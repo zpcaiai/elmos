@@ -91,12 +91,8 @@ _PROCESS_DIAGNOSTIC_SECRET_RE = re.compile(
     r"(?im)\b(token|secret|password|passwd|api[_-]?key|cookie|credential)\b"
     r"(\s*[:=]\s*)([^\s,;]+)"
 )
-_PROCESS_DIAGNOSTIC_AUTHORIZATION_RE = re.compile(
-    r"(?im)\b(authorization)\b(\s*:\s*)[^\r\n]*"
-)
-_PROCESS_DIAGNOSTIC_PRIVATE_PATH_RE = re.compile(
-    r"(?<![A-Za-z0-9._-])/(?:private|tmp|var/folders)/[^\s\"'<>]+"
-)
+_PROCESS_DIAGNOSTIC_AUTHORIZATION_RE = re.compile(r"(?im)\b(authorization)\b(\s*:\s*)[^\r\n]*")
+_PROCESS_DIAGNOSTIC_PRIVATE_PATH_RE = re.compile(r"(?<![A-Za-z0-9._-])/(?:private|tmp|var/folders)/[^\s\"'<>]+")
 _PROCESS_DIAGNOSTIC_LIMIT = 2_000
 
 
@@ -280,8 +276,7 @@ def _vb6_harness(function: Function, cases: list[dict[str, Any]]) -> str:
         if not isinstance(values, list) or len(values) != len(function.parameters):
             raise RouteError("VB6_CASE_ARGUMENT_COUNT_INVALID")
         args = ", ".join(
-            _vb6_literal(value, parameter.type)
-            for value, parameter in zip(values, function.parameters, strict=True)
+            _vb6_literal(value, parameter.type) for value, parameter in zip(values, function.parameters, strict=True)
         )
         expected = _vb6_literal(_returned_case_value(case), function.return_type)
         actual_name = f"actual{index}"
@@ -549,8 +544,7 @@ def _python_harness(
         if not isinstance(values, list) or len(values) != len(function.parameters):
             raise RouteError("PYTHON_CASE_ARGUMENT_COUNT_INVALID")
         args = ", ".join(
-            _python_literal(value, parameter.type)
-            for value, parameter in zip(values, function.parameters, strict=True)
+            _python_literal(value, parameter.type) for value, parameter in zip(values, function.parameters, strict=True)
         )
         expected = _python_literal(_returned_case_value(case), function.return_type)
         actual = f"actual_{index}"
@@ -978,8 +972,7 @@ def _vcpp6_harness(
         if not isinstance(values, list) or len(values) != len(function.parameters):
             raise RouteError("VCPP6_CASE_ARGUMENT_COUNT_INVALID")
         args = ", ".join(
-            _vcpp6_literal(value, parameter.type)
-            for value, parameter in zip(values, function.parameters, strict=True)
+            _vcpp6_literal(value, parameter.type) for value, parameter in zip(values, function.parameters, strict=True)
         )
         expected = _vcpp6_literal(_returned_case_value(case), function.return_type)
         actual = f"actual_{index}"
@@ -991,9 +984,9 @@ def _vcpp6_harness(
         )
         observation = {
             "integer": f'printf("ELMOS_OBSERVATION\\t{index}\\ti64-dec\\t%I64d\\n", {actual});',
-            "number": f'elmos_harness_print_fp64({index}, {actual});',
+            "number": f"elmos_harness_print_fp64({index}, {actual});",
             "boolean": f'printf("ELMOS_OBSERVATION\\t{index}\\tbool\\t%s\\n", {actual} ? "true" : "false");',
-            "string": f'elmos_harness_print_string({index}, {actual});',
+            "string": f"elmos_harness_print_string({index}, {actual});",
         }[function.return_type]
         checks.extend(
             [
@@ -1028,19 +1021,15 @@ def _vcpp6_harness(
             '    printf("ELMOS_OBSERVATION\\t%d\\thex-utf8\\t", index);\n'
             "    for (std::string::size_type offset = 0; offset < value.size(); ++offset) {\n"
             "        const unsigned char byte = (unsigned char)value[offset];\n"
-            '        putchar(digits[byte >> 4]);\n'
-            '        putchar(digits[byte & 0x0f]);\n'
+            "        putchar(digits[byte >> 4]);\n"
+            "        putchar(digits[byte & 0x0f]);\n"
             "    }\n"
             "    putchar('\\n');\n"
             "}\n\n"
         )
     return (
         "#include <stdio.h>\n#include <string.h>\n#include <string>\n"
-        f'#include "{include_file}"\n\n'
-        + helpers
-        + "int main() {\n"
-        + "\n".join(checks)
-        + "\n    return 0;\n}\n"
+        f'#include "{include_file}"\n\n' + helpers + "int main() {\n" + "\n".join(checks) + "\n    return 0;\n}\n"
     )
 
 
@@ -1229,8 +1218,7 @@ def _php_arguments(function: Function, case: dict[str, Any]) -> str:
     if not isinstance(values, list) or len(values) != len(function.parameters):
         raise RouteError("PHP_CASE_ARGUMENT_COUNT_INVALID")
     return ", ".join(
-        _php_literal(value, parameter.type)
-        for value, parameter in zip(values, function.parameters, strict=True)
+        _php_literal(value, parameter.type) for value, parameter in zip(values, function.parameters, strict=True)
     )
 
 
@@ -1264,7 +1252,7 @@ def _php_harness(function: Function, cases: list[dict[str, Any]], subject_relati
                 f"{actual} = {function.name}({args});",
                 f"{expected_name} = {expected};",
                 f"if ({condition}) {{ fwrite(STDERR, 'case {index}' . PHP_EOL); exit(1); }}",
-                f"echo \"ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t\", {rendered}, PHP_EOL;",
+                f'echo "ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t", {rendered}, PHP_EOL;',
             ]
         )
     return (
@@ -1287,9 +1275,7 @@ def _php_harness(function: Function, cases: list[dict[str, Any]], subject_relati
 #: and target side alike.  One name and one rule beats two file-derived names.
 _KOTLIN_HARNESS_JVM_NAME = "ElmosHarness"
 
-_KOTLIN_PACKAGE_RE = re.compile(
-    r"(?m)^package\s+([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*;?\s*$"
-)
+_KOTLIN_PACKAGE_RE = re.compile(r"(?m)^package\s+([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*;?\s*$")
 
 
 #: Bit-exact float64 helpers, emitted only for a `number` return.  `toRawBits`
@@ -1394,8 +1380,7 @@ def _kotlin_arguments(function: Function, case: dict[str, Any]) -> str:
     if not isinstance(values, list) or len(values) != len(function.parameters):
         raise RouteError("KOTLIN_CASE_ARGUMENT_COUNT_INVALID")
     return ", ".join(
-        _kotlin_literal(value, parameter.type)
-        for value, parameter in zip(values, function.parameters, strict=True)
+        _kotlin_literal(value, parameter.type) for value, parameter in zip(values, function.parameters, strict=True)
     )
 
 
@@ -1545,10 +1530,7 @@ def _dart_harness(function: Function, cases: list[dict[str, Any]], subject: str)
         actual = f"actual{index}"
         checks.append(f"  final {actual} = {function.name}({args});")
         if function.return_type == "number":
-            checks.append(
-                f"  if (!_elmosHarnessSameFp64({actual}, {expected})) "
-                f"throw StateError('case {index}');"
-            )
+            checks.append(f"  if (!_elmosHarnessSameFp64({actual}, {expected})) throw StateError('case {index}');")
             observation = f"_elmosHarnessFp64({actual})"
             encoding = "fp64-hex"
         elif function.return_type == "string":
@@ -1559,9 +1541,7 @@ def _dart_harness(function: Function, cases: list[dict[str, Any]], subject: str)
             checks.append(f"  if ({actual} != {expected}) throw StateError('case {index}');")
             observation = actual
             encoding = "i64-dec" if function.return_type == "integer" else "bool"
-        checks.append(
-            f"  print('ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t${{{observation}}}');"
-        )
+        checks.append(f"  print('ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t${{{observation}}}');")
 
     imports = ""
     helpers = ""
@@ -1587,15 +1567,7 @@ def _dart_harness(function: Function, cases: list[dict[str, Any]], subject: str)
             "      .join();\n"
             "}\n\n"
         )
-    return (
-        imports
-        + subject.rstrip()
-        + "\n\n"
-        + helpers
-        + "void main() {\n"
-        + "\n".join(checks)
-        + "\n}\n"
-    )
+    return imports + subject.rstrip() + "\n\n" + helpers + "void main() {\n" + "\n".join(checks) + "\n}\n"
 
 
 def _go_case_literal(value: object, value_type: str, *, math_alias: str = "math") -> str:
@@ -1929,8 +1901,6 @@ def _javascript_descriptor_stable_projection(
         "bytes": byte_count,
         "type": descriptor_type,
     }
-
-
 
 
 def _extract_python_function(source: str, function_name: str) -> str:
@@ -2283,9 +2253,7 @@ def validate_source(
         # launcher puts kotlin-stdlib on the run classpath itself.  A top-level
         # `main` in `source_harness.kt` compiles to the class `SourceHarnessKt`,
         # qualified by whatever package the subject declares.
-        entry_point = (
-            f"{package_name}.{_KOTLIN_HARNESS_JVM_NAME}" if package_name else _KOTLIN_HARNESS_JVM_NAME
-        )
+        entry_point = f"{package_name}.{_KOTLIN_HARNESS_JVM_NAME}" if package_name else _KOTLIN_HARNESS_JVM_NAME
         commands = [
             [toolchain.executable, "-Werror", "-d", "classes", source.name, "source_harness.kt"],
             [toolchain.auxiliary, "-classpath", "classes", entry_point],
@@ -2457,9 +2425,7 @@ def validate(
             ["./route_harness"],
         ]
     elif language == "vcpp6":
-        (output / "route_harness.cpp").write_text(
-            _vcpp6_harness(function, cases), encoding="ascii"
-        )
+        (output / "route_harness.cpp").write_text(_vcpp6_harness(function, cases), encoding="ascii")
         commands = [
             [
                 toolchain.executable,

@@ -176,9 +176,7 @@ def react_project_descriptor(repository_root: Path) -> dict[str, Any]:
             if type(section) is dict
             for name, version in section.items()
         }
-        mismatches = [
-            name for name, version in _PACKAGE_VERSIONS.items() if observed.get(name) != version
-        ]
+        mismatches = [name for name, version in _PACKAGE_VERSIONS.items() if observed.get(name) != version]
         if mismatches:
             raise RouteError(f"REACT_PACKAGE_VERSION_MISMATCH:{mismatches[0]}")
         raise RouteError("REACT_PACKAGE_DEPENDENCY_PROFILE_INVALID")
@@ -305,11 +303,14 @@ def verify_react_repository_project(
         raise RouteError(f"REACT_REPOSITORY_TYPESCRIPT_COMPILE_FAILED:{detail}")
 
     for relative, path, content in bindings:
-        if _stable_regular_bytes(
-            path,
-            f"REACT_REPOSITORY_SOURCE_CHANGED:{relative}",
-            maximum_bytes=MAX_SOURCE_BYTES,
-        ) != content:
+        if (
+            _stable_regular_bytes(
+                path,
+                f"REACT_REPOSITORY_SOURCE_CHANGED:{relative}",
+                maximum_bytes=MAX_SOURCE_BYTES,
+            )
+            != content
+        ):
             raise RouteError(f"REACT_REPOSITORY_SOURCE_CHANGED:{relative}")
     if react_project_descriptor(root) != descriptor:
         raise RouteError("REACT_PROJECT_DESCRIPTOR_CHANGED")
@@ -317,10 +318,7 @@ def verify_react_repository_project(
         "status": "PASSED",
         "profile": descriptor["profile"],
         "source_file_count": len(bindings),
-        "source_sha256": {
-            relative: hashlib.sha256(content).hexdigest()
-            for relative, _path, content in bindings
-        },
+        "source_sha256": {relative: hashlib.sha256(content).hexdigest() for relative, _path, content in bindings},
         "toolchain": _toolchain_receipt(toolchain),
         "command": [toolchain.auxiliary, "-p", "tsconfig.json", "--pretty", "false"],
         "stdout": completed.stdout[-2_000:],
@@ -389,8 +387,7 @@ def validate_react_repository_verification(
         or receipt.get("source_file_count") != len(expected_sources)
         or receipt.get("source_sha256") != expected_sources
         or receipt.get("toolchain") != _toolchain_receipt(toolchain)
-        or receipt.get("command")
-        != [toolchain.auxiliary, "-p", "tsconfig.json", "--pretty", "false"]
+        or receipt.get("command") != [toolchain.auxiliary, "-p", "tsconfig.json", "--pretty", "false"]
         or receipt.get("external_verification_status") != "NOT_RUN"
         or receipt.get("certification_status") != "NOT_CERTIFIED"
     ):

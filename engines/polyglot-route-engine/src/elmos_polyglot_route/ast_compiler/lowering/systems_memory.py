@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from ..ir import UniversalModule
+
+
 class SystemsMemoryLowering:
     """Transitions between RAII/ownership, ARC, and GC heap runtimes."""
 

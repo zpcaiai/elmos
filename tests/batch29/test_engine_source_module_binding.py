@@ -120,8 +120,8 @@ def test_current_engine_capture_binds_all_required_assets_and_runtime_modules(
         artifact_directory=artifact_directory,
     )
 
-    assert len(validator.ENGINE_RUNTIME_MODULES) == 22
-    assert len(validator.ENGINE_SOURCE_REQUIRED_ASSETS) == 25
+    assert len(validator.ENGINE_RUNTIME_MODULES) == 24
+    assert len(validator.ENGINE_SOURCE_REQUIRED_ASSETS) == 27
     assert _failures(
         validator,
         route,

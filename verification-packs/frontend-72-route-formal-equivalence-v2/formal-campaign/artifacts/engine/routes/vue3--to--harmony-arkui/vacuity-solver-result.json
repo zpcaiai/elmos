@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "vue3--to--harmony-arkui",
-  "formal_input_digest": "sha256:cc3200e59b784020dca9834f1b29363b1e49aa9f46fdb0decc2463ce1f699fb0",
-  "solver_input_digest": "sha256:1c9f3230b9d6572ab3bbdc2f21da11d4acbc3715902cf44b73dd144cf1a3c277",
-  "smt2_digest": "sha256:1c9f3230b9d6572ab3bbdc2f21da11d4acbc3715902cf44b73dd144cf1a3c277",
+  "formal_input_digest": "sha256:3870ac60a7ac63b22da9cc784570129ec67388b02e9d5486cf43733d863fc648",
+  "solver_input_digest": "sha256:2a008f791b5ac3b4d57656498c8ae00c0ef1c9da61a5fd7b7603b72560f46908",
+  "smt2_digest": "sha256:2a008f791b5ac3b4d57656498c8ae00c0ef1c9da61a5fd7b7603b72560f46908",
   "precheck_status": "PASSED"
 }

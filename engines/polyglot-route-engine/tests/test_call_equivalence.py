@@ -11,6 +11,7 @@ Verifies that:
 6. Python, TypeScript, and Go emitted targets execute to identical runtime values.
 7. Multi-language round-trip lifting and alpha-normalization preserves equivalence.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -49,6 +50,7 @@ def _normalize_ir_for_comparison(ir: SemanticIR) -> dict[str, Any]:
 # ==============================================================================
 # 1. Direct Function Call Parity (Helper + Entrypoint)
 # ==============================================================================
+
 
 def test_direct_function_call_cross_language_parity(tmp_path: Path) -> None:
     # Python
@@ -145,6 +147,7 @@ def test_direct_function_call_cross_language_parity(tmp_path: Path) -> None:
 # 2. Multi-Step Call Chain & Reverse Source Order Topological Sorting
 # ==============================================================================
 
+
 def test_multistep_call_chain_topological_sort(tmp_path: Path) -> None:
     # Defined in reverse dependency order in Go (top -> mid -> base)
     go_file = tmp_path / "chain.go"
@@ -227,12 +230,12 @@ def test_multistep_call_chain_topological_sort(tmp_path: Path) -> None:
 # 3. Fail-Closed Recursion Rejection Across All Analyzers
 # ==============================================================================
 
+
 def test_direct_recursion_rejection(tmp_path: Path) -> None:
     # Python
     py_file = tmp_path / "rec.py"
     py_file.write_text(
-        "def self_rec(n: int) -> int:\n"
-        "    return self_rec(n - 1)\n",
+        "def self_rec(n: int) -> int:\n    return self_rec(n - 1)\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError, match="RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET"):
@@ -241,10 +244,7 @@ def test_direct_recursion_rejection(tmp_path: Path) -> None:
     # TypeScript
     ts_file = tmp_path / "rec.ts"
     ts_file.write_text(
-        "type integer = number;\n"
-        "export function self_rec(n: integer): integer {\n"
-        "    return self_rec(n - 1);\n"
-        "}\n",
+        "type integer = number;\nexport function self_rec(n: integer): integer {\n    return self_rec(n - 1);\n}\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError, match="RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET"):
@@ -253,10 +253,7 @@ def test_direct_recursion_rejection(tmp_path: Path) -> None:
     # Go
     go_file = tmp_path / "rec.go"
     go_file.write_text(
-        "package main\n\n"
-        "func self_rec(n int64) int64 {\n"
-        "    return self_rec(n - 1)\n"
-        "}\n",
+        "package main\n\nfunc self_rec(n int64) int64 {\n    return self_rec(n - 1)\n}\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError, match="RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET"):
@@ -280,10 +277,7 @@ def test_mutual_recursion_rejection(tmp_path: Path) -> None:
     # Python
     py_file = tmp_path / "mutual.py"
     py_file.write_text(
-        "def fn_a(n: int) -> int:\n"
-        "    return fn_b(n - 1)\n\n"
-        "def fn_b(n: int) -> int:\n"
-        "    return fn_a(n - 1)\n",
+        "def fn_a(n: int) -> int:\n    return fn_b(n - 1)\n\ndef fn_b(n: int) -> int:\n    return fn_a(n - 1)\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError, match="RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET"):
@@ -340,14 +334,12 @@ def test_mutual_recursion_rejection(tmp_path: Path) -> None:
 # 4. Multi-Target Emission Across All 14 Routed Languages
 # ==============================================================================
 
+
 @pytest.mark.parametrize("target", ROUTED_LANGUAGES)
 def test_multicall_emits_to_all_14_targets(tmp_path: Path, target: str) -> None:
     py_file = tmp_path / "ops.py"
     py_file.write_text(
-        "def helper(x: int) -> int:\n"
-        "    return x + 1\n\n"
-        "def main_op(x: int) -> int:\n"
-        "    return helper(x) * 2\n",
+        "def helper(x: int) -> int:\n    return x + 1\n\ndef main_op(x: int) -> int:\n    return helper(x) * 2\n",
         encoding="utf-8",
     )
     ir = analyze(py_file, "python", "main_op")
@@ -369,6 +361,7 @@ def test_multicall_emits_to_all_14_targets(tmp_path: Path, target: str) -> None:
 # ==============================================================================
 # 5. Differential Runtime Execution (Python vs TypeScript vs Go)
 # ==============================================================================
+
 
 def test_multicall_differential_runtime_execution(tmp_path: Path) -> None:
     py_file = tmp_path / "math_ops.py"
@@ -415,7 +408,7 @@ def test_multicall_differential_runtime_execution(tmp_path: Path) -> None:
 
         # 3. Run Go
         go_source = run_dir / f"main_{x_val}_{y_val}.go"
-        go_code = emitted_go.replace("package main\n", "package main\nimport \"fmt\"\n", 1)
+        go_code = emitted_go.replace("package main\n", 'package main\nimport "fmt"\n', 1)
         go_source.write_text(
             f"{go_code}\nfunc main() {{\n    fmt.Println(step_two({x_val}, {y_val}))\n}}\n",
             encoding="utf-8",
@@ -434,13 +427,11 @@ def test_multicall_differential_runtime_execution(tmp_path: Path) -> None:
 # 6. Multi-Language Round-Trip Lifting & Reanalysis
 # ==============================================================================
 
+
 def test_multicall_roundtrip_reanalysis(tmp_path: Path) -> None:
     py_src = tmp_path / "source.py"
     py_src.write_text(
-        "def inc(x: int) -> int:\n"
-        "    return x + 1\n\n"
-        "def compute(n: int) -> int:\n"
-        "    return inc(n) * 2\n",
+        "def inc(x: int) -> int:\n    return x + 1\n\ndef compute(n: int) -> int:\n    return inc(n) * 2\n",
         encoding="utf-8",
     )
     ir_original = analyze(py_src, "python", "compute")

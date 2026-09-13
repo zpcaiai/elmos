@@ -4,6 +4,7 @@ Verifies that PHP while loops (`while ($cond) { ... }`) and monotonic for loops
 (`for ($i = 0; $i < $n; $i++) { ... }`) correctly lift into canonical IR loop statements,
 reject non-monotonic, do-while, or non-block forms, and emit cleanly into target languages.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,13 +18,7 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.php"
-    content = (
-        "<?php\n\n"
-        "declare(strict_types=1);\n\n"
-        "function subject(int $n): int {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"<?php\n\ndeclare(strict_types=1);\n\nfunction subject(int $n): int {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -84,11 +79,7 @@ def test_php_for_loop_lifts_default_step(tmp_path: Path) -> None:
 def test_php_for_loop_lifts_prefix_inc(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $total = 0;\n"
-        "    for ($i = 0; $i < $n; ++$i) {\n"
-        "        $total += $i;\n"
-        "    }\n"
-        "    return $total;",
+        "    $total = 0;\n    for ($i = 0; $i < $n; ++$i) {\n        $total += $i;\n    }\n    return $total;",
     )
     semantic = analyze(source, "php", "subject")
     loop = semantic.functions[0].body[1]
@@ -100,11 +91,7 @@ def test_php_for_loop_lifts_prefix_inc(tmp_path: Path) -> None:
 def test_php_for_loop_lifts_custom_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    $total = 0;\n"
-        "    for ($i = 0; $i < $n; $i += 2) {\n"
-        "        $total += $i;\n"
-        "    }\n"
-        "    return $total;",
+        "    $total = 0;\n    for ($i = 0; $i < $n; $i += 2) {\n        $total += $i;\n    }\n    return $total;",
     )
     semantic = analyze(source, "php", "subject")
     loop = semantic.functions[0].body[1]
@@ -116,10 +103,7 @@ def test_php_for_loop_lifts_custom_step(tmp_path: Path) -> None:
 def test_php_do_while_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    do {\n"
-        "        $n--;\n"
-        "    } while ($n > 0);\n"
-        "    return $n;",
+        "    do {\n        $n--;\n    } while ($n > 0);\n    return $n;",
     )
     with pytest.raises(RouteError, match="^PHP_DO_WHILE_REJECTED$"):
         analyze(source, "php", "subject")
@@ -128,10 +112,7 @@ def test_php_do_while_rejected(tmp_path: Path) -> None:
 def test_php_for_closed_range_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for ($i = 0; $i <= $n; $i++) {\n"
-        "        break;\n"
-        "    }\n"
-        "    return $n;",
+        "    for ($i = 0; $i <= $n; $i++) {\n        break;\n    }\n    return $n;",
     )
     with pytest.raises(RouteError, match="^PHP_FOR_CLOSED_RANGE_REJECTED$"):
         analyze(source, "php", "subject")
@@ -140,10 +121,7 @@ def test_php_for_closed_range_rejected(tmp_path: Path) -> None:
 def test_php_for_downto_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for ($i = $n; $i > 0; $i--) {\n"
-        "        break;\n"
-        "    }\n"
-        "    return $n;",
+        "    for ($i = $n; $i > 0; $i--) {\n        break;\n    }\n    return $n;",
     )
     with pytest.raises(RouteError, match="^PHP_FOR_DOWNTO_REJECTED$"):
         analyze(source, "php", "subject")
@@ -152,10 +130,7 @@ def test_php_for_downto_rejected(tmp_path: Path) -> None:
 def test_php_for_loop_index_mutation_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for ($i = 0; $i < $n; $i++) {\n"
-        "        $i = 10;\n"
-        "    }\n"
-        "    return $n;",
+        "    for ($i = 0; $i < $n; $i++) {\n        $i = 10;\n    }\n    return $n;",
     )
     with pytest.raises(RouteError, match="^PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:i$"):
         analyze(source, "php", "subject")
@@ -164,8 +139,7 @@ def test_php_for_loop_index_mutation_rejected(tmp_path: Path) -> None:
 def test_php_break_outside_loop_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    break;\n"
-        "    return $n;",
+        "    break;\n    return $n;",
     )
     with pytest.raises(RouteError, match="^PHP_BREAK_OUTSIDE_LOOP$"):
         analyze(source, "php", "subject")
@@ -174,8 +148,7 @@ def test_php_break_outside_loop_rejected(tmp_path: Path) -> None:
 def test_php_continue_outside_loop_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    continue;\n"
-        "    return $n;",
+        "    continue;\n    return $n;",
     )
     with pytest.raises(RouteError, match="^PHP_CONTINUE_OUTSIDE_LOOP$"):
         analyze(source, "php", "subject")

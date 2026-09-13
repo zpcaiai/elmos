@@ -75,10 +75,7 @@ def _tree_receipt(root: Path) -> dict[str, object]:
     return {
         "exists": True,
         "root": metadata(root),
-        "entries": {
-            path.relative_to(root).as_posix(): metadata(path)
-            for path in sorted(root.rglob("*"))
-        },
+        "entries": {path.relative_to(root).as_posix(): metadata(path) for path in sorted(root.rglob("*"))},
     }
 
 
@@ -91,9 +88,7 @@ def _write_sample(source: Path) -> None:
 
 
 def test_rust_vendor_exactly_closes_locked_registry_inputs() -> None:
-    configuration = tomllib.loads(
-        (RUST_PACKAGE / ".cargo/config.toml").read_text(encoding="utf-8")
-    )
+    configuration = tomllib.loads((RUST_PACKAGE / ".cargo/config.toml").read_text(encoding="utf-8"))
     assert configuration == {
         "net": {"offline": True},
         "source": {
@@ -111,9 +106,7 @@ def test_rust_vendor_exactly_closes_locked_registry_inputs() -> None:
     assert locked_registry == EXPECTED_REGISTRY_PACKAGES
 
     vendor = RUST_PACKAGE / "vendor"
-    vendor_directories = {
-        path.name for path in vendor.iterdir() if path.is_dir() and not path.is_symlink()
-    }
+    vendor_directories = {path.name for path in vendor.iterdir() if path.is_dir() and not path.is_symlink()}
     assert vendor_directories == set(EXPECTED_REGISTRY_PACKAGES)
     assert not [path for path in vendor.rglob("*") if path.is_symlink()]
 
@@ -125,15 +118,10 @@ def test_rust_vendor_exactly_closes_locked_registry_inputs() -> None:
         assert checksum["package"] == package_checksum
         expected_files = checksum["files"]
         observed_files = {
-            path.relative_to(crate).as_posix()
-            for path in crate.rglob("*")
-            if path.is_file() and path != checksum_path
+            path.relative_to(crate).as_posix() for path in crate.rglob("*") if path.is_file() and path != checksum_path
         }
         assert set(expected_files) == observed_files
-        assert {
-            relative: _sha256(crate / relative)
-            for relative in sorted(observed_files)
-        } == expected_files
+        assert {relative: _sha256(crate / relative) for relative in sorted(observed_files)} == expected_files
 
 
 def test_rust_inventory_builds_with_sanitized_empty_home_and_vendor(
@@ -209,12 +197,15 @@ def test_native_run_cleans_private_cargo_environment_on_success_and_failure(
                 isolated_cargo=True,
             )
     else:
-        assert native._run(
-            command,
-            cwd=RUST_PACKAGE,
-            timeout=900,
-            isolated_cargo=True,
-        ) == {}
+        assert (
+            native._run(
+                command,
+                cwd=RUST_PACKAGE,
+                timeout=900,
+                isolated_cargo=True,
+            )
+            == {}
+        )
     assert len(observed_roots) == 1
     assert not observed_roots[0].exists()
 

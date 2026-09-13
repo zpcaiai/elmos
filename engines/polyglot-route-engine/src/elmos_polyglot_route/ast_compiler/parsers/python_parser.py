@@ -4,21 +4,18 @@ from __future__ import annotations
 
 import ast
 import textwrap
-from typing import Any
 
 from ..ir import (
     AwaitExpr,
     BinaryExpr,
     BinaryOperator,
     CatchClause,
-    ConstructExpr,
     ExprStmt,
     FieldAccessExpr,
     IdentifierExpr,
     IfElseStmt,
     LiteralExpr,
     MethodCallExpr,
-    PrimitiveKind,
     RawSnippetExpr,
     ReturnStmt,
     ThrowStmt,
@@ -33,7 +30,6 @@ from ..ir import (
     UniversalParam,
     UniversalStmt,
     UniversalType,
-    VarDeclStmt,
 )
 from .base import BaseAstParser
 
@@ -42,19 +38,19 @@ class PythonAstParser(BaseAstParser):
     """Parses Python code using the official 'ast' library into Universal AST IR."""
 
     def __init__(self) -> None:
-        super().__init__('python')
+        super().__init__("python")
 
     def parse(self, source_code: str) -> UniversalModule:
         clean_source = textwrap.dedent(source_code).strip()
         try:
             tree = ast.parse(clean_source)
-        except SyntaxError as ex:
+        except SyntaxError:
             # Fallback module with raw snippet if syntax error
-            module = UniversalModule(name='PythonModule', source_language='python')
-            module.classes.append(UniversalClass(name='SyntaxErrorClass'))
+            module = UniversalModule(name="PythonModule", source_language="python")
+            module.classes.append(UniversalClass(name="SyntaxErrorClass"))
             return module
 
-        module = UniversalModule(name='PythonModule', source_language='python')
+        module = UniversalModule(name="PythonModule", source_language="python")
 
         # Detect imports
         for node in tree.body:
@@ -70,7 +66,7 @@ class PythonAstParser(BaseAstParser):
             if isinstance(node, ast.ClassDef):
                 cls = self._parse_class(node)
                 module.classes.append(cls)
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 fn = self._parse_function(node)
                 module.free_functions.append(fn)
             elif isinstance(node, ast.Assign):
@@ -111,7 +107,7 @@ class PythonAstParser(BaseAstParser):
         for dec in node.decorator_list:
             dec_name = self._decorator_to_str(dec)
             annotations.append(UniversalAnnotation(name=dec_name))
-            if 'router' in dec_name.lower() or 'controller' in dec_name.lower():
+            if "router" in dec_name.lower() or "controller" in dec_name.lower():
                 is_controller = True
 
         fields: list[UniversalField] = []
@@ -123,15 +119,19 @@ class PythonAstParser(BaseAstParser):
                 field_name = item.target.id
                 field_type = self._annotation_to_type(item.annotation)
                 fields.append(UniversalField(name=field_name, type_info=field_type))
-            elif isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if item.name == '__init__':
+            elif isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
+                if item.name == "__init__":
                     ctor = self._parse_constructor(item)
                     constructors.append(ctor)
                     # Also extract self.field = ... from init
                     for stmt in item.body:
                         if isinstance(stmt, ast.Assign):
                             for target in stmt.targets:
-                                if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name) and target.value.id == 'self':
+                                if (
+                                    isinstance(target, ast.Attribute)
+                                    and isinstance(target.value, ast.Name)
+                                    and target.value.id == "self"
+                                ):
                                     fname = target.attr
                                     if not any(f.name == fname for f in fields):
                                         fields.append(UniversalField(name=fname, type_info=UniversalType.string_type()))
@@ -148,13 +148,13 @@ class PythonAstParser(BaseAstParser):
             methods=methods,
             annotations=annotations,
             is_controller=is_controller,
-            base_route=base_route or ('/api/v1/assets' if 'Asset' in cls_name else None),
+            base_route=base_route or ("/api/v1/assets" if "Asset" in cls_name else None),
         )
 
     def _parse_constructor(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> UniversalConstructor:
         params: list[UniversalParam] = []
         for arg in node.args.args:
-            if arg.arg == 'self':
+            if arg.arg == "self":
                 continue
             ptype = self._annotation_to_type(arg.annotation) if arg.annotation else UniversalType.string_type()
             params.append(UniversalParam(name=arg.arg, type_info=ptype))
@@ -167,7 +167,7 @@ class PythonAstParser(BaseAstParser):
 
         params: list[UniversalParam] = []
         for arg in node.args.args:
-            if arg.arg == 'self' or arg.arg == 'cls':
+            if arg.arg == "self" or arg.arg == "cls":
                 continue
             ptype = self._annotation_to_type(arg.annotation) if arg.annotation else UniversalType.string_type()
             params.append(UniversalParam(name=arg.arg, type_info=ptype))
@@ -180,18 +180,18 @@ class PythonAstParser(BaseAstParser):
             dec_str = self._decorator_to_str(dec)
             annotations.append(UniversalAnnotation(name=dec_str))
             lower_dec = dec_str.lower()
-            if '.get' in lower_dec:
-                http_method = 'GET'
-                http_path = self._extract_path_arg(dec) or ''
-            elif '.post' in lower_dec:
-                http_method = 'POST'
-                http_path = self._extract_path_arg(dec) or ''
-            elif '.put' in lower_dec:
-                http_method = 'PUT'
-                http_path = self._extract_path_arg(dec) or ''
-            elif '.delete' in lower_dec:
-                http_method = 'DELETE'
-                http_path = self._extract_path_arg(dec) or ''
+            if ".get" in lower_dec:
+                http_method = "GET"
+                http_path = self._extract_path_arg(dec) or ""
+            elif ".post" in lower_dec:
+                http_method = "POST"
+                http_path = self._extract_path_arg(dec) or ""
+            elif ".put" in lower_dec:
+                http_method = "PUT"
+                http_path = self._extract_path_arg(dec) or ""
+            elif ".delete" in lower_dec:
+                http_method = "DELETE"
+                http_path = self._extract_path_arg(dec) or ""
 
         body = self._parse_body(node.body)
 
@@ -219,8 +219,8 @@ class PythonAstParser(BaseAstParser):
             val = self._parse_expr(stmt.value) if stmt.value else None
             return ReturnStmt(value=val)
         elif isinstance(stmt, ast.Raise):
-            exc_class = 'Exception'
-            msg = 'Error'
+            exc_class = "Exception"
+            msg = "Error"
             if stmt.exc:
                 if isinstance(stmt.exc, ast.Call):
                     if isinstance(stmt.exc.func, ast.Name):
@@ -232,16 +232,16 @@ class PythonAstParser(BaseAstParser):
             try_body = self._parse_body(stmt.body)
             catches: list[CatchClause] = []
             for handler in stmt.handlers:
-                exc_type = 'Exception'
+                exc_type = "Exception"
                 if handler.type and isinstance(handler.type, ast.Name):
                     exc_type = handler.type.id
-                var_name = handler.name or 'ex'
+                var_name = handler.name or "ex"
                 cbody = self._parse_body(handler.body)
                 catches.append(CatchClause(exception_type=exc_type, variable_name=var_name, body=cbody))
             finally_body = self._parse_body(stmt.finalbody) if stmt.finalbody else []
             return TryCatchFinallyStmt(try_body=try_body, catch_clauses=catches, finally_body=finally_body)
         elif isinstance(stmt, ast.If):
-            cond = self._parse_expr(stmt.test) or LiteralExpr(value=True, type_kind='bool')
+            cond = self._parse_expr(stmt.test) or LiteralExpr(value=True, type_kind="bool")
             then_b = self._parse_body(stmt.body)
             else_b = self._parse_body(stmt.orelse) if stmt.orelse else []
             return IfElseStmt(condition=cond, then_body=then_b, else_body=else_b)
@@ -257,13 +257,13 @@ class PythonAstParser(BaseAstParser):
         if isinstance(expr, ast.Constant):
             val = expr.value
             if isinstance(val, bool):
-                return LiteralExpr(value=val, type_kind='bool')
-            elif isinstance(val, (int, float)):
-                return LiteralExpr(value=val, type_kind='int' if isinstance(val, int) else 'float')
+                return LiteralExpr(value=val, type_kind="bool")
+            elif isinstance(val, int | float):
+                return LiteralExpr(value=val, type_kind="int" if isinstance(val, int) else "float")
             elif isinstance(val, str):
-                return LiteralExpr(value=val, type_kind='string')
+                return LiteralExpr(value=val, type_kind="string")
             elif val is None:
-                return LiteralExpr(value=None, type_kind='null')
+                return LiteralExpr(value=None, type_kind="null")
         elif isinstance(expr, ast.Name):
             return IdentifierExpr(name=expr.id)
         elif isinstance(expr, ast.Attribute):
@@ -272,13 +272,13 @@ class PythonAstParser(BaseAstParser):
                 return FieldAccessExpr(target=target, field_name=expr.attr)
         elif isinstance(expr, ast.Call):
             target = None
-            fname = 'unknown'
+            fname = "unknown"
             if isinstance(expr.func, ast.Name):
                 fname = expr.func.id
             elif isinstance(expr.func, ast.Attribute):
                 target = self._parse_expr(expr.func.value)
                 fname = expr.func.attr
-            args = [self._parse_expr(a) for a in expr.args if self._parse_expr(a) is not None]
+            args = [parsed for arg in expr.args if (parsed := self._parse_expr(arg)) is not None]
             return MethodCallExpr(target=target, method_name=fname, args=args)
         elif isinstance(expr, ast.Await):
             inner = self._parse_expr(expr.value)
@@ -296,7 +296,7 @@ class PythonAstParser(BaseAstParser):
                 op = BinaryOperator.DIV
             if left and right:
                 return BinaryExpr(left=left, op=op, right=right)
-        return RawSnippetExpr(code=ast.unparse(expr) if hasattr(ast, 'unparse') else '')
+        return RawSnippetExpr(code=ast.unparse(expr) if hasattr(ast, "unparse") else "")
 
     def _annotation_to_type(self, node: ast.expr | None) -> UniversalType:
         if node is None:
@@ -308,9 +308,9 @@ class PythonAstParser(BaseAstParser):
         elif isinstance(node, ast.Subscript):
             if isinstance(node.value, ast.Name):
                 base_name = node.value.id
-                if base_name in ('list', 'List') and isinstance(node.slice, ast.Name):
+                if base_name in ("list", "List") and isinstance(node.slice, ast.Name):
                     return UniversalType.list_of(self.parse_type(node.slice.id))
-                elif base_name in ('Optional',):
+                elif base_name in ("Optional",):
                     if isinstance(node.slice, ast.Name):
                         return UniversalType.optional_of(self.parse_type(node.slice.id))
         return UniversalType.string_type()
@@ -323,13 +323,17 @@ class PythonAstParser(BaseAstParser):
             return f"{val}.{node.attr}"
         elif isinstance(node, ast.Call):
             return self._decorator_to_str(node.func)
-        return ''
+        return ""
 
     def _extract_path_arg(self, node: ast.expr) -> str | None:
         if isinstance(node, ast.Call):
             if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                 return node.args[0].value
             for kw in node.keywords:
-                if kw.arg in ('path', 'prefix') and isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
+                if (
+                    kw.arg in ("path", "prefix")
+                    and isinstance(kw.value, ast.Constant)
+                    and isinstance(kw.value.value, str)
+                ):
                     return kw.value.value
         return None

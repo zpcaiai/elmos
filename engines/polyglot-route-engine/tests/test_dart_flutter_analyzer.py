@@ -66,9 +66,7 @@ def test_flutter_inventory_is_ast_owned_and_marks_ui_non_analyzable() -> None:
     assert [(item["name"], item["analyzable"]) for item in pure["subjects"]] == [("choose", True)]
     source_bytes = (FIXTURES / "development" / "choose.dart").read_bytes()
     assert pure["source_artifact_bytes"] == len(source_bytes)
-    assert pure["source_artifact_sha256"] == (
-        "sha256:" + hashlib.sha256(source_bytes).hexdigest()
-    )
+    assert pure["source_artifact_sha256"] == ("sha256:" + hashlib.sha256(source_bytes).hexdigest())
     ui_import = widget["subjects"][0]
     assert ui_import["declaration_kind"] == "flutter-ui-import"
     assert ui_import["analyzable"] is False
@@ -110,8 +108,7 @@ def test_flutter_conditional_expression_body_lowers_to_typed_if_ir(
 ) -> None:
     source = tmp_path / f"{function_name}.dart"
     source.write_text(
-        f"int {function_name}(int left, int right) "
-        f"=> left {operator} right ? left : right;\n",
+        f"int {function_name}(int left, int right) => left {operator} right ? left : right;\n",
         encoding="utf-8",
     )
     toolchain = exact_toolchain("flutter")

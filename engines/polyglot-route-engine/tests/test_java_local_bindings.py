@@ -19,11 +19,7 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "Calculation.java"
-    content = (
-        "public final class Calculation {\n"
-        f"    {body}\n"
-        "}\n"
-    )
+    content = f"public final class Calculation {{\n    {body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -65,10 +61,7 @@ def test_java_lifted_let_emits_to_all_targets(tmp_path: Path) -> None:
 def test_java_unannotated_var_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "public static long total(long price) {\n"
-        "    var subtotal = price;\n"
-        "    return subtotal;\n"
-        "}",
+        "public static long total(long price) {\n    var subtotal = price;\n    return subtotal;\n}",
     )
     with pytest.raises(RouteError, match="JAVA_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "java", "total")
@@ -77,10 +70,7 @@ def test_java_unannotated_var_rejected(tmp_path: Path) -> None:
 def test_java_mutable_local_accepted(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "public static long total(long price) {\n"
-        "    long subtotal = price;\n"
-        "    return subtotal;\n"
-        "}",
+        "public static long total(long price) {\n    long subtotal = price;\n    return subtotal;\n}",
     )
     semantic = analyze(source, "java", "total")
     statements = semantic.functions[0].body
@@ -91,10 +81,7 @@ def test_java_mutable_local_accepted(tmp_path: Path) -> None:
 def test_java_declaration_without_value_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "public static long total(long price) {\n"
-        "    final long subtotal;\n"
-        "    return price;\n"
-        "}",
+        "public static long total(long price) {\n    final long subtotal;\n    return price;\n}",
     )
     with pytest.raises(RouteError, match="JAVA_ANNOTATED_DECLARATION_WITHOUT_VALUE"):
         analyze(source, "java", "total")
@@ -103,10 +90,7 @@ def test_java_declaration_without_value_rejected(tmp_path: Path) -> None:
 def test_java_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "public static long total(long price) {\n"
-        "    price = price + 1;\n"
-        "    return price;\n"
-        "}",
+        "public static long total(long price) {\n    price = price + 1;\n    return price;\n}",
     )
     with pytest.raises(RouteError, match="JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:price"):
         analyze(source, "java", "total")
@@ -137,10 +121,7 @@ def test_java_mutable_local_reassignment_accepted(tmp_path: Path) -> None:
 def test_java_unsupported_int_type_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "public static long total(long price) {\n"
-        "    final int subtotal = 1;\n"
-        "    return price;\n"
-        "}",
+        "public static long total(long price) {\n    final int subtotal = 1;\n    return price;\n}",
     )
     with pytest.raises(RouteError, match="JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"):
         analyze(source, "java", "total")
@@ -168,10 +149,7 @@ def test_java_multiple_sequential_bindings(tmp_path: Path) -> None:
 def test_java_shadowing_parameter_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "public static long total(long price) {\n"
-        "    final long price = 10;\n"
-        "    return price;\n"
-        "}",
+        "public static long total(long price) {\n    final long price = 10;\n    return price;\n}",
     )
     semantic = analyze(source, "java", "total")
     with pytest.raises(RouteError, match="LET_NAME_ALREADY_BOUND:price"):

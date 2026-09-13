@@ -4,6 +4,7 @@ Verifies that C# while loops (`while (cond) { ... }`) and monotonic for loops
 (`for (long i = 0; i < n; i++) { ... }`) correctly lift into canonical IR loop statements,
 reject non-monotonic, do-while, or non-standard forms, and emit cleanly into target languages.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,13 +18,7 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "Subject.cs"
-    content = (
-        "public static class Subject {\n"
-        "    public static long subject(long n) {\n"
-        f"{body}\n"
-        "    }\n"
-        "}\n"
-    )
+    content = f"public static class Subject {{\n    public static long subject(long n) {{\n{body}\n    }}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -31,10 +26,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_csharp_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "        while (n > 0) {\n"
-        "            break;\n"
-        "        }\n"
-        "        return n;",
+        "        while (n > 0) {\n            break;\n        }\n        return n;",
     )
     semantic = analyze(source, "csharp", "subject")
     statements = semantic.functions[0].body
@@ -89,10 +81,7 @@ def test_csharp_for_loop_lifts_custom_step(tmp_path: Path) -> None:
 def test_csharp_rejects_do_while(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "        do {\n"
-        "            break;\n"
-        "        } while (n > 0);\n"
-        "        return n;",
+        "        do {\n            break;\n        } while (n > 0);\n        return n;",
     )
     with pytest.raises(RouteError, match="CSHARP_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "csharp", "subject")

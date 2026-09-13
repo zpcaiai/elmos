@@ -8,11 +8,7 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, class_body: str) -> Path:
     path = tmp_path / "Subject.java"
-    content = (
-        "public final class Subject {\n"
-        f"{class_body}\n"
-        "}\n"
-    )
+    content = f"public final class Subject {{\n{class_body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -123,10 +119,7 @@ def test_java_while_with_break_and_continue(tmp_path: Path) -> None:
 def test_java_rejects_parameter_reassignment(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    public static long bad_param(long n) {\n"
-        "        n = n + 1;\n"
-        "        return n;\n"
-        "    }\n",
+        "    public static long bad_param(long n) {\n        n = n + 1;\n        return n;\n    }\n",
     )
     with pytest.raises(RouteError, match="JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:n"):
         analyze(source, "java", "bad_param")
@@ -135,10 +128,7 @@ def test_java_rejects_parameter_reassignment(tmp_path: Path) -> None:
 def test_java_rejects_compound_parameter_reassignment(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    public static long bad_param(long n) {\n"
-        "        n += 1;\n"
-        "        return n;\n"
-        "    }\n",
+        "    public static long bad_param(long n) {\n        n += 1;\n        return n;\n    }\n",
     )
     with pytest.raises(RouteError, match="JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:n"):
         analyze(source, "java", "bad_param")

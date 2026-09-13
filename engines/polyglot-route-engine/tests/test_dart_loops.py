@@ -4,6 +4,7 @@ Verifies that Dart while loops (`while (cond) { ... }`) and monotonic for loops
 (`for (int i = 0; i < n; i++) { ... }`) correctly lift into canonical IR loop statements,
 reject non-monotonic, do-while, for-in, or non-int forms, and emit cleanly into target languages.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,11 +18,7 @@ from elmos_polyglot_route.source_analyzer import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.dart"
-    content = (
-        "int subject(int n) {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"int subject(int n) {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -29,10 +26,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_dart_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  while (n > 0) {\n"
-        "    break;\n"
-        "  }\n"
-        "  return n;",
+        "  while (n > 0) {\n    break;\n  }\n  return n;",
     )
     semantic = analyze(source, "flutter", "subject")
     statements = semantic.functions[0].body
@@ -47,11 +41,7 @@ def test_dart_while_loop_lifts(tmp_path: Path) -> None:
 def test_dart_for_loop_lifts_default_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int total = 0;\n"
-        "  for (int i = 0; i < n; i++) {\n"
-        "    continue;\n"
-        "  }\n"
-        "  return total;",
+        "  int total = 0;\n  for (int i = 0; i < n; i++) {\n    continue;\n  }\n  return total;",
     )
     semantic = analyze(source, "flutter", "subject")
     statements = semantic.functions[0].body
@@ -70,11 +60,7 @@ def test_dart_for_loop_lifts_default_step(tmp_path: Path) -> None:
 def test_dart_for_loop_lifts_prefix_inc(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int total = 0;\n"
-        "  for (int i = 0; i < n; ++i) {\n"
-        "    total += i;\n"
-        "  }\n"
-        "  return total;",
+        "  int total = 0;\n  for (int i = 0; i < n; ++i) {\n    total += i;\n  }\n  return total;",
     )
     semantic = analyze(source, "flutter", "subject")
     loop = semantic.functions[0].body[1]
@@ -88,11 +74,7 @@ def test_dart_for_loop_lifts_prefix_inc(tmp_path: Path) -> None:
 def test_dart_for_loop_lifts_custom_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int total = 0;\n"
-        "  for (int i = 0; i < n; i += 2) {\n"
-        "    total += i;\n"
-        "  }\n"
-        "  return total;",
+        "  int total = 0;\n  for (int i = 0; i < n; i += 2) {\n    total += i;\n  }\n  return total;",
     )
     semantic = analyze(source, "flutter", "subject")
     loop = semantic.functions[0].body[1]
@@ -104,10 +86,7 @@ def test_dart_for_loop_lifts_custom_step(tmp_path: Path) -> None:
 def test_dart_do_while_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  do {\n"
-        "    n--;\n"
-        "  } while (n > 0);\n"
-        "  return n;",
+        "  do {\n    n--;\n  } while (n > 0);\n  return n;",
     )
     with pytest.raises(
         RouteError,
@@ -119,10 +98,7 @@ def test_dart_do_while_rejected(tmp_path: Path) -> None:
 def test_dart_for_loop_non_integer_type_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  for (double i = 0.0; i < 10.0; i++) {\n"
-        "    break;\n"
-        "  }\n"
-        "  return n;",
+        "  for (double i = 0.0; i < 10.0; i++) {\n    break;\n  }\n  return n;",
     )
     with pytest.raises(
         RouteError,
@@ -134,10 +110,7 @@ def test_dart_for_loop_non_integer_type_rejected(tmp_path: Path) -> None:
 def test_dart_for_loop_non_monotonic_condition_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  for (int i = 0; i <= n; i++) {\n"
-        "    break;\n"
-        "  }\n"
-        "  return n;",
+        "  for (int i = 0; i <= n; i++) {\n    break;\n  }\n  return n;",
     )
     with pytest.raises(
         RouteError,
@@ -149,10 +122,7 @@ def test_dart_for_loop_non_monotonic_condition_rejected(tmp_path: Path) -> None:
 def test_dart_for_loop_non_monotonic_updater_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  for (int i = 0; i < n; i--) {\n"
-        "    break;\n"
-        "  }\n"
-        "  return n;",
+        "  for (int i = 0; i < n; i--) {\n    break;\n  }\n  return n;",
     )
     with pytest.raises(
         RouteError,

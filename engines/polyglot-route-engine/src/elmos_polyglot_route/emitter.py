@@ -775,7 +775,7 @@ _PHP_HELPERS: dict[str, str] = {
         "function elmos_checked_add(int $left, int $right): int {\n"
         "    $result = $left + $right;\n"
         "    if (!is_int($result)) {\n"
-        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        f"        throw new \\ArithmeticError('{_OVERFLOW_MESSAGE}');\n"
         "    }\n"
         "    return $result;\n"
         "}"
@@ -784,7 +784,7 @@ _PHP_HELPERS: dict[str, str] = {
         "function elmos_checked_sub(int $left, int $right): int {\n"
         "    $result = $left - $right;\n"
         "    if (!is_int($result)) {\n"
-        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        f"        throw new \\ArithmeticError('{_OVERFLOW_MESSAGE}');\n"
         "    }\n"
         "    return $result;\n"
         "}"
@@ -793,7 +793,7 @@ _PHP_HELPERS: dict[str, str] = {
         "function elmos_checked_mul(int $left, int $right): int {\n"
         "    $result = $left * $right;\n"
         "    if (!is_int($result)) {\n"
-        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        f"        throw new \\ArithmeticError('{_OVERFLOW_MESSAGE}');\n"
         "    }\n"
         "    return $result;\n"
         "}"
@@ -801,10 +801,10 @@ _PHP_HELPERS: dict[str, str] = {
     "checked_div": (
         "function elmos_checked_div(int $left, int $right): int {\n"
         "    if ($right === 0) {\n"
-        f'        throw new \\DivisionByZeroError(\'{_DIVIDE_BY_ZERO_MESSAGE}\');\n'
+        f"        throw new \\DivisionByZeroError('{_DIVIDE_BY_ZERO_MESSAGE}');\n"
         "    }\n"
         "    if ($left === PHP_INT_MIN && $right === -1) {\n"
-        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        f"        throw new \\ArithmeticError('{_OVERFLOW_MESSAGE}');\n"
         "    }\n"
         "    return intdiv($left, $right);\n"
         "}"
@@ -812,10 +812,10 @@ _PHP_HELPERS: dict[str, str] = {
     "checked_mod": (
         "function elmos_checked_mod(int $left, int $right): int {\n"
         "    if ($right === 0) {\n"
-        f'        throw new \\DivisionByZeroError(\'{_DIVIDE_BY_ZERO_MESSAGE}\');\n'
+        f"        throw new \\DivisionByZeroError('{_DIVIDE_BY_ZERO_MESSAGE}');\n"
         "    }\n"
         "    if ($left === PHP_INT_MIN && $right === -1) {\n"
-        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        f"        throw new \\ArithmeticError('{_OVERFLOW_MESSAGE}');\n"
         "    }\n"
         "    return $left % $right;\n"
         "}"
@@ -826,7 +826,7 @@ _PHP_HELPERS: dict[str, str] = {
     "non_zero_float": (
         "function elmos_non_zero_float(float $value): float {\n"
         "    if ($value === 0.0) {\n"
-        f'        throw new \\DivisionByZeroError(\'{_DIVIDE_BY_ZERO_MESSAGE}\');\n'
+        f"        throw new \\DivisionByZeroError('{_DIVIDE_BY_ZERO_MESSAGE}');\n"
         "    }\n"
         "    return $value;\n"
         "}"
@@ -840,7 +840,7 @@ _VB6_HELPERS: dict[str, str] = {
         "    Dim resultValue As Double\n"
         "    resultValue = CDbl(leftValue) + CDbl(rightValue)\n"
         "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
-        "Err.Raise 6, \"ElmosCheckedAdd\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        'Err.Raise 6, "ElmosCheckedAdd", "ELMOS_INTEGER_OVERFLOW"\n'
         "    ElmosCheckedAdd = CLng(resultValue)\n"
         "End Function"
     ),
@@ -849,7 +849,7 @@ _VB6_HELPERS: dict[str, str] = {
         "    Dim resultValue As Double\n"
         "    resultValue = CDbl(leftValue) - CDbl(rightValue)\n"
         "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
-        "Err.Raise 6, \"ElmosCheckedSub\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        'Err.Raise 6, "ElmosCheckedSub", "ELMOS_INTEGER_OVERFLOW"\n'
         "    ElmosCheckedSub = CLng(resultValue)\n"
         "End Function"
     ),
@@ -858,15 +858,15 @@ _VB6_HELPERS: dict[str, str] = {
         "    Dim resultValue As Double\n"
         "    resultValue = CDbl(leftValue) * CDbl(rightValue)\n"
         "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
-        "Err.Raise 6, \"ElmosCheckedMul\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        'Err.Raise 6, "ElmosCheckedMul", "ELMOS_INTEGER_OVERFLOW"\n'
         "    ElmosCheckedMul = CLng(resultValue)\n"
         "End Function"
     ),
     "checked_div": (
         "Private Function ElmosCheckedDiv(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
-        "    If rightValue = 0 Then Err.Raise 11, \"ElmosCheckedDiv\", \"ELMOS_DIVIDE_BY_ZERO\"\n"
+        '    If rightValue = 0 Then Err.Raise 11, "ElmosCheckedDiv", "ELMOS_DIVIDE_BY_ZERO"\n'
         "    If leftValue = -2147483648# And rightValue = -1 Then "
-        "Err.Raise 6, \"ElmosCheckedDiv\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        'Err.Raise 6, "ElmosCheckedDiv", "ELMOS_INTEGER_OVERFLOW"\n'
         "    ElmosCheckedDiv = CLng(Fix(CDbl(leftValue) / CDbl(rightValue)))\n"
         "End Function"
     ),
@@ -879,7 +879,7 @@ _VB6_HELPERS: dict[str, str] = {
     ),
     "non_zero_double": (
         "Private Function ElmosNonZero(ByVal value As Double) As Double\n"
-        "    If value = 0# Then Err.Raise 11, \"ElmosNonZero\", \"ELMOS_DIVIDE_BY_ZERO\"\n"
+        '    If value = 0# Then Err.Raise 11, "ElmosNonZero", "ELMOS_DIVIDE_BY_ZERO"\n'
         "    ElmosNonZero = value\n"
         "End Function"
     ),
@@ -1578,10 +1578,7 @@ def _expression(
             raise RouteError(f"UNKNOWN_RECORD_TYPE:{expression.record_name}")
         rec = context.records[expression.record_name]
         arg_map = dict(expression.arguments)
-        ordered_args = [
-            (f.name, _expression(context, arg_map[f.name], environment))
-            for f in rec.fields
-        ]
+        ordered_args = [(f.name, _expression(context, arg_map[f.name], environment)) for f in rec.fields]
         lang = context.language
         if lang in {"java", "csharp"}:
             args_str = ", ".join(v for _, v in ordered_args)
@@ -1622,10 +1619,7 @@ def _expression(
             raise RouteError("INVALID_CALL_EXPRESSION")
         if context.functions and expression.function_name not in context.functions:
             raise RouteError(f"UNKNOWN_FUNCTION:{expression.function_name}")
-        args_str = ", ".join(
-            _expression(context, arg, environment)
-            for arg in expression.call_arguments
-        )
+        args_str = ", ".join(_expression(context, arg, environment) for arg in expression.call_arguments)
         return f"{expression.function_name}({args_str})"
     raise RouteError(f"UNSUPPORTED_EMISSION_EXPRESSION:{expression.kind}")
 
@@ -2133,12 +2127,9 @@ def _vb6_statements(
 def _vb6_function(context: _Context, function: Function) -> str:
     environment = types.check_function(function, context.records, context.functions)
     parameters = ", ".join(
-        f"ByVal {parameter.name} As {_type('vb6', parameter.type)}"
-        for parameter in function.parameters
+        f"ByVal {parameter.name} As {_type('vb6', parameter.type)}" for parameter in function.parameters
     )
-    lines = [
-        f"Public Function {function.name}({parameters}) As {_type('vb6', function.return_type)}"
-    ]
+    lines = [f"Public Function {function.name}({parameters}) As {_type('vb6', function.return_type)}"]
     lines.extend(_vb6_statements(context, function.name, function.body, environment, 1))
     lines.append("End Function")
     return "\n".join(lines)

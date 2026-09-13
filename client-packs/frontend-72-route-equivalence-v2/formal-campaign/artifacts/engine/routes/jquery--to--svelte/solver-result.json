@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "jquery--to--svelte",
-  "formal_input_digest": "sha256:0f4c844155551a00f9257858cd799f39ec5550389b221e25c91b31a40715166a",
-  "solver_input_digest": "sha256:0f113d7f0c704e4c8e9a8a73a084e43c71c34abf0026c9c16b3e17d3d4ca3437",
-  "smt2_digest": "sha256:0f113d7f0c704e4c8e9a8a73a084e43c71c34abf0026c9c16b3e17d3d4ca3437"
+  "formal_input_digest": "sha256:21937fd5439231e9ea8b420ed31c3d11fa388cec74b37b285787fcf47798d170",
+  "solver_input_digest": "sha256:28f2d4be2a067f0fff2e42c52b80f34285d68a71f8966fa1c74f213898eea48e",
+  "smt2_digest": "sha256:28f2d4be2a067f0fff2e42c52b80f34285d68a71f8966fa1c74f213898eea48e"
 }

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Dict, Any
-
 
 class UIShimRegistry:
     """Maps universal UI tags and events across React, Flutter, Swift, and VB6."""
 
-    TAG_MAPPINGS: Dict[str, Dict[str, str]] = {
+    TAG_MAPPINGS: dict[str, dict[str, str]] = {
         "Button": {
             "react": "<button onClick={{{handler}}}>{text}</button>",
             "flutter": "ElevatedButton(onPressed: {handler}, child: Text('{text}'))",
@@ -32,7 +30,7 @@ class UIShimRegistry:
             "flutter": "TextField(onChanged: {handler})",
             "swift": "TextField('{placeholder}', text: ${binding})",
             "vb6": "TextBox",
-        }
+        },
     }
 
     @classmethod

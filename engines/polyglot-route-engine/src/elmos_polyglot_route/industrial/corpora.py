@@ -9,6 +9,7 @@ from elmos_polyglot_route.ast_compiler.ir import (
     AssignStmt,
     BinaryExpr,
     BinaryOperator,
+    CatchClause,
     ChannelMakeStmt,
     ChannelRecvStmt,
     ChannelSendStmt,
@@ -33,7 +34,6 @@ from elmos_polyglot_route.ast_compiler.ir import (
     UniversalParam,
     UniversalType,
     VarDeclStmt,
-    CatchClause,
 )
 
 

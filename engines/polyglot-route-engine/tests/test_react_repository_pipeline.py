@@ -105,10 +105,7 @@ def _run_node(
 
 
 def _assert_node_passed(completed: subprocess.CompletedProcess[str]) -> None:
-    assert completed.returncode == 0, (
-        f"stdout={completed.stdout[-2_000:]!r}\n"
-        f"stderr={completed.stderr[-2_000:]!r}"
-    )
+    assert completed.returncode == 0, f"stdout={completed.stdout[-2_000:]!r}\nstderr={completed.stderr[-2_000:]!r}"
 
 
 def _compiled_module(assembled_path: str) -> Path:
@@ -135,18 +132,14 @@ def test_react_repository_inventory_requires_exact_project_and_rejects_ui(
     repository = tmp_path / "repository"
     _write_react_project(repository)
     (repository / "pure.tsx").write_text(
-        "export function add(left: number, right: number): number {\n"
-        "  return left + right;\n"
-        "}\n",
+        "export function add(left: number, right: number): number {\n  return left + right;\n}\n",
         encoding="utf-8",
     )
 
     plan = plan_repository(repository, "local:react-inventory", "react", "typescript")
     assert plan["source_file_count"] == 1
     assert plan["language_counts"]["react"] == 1
-    assert plan["react_project_descriptor"]["profile"] == (
-        "react-19.2.7-typescript-5.9.2-node-26.0.0-typed-pure-v1"
-    )
+    assert plan["react_project_descriptor"]["profile"] == ("react-19.2.7-typescript-5.9.2-node-26.0.0-typed-pure-v1")
     discovery = discover_repository(plan, repository)
     assert discovery["ready_count"] == 1
     assert discovery["react_project_source_paths"] == ["pure.tsx"]
@@ -154,9 +147,7 @@ def test_react_repository_inventory_requires_exact_project_and_rejects_ui(
     assert discovery["react_project_verification"]["toolchain"]["language"] == "react"
 
     (repository / "pure.tsx").write_text(
-        "export function Counter(value: number): number {\n"
-        "  return value;\n"
-        "}\n",
+        "export function Counter(value: number): number {\n  return value;\n}\n",
         encoding="utf-8",
     )
     rejected_plan = plan_repository(
@@ -168,9 +159,7 @@ def test_react_repository_inventory_requires_exact_project_and_rejects_ui(
     rejected = discover_repository(rejected_plan, repository)
     assert rejected["ready_count"] == 0
     assert rejected["results"][0]["verdict"] == Verdict.UNSUPPORTED
-    assert rejected["results"][0]["blocker_code"] == (
-        "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
-    )
+    assert rejected["results"][0]["blocker_code"] == ("NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED")
 
     package = json.loads((repository / "package.json").read_text(encoding="utf-8"))
     package["dependencies"]["react"] = "^19.2.7"
@@ -344,15 +333,11 @@ def test_react_source_repository_closes_to_typescript_and_runs_with_node(
     repository = tmp_path / "repository"
     _write_react_project(repository)
     (repository / "add.tsx").write_text(
-        "export function add(left: number, right: number): number {\n"
-        "  return left + right;\n"
-        "}\n",
+        "export function add(left: number, right: number): number {\n  return left + right;\n}\n",
         encoding="utf-8",
     )
     (repository / "multiply.ts").write_text(
-        "export function multiply(left: number, right: number): number {\n"
-        "  return left * right;\n"
-        "}\n",
+        "export function multiply(left: number, right: number): number {\n  return left * right;\n}\n",
         encoding="utf-8",
     )
     cases = tmp_path / "cases"
@@ -393,8 +378,7 @@ def test_react_source_repository_closes_to_typescript_and_runs_with_node(
         )
     runner = assembled / "react-source-target-runner.mjs"
     runner.write_text(
-        "\n".join([*imports, *checks, 'console.log("REACT_SOURCE_TO_TYPESCRIPT_OK");'])
-        + "\n",
+        "\n".join([*imports, *checks, 'console.log("REACT_SOURCE_TO_TYPESCRIPT_OK");']) + "\n",
         encoding="utf-8",
     )
     completed = _run_node(
@@ -413,15 +397,11 @@ def test_react_target_repository_assembles_compiles_and_runs_with_node(
     repository = tmp_path / "repository"
     repository.mkdir()
     (repository / "add.ts").write_text(
-        "export function add(left: number, right: number): number {\n"
-        "  return left + right;\n"
-        "}\n",
+        "export function add(left: number, right: number): number {\n  return left + right;\n}\n",
         encoding="utf-8",
     )
     (repository / "multiply.ts").write_text(
-        "export function multiply(left: number, right: number): number {\n"
-        "  return left * right;\n"
-        "}\n",
+        "export function multiply(left: number, right: number): number {\n  return left * right;\n}\n",
         encoding="utf-8",
     )
     cases = tmp_path / "cases"
@@ -479,8 +459,7 @@ def test_react_target_repository_assembles_compiles_and_runs_with_node(
         )
     runner = assembled / "react-target-runner.mjs"
     runner.write_text(
-        "\n".join([*imports, *checks, 'console.log("TYPESCRIPT_TO_REACT_OK");'])
-        + "\n",
+        "\n".join([*imports, *checks, 'console.log("TYPESCRIPT_TO_REACT_OK");']) + "\n",
         encoding="utf-8",
     )
     completed = _run_node(

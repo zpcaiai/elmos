@@ -5,6 +5,7 @@ language tables. The parts that need a real interpreter -- the behaviour replay
 and the analyzer round-trip -- live in the toolchain-bound suites, because a
 host without the pinned PHP build must not be able to make them pass.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -363,9 +364,7 @@ def test_helper_class_references_are_fully_qualified() -> None:
     for helper_id, source in _PHP_HELPERS.items():
         for spelling in ("ArithmeticError", "DivisionByZeroError"):
             if spelling in source:
-                assert f"new \\{spelling}(" in source, (
-                    f"{helper_id} names {spelling} without a leading backslash"
-                )
+                assert f"new \\{spelling}(" in source, f"{helper_id} names {spelling} without a leading backslash"
 
 
 def test_placing_two_units_gives_each_its_own_namespace(tmp_path) -> None:
@@ -524,29 +523,31 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     receipt.write_text(json.dumps(document), encoding="utf-8")
     baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
-    document.update({
-        "homebrew_version": "6.1.0",
-        "time": 2,
-        "source_modified_time": 200,
-        "installed_on_request": False,
-        "aliases": [],
-    })
-    document["source"].update({
-        "spec": None,
-        "tap": "elmos/pinned-route-ci",
-        "tap_git_head": "b" * 40,
-        "path": "/opt/homebrew/Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb",
-        "versions": {
-            "stable": "8.5.9",
-            "head": "HEAD",
-            "version_scheme": 0,
-            "compatibility_version": None,
-        },
-    })
-    document["runtime_dependencies"].reverse()
-    document["runtime_dependencies"][0].update(
-        {"version": "3.1", "revision": 2, "pkg_version": "3.1_2"}
+    document.update(
+        {
+            "homebrew_version": "6.1.0",
+            "time": 2,
+            "source_modified_time": 200,
+            "installed_on_request": False,
+            "aliases": [],
+        }
     )
+    document["source"].update(
+        {
+            "spec": None,
+            "tap": "elmos/pinned-route-ci",
+            "tap_git_head": "b" * 40,
+            "path": "/opt/homebrew/Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb",
+            "versions": {
+                "stable": "8.5.9",
+                "head": "HEAD",
+                "version_scheme": 0,
+                "compatibility_version": None,
+            },
+        }
+    )
+    document["runtime_dependencies"].reverse()
+    document["runtime_dependencies"][0].update({"version": "3.1", "revision": 2, "pkg_version": "3.1_2"})
     receipt.write_text(json.dumps(document), encoding="utf-8")
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert invocation_drift == baseline
@@ -574,10 +575,12 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
-    document["source"]["versions"].update({
-        "head": "HEAD",
-        "compatibility_version": 0,
-    })
+    document["source"]["versions"].update(
+        {
+            "head": "HEAD",
+            "compatibility_version": 0,
+        }
+    )
     receipt.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
@@ -638,9 +641,7 @@ def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) 
 
     assert first_identity == second_identity
     assert first["runtime_dependencies"]["sha256"] != second["runtime_dependencies"]["sha256"]
-    assert first["runtime_dependencies"]["sorted_sha256"] == second[
-        "runtime_dependencies"
-    ]["sorted_sha256"]
+    assert first["runtime_dependencies"]["sorted_sha256"] == second["runtime_dependencies"]["sorted_sha256"]
     assert first["runtime_dependencies"]["unique_count"] == 2
 
 
@@ -790,9 +791,9 @@ def test_php_module_inventory_is_wired_into_the_enumeration_surface() -> None:
 
     source = inspect.getsource(inventory_module)
     assert 'elif language == "php":' in source
-    assert '_run_trusted_php_analyzer(' in source
+    assert "_run_trusted_php_analyzer(" in source
     php_branch = source.index('elif language == "php":')
-    unsupported = source.index('MODULE_INVENTORY_UNSUPPORTED')
+    unsupported = source.index("MODULE_INVENTORY_UNSUPPORTED")
     assert php_branch < unsupported, "php must be handled before the fail-closed default"
 
 

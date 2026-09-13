@@ -741,9 +741,7 @@ def _profiled_swift_build_component_specs() -> tuple[tuple[object, ...], ...]:
     if not set(overrides) <= known_roles:
         raise RouteError("SWIFT_ANALYZER_BUILD_CLOSURE_PROFILE_INVALID:components")
     return tuple(
-        (*spec[:4], *overrides[str(spec[0])], *spec[6:])
-        if str(spec[0]) in overrides
-        else spec
+        (*spec[:4], *overrides[str(spec[0])], *spec[6:]) if str(spec[0]) in overrides else spec
         for spec in _SWIFT_BUILD_COMPONENT_SPECS
     )
 
@@ -757,11 +755,10 @@ def _profiled_swift_build_tree_specs() -> tuple[tuple[object, ...], ...]:
     if not set(overrides) <= known_roles:
         raise RouteError("SWIFT_ANALYZER_BUILD_CLOSURE_PROFILE_INVALID:trees")
     return tuple(
-        (*spec[:3], *overrides[str(spec[0])])
-        if str(spec[0]) in overrides
-        else spec
-        for spec in _SWIFT_BUILD_TREE_SPECS
+        (*spec[:3], *overrides[str(spec[0])]) if str(spec[0]) in overrides else spec for spec in _SWIFT_BUILD_TREE_SPECS
     )
+
+
 _SWIFT_ANALYZER_LOCK = threading.Lock()
 _SWIFT_ANALYZER_TEMPORARY: tempfile.TemporaryDirectory[str] | None = None
 _SWIFT_ANALYZER_BINARY: Path | None = None
@@ -1120,22 +1117,13 @@ def _stable_read_regular_file(
     permitted_uids = allowed_uids if allowed_uids is not None else frozenset({os.getuid()})
     try:
         before = path.lstat()
-        if (
-            not stat.S_ISREG(before.st_mode)
-            or before.st_size < minimum_bytes
-            or before.st_size > maximum_bytes
-        ):
+        if not stat.S_ISREG(before.st_mode) or before.st_size < minimum_bytes or before.st_size > maximum_bytes:
             raise RouteError(failure)
         # A path can be replaced after lstat() but before open(). O_NOFOLLOW
         # rejects a symlink swap, while O_NONBLOCK prevents a FIFO/device swap
         # from blocking this verifier before fstat() can reject non-regular
         # descriptors.
-        flags = (
-            os.O_RDONLY
-            | os.O_NONBLOCK
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-        )
+        flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         descriptor = os.open(path, flags)
         try:
             opened_before = os.fstat(descriptor)
@@ -2054,9 +2042,7 @@ def _require_current_swift_network_execution_identity(
         )
         if before != after
     ]
-    mismatched = sorted(
-        key for key in expected_keys if observed.get(key) != expected.get(key)
-    )
+    mismatched = sorted(key for key in expected_keys if observed.get(key) != expected.get(key))
     if unstable or mismatched:
         detail = ";".join(
             part
@@ -2066,9 +2052,7 @@ def _require_current_swift_network_execution_identity(
             )
             if part
         )
-        raise RouteError(
-            "NETWORK_ISOLATION_NOT_RUN:execution-identity-changed:" + detail
-        )
+        raise RouteError("NETWORK_ISOLATION_NOT_RUN:execution-identity-changed:" + detail)
 
 
 def _stable_secure_directory_chain_identity(
@@ -2238,11 +2222,7 @@ def _swift_object_store_manifest(objects: Path) -> tuple[tuple[object, ...], ...
             metadata.st_ctime_ns,
         )
         metadata_before[relative] = identity
-        if (
-            stat.S_ISLNK(metadata.st_mode)
-            or metadata.st_uid != os.getuid()
-            or stat.S_IMODE(metadata.st_mode) & 0o022
-        ):
+        if stat.S_ISLNK(metadata.st_mode) or metadata.st_uid != os.getuid() or stat.S_IMODE(metadata.st_mode) & 0o022:
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
         if stat.S_ISDIR(metadata.st_mode):
             manifest.append(
@@ -2416,11 +2396,7 @@ def _swift_standalone_object_store_identity(
         or manifest_after != manifest_before
     ):
         raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
-    identities = frozenset(
-        (cast(int, entry[2]), cast(int, entry[3]))
-        for entry in manifest_after
-        if entry[1] == "file"
-    )
+    identities = frozenset((cast(int, entry[2]), cast(int, entry[3])) for entry in manifest_after if entry[1] == "file")
     return manifest_after, identities
 
 
@@ -2537,10 +2513,7 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE") from error
         return files
 
-    def capture() -> (
-        tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]
-        | None
-    ):
+    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]] | None:
         root_before = _verify_secure_directory_chain(
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE",
@@ -2583,9 +2556,7 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
         # timestamps are excluded, but dev, ino, mode, uid, gid and path still
         # have to match. The metadata root itself retains both timestamps so an
         # empty-directory mutation cannot escape the manifest stability check.
-        if _stable_secure_directory_chain_identity(
-            root_after
-        ) != _stable_secure_directory_chain_identity(root_before):
+        if _stable_secure_directory_chain_identity(root_after) != _stable_secure_directory_chain_identity(root_before):
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
         if not root_before or root_after[-1] != root_before[-1]:
             return None
@@ -2602,10 +2573,7 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
     # Require two agreeing captures, with one bounded retry available when the
     # metadata root itself changes timestamps during a capture. Persistent root
     # churn remains a hard failure; ancestor-only timestamp churn is harmless.
-    previous: (
-        tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]
-        | None
-    ) = None
+    previous: tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]] | None = None
     for _attempt in range(3):
         captured = capture()
         if captured is None:
@@ -3216,9 +3184,7 @@ def _swift_build_session_members(
 ) -> dict[int, int]:
     """Return exact live PID/PGID members of one isolated build session."""
 
-    enumeration_deadline = deadline or (
-        time.monotonic() + _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS
-    )
+    enumeration_deadline = deadline or (time.monotonic() + _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS)
     members: dict[int, int] = {}
     for pid in _swift_build_process_ids(enumeration_deadline):
         if time.monotonic() >= enumeration_deadline:
@@ -3500,9 +3466,7 @@ def _terminate_swift_build_session(
     started = time.monotonic()
     cleanup_deadline = started + _SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS
     session_deadline = cleanup_deadline - _SWIFT_BUILD_REAP_RESERVE_SECONDS
-    final_signal_deadline = (
-        session_deadline - _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS
-    )
+    final_signal_deadline = session_deadline - _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS
     kill_deadline = final_signal_deadline - _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS
     termination_deadline = min(
         started + _SWIFT_BUILD_TERMINATION_GRACE_SECONDS,
@@ -3966,13 +3930,9 @@ def _swift_build_closure_receipt() -> dict[str, Any]:
         "compiler_runtime_soundness": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "components": [
-            _swift_build_component_receipt(spec, content_cache)
-            for spec in _profiled_swift_build_component_specs()
+            _swift_build_component_receipt(spec, content_cache) for spec in _profiled_swift_build_component_specs()
         ],
-        "trees": [
-            _swift_build_tree_receipt(spec)
-            for spec in _profiled_swift_build_tree_specs()
-        ],
+        "trees": [_swift_build_tree_receipt(spec) for spec in _profiled_swift_build_tree_specs()],
     }
 
 
@@ -4036,8 +3996,7 @@ def _canonical_swift_toolchain_identity(toolchain: dict[str, Any]) -> dict[str, 
         "profile": [
             item
             for item in profile_items
-            if isinstance(item, str)
-            and not item.startswith(("sdk-path=", "apple-host-profile="))
+            if isinstance(item, str) and not item.startswith(("sdk-path=", "apple-host-profile="))
         ],
         "build_closure": _canonical_swift_build_closure_identity(build_closure),
     }
@@ -4991,9 +4950,7 @@ def _build_csharp_analyzer(
         output = root / "output"
         for directory in (home, scratch, http_cache, package_mirror, output):
             directory.mkdir(mode=0o700)
-        packages = _csharp_package_restore_cache(
-            toolchain, source_manifest, toolchain_identity, package_manifest
-        )
+        packages = _csharp_package_restore_cache(toolchain, source_manifest, toolchain_identity, package_manifest)
         if packages is None:
             packages = root / "packages"
             packages.mkdir(mode=0o700)
@@ -5169,9 +5126,7 @@ def _csharp_analyzer(toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]]:
                 Path(toolchain.executable),
                 salt=(str(current_inputs["sha256"]), str(current_toolchain["sha256"])),
             )
-            cached = _load_persistent_analyzer_build(
-                "csharp-analyzer", cache_key, _verify_csharp_analyzer_output
-            )
+            cached = _load_persistent_analyzer_build("csharp-analyzer", cache_key, _verify_csharp_analyzer_output)
             if cached is not None:
                 cached_output, cached_receipt = cached
                 _CSHARP_ANALYZER_BINARY = cached_output / _CSHARP_ANALYZER_ENTRYPOINT
@@ -5972,7 +5927,7 @@ def _run_trusted_swift_analyzer(
         wrapped = str(error)
         prefix = f"NATIVE_ANALYZER_FAILED:{binary}:"
         if wrapped.startswith(prefix):
-            candidate = wrapped[len(prefix):]
+            candidate = wrapped[len(prefix) :]
             for reason in allowed_domain_errors:
                 if candidate == reason or candidate.startswith(f"{reason}:"):
                     raise RouteError(candidate) from error
@@ -6200,10 +6155,7 @@ def _normalize_private_analyzer_root_group(root: Path, *, failure: str) -> None:
         before.st_ctime_ns,
     )
     descriptor_flags = (
-        os.O_RDONLY
-        | getattr(os, "O_CLOEXEC", 0)
-        | getattr(os, "O_DIRECTORY", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
     )
     try:
         descriptor = os.open(root, descriptor_flags)
@@ -6212,19 +6164,16 @@ def _normalize_private_analyzer_root_group(root: Path, *, failure: str) -> None:
     try:
         opened_before = os.fstat(descriptor)
         if (
-            (
-                opened_before.st_dev,
-                opened_before.st_ino,
-                opened_before.st_mode,
-                opened_before.st_nlink,
-                opened_before.st_uid,
-                opened_before.st_gid,
-                opened_before.st_size,
-                opened_before.st_mtime_ns,
-                opened_before.st_ctime_ns,
-            )
-            != exact_before
-        ):
+            opened_before.st_dev,
+            opened_before.st_ino,
+            opened_before.st_mode,
+            opened_before.st_nlink,
+            opened_before.st_uid,
+            opened_before.st_gid,
+            opened_before.st_size,
+            opened_before.st_mtime_ns,
+            opened_before.st_ctime_ns,
+        ) != exact_before:
             raise RouteError(failure)
         os.fchown(descriptor, -1, os.getgid())
         opened_after = os.fstat(descriptor)
@@ -7742,11 +7691,7 @@ def _partition_php_profile_preamble(
     completion.
     """
 
-    profile_subjects = [
-        subject
-        for subject in subjects
-        if subject.get("declaration_kind") == "php-profile-preamble"
-    ]
+    profile_subjects = [subject for subject in subjects if subject.get("declaration_kind") == "php-profile-preamble"]
     if len(profile_subjects) > 1:
         raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
     if not profile_subjects:
@@ -8062,6 +8007,7 @@ def _analyze_batch(
                 arguments,
                 allowed_domain_errors=_JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS,
             )
+
             # Java promotes only an explicit allow-list; every other failure has
             # to stay a hard failure, which is what the forged-stack-trace tests
             # in `test_native_validation.py` exist to guarantee.
@@ -8646,7 +8592,7 @@ def _run_trusted_kotlin_analyzer(
             wrapped = str(error)
             prefix = f"NATIVE_ANALYZER_FAILED:{java}:"
             if wrapped.startswith(prefix):
-                candidate = wrapped[len(prefix):]
+                candidate = wrapped[len(prefix) :]
                 for reason in allowed_domain_errors:
                     if candidate == reason or candidate.startswith(f"{reason}:"):
                         raise RouteError(candidate) from error

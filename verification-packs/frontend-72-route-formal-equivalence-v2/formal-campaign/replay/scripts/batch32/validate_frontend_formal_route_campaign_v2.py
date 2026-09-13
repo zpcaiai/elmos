@@ -3038,7 +3038,7 @@ def validate_raw_solver_replay(
         or not isinstance(argv[0], str)
         or not Path(argv[0]).is_absolute()
         or replay.get("solver_binary_sha256")
-        != "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7"
+        != "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54"
         or replay.get("solver_version") != "Z3 version 4.16.0 - 64 bit"
         or replay.get("exit_code") != 0
         or replay.get("stdout") != expected_stdout

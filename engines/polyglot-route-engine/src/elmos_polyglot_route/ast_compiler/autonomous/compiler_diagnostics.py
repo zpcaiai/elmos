@@ -8,12 +8,11 @@ import re
 import shutil
 import subprocess
 import tempfile
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
 
-from ..legacy_env.vb6_validator import Vb6StrictSemanticValidator
 from ..legacy_env.kotlin_validator import KotlinStrictSemanticValidator
+from ..legacy_env.vb6_validator import Vb6StrictSemanticValidator
 
 
 @dataclass
@@ -29,17 +28,21 @@ class NativeCompilerDiagnostic:
 class CompilerDiagnosticParser:
     """Invokes real system toolchains and parses compiler error outputs into structured diagnostics."""
 
-    _CSC_DLL: Optional[str] = None
-    _CORE_LIB: Optional[str] = None
-    _RUNTIME_LIB: Optional[str] = None
+    _CSC_DLL: str | None = None
+    _CORE_LIB: str | None = None
+    _RUNTIME_LIB: str | None = None
 
     @classmethod
     def _init_dotnet_paths(cls) -> None:
         if cls._CSC_DLL is not None:
             return
         cscs = glob.glob("/opt/homebrew/Cellar/dotnet/**/Roslyn/bincore/csc.dll", recursive=True)
-        corelibs = glob.glob("/opt/homebrew/Cellar/dotnet/**/shared/Microsoft.NETCore.App/**/System.Private.CoreLib.dll", recursive=True)
-        runtimes = glob.glob("/opt/homebrew/Cellar/dotnet/**/shared/Microsoft.NETCore.App/**/System.Runtime.dll", recursive=True)
+        corelibs = glob.glob(
+            "/opt/homebrew/Cellar/dotnet/**/shared/Microsoft.NETCore.App/**/System.Private.CoreLib.dll", recursive=True
+        )
+        runtimes = glob.glob(
+            "/opt/homebrew/Cellar/dotnet/**/shared/Microsoft.NETCore.App/**/System.Runtime.dll", recursive=True
+        )
         if cscs:
             cls._CSC_DLL = cscs[0]
         if corelibs:
@@ -63,7 +66,7 @@ class CompilerDiagnosticParser:
 
         # In-tree strict validators
         if lang in ("vb6", "vb"):
-            ret_code, diags = Vb6StrictSemanticValidator.validate(code)
+            ret_code, vb6_diagnostics = Vb6StrictSemanticValidator.validate(code)
             native_diags = [
                 NativeCompilerDiagnostic(
                     language="vb6",
@@ -71,13 +74,14 @@ class CompilerDiagnosticParser:
                     line_number=d.line,
                     column=d.column,
                     message=d.message,
-                    category=d.category
-                ) for d in diags
+                    category=d.category,
+                )
+                for d in vb6_diagnostics
             ]
-            return ret_code, native_diags, f"VB6 Strict Validation: {len(diags)} diagnostics"
+            return ret_code, native_diags, f"VB6 Strict Validation: {len(vb6_diagnostics)} diagnostics"
 
         if lang in ("kotlin", "kt"):
-            ret_code, diags = KotlinStrictSemanticValidator.validate(code)
+            ret_code, kotlin_diagnostics = KotlinStrictSemanticValidator.validate(code)
             native_diags = [
                 NativeCompilerDiagnostic(
                     language="kotlin",
@@ -85,10 +89,11 @@ class CompilerDiagnosticParser:
                     line_number=d.line,
                     column=d.column,
                     message=d.message,
-                    category=d.category
-                ) for d in diags
+                    category=d.category,
+                )
+                for d in kotlin_diagnostics
             ]
-            return ret_code, native_diags, f"Kotlin Strict Validation: {len(diags)} diagnostics"
+            return ret_code, native_diags, f"Kotlin Strict Validation: {len(kotlin_diagnostics)} diagnostics"
 
         with tempfile.TemporaryDirectory(prefix="elmos_diag_") as tmpdir:
             tmppath = Path(tmpdir)
@@ -133,7 +138,14 @@ class CompilerDiagnosticParser:
                 src_file = tmppath / "test.rs"
                 src_file.write_text(code, encoding="utf-8")
                 rustc_bin = shutil.which("rustc") or "rustc"
-                cmd = [rustc_bin, "--crate-type=lib", "--emit=metadata", "-o", str(tmppath / "test.rmeta"), str(src_file)]
+                cmd = [
+                    rustc_bin,
+                    "--crate-type=lib",
+                    "--emit=metadata",
+                    "-o",
+                    str(tmppath / "test.rmeta"),
+                    str(src_file),
+                ]
 
             elif lang in ("go", "golang"):
                 src_file = tmppath / "test.go"
@@ -145,7 +157,11 @@ class CompilerDiagnosticParser:
                 src_file = tmppath / ("test.tsx" if lang == "react" else "test.ts")
                 src_file.write_text(code, encoding="utf-8")
                 tsc_bin = shutil.which("tsc") or "/opt/homebrew/bin/tsc"
-                cmd = [tsc_bin, "--noEmit", "--skipLibCheck", str(src_file)] if os.path.exists(tsc_bin) else ["node", "--check", str(src_file)]
+                cmd = (
+                    [tsc_bin, "--noEmit", "--skipLibCheck", str(src_file)]
+                    if os.path.exists(tsc_bin)
+                    else ["node", "--check", str(src_file)]
+                )
 
             elif lang in ("flutter", "dart"):
                 src_file = tmppath / "test.dart"
@@ -161,11 +177,12 @@ class CompilerDiagnosticParser:
                             "name": "flutter",
                             "rootUri": shim_root.as_uri(),
                             "packageUri": "lib/",
-                            "languageVersion": "3.0"
+                            "languageVersion": "3.0",
                         }
-                    ]
+                    ],
                 }
                 import json
+
                 (dart_tool / "package_config.json").write_text(json.dumps(pkg_cfg), encoding="utf-8")
                 dart_bin = shutil.which("dart") or "/opt/homebrew/bin/dart"
                 cmd = [dart_bin, "analyze", str(src_file)]
@@ -173,7 +190,10 @@ class CompilerDiagnosticParser:
             elif lang == "java":
                 src_file = tmppath / "OrderProcessor.java"
                 src_file.write_text(code, encoding="utf-8")
-                javac_bin = shutil.which("javac") or "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac"
+                javac_bin = (
+                    shutil.which("javac")
+                    or "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac"
+                )
                 cmd = [javac_bin, "-d", str(tmppath), str(src_file)]
 
             elif lang in ("csharp", "cs"):
@@ -182,11 +202,14 @@ class CompilerDiagnosticParser:
                 cls._init_dotnet_paths()
                 if cls._CSC_DLL and cls._CORE_LIB:
                     cmd = [
-                        "dotnet", "exec", cls._CSC_DLL,
-                        "-target:library", "-nologo",
+                        "dotnet",
+                        "exec",
+                        cls._CSC_DLL,
+                        "-target:library",
+                        "-nologo",
                         f"-r:{cls._CORE_LIB}",
                         f"-r:{cls._RUNTIME_LIB}" if cls._RUNTIME_LIB else "",
-                        str(src_file)
+                        str(src_file),
                     ]
                     cmd = [arg for arg in cmd if arg]
                 else:
@@ -198,8 +221,8 @@ class CompilerDiagnosticParser:
             try:
                 proc = subprocess.run(cmd, cwd=str(tmppath), capture_output=True, text=True, timeout=60)
                 raw_out = proc.stdout + proc.stderr
-                diags = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
-                return proc.returncode, diags, raw_out
+                parsed_diagnostics = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
+                return proc.returncode, parsed_diagnostics, raw_out
             except Exception as e:
                 return 0, [], f"Diagnostic runner warning: {e}"
 
@@ -210,7 +233,7 @@ class CompilerDiagnosticParser:
             line_str = line.strip()
 
             # 1. Standard clang/gcc/rustc/swiftc format: file:line:col: error: message
-            match1 = re.search(r':(\d+):(\d+):\s*(error|warning):\s*(.+)', line_str)
+            match1 = re.search(r":(\d+):(\d+):\s*(error|warning):\s*(.+)", line_str)
             if match1:
                 line_no = int(match1.group(1))
                 col_no = int(match1.group(2))
@@ -221,7 +244,7 @@ class CompilerDiagnosticParser:
                 continue
 
             # 2. Rustc error format: error[E0412]: message or error: message
-            match_rust = re.match(r'error(?:\[[A-Za-z0-9]+\])?:\s*(.+)', line_str)
+            match_rust = re.match(r"error(?:\[[A-Za-z0-9]+\])?:\s*(.+)", line_str)
             if match_rust:
                 msg = match_rust.group(1)
                 line_no, col_no = 1, 1
@@ -229,7 +252,7 @@ class CompilerDiagnosticParser:
                 idx_in_raw = raw_lines.index(line) if line in raw_lines else -1
                 if idx_in_raw != -1:
                     for n_i in range(idx_in_raw + 1, min(idx_in_raw + 4, len(raw_lines))):
-                        loc_m = re.search(r'-->\s*[^:]+:(\d+):(\d+)', raw_lines[n_i])
+                        loc_m = re.search(r"-->\s*[^:]+:(\d+):(\d+)", raw_lines[n_i])
                         if loc_m:
                             line_no = int(loc_m.group(1))
                             col_no = int(loc_m.group(2))
@@ -239,7 +262,7 @@ class CompilerDiagnosticParser:
                 continue
 
             # 3. Go vet format: [vet: ]file:line:col: message
-            match_go = re.search(r'(?:vet:\s*)?[^:\s]+:(\d+):(\d+):\s*(.+)', line_str)
+            match_go = re.search(r"(?:vet:\s*)?[^:\s]+:(\d+):(\d+):\s*(.+)", line_str)
             if match_go and not line_str.startswith("#"):
                 line_no = int(match_go.group(1))
                 col_no = int(match_go.group(2))
@@ -249,7 +272,7 @@ class CompilerDiagnosticParser:
                 continue
 
             # 4. Javac format: file:line: error: message
-            match2 = re.search(r':(\d+):\s*(error|warning):\s*(.+)', line_str)
+            match2 = re.search(r":(\d+):\s*(error|warning):\s*(.+)", line_str)
             if match2:
                 line_no = int(match2.group(1))
                 sev = match2.group(2)
@@ -267,7 +290,7 @@ class CompilerDiagnosticParser:
                 continue
 
             # 5. Roslyn C# csc format: file(line,col): error CODE: message
-            match3 = re.search(r'\((\d+),(\d+)\):\s*(error|warning)\s+[A-Za-z0-9]+:\s*(.+)', line_str)
+            match3 = re.search(r"\((\d+),(\d+)\):\s*(error|warning)\s+[A-Za-z0-9]+:\s*(.+)", line_str)
             if match3:
                 line_no = int(match3.group(1))
                 col_no = int(match3.group(2))
@@ -278,7 +301,7 @@ class CompilerDiagnosticParser:
                 continue
 
             # 6. Dart analyze format: error • message • file:line:col
-            match4 = re.search(r'(error|warning)\s*•\s*(.+?)\s*•\s*[^:]+:(\d+):(\d+)', line_str)
+            match4 = re.search(r"(error|warning)\s*•\s*(.+?)\s*•\s*[^:]+:(\d+):(\d+)", line_str)
             if match4:
                 sev = match4.group(1)
                 msg = match4.group(2)
@@ -289,7 +312,7 @@ class CompilerDiagnosticParser:
                 continue
 
             # 7. PHP lint format: Parse error: message in file on line X
-            match5 = re.search(r'Parse error:\s*(.+?)\s*in\s+.+?\s+on line\s*(\d+)', line_str)
+            match5 = re.search(r"Parse error:\s*(.+?)\s*in\s+.+?\s+on line\s*(\d+)", line_str)
             if match5:
                 msg = match5.group(1)
                 line_no = int(match5.group(2))
@@ -301,7 +324,13 @@ class CompilerDiagnosticParser:
         if ret_code != 0 and not diags and raw.strip():
             for line in raw.splitlines():
                 l_s = line.strip()
-                if not l_s or l_s.startswith("#") or l_s.startswith("-->") or l_s.startswith("|") or "no syntax error" in l_s.lower():
+                if (
+                    not l_s
+                    or l_s.startswith("#")
+                    or l_s.startswith("-->")
+                    or l_s.startswith("|")
+                    or "no syntax error" in l_s.lower()
+                ):
                     continue
                 cat = cls._categorize_message(l_s)
                 diags.append(NativeCompilerDiagnostic(lang, "error", 1, 1, l_s, cat))
@@ -315,13 +344,25 @@ class CompilerDiagnosticParser:
     @classmethod
     def _categorize_message(cls, msg: str) -> str:
         low = msg.lower()
-        if "unknown type" in low or "not found" in low or "undeclared" in low or "no member named" in low or "cannot find symbol" in low or "cannot find type" in low or "undefined" in low:
+        if (
+            "unknown type" in low
+            or "not found" in low
+            or "undeclared" in low
+            or "no member named" in low
+            or "cannot find symbol" in low
+            or "cannot find type" in low
+            or "undefined" in low
+        ):
             return "undefined_symbol"
-        elif "cannot convert" in low or "mismatched types" in low or "type mismatch" in low or "incompatible types" in low:
+        elif (
+            "cannot convert" in low
+            or "mismatched types" in low
+            or "type mismatch" in low
+            or "incompatible types" in low
+        ):
             return "type_mismatch"
         elif "include" in low or "import" in low or "using directive" in low or "package does not exist" in low:
             return "missing_import"
         elif "expected" in low or "syntax error" in low or "semicolon" in low:
             return "syntax_error"
         return "general"
-

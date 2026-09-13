@@ -45,6 +45,8 @@ ENGINE_RUNTIME_MODULES = {
     "elmos_polyglot_route.toolchains": "elmos_polyglot_route/toolchains.py",
     "elmos_polyglot_route.types": "elmos_polyglot_route/types.py",
     "elmos_polyglot_route.validation": "elmos_polyglot_route/validation.py",
+    "elmos_polyglot_route.vb6_analyzer": "elmos_polyglot_route/vb6_analyzer.py",
+    "elmos_polyglot_route.vcpp6_analyzer": "elmos_polyglot_route/vcpp6_analyzer.py",
 }
 ENGINE_RUNTIME_PROJECT_RELATIVE = "engines/polyglot-route-engine"
 ENGINE_RUNTIME_MODULE_REPOSITORY_PATHS = {

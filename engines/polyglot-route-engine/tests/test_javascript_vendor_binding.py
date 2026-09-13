@@ -237,9 +237,7 @@ def test_toolchain_binding_requires_matching_node_closure_profile(
     profile_value: str | None,
 ) -> None:
     toolchain = _toolchain()
-    profile = tuple(
-        item for item in toolchain.profile if not item.startswith("node-closure-profile=")
-    )
+    profile = tuple(item for item in toolchain.profile if not item.startswith("node-closure-profile="))
     if profile_value is not None:
         profile = (*profile, f"node-closure-profile={profile_value}")
     candidate = ExactToolchain(

@@ -20,6 +20,7 @@ distribution, and checks two different kinds of claim:
 Sample count is fixed and the seed is constant, so a failure reproduces
 exactly. Raise it locally with ELMOS_PROPERTY_SAMPLES for a deeper sweep.
 """
+
 from __future__ import annotations
 
 import json
@@ -48,9 +49,7 @@ SAFE_MAX = SAFE_INTEGER_MAX
 SEED = 20260806
 SAMPLES = int(os.environ.get("ELMOS_PROPERTY_SAMPLES", "600"))
 
-pytestmark = pytest.mark.skipif(
-    shutil.which("node") is None, reason="node is required for the TypeScript half"
-)
+pytestmark = pytest.mark.skipif(shutil.which("node") is None, reason="node is required for the TypeScript half")
 
 
 # --------------------------------------------------------------------------
@@ -236,9 +235,7 @@ def _integer_inputs(count: int) -> list[tuple[int, int]]:
 # --------------------------------------------------------------------------
 
 
-def _canonical_outcomes(
-    unit: dict[str, Any], inputs: list[tuple[int, int]]
-) -> list[tuple[Any, bool]]:
+def _canonical_outcomes(unit: dict[str, Any], inputs: list[tuple[int, int]]) -> list[tuple[Any, bool]]:
     """(value-or-ERROR, whether every intermediate stayed safe-integer sized).
 
     This is the specification, not a target: using one target as the reference
@@ -276,7 +273,7 @@ def _typescript_outcomes(unit: dict[str, Any], inputs: list[tuple[int, int]]) ->
         "const results: unknown[] = [];\n"
         f"const cases: [number, number][] = {json.dumps(inputs)};\n"
         "for (const [a, b] of cases) {\n"
-        f"  try {{ results.push({unit['name']}(a, b)); }} catch {{ results.push(\"ERROR\"); }}\n"
+        f'  try {{ results.push({unit["name"]}(a, b)); }} catch {{ results.push("ERROR"); }}\n'
         "}\n"
         "console.log(JSON.stringify(results));\n"
     )
@@ -369,9 +366,7 @@ def test_the_distribution_actually_reaches_the_interesting_regions() -> None:
 
 
 def _both_targets(unit: dict[str, Any], inputs: list[tuple[int, int]]) -> list[tuple[Any, Any]]:
-    return list(
-        zip(_python_outcomes(unit, inputs), _typescript_outcomes(unit, inputs), strict=True)
-    )
+    return list(zip(_python_outcomes(unit, inputs), _typescript_outcomes(unit, inputs), strict=True))
 
 
 def test_clamp_lands_inside_its_bounds_in_both_targets() -> None:
@@ -387,8 +382,7 @@ def test_clamp_is_idempotent_in_both_targets() -> None:
     inputs = [(a, b) for a, b in _integer_inputs(SAMPLES) if b >= 0]
     once = _both_targets(INTEGER_UNITS["clamp"], inputs)
     twice_inputs = [
-        (value if isinstance(value, int) else 0, b)
-        for (value, _), (_, b) in zip(once, inputs, strict=True)
+        (value if isinstance(value, int) else 0, b) for (value, _), (_, b) in zip(once, inputs, strict=True)
     ]
     twice = _both_targets(INTEGER_UNITS["clamp"], twice_inputs)
     for (first, _), (second, _) in zip(once, twice, strict=True):
@@ -399,9 +393,7 @@ def test_clamp_is_idempotent_in_both_targets() -> None:
 
 def test_difference_is_never_negative_in_both_targets() -> None:
     inputs = _integer_inputs(SAMPLES)
-    for (a, b), (python, typescript) in zip(
-        inputs, _both_targets(INTEGER_UNITS["difference"], inputs), strict=True
-    ):
+    for (a, b), (python, typescript) in zip(inputs, _both_targets(INTEGER_UNITS["difference"], inputs), strict=True):
         for outcome in (python, typescript):
             if outcome == "ERROR":
                 continue
@@ -410,9 +402,7 @@ def test_difference_is_never_negative_in_both_targets() -> None:
 
 def test_between_is_consistent_with_its_own_definition() -> None:
     inputs = _integer_inputs(SAMPLES)
-    for (a, b), (python, typescript) in zip(
-        inputs, _both_targets(INTEGER_UNITS["between"], inputs), strict=True
-    ):
+    for (a, b), (python, typescript) in zip(inputs, _both_targets(INTEGER_UNITS["between"], inputs), strict=True):
         if python == "ERROR" or typescript == "ERROR":
             continue
         expected = 0 <= a and a <= b

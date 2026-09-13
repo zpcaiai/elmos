@@ -340,14 +340,17 @@ def validate_react_runtime_receipt(
     if set(receipt) != expected_keys:
         raise RouteError("REACT_RUNTIME_RECEIPT_SCHEMA_INVALID")
     payload = _runtime_probe_digest_payload(receipt)
-    if receipt.get("receipt_sha256") != hashlib.sha256(
-        json.dumps(
-            payload,
-            ensure_ascii=True,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("ascii")
-    ).hexdigest():
+    if (
+        receipt.get("receipt_sha256")
+        != hashlib.sha256(
+            json.dumps(
+                payload,
+                ensure_ascii=True,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("ascii")
+        ).hexdigest()
+    ):
         raise RouteError("REACT_RUNTIME_RECEIPT_DIGEST_INVALID")
     dependencies = _dependency_receipt()
     stdout = receipt.get("stdout")
@@ -588,10 +591,7 @@ def _source_unchanged(source: Path, content: bytes, identity: tuple[int, ...]) -
 
 
 def _profile_digest(receipt: tuple[dict[str, str | int], ...]) -> str:
-    portable = tuple(
-        {key: value for key, value in identity.items() if key != "runtime_entry"}
-        for identity in receipt
-    )
+    portable = tuple({key: value for key, value in identity.items() if key != "runtime_entry"} for identity in receipt)
     payload = json.dumps(portable, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
     return hashlib.sha256(payload).hexdigest()
 
@@ -607,9 +607,7 @@ def _run_react_frontend(
     source = source.expanduser()
     content, source_identity = _read_source(source)
     toolchain = exact_toolchain("react")
-    if toolchain.version != (
-        "React 19.2.7 / React DOM 19.2.7 / TypeScript 5.9.2 / Node 26.0.0"
-    ):
+    if toolchain.version != ("React 19.2.7 / React DOM 19.2.7 / TypeScript 5.9.2 / Node 26.0.0"):
         raise RouteError("REACT_TYPESCRIPT_TOOLCHAIN_MISMATCH")
     parser = _typescript_parser(toolchain)
     analyzer_binding = _analyzer_binding()
@@ -719,8 +717,7 @@ def inventory_react_module(
     value, _receipt = _run_react_frontend(source, "--inventory")
     if (
         value.get("analyzer") != "TypeScript Compiler API TS/TSX / React dependency probe"
-        or value.get("analyzer_version")
-        != "TypeScript 5.9.2 / React 19.2.7 / React DOM 19.2.7"
+        or value.get("analyzer_version") != "TypeScript 5.9.2 / React 19.2.7 / React DOM 19.2.7"
     ):
         raise RouteError("REACT_ANALYZER_IDENTITY_INVALID")
     # Native inventory validation is language-neutral and supplies occurrence,
@@ -760,8 +757,7 @@ def analyze_react(source: Path, function_name: str, *, emitted_target: bool = Fa
     value, dependency_before = _run_react_frontend(source, function_name)
     if (
         value.get("analyzer") != "TypeScript Compiler API TS/TSX / React dependency probe"
-        or value.get("analyzer_version")
-        != "TypeScript 5.9.2 / React 19.2.7 / React DOM 19.2.7"
+        or value.get("analyzer_version") != "TypeScript 5.9.2 / React 19.2.7 / React DOM 19.2.7"
     ):
         raise RouteError("REACT_ANALYZER_IDENTITY_INVALID")
     value["analyzer"] = "ELMOS React/TSX typed-pure source analyzer"

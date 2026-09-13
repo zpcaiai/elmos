@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "solver": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-concurrency-20260906/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "angular--to--svelte",
-  "formal_input_digest": "sha256:89af46013b26e78eaead61e7c5504382913acb99b75616120f8f4c38efe83c17",
-  "solver_input_digest": "sha256:6ae957982beba5820ab73e7e2dee517f21ad632b13e88fe5648a89df7a283a2e",
-  "smt2_digest": "sha256:6ae957982beba5820ab73e7e2dee517f21ad632b13e88fe5648a89df7a283a2e"
+  "formal_input_digest": "sha256:d2b0a053599aa120db34a38bc19a295d4135a9f22ba83515f855935ca04cf70e",
+  "solver_input_digest": "sha256:b2050ce4777589529966dcd5914c768bee059e02f36ad45e7a5c17899aa7310b",
+  "smt2_digest": "sha256:b2050ce4777589529966dcd5914c768bee059e02f36ad45e7a5c17899aa7310b"
 }

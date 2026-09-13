@@ -6,6 +6,7 @@ Verifies that Python, Go, TypeScript, and Java record representations:
 3. Preserve roundtrip re-analysis equivalence between source languages and emitted targets.
 4. Fail closed on field mutations, unbacked types, and unknown members across all frontends.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -147,9 +148,7 @@ def test_cross_emission_to_every_local_record_target(tmp_path: Path) -> None:
     )
 
     ir = analyze(java_file, "java", "origin")
-    for target in (
-        language for language in ROUTED_LANGUAGES if language not in {"vb6", "vcpp6"}
-    ):
+    for target in (language for language in ROUTED_LANGUAGES if language not in {"vb6", "vcpp6"}):
         result = emit(ir, target)
         assert len(result.content) > 0
         assert "Point" in result.content
@@ -204,9 +203,7 @@ def test_record_immutability_and_fail_closed_across_analyzers(tmp_path: Path) ->
     # 2. Incomplete record construction in Go (missing required field)
     go_file = tmp_path / "bad_go.go"
     go_file.write_text(
-        "package main\n"
-        "type Point struct { x int64 }\n"
-        "func f() Point { return Point{} }\n",
+        "package main\ntype Point struct { x int64 }\nfunc f() Point { return Point{} }\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError):
@@ -215,8 +212,7 @@ def test_record_immutability_and_fail_closed_across_analyzers(tmp_path: Path) ->
     # 3. Incomplete record construction in TypeScript (unknown/missing shape)
     ts_file = tmp_path / "bad_ts.ts"
     ts_file.write_text(
-        "export interface Point { readonly x: number; }\n"
-        "export function f(): Point { return {}; }\n",
+        "export interface Point { readonly x: number; }\nexport function f(): Point { return {}; }\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError):

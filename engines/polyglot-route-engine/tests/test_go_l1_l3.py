@@ -53,12 +53,7 @@ def test_go_let_and_assign(tmp_path: Path) -> None:
 def test_go_inc_dec_statements(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func inc_dec(n int64) int64 {\n"
-        "    var i int64 = 0\n"
-        "    i++\n"
-        "    i--\n"
-        "    return i\n"
-        "}",
+        "func inc_dec(n int64) int64 {\n    var i int64 = 0\n    i++\n    i--\n    return i\n}",
     )
     semantic = analyze(source, "go", "inc_dec")
     fn = semantic.functions[0]
@@ -140,10 +135,7 @@ def test_go_while_with_break_and_continue(tmp_path: Path) -> None:
 def test_go_rejects_parameter_reassignment(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func bad_param(n int64) int64 {\n"
-        "    n = n + 1\n"
-        "    return n\n"
-        "}",
+        "func bad_param(n int64) int64 {\n    n = n + 1\n    return n\n}",
     )
     with pytest.raises(RouteError, match="GO_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:n"):
         analyze(source, "go", "bad_param")
@@ -152,10 +144,7 @@ def test_go_rejects_parameter_reassignment(tmp_path: Path) -> None:
 def test_go_rejects_compound_parameter_reassignment(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "func bad_param(n int64) int64 {\n"
-        "    n += 1\n"
-        "    return n\n"
-        "}",
+        "func bad_param(n int64) int64 {\n    n += 1\n    return n\n}",
     )
     with pytest.raises(RouteError, match="GO_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:n"):
         analyze(source, "go", "bad_param")

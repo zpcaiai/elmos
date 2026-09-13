@@ -127,9 +127,7 @@ _COMMON_PATTERNS: dict[str, list[tuple[str, re.Pattern[str], str]]] = {
         ),
         (
             "thread_primitives",
-            re.compile(
-                r"\b(Thread|Runnable|Executor|CompletableFuture|Future|Task\.Run|std::thread|pthread_create)\b"
-            ),
+            re.compile(r"\b(Thread|Runnable|Executor|CompletableFuture|Future|Task\.Run|std::thread|pthread_create)\b"),
             "Concurrent thread execution primitive",
         ),
         (

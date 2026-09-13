@@ -12,6 +12,7 @@ then decides whether every enumerated callable fits the bounded route profile.
 The legacy declaration scanner remains a proposal-only public helper; it never
 establishes repository completeness.
 """
+
 from __future__ import annotations
 
 import ast
@@ -155,11 +156,9 @@ def propose_candidates(source: bytes, language: Language) -> list[str]:
             tree = ast.parse(text)
         except (RecursionError, SyntaxError, ValueError):
             return []
-        return [
-            subject.name
-            for subject in python_coverage_subjects(tree, "<candidate-source>")
-            if subject.candidate
-        ][:MAX_CANDIDATES_PER_FILE]
+        return [subject.name for subject in python_coverage_subjects(tree, "<candidate-source>") if subject.candidate][
+            :MAX_CANDIDATES_PER_FILE
+        ]
     pattern = _DECLARATION_PATTERNS.get(language)
     if pattern is None:
         return []
@@ -1022,9 +1021,7 @@ def discover_unit(
                 )
             )
         duplicate_names = {
-            name
-            for name, count in Counter(str(subject["name"]) for subject in candidate_symbols).items()
-            if count > 1
+            name for name, count in Counter(str(subject["name"]) for subject in candidate_symbols).items() if count > 1
         }
         for subject in python_subjects:
             if subject.candidate and subject.name in duplicate_names:
@@ -1060,8 +1057,7 @@ def discover_unit(
                         else "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
                     ),
                     (
-                        f"{relative} compiler-backed module enumeration rejected the source: "
-                        f"{diagnostic}"
+                        f"{relative} compiler-backed module enumeration rejected the source: {diagnostic}"
                         if blocker_verdict == Verdict.UNSUPPORTED
                         else f"{relative} compiler-backed module enumeration did not run: {diagnostic}"
                     ),
@@ -1095,10 +1091,7 @@ def discover_unit(
             ]
             if len(coverage_subjects) != len(raw_subjects):
                 raise RouteError(f"MODULE_INVENTORY_SUBJECTS_INVALID:{relative}")
-            if (
-                source_language == "java"
-                and raw_inventory.get("enumeration_status") == "PASSED"
-            ):
+            if source_language == "java" and raw_inventory.get("enumeration_status") == "PASSED":
                 wrapper_verification = verified_java_structural_wrapper(
                     coverage_subjects,
                     relative,
@@ -1163,21 +1156,16 @@ def discover_unit(
                     )
                 )
             candidate_symbols = [
-                native_subject
-                for native_subject in coverage_subjects
-                if native_subject["candidate"] is True
+                native_subject for native_subject in coverage_subjects if native_subject["candidate"] is True
             ]
             if raw_inventory.get("enumeration_status") == "PASSED":
                 compiler_candidate_enumeration = (
                     len(candidate_symbols) <= MAX_CANDIDATES_PER_FILE,
-                    None
-                    if len(candidate_symbols) <= MAX_CANDIDATES_PER_FILE
-                    else "FUNCTION_INVENTORY_LIMIT_EXCEEDED",
+                    None if len(candidate_symbols) <= MAX_CANDIDATES_PER_FILE else "FUNCTION_INVENTORY_LIMIT_EXCEEDED",
                 )
             for native_subject in coverage_subjects:
                 already_blocked = any(
-                    blocker.get("coverage_key") == native_subject["coverage_key"]
-                    for blocker in coverage_blockers
+                    blocker.get("coverage_key") == native_subject["coverage_key"] for blocker in coverage_blockers
                 )
                 if (
                     native_subject["candidate"] is False
@@ -1214,9 +1202,7 @@ def discover_unit(
                 )
             duplicate_names = {
                 name
-                for name, count in Counter(
-                    str(native_subject["name"]) for native_subject in candidate_symbols
-                ).items()
+                for name, count in Counter(str(native_subject["name"]) for native_subject in candidate_symbols).items()
                 if count > 1
             }
             for native_subject in candidate_symbols:
@@ -1242,9 +1228,7 @@ def discover_unit(
     if compiler_candidate_enumeration is not None:
         _inventory_complete, _inventory_reason = compiler_candidate_enumeration
     else:
-        _inventory_names, _inventory_complete, _inventory_reason = _candidate_inventory(
-            content, source_language
-        )
+        _inventory_names, _inventory_complete, _inventory_reason = _candidate_inventory(content, source_language)
     result["candidate_enumeration_complete"] = _inventory_complete
     result["candidate_enumeration_reason"] = _inventory_reason
     result["coverage_subject_count"] = len(coverage_subjects)
@@ -1306,8 +1290,7 @@ def discover_unit(
                 for unresolved_subject in candidate_symbols[:MAX_CANDIDATES_PER_FILE]:
                     unresolved_coverage_key = str(unresolved_subject["coverage_key"])
                     if unresolved_subject.get("blocking_reasons") or any(
-                        blocker.get("coverage_key") == unresolved_coverage_key
-                        for blocker in coverage_blockers
+                        blocker.get("coverage_key") == unresolved_coverage_key for blocker in coverage_blockers
                     ):
                         continue
                     for stale_key in ("semantic_signature", "analyzer", "analyzer_version"):
@@ -1342,11 +1325,7 @@ def discover_unit(
             candidate_subject["diagnostics"] = diagnostics
             rejection = {
                 "candidate": name,
-                "blocker_code": (
-                    "NATIVE_ANALYZER_DIAGNOSTICS"
-                    if ir.diagnostics
-                    else "EXACTLY_ONE_FUNCTION_REQUIRED"
-                ),
+                "blocker_code": ("NATIVE_ANALYZER_DIAGNOSTICS" if ir.diagnostics else "EXACTLY_ONE_FUNCTION_REQUIRED"),
                 "reason": ";".join(diagnostics),
                 "coverage_key": coverage_key,
                 "source_symbol": candidate_subject,
@@ -1401,10 +1380,7 @@ def discover_unit(
         verdict=(
             Verdict.NOT_RUN
             if analyzer_execution_not_run
-            or (
-                coverage_blockers
-                and all(blocker.get("verdict") == Verdict.NOT_RUN for blocker in coverage_blockers)
-            )
+            or (coverage_blockers and all(blocker.get("verdict") == Verdict.NOT_RUN for blocker in coverage_blockers))
             else Verdict.UNSUPPORTED
         ),
         reason="No candidate declaration stayed inside the bounded profile.",
@@ -1427,10 +1403,7 @@ def discover_repository(
     if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     language_lifecycle = repository_language_lifecycle(source_language, target_language)
-    if (
-        language_lifecycle is None
-        or plan.get("language_lifecycle") != language_lifecycle
-    ):
+    if language_lifecycle is None or plan.get("language_lifecycle") != language_lifecycle:
         raise RouteError("REPOSITORY_PLAN_LANGUAGE_LIFECYCLE_INVALID")
     if plan.get("kind") != "elmos.repository-route-plan":
         raise RouteError("REPOSITORY_PLAN_KIND_INVALID")
@@ -1454,14 +1427,10 @@ def discover_repository(
             raise RouteError("REACT_PROJECT_DESCRIPTOR_REQUIRED")
         react_descriptor = react_project_descriptor(root)
         if react_descriptor != declared_descriptor or any(
-            not isinstance(unit, dict)
-            or unit.get("react_project_descriptor") != declared_descriptor
-            for unit in units
+            not isinstance(unit, dict) or unit.get("react_project_descriptor") != declared_descriptor for unit in units
         ):
             raise RouteError("REACT_PROJECT_DESCRIPTOR_CHANGED")
-        react_project_source_paths = [
-            str(unit.get("source_path", "")) for unit in selected
-        ]
+        react_project_source_paths = [str(unit.get("source_path", "")) for unit in selected]
         react_project_verification = verify_react_repository_project(
             root,
             react_project_source_paths,
@@ -1501,9 +1470,7 @@ def discover_repository(
                             else {}
                         ),
                         "candidates": [candidate_name] if candidate_name else list(result.get("candidates", [])),
-                        "candidate_enumeration_complete": bool(
-                            result.get("candidate_enumeration_complete", True)
-                        ),
+                        "candidate_enumeration_complete": bool(result.get("candidate_enumeration_complete", True)),
                         "candidate_enumeration_reason": result.get("candidate_enumeration_reason"),
                         "profile": PROFILE,
                         "execution_status": "NOT_RUN",
@@ -1525,14 +1492,9 @@ def discover_repository(
                 if blocker_verdict not in {Verdict.UNSUPPORTED, Verdict.NOT_RUN}:
                     raise RouteError("DISCOVERY_BLOCKER_VERDICT_INVALID")
                 raw_blocker_symbol = blocker.get("source_symbol")
-                blocker_symbol: dict[str, Any] = (
-                    raw_blocker_symbol if isinstance(raw_blocker_symbol, dict) else {}
-                )
+                blocker_symbol: dict[str, Any] = raw_blocker_symbol if isinstance(raw_blocker_symbol, dict) else {}
                 blocker_name = str(
-                    blocker.get("function_name")
-                    or blocker_symbol.get("name")
-                    or blocker.get("name")
-                    or ""
+                    blocker.get("function_name") or blocker_symbol.get("name") or blocker.get("name") or ""
                 )
                 blocker_reason = str(blocker.get("reason", blocker_code))
                 results.append(
@@ -1548,9 +1510,7 @@ def discover_repository(
                             else {}
                         ),
                         "candidates": [blocker_name] if blocker_name else [],
-                        "candidate_enumeration_complete": bool(
-                            result.get("candidate_enumeration_complete", True)
-                        ),
+                        "candidate_enumeration_complete": bool(result.get("candidate_enumeration_complete", True)),
                         "candidate_enumeration_reason": result.get("candidate_enumeration_reason"),
                         "profile": PROFILE,
                         "execution_status": "NOT_RUN",
@@ -1560,9 +1520,7 @@ def discover_repository(
                         "coverage_key": blocker.get("coverage_key"),
                         "source_symbol": blocker.get("source_symbol"),
                         "rejected_candidates": (
-                            [{"candidate": blocker_name, "reason": blocker_reason}]
-                            if blocker_name
-                            else []
+                            [{"candidate": blocker_name, "reason": blocker_reason}] if blocker_name else []
                         ),
                         "required_inputs": (
                             ["restore_analyzer_execution_and_replay"]
@@ -1594,9 +1552,7 @@ def discover_repository(
         if result.get("verdict") != Verdict.READY and isinstance(result.get("blocker_code"), str)
     )
     module_inventories = [
-        inventory
-        for result in file_results
-        if isinstance((inventory := result.get("module_inventory")), dict)
+        inventory for result in file_results if isinstance((inventory := result.get("module_inventory")), dict)
     ]
     module_inventory_status_counts = {status: 0 for status in ("FAILED", "NOT_RUN", "PASSED")}
     for inventory in module_inventories:
@@ -1661,6 +1617,7 @@ MAX_INVENTORY_CANDIDATES_PER_FILE = 10_000
 
 MAX_REPOSITORY_FUNCTIONAL_OBLIGATIONS = 10_000
 
+
 class _PythonFunctionInventory(ast.NodeVisitor):
     def __init__(self) -> None:
         self.scope: list[str] = []
@@ -1682,6 +1639,7 @@ class _PythonFunctionInventory(ast.NodeVisitor):
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:  # noqa: N802 - ast visitor contract
         self._visit_function(node)
+
 
 def _candidate_inventory(source: bytes, language: Language) -> tuple[list[str], bool, str | None]:
     try:
@@ -1720,6 +1678,7 @@ def _candidate_inventory(source: bytes, language: Language) -> tuple[list[str], 
     # complete project feature inventory, so the report keeps an UNKNOWN
     # obligation in its denominator until a compiler inventory is available.
     return names, False, "DECLARATION_SCAN_NOT_COMPILER_COMPLETE"
+
 
 def _preflight_inventory(
     units: list[dict[str, Any]],
@@ -1771,9 +1730,7 @@ def _preflight_inventory(
         candidates, complete, reason_code = _candidate_inventory(content, source_language)
         obligation_lower_bound += len(candidates) + (0 if candidates and complete else 1)
         if obligation_lower_bound > MAX_REPOSITORY_FUNCTIONAL_OBLIGATIONS:
-            raise RouteError(
-                f"FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED:{MAX_REPOSITORY_FUNCTIONAL_OBLIGATIONS + 1}"
-            )
+            raise RouteError(f"FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED:{MAX_REPOSITORY_FUNCTIONAL_OBLIGATIONS + 1}")
         inventory.append(
             {
                 "id": unit.get("id"),
@@ -1786,6 +1743,7 @@ def _preflight_inventory(
             }
         )
     return inventory
+
 
 def inventory_repository_incident(
     plan: dict[str, Any],
@@ -1822,10 +1780,7 @@ def inventory_repository_incident(
             "execution_status": "NOT_RUN",
             "verdict": Verdict.UNSUPPORTED if candidates else Verdict.NO_CANDIDATE_DECLARATION,
             "reason": reason,
-            "rejected_candidates": [
-                {"candidate": candidate, "reason": reason_code}
-                for candidate in candidates
-            ],
+            "rejected_candidates": [{"candidate": candidate, "reason": reason_code} for candidate in candidates],
         }
         results.append(result)
     counts: dict[str, int] = {}

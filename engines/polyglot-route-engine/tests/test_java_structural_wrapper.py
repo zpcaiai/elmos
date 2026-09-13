@@ -72,18 +72,10 @@ def test_exact_java_structural_wrappers_allow_complete_pipeline(
     assert report["repository_execution_status"] == "PASSED_LOCAL"
     assert report["conversion_coverage"]["complete"] is True
     assert report["conversion_coverage"]["subject_count"] == file_count
-    discovery = json.loads(
-        (tmp_path / "output" / "repository-discovery-report.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    discovery = json.loads((tmp_path / "output" / "repository-discovery-report.json").read_text(encoding="utf-8"))
     assert discovery["ready_count"] == file_count
     assert discovery["coverage_blocker_count"] == 0
-    blocker_keys = {
-        result.get("coverage_key")
-        for result in discovery["results"]
-        if result["verdict"] != Verdict.READY
-    }
+    blocker_keys = {result.get("coverage_key") for result in discovery["results"] if result["verdict"] != Verdict.READY}
     wrappers = [
         subject
         for inventory in discovery["module_inventories"]
@@ -165,11 +157,7 @@ def test_malicious_java_wrapper_keeps_local_output_but_blocks_repository(
     assert report["repository_complete"] is False
     assert report["repository_execution_status"] == "LIMITED"
     assert report["status_counts"]["PASSED"] == 1
-    discovery = json.loads(
-        (tmp_path / "output" / "repository-discovery-report.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    discovery = json.loads((tmp_path / "output" / "repository-discovery-report.json").read_text(encoding="utf-8"))
     wrapper = next(
         subject
         for subject in discovery["module_inventories"][0]["subjects"]
@@ -178,8 +166,7 @@ def test_malicious_java_wrapper_keeps_local_output_but_blocks_repository(
     assert wrapper["subject_kind"] == "module-obligation"
     assert wrapper["semantic_status"] == "BLOCKED"
     assert any(
-        result.get("coverage_key") == wrapper["coverage_key"]
-        and result["verdict"] == Verdict.UNSUPPORTED
+        result.get("coverage_key") == wrapper["coverage_key"] and result["verdict"] == Verdict.UNSUPPORTED
         for result in discovery["results"]
     )
 

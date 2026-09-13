@@ -112,16 +112,9 @@ def test_deprecated_language_keeps_its_engine_machinery_but_leaves_the_matrix() 
     # Kotlin/React/Flutter arrived after JavaScript retirement. Their six
     # cross-pairs have no archived route identity and cannot be invented by
     # the deprecated-replay lifecycle.
-    assert not any(
-        {source, target} & {"kotlin", "react", "flutter"}
-        for source, target in DEPRECATED_DIRECTED_PAIRS
-    )
-    assert repository_language_lifecycle("javascript", "java") == (
-        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
-    )
-    assert repository_language_lifecycle("java", "javascript") == (
-        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
-    )
+    assert not any({source, target} & {"kotlin", "react", "flutter"} for source, target in DEPRECATED_DIRECTED_PAIRS)
+    assert repository_language_lifecycle("javascript", "java") == (REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY)
+    assert repository_language_lifecycle("java", "javascript") == (REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY)
     for v3_language in ("kotlin", "react", "flutter"):
         assert repository_language_lifecycle("javascript", v3_language) is None
         assert repository_language_lifecycle(v3_language, "javascript") is None
@@ -167,9 +160,9 @@ def test_repository_orchestration_surface_is_exactly_the_completed_repository_se
     assert discovery_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert target_project_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert target_build_languages == set(REPOSITORY_SURFACE_LANGUAGES)
-    assert set(REPOSITORY_SURFACE_LANGUAGES) == (
-        set(SUPPORTED_LANGUAGES) | set(DEPRECATED_LANGUAGES)
-    ) - set(PENDING_REPOSITORY_LANGUAGES)
+    assert set(REPOSITORY_SURFACE_LANGUAGES) == (set(SUPPORTED_LANGUAGES) | set(DEPRECATED_LANGUAGES)) - set(
+        PENDING_REPOSITORY_LANGUAGES
+    )
 
     directed_pairs = {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
@@ -282,9 +275,7 @@ def test_receipt_identity_tokenizes_every_governed_install_root(
     assert str(root) not in serialized
     assert record["executable"].startswith("<polyglot-toolchain-root>/")
     assert record["auxiliary"].startswith("<polyglot-toolchain-root>/")
-    assert record["profile"][0].startswith(
-        f"{language}-root=<polyglot-toolchain-root>/"
-    )
+    assert record["profile"][0].startswith(f"{language}-root=<polyglot-toolchain-root>/")
 
 
 def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
@@ -326,12 +317,8 @@ def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
 
     assert record["executable"].startswith("<polyglot-toolchain-root>/")
     assert str(relocated_root) not in json.dumps(record, sort_keys=True)
-    _, expected_record_sha256 = module._expected_toolchain_identity(
-        "kotlin", record["profile"]
-    )
-    assert module.exact_toolchain_record_sha256(record) == (
-        expected_record_sha256
-    )
+    _, expected_record_sha256 = module._expected_toolchain_identity("kotlin", record["profile"])
+    assert module.exact_toolchain_record_sha256(record) == (expected_record_sha256)
 
 
 def test_kotlin_temurin_receipt_uses_exact_profile_override(
@@ -367,10 +354,9 @@ def test_kotlin_temurin_receipt_uses_exact_profile_override(
 
     assert "kotlin-jvm-home=<java21-home>" in record["profile"]
     assert "/Users/runner" not in json.dumps(record, sort_keys=True)
-    assert module.exact_toolchain_record_sha256(record) == (
-        module.EXACT_TOOLCHAIN_PROFILE_OVERRIDES["kotlin"][
-            "kotlin-jvm-distribution=temurin"
-        ]["record_sha256"]
+    assert (
+        module.exact_toolchain_record_sha256(record)
+        == (module.EXACT_TOOLCHAIN_PROFILE_OVERRIDES["kotlin"]["kotlin-jvm-distribution=temurin"]["record_sha256"])
     )
 
 
@@ -414,11 +400,7 @@ def test_batch29_live_schemas_and_historical_module_schema_keep_separate_sets() 
         assert set(schema["$defs"]["language"]["enum"]) == active
         assert "javascript" not in schema["$defs"]["language"]["enum"]
 
-    module_schema = json.loads(
-        (schema_root / "module-equivalence-evidence.schema.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    module_schema = json.loads((schema_root / "module-equivalence-evidence.schema.json").read_text(encoding="utf-8"))
     historical_module_languages = {
         "java",
         "csharp",
@@ -432,20 +414,11 @@ def test_batch29_live_schemas_and_historical_module_schema_keep_separate_sets() 
         "javascript",
     }
     module_language_enums = (
-        module_schema["$defs"]["verified_language_prelude_side"]["properties"][
-            "language"
-        ]["enum"],
-        module_schema["$defs"]["module_inventory"]["properties"][
-            "source_language"
-        ]["enum"],
+        module_schema["$defs"]["verified_language_prelude_side"]["properties"]["language"]["enum"],
+        module_schema["$defs"]["module_inventory"]["properties"]["source_language"]["enum"],
     )
-    assert all(
-        set(language_enum) == historical_module_languages
-        for language_enum in module_language_enums
-    )
-    non_java_languages = module_schema["$defs"]["verified_non_java_wrapper"][
-        "properties"
-    ]["language"]["enum"]
+    assert all(set(language_enum) == historical_module_languages for language_enum in module_language_enums)
+    non_java_languages = module_schema["$defs"]["verified_non_java_wrapper"]["properties"]["language"]["enum"]
     assert set(non_java_languages) == historical_module_languages - {"java"}
     assert all("javascript" in language_enum for language_enum in module_language_enums)
     assert "javascript" in non_java_languages
@@ -668,9 +641,7 @@ def test_every_declared_routed_pair_has_a_pack_and_nothing_else_does() -> None:
     unexpected = sorted(present - expected - deprecated)
     assert not unexpected, f"packs for pairs the engine does not declare: {unexpected}"
     retired_without_pack = sorted(deprecated - present)
-    assert not retired_without_pack, (
-        f"deprecated packs were deleted instead of retained: {retired_without_pack}"
-    )
+    assert not retired_without_pack, f"deprecated packs were deleted instead of retained: {retired_without_pack}"
 
 
 def test_no_supported_language_remains_engine_only_after_explicit_matrix() -> None:
@@ -724,12 +695,7 @@ def test_inventory_declares_the_complete_210_with_preserved_provenance_sets() ->
     vcpp6_languages = {"vcpp6"}
 
     def complete(languages: set[str]) -> set[str]:
-        return {
-            f"{source}-to-{target}"
-            for source in languages
-            for target in languages
-            if source != target
-        }
+        return {f"{source}-to-{target}" for source in languages for target in languages if source != target}
 
     core_keys = complete(legacy_languages)
     nine_language_keys = complete(nine_languages)
@@ -742,9 +708,9 @@ def test_inventory_declares_the_complete_210_with_preserved_provenance_sets() ->
     completion_keys = nine_language_keys - core_keys - specialized_keys
     thirteen_active_languages = set(SUPPORTED_LANGUAGES) - vb6_languages - vcpp6_languages
     thirteen_active_keys = complete(thirteen_active_languages)
-    v3_keys = thirteen_active_keys - (eleven_language_keys - {
-        key for key in eleven_language_keys if "javascript" in key.split("-to-")
-    })
+    v3_keys = thirteen_active_keys - (
+        eleven_language_keys - {key for key in eleven_language_keys if "javascript" in key.split("-to-")}
+    )
     fourteen_active_languages = set(SUPPORTED_LANGUAGES) - vcpp6_languages
     fourteen_active_keys = complete(fourteen_active_languages)
     vb6_keys = fourteen_active_keys - thirteen_active_keys
@@ -789,9 +755,7 @@ def test_inventory_declares_the_complete_210_with_preserved_provenance_sets() ->
     assert set(route_sets["eleven-language-complete-110"]["route_keys"]) == eleven_language_keys
     assert set(route_sets["kotlin-react-flutter-completion-66"]["route_keys"]) == v3_keys
     assert route_sets["kotlin-react-flutter-completion-66"]["analyzer_status"] == "LOCAL_SINGLE_UNIT_READY"
-    assert route_sets["kotlin-react-flutter-completion-66"]["repository_status"] == (
-        "LOCAL_REPOSITORY_READY"
-    )
+    assert route_sets["kotlin-react-flutter-completion-66"]["repository_status"] == ("LOCAL_REPOSITORY_READY")
     assert set(route_sets["thirteen-language-complete-156"]["route_keys"]) == thirteen_active_keys
     assert set(route_sets["vb6-completion-26"]["route_keys"]) == vb6_keys
     assert route_sets["vb6-completion-26"]["vendor_runtime_status"] == "NOT_RUN"
@@ -802,6 +766,4 @@ def test_inventory_declares_the_complete_210_with_preserved_provenance_sets() ->
 
     # The active inventory carries no deprecated direction.
     assert {route["route_key"] for route in inventory["routes"]} == active_keys
-    assert not any(
-        "javascript" in route["route_key"].split("-to-") for route in inventory["routes"]
-    )
+    assert not any("javascript" in route["route_key"].split("-to-") for route in inventory["routes"])

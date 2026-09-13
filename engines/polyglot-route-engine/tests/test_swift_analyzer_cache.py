@@ -75,10 +75,7 @@ def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_close
     maximum = native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
     assert maximum == 400_000_000
     assert 290_664_032 <= maximum
-    assert (
-        "_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES"
-        in native._swift_build_component_receipt.__code__.co_names
-    )
+    assert "_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES" in native._swift_build_component_receipt.__code__.co_names
 
     oversized = tmp_path / "oversized-clang"
     with oversized.open("wb") as stream:
@@ -99,11 +96,14 @@ def test_swift_build_closure_tree_aggregate_limit_fails_closed() -> None:
         maximum // 2,
         failure="TEST_SWIFT_TREE_TOO_LARGE",
     )
-    assert native._checked_swift_tree_byte_total(
-        first,
-        maximum - first,
-        failure="TEST_SWIFT_TREE_TOO_LARGE",
-    ) == maximum
+    assert (
+        native._checked_swift_tree_byte_total(
+            first,
+            maximum - first,
+            failure="TEST_SWIFT_TREE_TOO_LARGE",
+        )
+        == maximum
+    )
     with pytest.raises(RouteError, match="TEST_SWIFT_TREE_TOO_LARGE"):
         native._checked_swift_tree_byte_total(
             maximum,
@@ -117,12 +117,15 @@ def test_swift_tree_regular_file_boundary_allows_zero_and_rejects_over_400m(
 ) -> None:
     empty = tmp_path / "empty"
     empty.touch()
-    assert native._stable_read_regular_file(
-        empty,
-        failure="TEST_SWIFT_TREE_FILE_INVALID",
-        minimum_bytes=0,
-        maximum_bytes=native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
-    ) == b""
+    assert (
+        native._stable_read_regular_file(
+            empty,
+            failure="TEST_SWIFT_TREE_FILE_INVALID",
+            minimum_bytes=0,
+            maximum_bytes=native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
+        )
+        == b""
+    )
 
     oversized = tmp_path / "oversized-tree-file"
     with oversized.open("wb") as stream:
@@ -180,12 +183,7 @@ def test_stable_regular_file_reader_rejects_lstat_to_open_fifo_swap_without_bloc
             maximum_bytes=1_024,
         )
 
-    assert observed_flags == [
-        os.O_RDONLY
-        | os.O_NONBLOCK
-        | getattr(os, "O_CLOEXEC", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
-    ]
+    assert observed_flags == [os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)]
     assert stat.S_ISFIFO(candidate.lstat().st_mode)
 
 
@@ -285,9 +283,7 @@ def _install_mocked_swift_network_probe_runtime(
         "gid": 0,
         "nlink": 1,
     }
-    compiler_receipts = iter(
-        (copy.deepcopy(compiler), copy.deepcopy(compiler_after or compiler))
-    )
+    compiler_receipts = iter((copy.deepcopy(compiler), copy.deepcopy(compiler_after or compiler)))
     sdk_identity = ("sdk", "stable")
     sdk_identities = iter((sdk_identity, sdk_after or sdk_identity))
     sandbox = {
@@ -576,9 +572,7 @@ def test_swift_build_revalidates_toolchain_before_and_after_driver_execution() -
     end = source.index("\ndef _swift_toolchain_identity(", start)
     build_source = source[start:end]
     first = build_source.index("_require_current_swift_toolchain(toolchain)")
-    network_before = build_source.index(
-        "_require_current_swift_network_execution_identity(", first
-    )
+    network_before = build_source.index("_require_current_swift_network_execution_identity(", first)
     driver = build_source.index("_run_swift_build_step(", network_before)
     network_after = build_source.index(
         "_require_current_swift_network_execution_identity(",
@@ -915,16 +909,10 @@ while True:
         if leader_exits:
             assert time.monotonic() - started < 10
         if enumeration_mode in {"lost-after-first", "dual-failure-first"}:
-            assert any(
-                note.startswith("Swift build cleanup:")
-                for note in getattr(captured.value, "__notes__", ())
-            )
+            assert any(note.startswith("Swift build cleanup:") for note in getattr(captured.value, "__notes__", ()))
         else:
             cleanup_notes = getattr(captured.value, "__notes__", ())
-            assert all(
-                note.startswith("Swift build cleanup diagnostic:")
-                for note in cleanup_notes
-            ), cleanup_notes
+            assert all(note.startswith("Swift build cleanup diagnostic:") for note in cleanup_notes), cleanup_notes
         parent = json.loads(parent_record.read_text(encoding="utf-8"))
         child = json.loads(child_record.read_text(encoding="utf-8"))
         assert parent["pid"] == parent["pgid"] == parent["sid"]
@@ -1004,9 +992,8 @@ def test_swift_build_session_exit_requires_three_consecutive_empty_snapshots(
 
 
 def test_swift_post_completion_budget_covers_required_identity_scans() -> None:
-    minimum_scan_budget = (
-        native._SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS
-        * (native._SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS + 2)
+    minimum_scan_budget = native._SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS * (
+        native._SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS + 2
     )
 
     assert native._SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS >= minimum_scan_budget
@@ -1207,11 +1194,7 @@ def test_swift_build_step_fails_closed_on_normal_completion_enumeration_error(
 def test_swift_build_cleanup_obeys_absolute_wall_clock_deadline(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    script = (
-        "import signal, time; "
-        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
-        "time.sleep(30)"
-    )
+    script = "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(30)"
     process = subprocess.Popen(
         [sys.executable, "-c", script],
         stdin=subprocess.DEVNULL,
@@ -1342,8 +1325,7 @@ os.replace(temporary, parent_record)
             )
         assert captured.value.args == ("SWIFT_BUILD_DAEMON:process",)
         assert all(
-            note.startswith("Swift build cleanup diagnostic:")
-            for note in getattr(captured.value, "__notes__", ())
+            note.startswith("Swift build cleanup diagnostic:") for note in getattr(captured.value, "__notes__", ())
         )
         assert captured.value.__cause__ is None
         parent = json.loads(parent_record.read_text(encoding="utf-8"))
@@ -1474,10 +1456,7 @@ def test_swift_dependency_clone_is_local_without_hardlinks_or_network(
     ) == {"verified": True}
     clone = commands[0]
     assert all(command[0] == str(native._APPLE_GIT) for command in commands)
-    assert all(
-        command[0] not in {"/usr/bin/xcrun", "/usr/bin/git", "/usr/bin/python3"}
-        for command in commands
-    )
+    assert all(command[0] not in {"/usr/bin/xcrun", "/usr/bin/git", "/usr/bin/python3"} for command in commands)
     assert clone[1:5] == ["clone", "--no-local", "--no-hardlinks", "--no-checkout"]
     assert "https://" not in " ".join(part.lower() for part in clone)
     assert "http://" not in " ".join(part.lower() for part in clone)
@@ -1927,9 +1906,7 @@ def test_swift_dependency_cache_lock_retries_read_after_create_race(
     assert observed_cache == cache
     assert len(lock_open_flags) == 3
     assert lock_open_flags[0] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT) == 0
-    assert lock_open_flags[1] & (os.O_RDWR | os.O_CREAT | os.O_EXCL) == (
-        os.O_RDWR | os.O_CREAT | os.O_EXCL
-    )
+    assert lock_open_flags[1] & (os.O_RDWR | os.O_CREAT | os.O_EXCL) == (os.O_RDWR | os.O_CREAT | os.O_EXCL)
     assert lock_open_flags[2] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT) == 0
 
 

@@ -374,9 +374,7 @@ def _expression(
     function_names: dict[str, str],
     emitted_target: bool,
 ) -> dict[str, Any]:
-    parser = _ExpressionParser(
-        _tokens(text, line, encoding), source, names, function_names, emitted_target
-    )
+    parser = _ExpressionParser(_tokens(text, line, encoding), source, names, function_names, emitted_target)
     return parser.parse()
 
 
@@ -402,9 +400,7 @@ def _reject_vb6_semantic_drift(ir: SemanticIR, source_bytes: bytes) -> None:
         right_type = types.infer(expression.right, environment, functions_env=functions)
         if expression.left.source_span is None or expression.right.source_span is None:
             raise RouteError("VB6_EXPRESSION_SOURCE_SPAN_REQUIRED")
-        operator_bytes = source_bytes[
-            expression.left.source_span.end_byte : expression.right.source_span.start_byte
-        ]
+        operator_bytes = source_bytes[expression.left.source_span.end_byte : expression.right.source_span.start_byte]
         expression_bytes = (
             source_bytes[expression.source_span.start_byte : expression.source_span.end_byte]
             if expression.source_span is not None
@@ -422,6 +418,7 @@ def _reject_vb6_semantic_drift(ir: SemanticIR, source_bytes: bytes) -> None:
         visit(expression.right, environment)
 
     functions = {function.name: function for function in ir.functions}
+
     def visit_statements(statements: tuple[Any, ...], environment: dict[str, str]) -> None:
         for statement in statements:
             if statement.expression is not None:
@@ -519,9 +516,7 @@ def _analyze_function(
             match = _IF.fullmatch(raw)
             if match is not None:
                 condition_text = match.group(1)
-                condition = _expression(
-                    condition_text, line, source, encoding, names, function_names, emitted_target
-                )
+                condition = _expression(condition_text, line, source, encoding, names, function_names, emitted_target)
                 then_body, stop = parse_block(index + 1, (_ELSE, _END_IF))
                 if stop >= len(body_lines):
                     raise RouteError(f"VB6_END_IF_REQUIRED:line={line.number}")
@@ -544,9 +539,7 @@ def _analyze_function(
                 continue
             match = _WHILE.fullmatch(raw)
             if match is not None:
-                condition = _expression(
-                    match.group(1), line, source, encoding, names, function_names, emitted_target
-                )
+                condition = _expression(match.group(1), line, source, encoding, names, function_names, emitted_target)
                 loop_body, stop = parse_block(index + 1, (_WEND,))
                 if stop >= len(body_lines):
                     raise RouteError(f"VB6_WEND_REQUIRED:line={line.number}")
@@ -575,9 +568,7 @@ def _analyze_function(
                 # `+` is not a reliable string concatenation operator in VB6;
                 # the exact string spelling is `&`.  Reject a string `+` after
                 # type checking below if it entered as arithmetic syntax.
-                expression = _expression(
-                    expression_text, line, source, encoding, names, function_names, emitted_target
-                )
+                expression = _expression(expression_text, line, source, encoding, names, function_names, emitted_target)
                 statements.append(
                     {
                         "kind": "return" if is_return else "assign",
@@ -601,6 +592,7 @@ def _analyze_function(
     body, consumed = parse_block(0, ())
     if consumed != len(body_lines) or not body:
         raise RouteError(f"VB6_FUNCTION_BODY_INVALID:{function_name}")
+
     def has_return(statements: list[dict[str, Any]]) -> bool:
         return any(
             statement["kind"] == "return"
@@ -684,9 +676,7 @@ def analyze_vb6(source: Path, function_name: str, *, emitted_target: bool = Fals
     if len(selected) != 1:
         raise RouteError(f"VB6_FUNCTION_NOT_FOUND:{function_name}")
     start, end, header = selected[0]
-    function = _analyze_function(
-        source, lines, start, end, header, encoding, function_names, emitted_target
-    )
+    function = _analyze_function(source, lines, start, end, header, encoding, function_names, emitted_target)
     ir = SemanticIR.from_mapping(
         {
             "schema_version": "1.0.0",

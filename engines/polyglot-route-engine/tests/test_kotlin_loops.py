@@ -4,6 +4,7 @@ Verifies that Kotlin while loops (`while (cond) { ... }`) and monotonic for loop
 (`for (i in 0L until n) { ... }`) correctly lift into canonical IR loop statements,
 reject non-monotonic ranges, do-while, labels, loop variable mutations, and emit cleanly across targets.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,11 +18,7 @@ from elmos_polyglot_route.source_analyzer import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.kt"
-    content = (
-        "fun subject(n: Long): Long {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"fun subject(n: Long): Long {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -29,11 +26,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_kotlin_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var count: Long = n\n"
-        "    while (count > 0L) {\n"
-        "        break\n"
-        "    }\n"
-        "    return count",
+        "    var count: Long = n\n    while (count > 0L) {\n        break\n    }\n    return count",
     )
     semantic = analyze(source, "kotlin", "subject")
     statements = semantic.functions[0].body
@@ -49,11 +42,7 @@ def test_kotlin_while_loop_lifts(tmp_path: Path) -> None:
 def test_kotlin_for_loop_lifts_default_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Long = 0L\n"
-        "    for (i in 0L until n) {\n"
-        "        continue\n"
-        "    }\n"
-        "    return total",
+        "    var total: Long = 0L\n    for (i in 0L until n) {\n        continue\n    }\n    return total",
     )
     semantic = analyze(source, "kotlin", "subject")
     statements = semantic.functions[0].body
@@ -72,11 +61,7 @@ def test_kotlin_for_loop_lifts_default_step(tmp_path: Path) -> None:
 def test_kotlin_for_loop_lifts_custom_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Long = 0L\n"
-        "    for (i in 0L until n step 2L) {\n"
-        "        total += i\n"
-        "    }\n"
-        "    return total",
+        "    var total: Long = 0L\n    for (i in 0L until n step 2L) {\n        total += i\n    }\n    return total",
     )
     semantic = analyze(source, "kotlin", "subject")
     loop = semantic.functions[0].body[1]
@@ -92,11 +77,7 @@ def test_kotlin_for_loop_lifts_custom_step(tmp_path: Path) -> None:
 def test_kotlin_do_while_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var count: Long = n\n"
-        "    do {\n"
-        "        count -= 1L\n"
-        "    } while (count > 0L)\n"
-        "    return count",
+        "    var count: Long = n\n    do {\n        count -= 1L\n    } while (count > 0L)\n    return count",
     )
     with pytest.raises(
         RouteError,
@@ -108,10 +89,7 @@ def test_kotlin_do_while_rejected(tmp_path: Path) -> None:
 def test_kotlin_labeled_loop_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    loop@ while (n > 0L) {\n"
-        "        break@loop\n"
-        "    }\n"
-        "    return n",
+        "    loop@ while (n > 0L) {\n        break@loop\n    }\n    return n",
     )
     with pytest.raises(
         RouteError,
@@ -123,11 +101,7 @@ def test_kotlin_labeled_loop_rejected(tmp_path: Path) -> None:
 def test_kotlin_for_closed_range_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Long = 0L\n"
-        "    for (i in 0L..n) {\n"
-        "        total += i\n"
-        "    }\n"
-        "    return total",
+        "    var total: Long = 0L\n    for (i in 0L..n) {\n        total += i\n    }\n    return total",
     )
     with pytest.raises(
         RouteError,
@@ -139,11 +113,7 @@ def test_kotlin_for_closed_range_rejected(tmp_path: Path) -> None:
 def test_kotlin_for_down_to_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Long = 0L\n"
-        "    for (i in n downTo 0L) {\n"
-        "        total += i\n"
-        "    }\n"
-        "    return total",
+        "    var total: Long = 0L\n    for (i in n downTo 0L) {\n        total += i\n    }\n    return total",
     )
     with pytest.raises(
         RouteError,
@@ -155,11 +125,7 @@ def test_kotlin_for_down_to_rejected(tmp_path: Path) -> None:
 def test_kotlin_for_loop_index_mutation_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Long = 0L\n"
-        "    for (i in 0L until n) {\n"
-        "        i = 10L\n"
-        "    }\n"
-        "    return total",
+        "    var total: Long = 0L\n    for (i in 0L until n) {\n        i = 10L\n    }\n    return total",
     )
     with pytest.raises(
         RouteError,
@@ -171,8 +137,7 @@ def test_kotlin_for_loop_index_mutation_rejected(tmp_path: Path) -> None:
 def test_kotlin_while_non_block_body_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    while (n > 0L) break\n"
-        "    return n",
+        "    while (n > 0L) break\n    return n",
     )
     with pytest.raises(
         RouteError,
@@ -184,8 +149,7 @@ def test_kotlin_while_non_block_body_rejected(tmp_path: Path) -> None:
 def test_kotlin_for_non_block_body_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for (i in 0L until n) continue\n"
-        "    return n",
+        "    for (i in 0L until n) continue\n    return n",
     )
     with pytest.raises(
         RouteError,

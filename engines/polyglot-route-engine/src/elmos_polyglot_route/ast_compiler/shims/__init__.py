@@ -6,54 +6,56 @@ from .collections_shim import (
     COLLECTIONS_MAP,
     get_collection_type,
     list_add,
-    list_size,
-    list_contains,
     list_clear,
+    list_contains,
+    list_size,
+    map_contains_key,
     map_get,
     map_put,
-    map_contains_key,
     map_remove,
     set_add,
     set_contains,
 )
 from .datetime_shim import (
-    now_iso,
     epoch_millis,
+    now_iso,
     sleep_millis,
 )
 from .io_shim import (
-    log_info,
-    log_error,
+    file_exists,
     file_read_text,
     file_write_text,
-    file_exists,
-    path_combine,
     http_get,
+    log_error,
+    log_info,
+    path_combine,
 )
 from .json_shim import (
-    json_serialize,
     json_deserialize,
+    json_serialize,
 )
 from .math_shim import (
     math_abs,
-    math_min,
     math_max,
+    math_min,
     math_sqrt,
-    uuid_v4,
     sha256_hex,
+    uuid_v4,
 )
 from .strings_shim import (
-    string_length,
-    string_trim,
     string_contains,
-    string_starts_with,
     string_ends_with,
+    string_join,
+    string_length,
     string_replace,
+    string_split,
+    string_starts_with,
     string_to_lower,
     string_to_upper,
-    string_split,
-    string_join,
+    string_trim,
 )
+from .system_shim import SystemShimRegistry
+from .ui_shim import UIShimRegistry
 
 
 class ShimRegistry:
@@ -132,10 +134,6 @@ class ShimRegistry:
         return sha256_hex(expr, target_lang)
 
 
-from .ui_shim import UIShimRegistry
-from .system_shim import SystemShimRegistry
-
-
 __all__ = [
     "COLLECTIONS_MAP",
     "get_collection_type",
@@ -181,5 +179,3 @@ __all__ = [
     "UIShimRegistry",
     "SystemShimRegistry",
 ]
-
-

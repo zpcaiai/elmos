@@ -4,6 +4,7 @@ Verifies that Rust `while` and monotonic `for in start..end` loops lift into
 canonical loop IR, `break` and `continue` lift cleanly, labeled loops and closed
 ranges are rejected, and lifted loop structures emit across targets.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

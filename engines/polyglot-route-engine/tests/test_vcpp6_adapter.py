@@ -102,9 +102,7 @@ def test_other_language_ir_emits_vcpp6_and_relifts_generated_target(tmp_path: Pa
         ),
     ],
 )
-def test_vcpp6_rejects_pointer_effect_and_uninitialized_semantics(
-    tmp_path: Path, body: str, error: str
-) -> None:
+def test_vcpp6_rejects_pointer_effect_and_uninitialized_semantics(tmp_path: Path, body: str, error: str) -> None:
     source = _write(tmp_path / "unsafe.cpp", body)
     with pytest.raises(RouteError, match=error):
         analyze(source, "vcpp6", body.split("(", 1)[0].split()[-1])

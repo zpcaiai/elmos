@@ -1879,6 +1879,8 @@ def _capture_engine_sources(repo: Path, route: Path) -> tuple[Path, list[Path]]:
             "toolchains.py",
             "types.py",
             "validation.py",
+            "vb6_analyzer.py",
+            "vcpp6_analyzer.py",
         )
     ]
     sources.extend(repo / relative for relative in CSHARP_ANALYZER_CAPTURE_INPUTS)

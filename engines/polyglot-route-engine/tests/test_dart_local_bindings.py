@@ -5,6 +5,7 @@ correctly lift into canonical `let` statements, assignments (`x = expr;`, `x += 
 lift into `assign`, parameter reassignment is rejected, constant reassignment is rejected,
 undeclared assignments are rejected, and lifted structures emit cleanly across targets.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,22 +19,14 @@ from elmos_polyglot_route.source_analyzer import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.dart"
-    content = (
-        "int total(int price, int tax) {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"int total(int price, int tax) {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
 
 def _source_unary(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.dart"
-    content = (
-        "int total(int price) {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"int total(int price) {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -41,8 +34,7 @@ def _source_unary(tmp_path: Path, body: str) -> Path:
 def test_dart_annotated_final_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  final int subtotal = price + tax;\n"
-        "  return subtotal;",
+        "  final int subtotal = price + tax;\n  return subtotal;",
     )
     semantic = analyze(source, "flutter", "total")
     statements = semantic.functions[0].body
@@ -57,8 +49,7 @@ def test_dart_annotated_final_local_lifts_to_let(tmp_path: Path) -> None:
 def test_dart_annotated_mutable_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int subtotal = price + tax;\n"
-        "  return subtotal;",
+        "  int subtotal = price + tax;\n  return subtotal;",
     )
     semantic = analyze(source, "flutter", "total")
     statements = semantic.functions[0].body
@@ -73,9 +64,7 @@ def test_dart_annotated_mutable_local_lifts_to_let(tmp_path: Path) -> None:
 def test_dart_mutable_local_assignment_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int subtotal = price;\n"
-        "  subtotal = price + tax;\n"
-        "  return subtotal;",
+        "  int subtotal = price;\n  subtotal = price + tax;\n  return subtotal;",
     )
     semantic = analyze(source, "flutter", "total")
     statements = semantic.functions[0].body
@@ -116,12 +105,7 @@ def test_dart_compound_assignment_lifts(tmp_path: Path) -> None:
 def test_dart_postfix_and_prefix_increment_lifts(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "  int count = price;\n"
-        "  count++;\n"
-        "  ++count;\n"
-        "  count--;\n"
-        "  --count;\n"
-        "  return count;",
+        "  int count = price;\n  count++;\n  ++count;\n  count--;\n  --count;\n  return count;",
     )
     semantic = analyze(source, "flutter", "total")
     statements = semantic.functions[0].body
@@ -140,8 +124,7 @@ def test_dart_postfix_and_prefix_increment_lifts(tmp_path: Path) -> None:
 def test_dart_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  price = price + 1;\n"
-        "  return price;",
+        "  price = price + 1;\n  return price;",
     )
     with pytest.raises(
         RouteError,
@@ -153,9 +136,7 @@ def test_dart_parameter_reassignment_rejected(tmp_path: Path) -> None:
 def test_dart_constant_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  final int subtotal = price;\n"
-        "  subtotal = subtotal + 1;\n"
-        "  return subtotal;",
+        "  final int subtotal = price;\n  subtotal = subtotal + 1;\n  return subtotal;",
     )
     with pytest.raises(
         RouteError,
@@ -167,8 +148,7 @@ def test_dart_constant_reassignment_rejected(tmp_path: Path) -> None:
 def test_dart_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  unknown = 42;\n"
-        "  return price;",
+        "  unknown = 42;\n  return price;",
     )
     with pytest.raises(
         RouteError,
@@ -180,9 +160,7 @@ def test_dart_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
 def test_dart_assignment_type_mismatch_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int subtotal = price;\n"
-        "  subtotal = 3.14;\n"
-        "  return subtotal;",
+        "  int subtotal = price;\n  subtotal = 3.14;\n  return subtotal;",
     )
     with pytest.raises(
         RouteError,
@@ -194,8 +172,7 @@ def test_dart_assignment_type_mismatch_rejected(tmp_path: Path) -> None:
 def test_dart_unannotated_var_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  var subtotal = price;\n"
-        "  return subtotal;",
+        "  var subtotal = price;\n  return subtotal;",
     )
     with pytest.raises(
         RouteError,
@@ -207,8 +184,7 @@ def test_dart_unannotated_var_rejected(tmp_path: Path) -> None:
 def test_dart_local_without_initializer_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int subtotal;\n"
-        "  return price;",
+        "  int subtotal;\n  return price;",
     )
     with pytest.raises(
         RouteError,
@@ -220,9 +196,7 @@ def test_dart_local_without_initializer_rejected(tmp_path: Path) -> None:
 def test_dart_lifted_let_and_assign_emits_to_all_targets(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "  int acc = price;\n"
-        "  acc += tax;\n"
-        "  return acc;",
+        "  int acc = price;\n  acc += tax;\n  return acc;",
     )
     semantic = analyze(source, "flutter", "total")
     # TypeScript

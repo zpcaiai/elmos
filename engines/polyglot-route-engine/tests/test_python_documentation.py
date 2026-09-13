@@ -35,9 +35,9 @@ _DOCUMENTED = '''def calculate(quantity: int, price: int) -> int:
     return quantity * price
 '''
 
-_UNDOCUMENTED = '''def calculate(quantity: int, price: int) -> int:
+_UNDOCUMENTED = """def calculate(quantity: int, price: int) -> int:
     return quantity * price
-'''
+"""
 
 
 def _write(tmp_path: Path, body: str, name: str = "source.py") -> Path:
@@ -61,10 +61,7 @@ def test_documentation_is_provenance_and_never_changes_the_semantics(
 ) -> None:
     documented = analyze_python(_write(tmp_path, _DOCUMENTED, "a.py"), "calculate")
     undocumented = analyze_python(_write(tmp_path, _UNDOCUMENTED, "b.py"), "calculate")
-    assert (
-        documented.functions[0].semantic_mapping()
-        == undocumented.functions[0].semantic_mapping()
-    )
+    assert documented.functions[0].semantic_mapping() == undocumented.functions[0].semantic_mapping()
 
 
 def test_an_undocumented_function_serializes_exactly_as_before_the_field_existed(
@@ -81,12 +78,12 @@ def test_documentation_round_trips_through_the_ir_including_awkward_text(
     tmp_path: Path,
 ) -> None:
     awkward = (
-        'def calculate(quantity: int, price: int) -> int:\n'
+        "def calculate(quantity: int, price: int) -> int:\n"
         '    """Line one.\n'
-        '\n'
+        "\n"
         '    Line two with "quotes", a backslash \\\\ and a unicode dash —.\n'
         '    """\n'
-        '    return quantity * price\n'
+        "    return quantity * price\n"
     )
     mapping = analyze_python(_write(tmp_path, awkward), "calculate").to_mapping()
     reloaded = SemanticIR.from_mapping(mapping)
@@ -116,22 +113,18 @@ def test_a_body_that_is_only_a_docstring_fails_closed_with_its_own_code(
     [
         (
             "not-the-first-statement",
-            'def calculate(quantity: int, price: int) -> int:\n'
-            '    x: int = 1\n'
+            "def calculate(quantity: int, price: int) -> int:\n"
+            "    x: int = 1\n"
             '    "stray"\n'
-            '    return quantity * price\n',
+            "    return quantity * price\n",
         ),
         (
             "bytes-literal",
-            'def calculate(quantity: int, price: int) -> int:\n'
-            '    b"bytes"\n'
-            '    return quantity * price\n',
+            'def calculate(quantity: int, price: int) -> int:\n    b"bytes"\n    return quantity * price\n',
         ),
     ],
 )
-def test_only_a_leading_string_literal_counts_as_documentation(
-    tmp_path: Path, label: str, source: str
-) -> None:
+def test_only_a_leading_string_literal_counts_as_documentation(tmp_path: Path, label: str, source: str) -> None:
     """A bare string anywhere else is a no-op expression, not documentation."""
 
     with pytest.raises(RouteError) as raised:
@@ -150,11 +143,11 @@ def test_the_emitted_target_reanalysis_gate_still_refuses_a_docstring(
     """
 
     emitted = (
-        'def calculate(quantity: int, price: int) -> int:\n'
-        '    _elmos_in_range(quantity)\n'
-        '    _elmos_in_range(price)\n'
+        "def calculate(quantity: int, price: int) -> int:\n"
+        "    _elmos_in_range(quantity)\n"
+        "    _elmos_in_range(price)\n"
         '    """doc"""\n'
-        '    return _elmos_checked_mul(quantity, price)\n'
+        "    return _elmos_checked_mul(quantity, price)\n"
     )
     with pytest.raises(RouteError) as raised:
         analyze_python(_write(tmp_path, emitted), "calculate", emitted_target=True)

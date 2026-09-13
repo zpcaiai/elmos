@@ -46,22 +46,15 @@ def _installer_bound_toolchain_root() -> Path:
 
 _EXPECTED_TOOLCHAIN_ROOT = _installer_bound_toolchain_root()
 _homebrew_default = (
-    "/opt/homebrew"
-    if platform.system() == "Darwin"
-    else str(_EXPECTED_TOOLCHAIN_ROOT / "homebrew-not-applicable")
+    "/opt/homebrew" if platform.system() == "Darwin" else str(_EXPECTED_TOOLCHAIN_ROOT / "homebrew-not-applicable")
 )
-_EXPECTED_HOMEBREW_PREFIX = Path(
-    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", _homebrew_default)
-).expanduser()
+_EXPECTED_HOMEBREW_PREFIX = Path(os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", _homebrew_default)).expanduser()
 if (
     not _EXPECTED_HOMEBREW_PREFIX.is_absolute()
-    or _EXPECTED_HOMEBREW_PREFIX
-    != Path(os.path.normpath(str(_EXPECTED_HOMEBREW_PREFIX)))
+    or _EXPECTED_HOMEBREW_PREFIX != Path(os.path.normpath(str(_EXPECTED_HOMEBREW_PREFIX)))
     or _EXPECTED_HOMEBREW_PREFIX in {Path("/"), Path.home()}
 ):
-    raise RouteError(
-        f"EXACT_TOOLCHAIN_HOMEBREW_PREFIX_UNSAFE:{_EXPECTED_HOMEBREW_PREFIX}"
-    )
+    raise RouteError(f"EXACT_TOOLCHAIN_HOMEBREW_PREFIX_UNSAFE:{_EXPECTED_HOMEBREW_PREFIX}")
 _EXPECTED_HOMEBREW_CELLAR = _EXPECTED_HOMEBREW_PREFIX / "Cellar"
 
 
@@ -119,10 +112,7 @@ def _disabled_go_telemetry_directory(home: Path) -> Path:
             raise OSError(failure)
 
         directory_flags = (
-            os.O_RDONLY
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_DIRECTORY", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
         )
         directory_descriptor = os.open(telemetry, directory_flags)
         try:
@@ -132,11 +122,7 @@ def _disabled_go_telemetry_directory(home: Path) -> Path:
 
             mode_file = telemetry / "mode"
             write_flags = (
-                os.O_WRONLY
-                | os.O_CREAT
-                | os.O_EXCL
-                | getattr(os, "O_CLOEXEC", 0)
-                | getattr(os, "O_NOFOLLOW", 0)
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
             )
             try:
                 write_descriptor = os.open(
@@ -162,8 +148,7 @@ def _disabled_go_telemetry_directory(home: Path) -> Path:
             directory_after_create = os.fstat(directory_descriptor)
             rebound_directory = telemetry.lstat()
             if (
-                stable_directory_identity(directory_after_create)
-                != stable_directory_identity(opened_directory)
+                stable_directory_identity(directory_after_create) != stable_directory_identity(opened_directory)
                 or exact_identity(rebound_directory) != exact_identity(directory_after_create)
                 or os.listdir(directory_descriptor) != [mode_file.name]
                 or telemetry.is_symlink()
@@ -247,11 +232,7 @@ def sanitized_subprocess_env(
             raise RouteError("SUBPROCESS_WINDOWS_SYSTEM_ROOT_REQUIRED")
         system32 = Path(system_root) / "System32"
         fixed_paths = [*executable_dirs, system32, Path(system_root)]
-        path = os.pathsep.join(
-            str(item.resolve())
-            for item in dict.fromkeys(fixed_paths)
-            if item.is_dir()
-        )
+        path = os.pathsep.join(str(item.resolve()) for item in dict.fromkeys(fixed_paths) if item.is_dir())
         return {
             "PATH": path,
             "SystemRoot": system_root,
@@ -363,22 +344,13 @@ def _output(
         detail = ""
         if include_failure_diagnostic:
             diagnostic = (completed.stderr or completed.stdout).strip()
-            diagnostic = "".join(
-                character if character.isprintable() else "?"
-                for character in diagnostic[-1000:]
-            )
+            diagnostic = "".join(character if character.isprintable() else "?" for character in diagnostic[-1000:])
             detail = f":diagnostic={diagnostic or 'EMPTY'}"
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}:"
-            f"exit={completed.returncode}{detail}"
-        )
+        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}:exit={completed.returncode}{detail}")
     return (completed.stdout + (completed.stderr if include_stderr else "")).strip()
 
 
-_EXPECTED_JAVA_HOME = (
-    _EXPECTED_HOMEBREW_CELLAR
-    / "openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
-)
+_EXPECTED_JAVA_HOME = _EXPECTED_HOMEBREW_CELLAR / "openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
 _EXPECTED_JAVA_SHA256 = "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42"
 _EXPECTED_JAVAC_SHA256 = "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db"
 _EXPECTED_JAVA_MODULES_SHA256 = "5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee"
@@ -406,9 +378,7 @@ _TEMURIN_JAVAC_SHA256 = "56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c
 _TEMURIN_JAVA_MODULES_SHA256 = "915c525cd0b9d4db404cdc2368bfb4f3e0ab2a6a598b2d6a76d932de19dd2d33"
 _TEMURIN_JAVA_JVM_SHA256 = "34bc0bc23d87abb85147409ccdbf604ccd3d2fe8b83ac567a966a5df8a81eded"
 _TEMURIN_JAVA_RELEASE_SHA256 = "5fccc331767cf526748f17402c7355efb0d1c24f397c49ff9836760f4a3f3d17"
-_TEMURIN_JAVA_BUNDLE_CDHASH_FULL = (
-    "e392fdd40bd00e2e6a6986716901ee08ad1e0200e65bdafab50f70554364a5a2"
-)
+_TEMURIN_JAVA_BUNDLE_CDHASH_FULL = "e392fdd40bd00e2e6a6986716901ee08ad1e0200e65bdafab50f70554364a5a2"
 _TEMURIN_JAVA_TEAM_IDENTIFIER = "JCDTMS22B4"
 _TEMURIN_JAVA_VERSION = (
     'openjdk version "21.0.11" 2026-04-21 LTS\n'
@@ -577,9 +547,7 @@ def _select_homebrew_route_bundle_profile(
     )
     if len(matches) != 1:
         observed = "/".join((image_version or "local", product_version, build_version))
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH:observed={observed}"
-        )
+        raise RouteError(f"EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH:observed={observed}")
     return matches[0]
 
 
@@ -602,10 +570,7 @@ def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
             if profile.profile_id == declared_profile_id and profile.image_version
         )
         if len(declared_matches) != 1:
-            raise RouteError(
-                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
-                + declared_profile_id
-            )
+            raise RouteError("EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed=" + declared_profile_id)
         declared_profile = declared_matches[0]
         if image_version and image_version != declared_profile.image_version:
             raise RouteError(
@@ -622,25 +587,17 @@ def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
             "ImageOS": "macos26",
         }
         drift = tuple(
-            key
-            for key, expected in required_environment.items()
-            if os.environ.get(key, "").strip() != expected
+            key for key, expected in required_environment.items() if os.environ.get(key, "").strip() != expected
         )
         if drift:
-            raise RouteError(
-                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH:"
-                + ",".join(drift)
-            )
+            raise RouteError("EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH:" + ",".join(drift))
     selected = _select_homebrew_route_bundle_profile(
         image_version=image_version,
         product_version=_output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False),
         build_version=_output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False),
     )
     if declared_profile is not None and selected.profile_id != declared_profile.profile_id:
-        raise RouteError(
-            "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
-            + declared_profile_id
-        )
+        raise RouteError("EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed=" + declared_profile_id)
     return selected
 
 
@@ -1025,12 +982,7 @@ def _qualified_tree_manifest(
         # are host installation metadata, however, and are not part of the
         # immutable toolchain distribution bytes shared by isolated runners.
         digest_records = [
-            {
-                key: value
-                for key, value in record.items()
-                if key not in {"uid", "gid", "nlink"}
-            }
-            for record in records
+            {key: value for key, value in record.items() if key not in {"uid", "gid", "nlink"}} for record in records
         ]
     encoded = json.dumps(
         {"records": digest_records},
@@ -1335,20 +1287,14 @@ def _java_bundle_signature(bundle: Path) -> str:
             include_failure_diagnostic=True,
         )
     except RouteError as error:
-        raise RouteError(
-            "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-verify:"
-            f"{error}"
-        ) from error
+        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-verify:{error}") from error
     try:
         return _output(
             [str(codesign), "-d", "--verbose=4", str(bundle)],
             include_failure_diagnostic=True,
         )
     except RouteError as error:
-        raise RouteError(
-            "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-display:"
-            f"{error}"
-        ) from error
+        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-display:{error}") from error
 
 
 def _java_contract() -> _JavaContract:
@@ -1470,16 +1416,14 @@ def _java() -> ExactToolchain:
 
 _EXPECTED_PYTHON_LOCAL_ANCHOR = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
 _EXPECTED_PYTHON_ROOT = (
-    _EXPECTED_TOOLCHAIN_ROOT
-    / "python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/"
+    _EXPECTED_TOOLCHAIN_ROOT / "python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/"
     "sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python"
 )
 _EXPECTED_PYTHON_EXECUTABLE = _EXPECTED_PYTHON_ROOT / "bin" / "python3.12"
 _EXPECTED_PYTHON_STDLIB = _EXPECTED_PYTHON_ROOT / "lib" / "python3.12"
 _EXPECTED_PYTHON_LIBPYTHON = _EXPECTED_PYTHON_ROOT / "lib" / "libpython3.12.dylib"
 _EXPECTED_PYTHON_ARCHIVE = (
-    _EXPECTED_TOOLCHAIN_ROOT
-    / "python-build-standalone/archives/"
+    _EXPECTED_TOOLCHAIN_ROOT / "python-build-standalone/archives/"
     "sha256-22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84.tar.gz"
 )
 _EXPECTED_PYTHON_EXECUTABLE_SHA256 = "3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5"
@@ -1488,11 +1432,7 @@ _EXPECTED_PYTHON_LIBPYTHON_SHA256 = "6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684
 _EXPECTED_PYTHON_LIBPYTHON_BYTES = 17_865_200
 _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256 = "22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84"
 _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES = 17_667_661
-_EXPECTED_PYTHON_CAPTURE_RELATIVE = (
-    "runtime/python/sha256-"
-    + _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256
-    + ".tar.gz"
-)
+_EXPECTED_PYTHON_CAPTURE_RELATIVE = "runtime/python/sha256-" + _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256 + ".tar.gz"
 _EXPECTED_PYTHON_SOURCE_TREE_SHA256 = "1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154"
 _EXPECTED_PYTHON_RUNTIME_TREE_SHA256 = "49eb47a1e6f1a8803ef3686da328abf2e18f1d31b6447190c3455640e4df9adf"
 _EXPECTED_PYTHON_RUNTIME_RECORD_COUNT = 1_899
@@ -1539,17 +1479,13 @@ def _canonical_python_runtime_identity(runtime: dict[str, object]) -> str:
     for field in _PYTHON_RUNTIME_PATH_FIELDS:
         value = normalized.get(field)
         if not isinstance(value, str):
-            raise RouteError(
-                f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}"
-            )
+            raise RouteError(f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}")
         if value == root:
             normalized[field] = "@PYTHON_ROOT@"
         elif value.startswith(root + os.sep):
             normalized[field] = "@PYTHON_ROOT@" + value[len(root) :]
         else:
-            raise RouteError(
-                f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}"
-            )
+            raise RouteError(f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}")
     return json.dumps(normalized, sort_keys=True, separators=(",", ":"))
 
 
@@ -1790,10 +1726,7 @@ def _python() -> ExactToolchain:
         mismatch_fields.append("archive_sha256")
     if archive_after.get("bytes") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES:
         mismatch_fields.append("archive_bytes")
-    if (
-        hashlib.sha256(canonical_runtime.encode("utf-8")).hexdigest()
-        != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
-    ):
+    if hashlib.sha256(canonical_runtime.encode("utf-8")).hexdigest() != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256:
         mismatch_fields.append("runtime_identity_sha256")
     for key, expected in (
         ("version", "3.12.12"),
@@ -1808,10 +1741,7 @@ def _python() -> ExactToolchain:
         if runtime.get(key) != expected:
             mismatch_fields.append(f"runtime_{key}")
     if mismatch_fields:
-        raise RouteError(
-            "EXACT_TOOLCHAIN_MISMATCH:python:expected=3.12.12+20260211:"
-            + ",".join(mismatch_fields)
-        )
+        raise RouteError("EXACT_TOOLCHAIN_MISMATCH:python:expected=3.12.12+20260211:" + ",".join(mismatch_fields))
     return ExactToolchain(
         "python",
         "3.12.12+20260211",
@@ -1954,9 +1884,7 @@ _EXPECTED_NODE_ROOT = _EXPECTED_HOMEBREW_CELLAR / "node" / "26.0.0"
 _EXPECTED_NODE_SHIM = _EXPECTED_HOMEBREW_PREFIX / "bin" / "node"
 _EXPECTED_NODE_EXECUTABLE = _EXPECTED_NODE_ROOT / "bin" / "node"
 _EXPECTED_NODE_LIBNODE = _EXPECTED_NODE_ROOT / "lib" / "libnode.147.dylib"
-_EXPECTED_NODE_LIBADA = (
-    _EXPECTED_HOMEBREW_CELLAR / "ada-url" / "3.4.4" / "lib" / "libada.3.4.4.dylib"
-)
+_EXPECTED_NODE_LIBADA = _EXPECTED_HOMEBREW_CELLAR / "ada-url" / "3.4.4" / "lib" / "libada.3.4.4.dylib"
 _EXPECTED_NODE_OTOOL = Path("/usr/bin/otool")
 _EXPECTED_NODE_SHIM_TARGET = "../Cellar/node/26.0.0/bin/node"
 _NODE26_PROCESS_VERSIONS = (
@@ -1969,9 +1897,7 @@ _NODE26_PROCESS_VERSIONS = (
     '"unicode":"17.0","uv":"1.52.1","uvwasi":"0.0.23",'
     '"v8":"14.6.202.33-node.19","zlib":"1.2.12","zstd":"1.5.7"}'
 )
-_NODE26_PROCESS_VERSIONS_SHA256 = (
-    "3d1c55b1d3598ed3740b8d5461151069351d53495649a1efb718f6f858b48d52"
-)
+_NODE26_PROCESS_VERSIONS_SHA256 = "3d1c55b1d3598ed3740b8d5461151069351d53495649a1efb718f6f858b48d52"
 _NODE26_LEGACY_PROFILE_FIELDS: dict[str, str | int] = {
     "qualification_host": "legacy-homebrew-darwin-arm64",
     "node_version": "v26.0.0",
@@ -2080,38 +2006,23 @@ _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
 
 def node_closure_profile_id(closure_sha256: str) -> str | None:
     matches = [
-        str(profile["profile"])
-        for profile in _validated_node_profiles()
-        if profile["closure_sha256"] == closure_sha256
+        str(profile["profile"]) for profile in _validated_node_profiles() if profile["closure_sha256"] == closure_sha256
     ]
     return matches[0] if len(matches) == 1 else None
+
 
 # Backward-compatible aliases name the original local profile only.  Runtime
 # selection below never uses these aliases; it uses the selected complete
 # profile record so a hosted Node binary cannot be combined with legacy dylibs.
 _EXPECTED_NODE_SHA256 = str(_EXPECTED_NODE_CLOSURE_PROFILES[0]["node_sha256"])
 _EXPECTED_NODE_BYTES = int(_EXPECTED_NODE_CLOSURE_PROFILES[0]["node_bytes"])
-_EXPECTED_NODE_LIBNODE_SHA256 = str(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["libnode_sha256"]
-)
-_EXPECTED_NODE_LIBNODE_BYTES = int(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["libnode_bytes"]
-)
-_EXPECTED_NODE_CLOSURE_COMPONENT_COUNT = int(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["component_count"]
-)
-_EXPECTED_NODE_CLOSURE_EDGE_COUNT = int(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["edge_count"]
-)
-_EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT = int(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["system_edge_count"]
-)
-_EXPECTED_NODE_SYSTEM_EDGE_SHA256 = str(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["system_edge_sha256"]
-)
-_EXPECTED_NODE_TOPOLOGY_SHA256 = str(
-    _EXPECTED_NODE_CLOSURE_PROFILES[0]["topology_sha256"]
-)
+_EXPECTED_NODE_LIBNODE_SHA256 = str(_EXPECTED_NODE_CLOSURE_PROFILES[0]["libnode_sha256"])
+_EXPECTED_NODE_LIBNODE_BYTES = int(_EXPECTED_NODE_CLOSURE_PROFILES[0]["libnode_bytes"])
+_EXPECTED_NODE_CLOSURE_COMPONENT_COUNT = int(_EXPECTED_NODE_CLOSURE_PROFILES[0]["component_count"])
+_EXPECTED_NODE_CLOSURE_EDGE_COUNT = int(_EXPECTED_NODE_CLOSURE_PROFILES[0]["edge_count"])
+_EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT = int(_EXPECTED_NODE_CLOSURE_PROFILES[0]["system_edge_count"])
+_EXPECTED_NODE_SYSTEM_EDGE_SHA256 = str(_EXPECTED_NODE_CLOSURE_PROFILES[0]["system_edge_sha256"])
+_EXPECTED_NODE_TOPOLOGY_SHA256 = str(_EXPECTED_NODE_CLOSURE_PROFILES[0]["topology_sha256"])
 _EXPECTED_NODE_PROCESS_VERSIONS = _NODE26_PROCESS_VERSIONS
 _EXPECTED_NODE_PROCESS_VERSIONS_SHA256 = _NODE26_PROCESS_VERSIONS_SHA256
 _NODE_TOPOLOGY_CACHE: dict[str, object] | None = None
@@ -2181,8 +2092,7 @@ def _validated_node_profiles() -> tuple[dict[str, str | int], ...]:
             not isinstance(profile[field], str) or not str(profile[field])
             for field in _NODE26_PROFILE_FIELDS - _NODE26_PROFILE_INTEGER_FIELDS
         ) or any(
-            type(profile[field]) is not int or int(profile[field]) <= 0
-            for field in _NODE26_PROFILE_INTEGER_FIELDS
+            type(profile[field]) is not int or int(profile[field]) <= 0 for field in _NODE26_PROFILE_INTEGER_FIELDS
         ):
             raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
         if any(
@@ -2193,8 +2103,7 @@ def _validated_node_profiles() -> tuple[dict[str, str | int], ...]:
             raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
         process_versions = str(profile["process_versions"])
         if (
-            hashlib.sha256(process_versions.encode("ascii")).hexdigest()
-            != profile["process_versions_sha256"]
+            hashlib.sha256(process_versions.encode("ascii")).hexdigest() != profile["process_versions_sha256"]
             or profile["sha256"] != profile["closure_sha256"]
             or profile["bytes"] != profile["closure_bytes"]
             or profile["node_version"] != "v26.0.0"
@@ -2212,11 +2121,7 @@ def _validated_node_profiles() -> tuple[dict[str, str | int], ...]:
 
 
 def _node_profile(profile_id: str) -> dict[str, str | int]:
-    matches = [
-        profile
-        for profile in _validated_node_profiles()
-        if profile["profile"] == profile_id
-    ]
+    matches = [profile for profile in _validated_node_profiles() if profile["profile"] == profile_id]
     if len(matches) != 1:
         raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
     return matches[0]
@@ -2224,8 +2129,7 @@ def _node_profile(profile_id: str) -> dict[str, str | int]:
 
 _EXPECTED_TYPESCRIPT_CACHE_ANCHOR = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
 _EXPECTED_TYPESCRIPT_ROOT = (
-    _EXPECTED_TOOLCHAIN_ROOT
-    / "typescript/5.9.2/"
+    _EXPECTED_TOOLCHAIN_ROOT / "typescript/5.9.2/"
     "sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
 )
 _EXPECTED_TYPESCRIPT_LAUNCHER = _EXPECTED_TYPESCRIPT_ROOT / "bin" / "tsc"
@@ -2246,15 +2150,9 @@ _EXPECTED_TYPESCRIPT_PACKAGE_SHA256 = "5a0bb7f286c4b3f1413a42c05f902311b161f70e5
 _EXPECTED_TYPESCRIPT_PACKAGE_BYTES = 3_620
 _EXPECTED_TYPESCRIPT_LICENSE_SHA256 = "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
 _EXPECTED_TYPESCRIPT_LICENSE_BYTES = 9_197
-_EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256 = (
-    "61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
-)
-_EXPECTED_TYPESCRIPT_RUNTIME_MANIFEST_SHA256 = (
-    "2157e43e757e433c733e144df7409a54f5040faa22af4a9b13de977a663fd939"
-)
-_EXPECTED_TYPESCRIPT_CAPTURE_RELATIVE = (
-    "runtime/typescript/sha256-" + _EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256
-)
+_EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256 = "61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
+_EXPECTED_TYPESCRIPT_RUNTIME_MANIFEST_SHA256 = "2157e43e757e433c733e144df7409a54f5040faa22af4a9b13de977a663fd939"
+_EXPECTED_TYPESCRIPT_CAPTURE_RELATIVE = "runtime/typescript/sha256-" + _EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256
 # The compiler closure is relocatable, but its content identity predates that
 # property and was captured at this path/owner on macOS.  Live manifests are
 # still validated against the installer-selected root and the filesystem
@@ -2269,9 +2167,7 @@ _TYPESCRIPT_IDENTITY_CANONICAL_UID = 501
 _TYPESCRIPT_IDENTITY_CANONICAL_GID = 20
 _TYPESCRIPT_IDENTITY_CANONICAL_PACKAGE_NLINK = 6
 _TYPESCRIPT_IDENTITY_CANONICAL_DIRECTORY_NLINKS = {"bin": 3, "lib": 107}
-_EXPECTED_TYPESCRIPT_CLOSURE_SHA256 = (
-    "aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9"
-)
+_EXPECTED_TYPESCRIPT_CLOSURE_SHA256 = "aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9"
 _EXPECTED_TYPESCRIPT_CLOSURE_FILE_COUNT = 108
 _EXPECTED_TYPESCRIPT_LIBRARY_FILE_COUNT = 102
 _EXPECTED_TYPESCRIPT_CLOSURE_BYTES = 19_067_381
@@ -2466,8 +2362,7 @@ def _canonical_typescript_closure_manifest(
             raise ValueError
         if (
             manifest["schema_version"] != 2
-            or manifest["kind"]
-            != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
+            or manifest["kind"] != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
             or manifest["semantic_soundness"] != "NOT_RUN"
         ):
             raise ValueError
@@ -2498,10 +2393,7 @@ def _canonical_typescript_closure_manifest(
                 or not isinstance(item.get("relative_path"), str)
                 or not isinstance(item.get("resolved_path"), str)
                 or not isinstance(item.get("mode"), str)
-                or any(
-                    type(item.get(field)) is not int
-                    for field in ("uid", "gid", "nlink")
-                )
+                or any(type(item.get(field)) is not int for field in ("uid", "gid", "nlink"))
                 or cast(str, item["relative_path"]) in directory_names
                 or cast(str, item["resolved_path"]) in directory_paths
             ):
@@ -2514,10 +2406,7 @@ def _canonical_typescript_closure_manifest(
         # allowing a caller to forge a path, owner, group, or link count.
         if package != _typescript_package_root_binding():
             raise ValueError
-        expected_directories = [
-            _typescript_package_directory_binding(relative)
-            for relative in ("bin", "lib")
-        ]
+        expected_directories = [_typescript_package_directory_binding(relative) for relative in ("bin", "lib")]
         if directories != expected_directories:
             raise ValueError
 
@@ -2526,8 +2415,7 @@ def _canonical_typescript_closure_manifest(
         package_uid = cast(int, package["uid"])
         package_gid = cast(int, package["gid"])
         if any(
-            directory["uid"] != package_uid or directory["gid"] != package_gid
-            for directory in expected_directories
+            directory["uid"] != package_uid or directory["gid"] != package_gid for directory in expected_directories
         ):
             raise ValueError
         for item in files:
@@ -2556,19 +2444,12 @@ def _canonical_typescript_closure_manifest(
                 raise ValueError
             role = cast(str, item["role"])
             path = Path(cast(str, item["resolved_path"]))
-            if (
-                role in roles
-                or path in paths
-                or not path.is_absolute()
-                or str(path) != item["resolved_path"]
-            ):
+            if role in roles or path in paths or not path.is_absolute() or str(path) != item["resolved_path"]:
                 raise ValueError
             roles.add(role)
             paths.add(path)
             relative = path.relative_to(_EXPECTED_TYPESCRIPT_ROOT)
-            if not relative.parts or any(
-                part in {"", ".", ".."} for part in relative.parts
-            ):
+            if not relative.parts or any(part in {"", ".", ".."} for part in relative.parts):
                 raise ValueError
             rebound = _typescript_file_binding(path, role)
             if (
@@ -2576,10 +2457,7 @@ def _canonical_typescript_closure_manifest(
                 or item["uid"] != package_uid
                 or item["gid"] != package_gid
                 or len(cast(str, item["sha256"])) != 64
-                or any(
-                    character not in "0123456789abcdef"
-                    for character in cast(str, item["sha256"])
-                )
+                or any(character not in "0123456789abcdef" for character in cast(str, item["sha256"]))
             ):
                 raise ValueError
 
@@ -2589,11 +2467,7 @@ def _canonical_typescript_closure_manifest(
         # portable identity.
         if (
             _typescript_package_root_binding() != package
-            or [
-                _typescript_package_directory_binding(relative)
-                for relative in ("bin", "lib")
-            ]
-            != directories
+            or [_typescript_package_directory_binding(relative) for relative in ("bin", "lib")] != directories
         ):
             raise ValueError
 
@@ -2617,22 +2491,16 @@ def _canonical_typescript_closure_manifest(
             if not isinstance(item, dict):
                 raise ValueError
             directory_relative = cast(str, item["relative_path"])
-            item["resolved_path"] = str(
-                _TYPESCRIPT_IDENTITY_CANONICAL_ROOT / directory_relative
-            )
+            item["resolved_path"] = str(_TYPESCRIPT_IDENTITY_CANONICAL_ROOT / directory_relative)
             item["uid"] = _TYPESCRIPT_IDENTITY_CANONICAL_UID
             item["gid"] = _TYPESCRIPT_IDENTITY_CANONICAL_GID
-            item["nlink"] = _TYPESCRIPT_IDENTITY_CANONICAL_DIRECTORY_NLINKS[
-                directory_relative
-            ]
+            item["nlink"] = _TYPESCRIPT_IDENTITY_CANONICAL_DIRECTORY_NLINKS[directory_relative]
         for item in canonical_files:
             if not isinstance(item, dict):
                 raise ValueError
             path = Path(cast(str, item["resolved_path"]))
             file_relative = path.relative_to(_EXPECTED_TYPESCRIPT_ROOT)
-            item["resolved_path"] = str(
-                _TYPESCRIPT_IDENTITY_CANONICAL_ROOT / file_relative
-            )
+            item["resolved_path"] = str(_TYPESCRIPT_IDENTITY_CANONICAL_ROOT / file_relative)
             item["uid"] = _TYPESCRIPT_IDENTITY_CANONICAL_UID
             item["gid"] = _TYPESCRIPT_IDENTITY_CANONICAL_GID
             item["nlink"] = 1
@@ -2665,8 +2533,7 @@ def _raw_typescript_closure_identity(
             raise ValueError
         if (
             manifest["schema_version"] != 2
-            or manifest["kind"]
-            != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
+            or manifest["kind"] != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
             or manifest["semantic_soundness"] != "NOT_RUN"
         ):
             raise ValueError
@@ -2704,25 +2571,17 @@ def _raw_typescript_closure_identity(
                 or type(item.get("bytes")) is not int
                 or not isinstance(item.get("sha256"), str)
                 or not isinstance(item.get("mode"), str)
-                or any(
-                    type(item.get(field)) is not int
-                    for field in ("uid", "gid", "nlink")
-                )
+                or any(type(item.get(field)) is not int for field in ("uid", "gid", "nlink"))
                 or cast(int, item["bytes"]) < 0
                 or len(cast(str, item["sha256"])) != 64
-                or any(
-                    character not in "0123456789abcdef"
-                    for character in cast(str, item["sha256"])
-                )
+                or any(character not in "0123456789abcdef" for character in cast(str, item["sha256"]))
                 or cast(str, item["role"]) in roles
                 or cast(str, item["resolved_path"]) in resolved_paths
             ):
                 raise ValueError
             roles.add(cast(str, item["role"]))
             resolved_paths.add(cast(str, item["resolved_path"]))
-        canonical = json.dumps(
-            manifest, sort_keys=True, separators=(",", ":")
-        ).encode("utf-8")
+        canonical = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return {
             "manifest": manifest,
             "sha256": hashlib.sha256(canonical).hexdigest(),
@@ -2831,9 +2690,7 @@ def _typescript_compiler_paths() -> tuple[Path, ...]:
         or len(observed) != _EXPECTED_TYPESCRIPT_CLOSURE_FILE_COUNT
         or len(libraries) != _EXPECTED_TYPESCRIPT_LIBRARY_FILE_COUNT
         or any(
-            path.parent != _EXPECTED_TYPESCRIPT_ROOT / "lib"
-            or not path.name.endswith(".d.ts")
-            for path in libraries
+            path.parent != _EXPECTED_TYPESCRIPT_ROOT / "lib" or not path.name.endswith(".d.ts") for path in libraries
         )
     ):
         raise RouteError(failure)
@@ -2850,10 +2707,7 @@ def _typescript_compiler_closure() -> dict[str, object]:
         _EXPECTED_TYPESCRIPT_LICENSE: "license",
     }
     paths_before = _typescript_compiler_paths()
-    directories_before = [
-        _typescript_package_directory_binding(relative)
-        for relative in ("bin", "lib")
-    ]
+    directories_before = [_typescript_package_directory_binding(relative) for relative in ("bin", "lib")]
     files = [
         _typescript_file_binding(
             path,
@@ -2861,14 +2715,8 @@ def _typescript_compiler_closure() -> dict[str, object]:
         )
         for path in paths_before
     ]
-    directories_after = [
-        _typescript_package_directory_binding(relative)
-        for relative in ("bin", "lib")
-    ]
-    if (
-        paths_before != _typescript_compiler_paths()
-        or directories_before != directories_after
-    ):
+    directories_after = [_typescript_package_directory_binding(relative) for relative in ("bin", "lib")]
+    if paths_before != _typescript_compiler_paths() or directories_before != directories_after:
         raise RouteError("EXACT_TOOLCHAIN_TYPESCRIPT_CLOSURE_CHANGED_DURING_PROBE")
     manifest: dict[str, object] = {
         "schema_version": 2,
@@ -2956,9 +2804,7 @@ def _verify_typescript_compiler_closure(identity: dict[str, object]) -> None:
             standard_library_count += 1
         elif role not in expected:
             raise RouteError("EXACT_TOOLCHAIN_TYPESCRIPT_CLOSURE_MISMATCH")
-        source_records.append(
-            {"path": relative, "bytes": byte_count, "sha256": digest}
-        )
+        source_records.append({"path": relative, "bytes": byte_count, "sha256": digest})
         runtime_records.append(
             {
                 "path": relative,
@@ -2972,15 +2818,11 @@ def _verify_typescript_compiler_closure(identity: dict[str, object]) -> None:
     if (
         standard_library_count != _EXPECTED_TYPESCRIPT_LIBRARY_FILE_COUNT
         or hashlib.sha256(
-            json.dumps(
-                {"files": source_records}, sort_keys=True, separators=(",", ":")
-            ).encode("utf-8")
+            json.dumps({"files": source_records}, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest()
         != _EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256
         or hashlib.sha256(
-            json.dumps(
-                {"files": runtime_records}, sort_keys=True, separators=(",", ":")
-            ).encode("utf-8")
+            json.dumps({"files": runtime_records}, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest()
         != _EXPECTED_TYPESCRIPT_RUNTIME_MANIFEST_SHA256
     ):
@@ -3362,10 +3204,7 @@ def _node_closure_identity(manifest: dict[str, object]) -> dict[str, object]:
             "schema_version": 1,
             "kind": "elmos.node26-homebrew-macho-topology",
             "install_root": manifest["install_root"],
-            "component_paths": sorted(
-                cast(str, component["resolved_path"])
-                for component in components
-            ),
+            "component_paths": sorted(cast(str, component["resolved_path"]) for component in components),
             "edges": edges,
             "system_edges": system_edges,
         }
@@ -3405,17 +3244,8 @@ def _node_topology_identity(topology: dict[str, object]) -> dict[str, object]:
             or topology["kind"] != "elmos.node26-homebrew-macho-topology"
             or topology["install_root"] != str(_EXPECTED_NODE_ROOT)
             or len(component_paths) != len(set(component_paths))
-            or len(edges)
-            != len(
-                {
-                    (item["loader"], item["load_path"], item["resolved_path"])
-                    for item in edges
-                }
-            )
-            or len(system_edges)
-            != len(
-                {(item["loader"], item["load_path"]) for item in system_edges}
-            )
+            or len(edges) != len({(item["loader"], item["load_path"], item["resolved_path"]) for item in edges})
+            or len(system_edges) != len({(item["loader"], item["load_path"]) for item in system_edges})
         ):
             raise ValueError
         component_set = set(component_paths)
@@ -3431,16 +3261,11 @@ def _node_topology_identity(topology: dict[str, object]) -> dict[str, object]:
         ):
             raise ValueError
         if any(
-            item["loader"] not in component_set
-            or not item["load_path"].startswith(
-                ("/usr/lib/", "/System/Library/")
-            )
+            item["loader"] not in component_set or not item["load_path"].startswith(("/usr/lib/", "/System/Library/"))
             for item in system_edges
         ):
             raise ValueError
-        canonical = json.dumps(
-            topology, sort_keys=True, separators=(",", ":")
-        ).encode("utf-8")
+        canonical = json.dumps(topology, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return {
             "topology": topology,
             "sha256": hashlib.sha256(canonical).hexdigest(),
@@ -3507,10 +3332,7 @@ def _discover_node_topology() -> dict[str, object]:
             {"loader": loader, "load_path": load_path, "resolved_path": resolved}
             for loader, load_path, resolved in sorted(edges)
         ],
-        "system_edges": [
-            {"loader": loader, "load_path": load_path}
-            for loader, load_path in sorted(system_edges)
-        ],
+        "system_edges": [{"loader": loader, "load_path": load_path} for loader, load_path in sorted(system_edges)],
     }
     return _node_topology_identity(topology)
 
@@ -3616,24 +3438,21 @@ def _verify_node_dependency_closure(identity: dict[str, object]) -> str:
     executable_profiles = [
         profile
         for profile in _validated_node_profiles()
-        if executable.get("sha256") == profile["node_sha256"]
-        and executable.get("bytes") == profile["node_bytes"]
+        if executable.get("sha256") == profile["node_sha256"] and executable.get("bytes") == profile["node_bytes"]
     ]
     if not executable_profiles:
         raise RouteError("EXACT_TOOLCHAIN_NODE_EXECUTABLE_MISMATCH")
     libnode_profiles = [
         profile
         for profile in executable_profiles
-        if libnode.get("sha256") == profile["libnode_sha256"]
-        and libnode.get("bytes") == profile["libnode_bytes"]
+        if libnode.get("sha256") == profile["libnode_sha256"] and libnode.get("bytes") == profile["libnode_bytes"]
     ]
     if not libnode_profiles:
         raise RouteError("EXACT_TOOLCHAIN_NODE_LIBNODE_MISMATCH")
     libada_profiles = [
         profile
         for profile in libnode_profiles
-        if libada.get("sha256") == profile["libada_sha256"]
-        and libada.get("bytes") == profile["libada_bytes"]
+        if libada.get("sha256") == profile["libada_sha256"] and libada.get("bytes") == profile["libada_bytes"]
     ]
     if not libada_profiles:
         raise RouteError("EXACT_TOOLCHAIN_NODE_LIBADA_MISMATCH")
@@ -3722,8 +3541,7 @@ def _node_runtime_identity(profile_id: str) -> dict[str, object]:
         or identity.get("platform") != selected_profile["platform"]
         or identity.get("arch") != selected_profile["arch"]
         or observed_versions != selected_profile["process_versions"]
-        or hashlib.sha256(observed_versions.encode("ascii")).hexdigest()
-        != selected_profile["process_versions_sha256"]
+        or hashlib.sha256(observed_versions.encode("ascii")).hexdigest() != selected_profile["process_versions_sha256"]
     ):
         raise RouteError(
             "EXACT_TOOLCHAIN_MISMATCH:node-runtime:"
@@ -4299,9 +4117,7 @@ def _select_apple_route_host_profile(
         if local_matches:
             matches = local_matches
     if len(matches) != 1:
-        observed = "/".join(
-            (image_version, product_version, build_version, xcode.replace("\n", "/"))
-        )
+        observed = "/".join((image_version, product_version, build_version, xcode.replace("\n", "/")))
         raise RouteError(f"EXACT_TOOLCHAIN_APPLE_HOST_PROFILE_MISMATCH:observed={observed}")
     return matches[0]
 
@@ -4330,14 +4146,10 @@ def apple_route_host_profile(language: Language) -> AppleRouteHostProfile:
             "ELMOS_APPLE_ROUTE_XCODE_PHYSICAL": "/Applications/Xcode.app",
         }
         drift = tuple(
-            key
-            for key, expected in required_environment.items()
-            if os.environ.get(key, "").strip() != expected
+            key for key, expected in required_environment.items() if os.environ.get(key, "").strip() != expected
         )
         if drift:
-            raise RouteError(
-                "EXACT_TOOLCHAIN_APPLE_HOST_PROVENANCE_MISMATCH:" + ",".join(drift)
-            )
+            raise RouteError("EXACT_TOOLCHAIN_APPLE_HOST_PROVENANCE_MISMATCH:" + ",".join(drift))
     product_version = _output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False)
     build_version = _output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False)
     selected = _select_apple_route_host_profile(
@@ -4389,8 +4201,7 @@ def _apple_profile(language: Language) -> tuple[str, ...]:
         f"apple-host-profile={selected.profile_id}",
         "xcode=26.6/17F113",
         "macosx-sdk=26.5",
-        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
-        "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
     )
 
 
@@ -4506,13 +4317,13 @@ def _swift() -> ExactToolchain:
 # closed with EXACT_TOOLCHAIN_PHP_NOT_PINNED rather than accepting whatever
 # `php` happens to be on PATH.
 _PHP_VERSION_VARIABLE = "ELMOS_PHP_VERSION"
-_EXPECTED_PHP_VERSION = 'PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)'
+_EXPECTED_PHP_VERSION = "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
 _EXPECTED_PHP_ROOT = _EXPECTED_HOMEBREW_CELLAR / "php/8.5.9"
 _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
-_EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
+_EXPECTED_PHP_EXECUTABLE_SHA256 = "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218"
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f'
+_EXPECTED_PHP_TREE_SHA256 = "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
@@ -4522,7 +4333,7 @@ _EXPECTED_PHP_TREE_BYTES = 129937220
 #: part of the tree's identity, and a link that starts pointing somewhere else
 #: is drift even when every file's content is unchanged.
 _EXPECTED_PHP_TREE_SYMLINKS: dict[str, str] = {
-    'bin/phar': 'phar.phar',
+    "bin/phar": "phar.phar",
 }
 #: Symlinks whose target resolves *outside* the install root. Their content is
 #: NOT bound by this pin -- that is the whole point of recording them separately
@@ -4534,12 +4345,12 @@ _EXPECTED_PHP_TREE_SYMLINKS: dict[str, str] = {
 #: keeps that true: if a future formula adds an escaping link to something
 #: load-bearing, the set changes and the probe fails.
 _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS: dict[str, str] = {
-    'pecl': '/opt/homebrew/lib/php/pecl',
+    "pecl": "/opt/homebrew/lib/php/pecl",
 }
 #: sha256 over the canonical JSON the identity script prints. Pinning the digest
 #: rather than the document keeps this block readable while still failing closed
 #: on any drift in the extension set, the int width or the float model.
-_EXPECTED_PHP_RUNTIME_IDENTITY_SHA256 = '4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e'
+_EXPECTED_PHP_RUNTIME_IDENTITY_SHA256 = "4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e"
 #: How this build provides `ext/tokenizer`, which the PHP frontend is entirely
 #: built on. Either the string "builtin" -- the extension is compiled into the
 #: interpreter and is present with no php.ini at all -- or a path relative to
@@ -4552,12 +4363,10 @@ _EXPECTED_PHP_RUNTIME_IDENTITY_SHA256 = '4d932570ac531f0886895fe7be8440ba5764c7d
 #: restores it *without* restoring the rest of the machine's configuration,
 #: and requiring the object to live inside the pinned root is what keeps the
 #: thing being dlopen'd bound by the tree digest.
-_EXPECTED_PHP_TOKENIZER = 'builtin'
+_EXPECTED_PHP_TOKENIZER = "builtin"
 
 _PHP_FORMULA_SOURCE_COMMIT = "484c7c82b30520d6e2213fa9e1cad855b0385dc1"
-_PHP_FORMULA_SOURCE_SHA256 = (
-    "57d8566ea1cac7b67fb12b66eaa3a56bf82e5f2665a366c7b171020f44a1fe7d"
-)
+_PHP_FORMULA_SOURCE_SHA256 = "57d8566ea1cac7b67fb12b66eaa3a56bf82e5f2665a366c7b171020f44a1fe7d"
 
 
 def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
@@ -4585,8 +4394,7 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     expected_source_paths = {
         "homebrew/core": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
         "elmos/pinned-route-ci": str(
-            _EXPECTED_HOMEBREW_PREFIX
-            / "Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb"
+            _EXPECTED_HOMEBREW_PREFIX / "Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb"
         ),
     }
     if source.get("path") != expected_source_paths[source["tap"]]:
@@ -4607,28 +4415,19 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         or versions.get("head") not in {None, "HEAD"}
         or (
             "version_scheme" in versions
-            and (
-                type(versions["version_scheme"]) is not int
-                or versions["version_scheme"] != 0
-            )
+            and (type(versions["version_scheme"]) is not int or versions["version_scheme"] != 0)
         )
         or (
             "compatibility_version" in versions
             and not (
-                (
-                    type(versions["compatibility_version"]) is int
-                    and versions["compatibility_version"] == 1
-                )
+                (type(versions["compatibility_version"]) is int and versions["compatibility_version"] == 1)
                 # A bottle loaded from the exact no-git CI tap starts with an
                 # empty source-version record. Homebrew hydrates ``stable`` and
                 # ``version_scheme`` before writing INSTALL_RECEIPT.json, but
                 # leaves ``compatibility_version`` null. The pinned formula
                 # digest and the normalized install tree still bind the declared
                 # compatibility version; accept this null only for that tap.
-                or (
-                    source.get("tap") == "elmos/pinned-route-ci"
-                    and versions["compatibility_version"] is None
-                )
+                or (source.get("tap") == "elmos/pinned-route-ci" and versions["compatibility_version"] is None)
             )
         )
     ):
@@ -4675,13 +4474,9 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
                     "declared_directly": dependency["declared_directly"],
                 }
             )
-        if len({item["full_name"] for item in stable_dependencies}) != len(
-            stable_dependencies
-        ):
+        if len({item["full_name"] for item in stable_dependencies}) != len(stable_dependencies):
             raise RouteError(failure)
-        normalized["runtime_dependencies"] = sorted(
-            stable_dependencies, key=lambda item: cast(str, item["full_name"])
-        )
+        normalized["runtime_dependencies"] = sorted(stable_dependencies, key=lambda item: cast(str, item["full_name"]))
 
     normalized["time"] = "<installation-time>"
     normalized["source_modified_time"] = "<source-modified-time>"
@@ -4690,10 +4485,7 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         normalized["installed_on_request"] = "<installation-request-context>"
     source["spec"] = "stable"
     source["versions"] = {"stable": "8.5.9"}
-    source["tap"] = (
-        f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:"
-        f"sha256:{_PHP_FORMULA_SOURCE_SHA256}"
-    )
+    source["tap"] = f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:sha256:{_PHP_FORMULA_SOURCE_SHA256}"
     source["path"] = "<pinned-php-formula-source>"
     tap_git_head = source.get("tap_git_head")
     if tap_git_head is not None and (
@@ -4703,9 +4495,8 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     ):
         raise RouteError(failure)
     source["tap_git_head"] = "<installer-local-tap-head>"
-    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
 
 #: Printed as one canonical JSON object on stdout. `-n` suppresses every php.ini
 #: so the answer describes the *build*, not the machine's configuration; the
@@ -4741,22 +4532,15 @@ def _php_install_receipt_field_digests(
 ) -> dict[str, dict[str, object]]:
     diagnostics: dict[str, dict[str, object]] = {}
     for key, value in sorted(receipt.items()):
-        canonical = json.dumps(value, sort_keys=True, separators=(",", ":")).encode(
-            "utf-8"
-        )
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
         field: dict[str, object] = {
             "bytes": len(canonical),
             "sha256": hashlib.sha256(canonical).hexdigest(),
             "type": type(value).__name__,
         }
         if isinstance(value, list):
-            elements = [
-                json.dumps(item, sort_keys=True, separators=(",", ":"))
-                for item in value
-            ]
-            sorted_canonical = json.dumps(
-                sorted(elements), separators=(",", ":")
-            ).encode("utf-8")
+            elements = [json.dumps(item, sort_keys=True, separators=(",", ":")) for item in value]
+            sorted_canonical = json.dumps(sorted(elements), separators=(",", ":")).encode("utf-8")
             field.update(
                 {
                     "count": len(elements),
@@ -4779,8 +4563,7 @@ def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
         or document.get("dataLicense") != "CC0-1.0"
         or document.get("SPDXID") != "SPDXRef-DOCUMENT"
         or document.get("name") != "SBOM-SPDX-php-8.5.9"
-        or document.get("documentNamespace")
-        != "https://formulae.brew.sh/spdx/php-8.5.9.json"
+        or document.get("documentNamespace") != "https://formulae.brew.sh/spdx/php-8.5.9.json"
         or not isinstance(creation, dict)
         or set(creation) != {"created", "creators"}
         or not isinstance(created, str)
@@ -4795,27 +4578,18 @@ def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
     if (
         not creator.startswith(creator_prefix)
         or not creator_version
-        or any(
-            not (character.isalnum() or character in ".+-")
-            for character in creator_version
-        )
+        or any(not (character.isalnum() or character in ".+-") for character in creator_version)
     ):
         raise RouteError(failure)
     try:
-        if datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ").strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        ) != created:
+        if datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H:%M:%SZ") != created:
             raise RouteError(failure)
     except ValueError as error:
         raise RouteError(failure) from error
     normalized = json.loads(json.dumps(document))
     normalized["creationInfo"]["created"] = "<sbom-creation-time>"
-    normalized["creationInfo"]["creators"] = [
-        f"{creator_prefix}<installer-version>"
-    ]
-    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    normalized["creationInfo"]["creators"] = [f"{creator_prefix}<installer-version>"]
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def php_tree_identity(
@@ -4929,9 +4703,7 @@ def php_tree_identity(
             if not isinstance(receipt, dict):
                 raise RouteError(failure)
             if receipt_field_digests is not None:
-                receipt_field_digests.update(
-                    _php_install_receipt_field_digests(receipt)
-                )
+                receipt_field_digests.update(_php_install_receipt_field_digests(receipt))
             normalized = _normalized_php_install_receipt(receipt, failure)
             record = {
                 **record,
@@ -4966,19 +4738,13 @@ def php_tree_identity(
         raise RouteError(f"{failure}:TREE_CHANGED")
     if record_digests is not None:
         for diagnostic_record in records:
-            canonical_record = json.dumps(
-                diagnostic_record, sort_keys=True, separators=(",", ":")
-            ).encode("utf-8")
+            canonical_record = json.dumps(diagnostic_record, sort_keys=True, separators=(",", ":")).encode("utf-8")
             # This short digest is diagnostic only: the full canonical records
             # still determine the security decision below. Keeping the hosted
             # failure line bounded lets two independent runners identify the
             # exact drifting path without dumping toolchain file contents.
-            record_digests[cast(str, diagnostic_record["path"])] = hashlib.sha256(
-                canonical_record
-            ).hexdigest()[:16]
-    digest = hashlib.sha256(
-        json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
+            record_digests[cast(str, diagnostic_record["path"])] = hashlib.sha256(canonical_record).hexdigest()[:16]
+    digest = hashlib.sha256(json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
     return {
         "root": str(root),
         "sha256": digest,
@@ -5108,7 +4874,7 @@ def php_command(toolchain: ExactToolchain, *arguments: str) -> list[str]:
     ]
     prefix = "php-tokenizer="
     tokenizer = next(
-        (entry[len(prefix):] for entry in toolchain.profile if entry.startswith(prefix)),
+        (entry[len(prefix) :] for entry in toolchain.profile if entry.startswith(prefix)),
         None,
     )
     if tokenizer is None:
@@ -5146,11 +4912,7 @@ def _php() -> ExactToolchain:
             "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:php:expected=Darwin/arm64:"
             f"observed={platform.system()}/{platform.machine()}"
         )
-    if not (
-        _EXPECTED_PHP_EXECUTABLE_SHA256
-        and _EXPECTED_PHP_TREE_SHA256
-        and _EXPECTED_PHP_RUNTIME_IDENTITY_SHA256
-    ):
+    if not (_EXPECTED_PHP_EXECUTABLE_SHA256 and _EXPECTED_PHP_TREE_SHA256 and _EXPECTED_PHP_RUNTIME_IDENTITY_SHA256):
         # An unpinned digest must never degrade to "trust whatever is there".
         raise RouteError("EXACT_TOOLCHAIN_PHP_NOT_PINNED:run tools/pin_php_toolchain.py on the pinning host")
     expected_version = _pinned(_PHP_VERSION_VARIABLE, "php", _EXPECTED_PHP_VERSION)
@@ -5283,11 +5045,7 @@ def configured_polyglot_toolchain_root() -> Path:
         raise RouteError("EXACT_TOOLCHAIN_ROOT_CONFLICT")
     candidate = Path(route or project or "~/.local/share/elmos/toolchains").expanduser()
     normalized = Path(os.path.normpath(str(candidate)))
-    if (
-        not candidate.is_absolute()
-        or candidate != normalized
-        or candidate in {Path("/"), Path.home()}
-    ):
+    if not candidate.is_absolute() or candidate != normalized or candidate in {Path("/"), Path.home()}:
         raise RouteError(f"EXACT_TOOLCHAIN_ROOT_UNSAFE:{candidate}")
     return candidate
 
@@ -5352,8 +5110,7 @@ def _kotlin_classpath_binding() -> None:
     )
     if escaping:
         raise RouteError(
-            "EXACT_TOOLCHAIN_KOTLIN_CLASSPATH_UNBOUND:"
-            + ",".join(f"{name}->{target}" for name, target in escaping)
+            "EXACT_TOOLCHAIN_KOTLIN_CLASSPATH_UNBOUND:" + ",".join(f"{name}->{target}" for name, target in escaping)
         )
 
 
@@ -5421,8 +5178,7 @@ def _kotlin_build_number() -> str:
         raise RouteError("EXACT_TOOLCHAIN_KOTLIN_BUILD_NUMBER_UNREADABLE") from error
     if observed != _EXPECTED_KOTLIN_BUILD_NUMBER:
         raise RouteError(
-            f"EXACT_TOOLCHAIN_KOTLIN_BUILD_NUMBER_MISMATCH:"
-            f"expected={_EXPECTED_KOTLIN_BUILD_NUMBER}:observed={observed}"
+            f"EXACT_TOOLCHAIN_KOTLIN_BUILD_NUMBER_MISMATCH:expected={_EXPECTED_KOTLIN_BUILD_NUMBER}:observed={observed}"
         )
     return observed
 
@@ -5450,7 +5206,7 @@ def _kotlin_jvm_binding() -> tuple[Path, str]:
         raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_UNPINNED:{error}") from error
 
     def profile_value(prefix: str) -> str:
-        matches = [item[len(prefix):] for item in jdk.profile if item.startswith(prefix)]
+        matches = [item[len(prefix) :] for item in jdk.profile if item.startswith(prefix)]
         if len(matches) != 1:
             raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_UNPINNED:{prefix}")
         return matches[0]
@@ -5472,10 +5228,7 @@ def _kotlin_version_contract() -> tuple[str, str]:
         distribution = "homebrew"
     expected = _EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION.get(distribution)
     if expected is None:
-        raise RouteError(
-            "EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:"
-            f"{distribution}"
-        )
+        raise RouteError(f"EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:{distribution}")
     return distribution, expected
 
 
@@ -5554,9 +5307,7 @@ def _kotlin() -> ExactToolchain:
         and _EXPECTED_KOTLIN_BUILD_NUMBER
     ):
         # An unpinned digest must never degrade to "trust whatever is there".
-        raise RouteError(
-            "EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED:run tools/pin_kotlin_toolchain.py on the pinning host"
-        )
+        raise RouteError("EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED:run tools/pin_kotlin_toolchain.py on the pinning host")
     _kotlin_classpath_binding()
     jvm_home, jvm_release_digest = _kotlin_jvm_binding()
     jvm_distribution, repository_version = _kotlin_version_contract()
@@ -5635,9 +5386,7 @@ _EXPECTED_FLUTTER_VERSION_FIELDS = (
     "c416acfeb8126e097f758c664aaa3da929e27da0",
     "3.12.1",
 )
-_EXPECTED_FLUTTER_DART_VERSION = (
-    'Dart SDK version: 3.12.1 (stable) (Tue May 26 01:02:21 2026 -0700) on "macos_arm64"'
-)
+_EXPECTED_FLUTTER_DART_VERSION = 'Dart SDK version: 3.12.1 (stable) (Tue May 26 01:02:21 2026 -0700) on "macos_arm64"'
 
 # Repository-build closure for the deliberately import-free pure-Dart subset
 # emitted by the Flutter route. The AST frontend has a separate analyzer
@@ -5646,9 +5395,7 @@ _EXPECTED_FLUTTER_DART_VERSION = (
 # ambient Flutter CLI/cache updater or claim Flutter framework/UI semantics.
 _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA = "v1"
 _EXPECTED_FLUTTER_DART_SDK_ROOT = _EXPECTED_FLUTTER_ROOT / "bin" / "cache" / "dart-sdk"
-_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256 = (
-    "04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50"
-)
+_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256 = "04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50"
 _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT = 1124
 _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT = 1012
 _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT = 112
@@ -5682,11 +5429,7 @@ _EXPECTED_FLUTTER_DART_SDK_TREES: tuple[dict[str, object], ...] = (
 def _expected_flutter_build_closure(
     trees: dict[str, dict[str, object]] | None = None,
 ) -> dict[str, object]:
-    dart_sdk = (
-        dict(_EXPECTED_FLUTTER_DART_SDK_TREES[0])
-        if trees is None
-        else dict(trees["dart_sdk"])
-    )
+    dart_sdk = dict(_EXPECTED_FLUTTER_DART_SDK_TREES[0]) if trees is None else dict(trees["dart_sdk"])
     return {
         "schema": _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA,
         "trees": {"dart_sdk": dart_sdk},
@@ -5771,14 +5514,9 @@ def _flutter() -> ExactToolchain:
     observed_dart = _output([str(_EXPECTED_FLUTTER_DART), "--version"])
     after = bindings()
     trees = _flutter_build_tree_identities()
-    if (
-        before != after
-        or fields != _EXPECTED_FLUTTER_VERSION_FIELDS
-        or observed_dart != _EXPECTED_FLUTTER_DART_VERSION
-    ):
+    if before != after or fields != _EXPECTED_FLUTTER_VERSION_FIELDS or observed_dart != _EXPECTED_FLUTTER_DART_VERSION:
         raise RouteError(
-            "EXACT_TOOLCHAIN_MISMATCH:flutter:expected=Flutter-3.44.1/Dart-3.12.1:"
-            f"observed={fields[0]}/{fields[3]}"
+            f"EXACT_TOOLCHAIN_MISMATCH:flutter:expected=Flutter-3.44.1/Dart-3.12.1:observed={fields[0]}/{fields[3]}"
         )
     closure_sha256 = _flutter_build_closure_sha256(trees)
     dart_sdk_sha256 = str(trees["dart_sdk"]["sha256"])
@@ -5825,8 +5563,7 @@ def verify_flutter_build_toolchain(toolchain: ExactToolchain) -> dict[str, objec
     closure_sha256 = _flutter_build_closure_sha256(trees)
     if (
         f"flutter-build-closure-sha256={closure_sha256}" not in toolchain.profile
-        or f"flutter-dart-sdk-tree-sha256={trees['dart_sdk']['sha256']}"
-        not in toolchain.profile
+        or f"flutter-dart-sdk-tree-sha256={trees['dart_sdk']['sha256']}" not in toolchain.profile
     ):
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_CHANGED_DURING_VERIFICATION")
     if toolchain != exact_toolchain("flutter"):
@@ -5878,10 +5615,7 @@ def _react() -> ExactToolchain:
     from .react_analyzer import react_dependency_receipt
 
     receipt = react_dependency_receipt()
-    portable = tuple(
-        {key: value for key, value in identity.items() if key != "runtime_entry"}
-        for identity in receipt
-    )
+    portable = tuple({key: value for key, value in identity.items() if key != "runtime_entry"} for identity in receipt)
     digest = hashlib.sha256(
         json.dumps(portable, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
     ).hexdigest()
@@ -6259,10 +5993,7 @@ def _vb6() -> ExactToolchain:
     binding = resolve_vb6_toolchain(REPOSITORY_ROOT)
     return ExactToolchain(
         "vb6",
-        (
-            "Microsoft Visual Basic 6.0 SP6 / "
-            f"compiler {binding.compiler_version} / runtime {binding.runtime_version}"
-        ),
+        (f"Microsoft Visual Basic 6.0 SP6 / compiler {binding.compiler_version} / runtime {binding.runtime_version}"),
         str(binding.compiler),
         str(binding.runtime),
         profile=(
