@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "svelte--to--react-native",
-  "formal_input_digest": "sha256:a85518d8cdc452217a2847c6cd021bb11a476da2d5894065a7c8a274d733fb14",
-  "solver_input_digest": "sha256:cabef6bbf0d5cf5d5818aab0b5f499d9ad7a3a7558f3cb49b27cd3d7793e2f2c",
-  "smt2_digest": "sha256:cabef6bbf0d5cf5d5818aab0b5f499d9ad7a3a7558f3cb49b27cd3d7793e2f2c"
+  "formal_input_digest": "sha256:da830338238257ab7eac5599e95b043e72b51c44a822ccce2e86612238ce9995",
+  "solver_input_digest": "sha256:89baf1bd019863230ebd5e4117e146abf09d9582ac36b499323f69616a554515",
+  "smt2_digest": "sha256:89baf1bd019863230ebd5e4117e146abf09d9582ac36b499323f69616a554515"
 }

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "svelte--to--jquery",
-  "formal_input_digest": "sha256:22ca7fea36404319a984d9663c5de25c5a0bba9c6c48ebe9737bf2c26acc1b8a",
-  "solver_input_digest": "sha256:d10b15ec8a47c0030105acea8479583ad1e8bbaccbc1a7f91853f70a2088e8d8",
-  "smt2_digest": "sha256:d10b15ec8a47c0030105acea8479583ad1e8bbaccbc1a7f91853f70a2088e8d8",
+  "formal_input_digest": "sha256:2e98255da3175a3b33b5e737a4f394b49722ef55c6587c807503ecf99af35be5",
+  "solver_input_digest": "sha256:9cd766980061bce85cd51d0fdd44a6d9f925010c5a8b7f2cad2374939e716ba7",
+  "smt2_digest": "sha256:9cd766980061bce85cd51d0fdd44a6d9f925010c5a8b7f2cad2374939e716ba7",
   "precheck_status": "PASSED"
 }

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "flutter--to--angular",
-  "formal_input_digest": "sha256:32eca3e3ad1f99082928ee04aa6e1c73b56d9bef126071bb35dacac477714d11",
-  "solver_input_digest": "sha256:be2c36e570531fa1383ddd8430953f215be5f66fbfa5ab6a8df20f00925f1188",
-  "smt2_digest": "sha256:be2c36e570531fa1383ddd8430953f215be5f66fbfa5ab6a8df20f00925f1188"
+  "formal_input_digest": "sha256:45a5ab201f819ee8dde8c28dde44f0719573cbcd53795254bd9eaa2707eb3dc1",
+  "solver_input_digest": "sha256:f7f40f958f09cd8546afd24fd55c40950c3df251d7ac6ac3ef2d2d5b4682533a",
+  "smt2_digest": "sha256:f7f40f958f09cd8546afd24fd55c40950c3df251d7ac6ac3ef2d2d5b4682533a"
 }
