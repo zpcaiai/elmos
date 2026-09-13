@@ -17,6 +17,14 @@ import run_client_gate as client_gate  # noqa: E402
 
 
 class PortableClientPackGateTest(unittest.TestCase):
+    def test_formal_replay_watchdogs_are_bounded_and_distinct_from_solver_budget(
+        self,
+    ) -> None:
+        self.assertEqual(600, formal_v1.SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS)
+        self.assertEqual(3600, formal_v2.SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS)
+        self.assertEqual(10_000, formal_v1.LOCKED_Z3_OPTIONS["timeout_ms"])
+        self.assertEqual(120, formal_v2.SOLVER_REPLAY_PROCESS_TIMEOUT_SECONDS)
+
     def write_inventory(self, root: Path) -> None:
         for pack_name, mode in portable.EXPECTED_PACK_MODES.items():
             pack = root / pack_name

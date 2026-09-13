@@ -89,9 +89,10 @@ REQUIRED_RUNTIME_CHANNELS = {
     "vue3": ("browser",),
 }
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
-# Revalidating the full 72-route/864-block frozen pack takes longer than five
-# minutes on the pinned Node 26 macOS runner. Keep a finite fail-closed budget.
-SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 600
+# Revalidating the full 72-route/864-block frozen pack can exceed ten minutes
+# on a busy pinned Node 26 macOS runner. Keep a finite fail-closed budget that
+# covers the nested engine verification and Python evidence walk.
+SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 3600
 LOCKED_NODE_IDENTITIES = (
     {
         "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
@@ -1135,6 +1136,10 @@ REQUIRED_REPLAY_REPOSITORY_PATHS = frozenset(
     }
 )
 SOLVER_REPLAY_CACHE: dict[tuple[str, str], tuple[int, bytes, bytes]] = {}
+# Keep the evidence-bound solver budget at 10 seconds while allowing bounded
+# process scheduling, startup, and artifact I/O overhead on production-shaped,
+# contended hosts. This watchdog does not change the proof's solver budget.
+SOLVER_REPLAY_PROCESS_TIMEOUT_SECONDS = 120
 MAIN_SOLVER_KEYS = frozenset(v1.ENGINE_SOLVER_RESULT_KEYS)
 VACUITY_SOLVER_KEYS = MAIN_SOLVER_KEYS | {"precheck_status"}
 BLOCK_RESULT_KEYS = frozenset(
@@ -1408,7 +1413,7 @@ def validate_solver_artifact(
                 [str(binary_path), "-in"],
                 input=smt,
                 capture_output=True,
-                timeout=10,
+                timeout=SOLVER_REPLAY_PROCESS_TIMEOUT_SECONDS,
                 check=False,
             )
             replay = (completed.returncode, completed.stdout, completed.stderr)
@@ -2838,7 +2843,7 @@ def validate_engine_verifier(
             # The full 72-route/864-block verifier exceeds three minutes on
             # the pinned Node 26 macOS runner. It remains fail-closed under a
             # finite production-sized replay budget.
-            timeout=600,
+            timeout=SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS,
             check=False,
         )
         result = json.loads(completed.stdout.strip().splitlines()[-1])

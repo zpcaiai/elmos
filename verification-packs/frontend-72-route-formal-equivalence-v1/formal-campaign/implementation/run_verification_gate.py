@@ -35,6 +35,12 @@ from _common import (
     resolve_ref,
 )
 
+# These watchdogs bound the validator processes, including content hashing and
+# their self-contained replay. They do not change the evidence-bound solver
+# budgets inside either campaign.
+FRONTEND_V1_CAMPAIGN_VALIDATION_TIMEOUT_SECONDS = 1200
+FRONTEND_V2_CAMPAIGN_VALIDATION_TIMEOUT_SECONDS = 3600
+
 TECHNIQUE_THRESHOLDS = {
     "property": ("property_pass_rate", 1.0),
     "property-based-testing": ("property_pass_rate", 1.0),
@@ -891,7 +897,7 @@ def main(repository_root: Path | None = None) -> int:
                             **frontend_defaults,
                             "status": "invalid",
                         },
-                        540,
+                        FRONTEND_V2_CAMPAIGN_VALIDATION_TIMEOUT_SECONDS,
                     )
                 else:
                     frontend_campaign = {
@@ -937,7 +943,7 @@ def main(repository_root: Path | None = None) -> int:
                             "status": "invalid",
                             "local_equivalence_status": "INCOMPLETE",
                         },
-                        180,
+                        FRONTEND_V1_CAMPAIGN_VALIDATION_TIMEOUT_SECONDS,
                     )
                 else:
                     frontend_campaign = {

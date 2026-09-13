@@ -930,17 +930,30 @@ export function runFrontendSolver(smt2, options = {}) {
     if ((options.args?.length ?? 0) > 0)
         return rejected("ERROR", "custom solver arguments are forbidden by the locked Z3 profile");
     let binaryPath;
+    let fallbackBinaryPath;
     const candidates = command.includes("/")
         ? [resolve(command)]
-        : (process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command));
+        : [
+            ...(process.env.PATH ?? "").split(":").filter(Boolean).map(directory => join(directory, command)),
+            "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+            "/usr/local/Cellar/z3/4.16.0/bin/z3",
+        ];
     for (const candidate of candidates) {
         try {
             accessSync(candidate, fsConstants.X_OK);
-            binaryPath = realpathSync(candidate);
-            break;
+            const resolved = realpathSync(candidate);
+            if (fallbackBinaryPath === undefined)
+                fallbackBinaryPath = resolved;
+            const digest = bytesDigest(readFileSync(resolved));
+            if (basename(resolved) === "z3" && lockedZ3BinaryDigests.has(digest)) {
+                binaryPath = resolved;
+                break;
+            }
         }
-        catch { /* continue bounded PATH search */ }
+        catch { /* continue bounded search */ }
     }
+    if (binaryPath === undefined)
+        binaryPath = fallbackBinaryPath;
     if (binaryPath === undefined)
         return rejected("MISSING", "locked Z3 executable is missing");
     const binaryDigest = bytesDigest(readFileSync(binaryPath));
