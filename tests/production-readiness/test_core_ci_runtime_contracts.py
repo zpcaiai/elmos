@@ -51,7 +51,7 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
         self.assertIn("869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55", script)
         self.assertIn('POSTGRESQL_17_BIN=%s\\n', script)
 
-    def test_frontend_gate_only_discovers_declared_client_packs(self) -> None:
+    def test_frontend_job_gates_only_declared_client_pack_manifests(self) -> None:
         job = _job(
             self.workflow,
             "frontend-client-engine",
