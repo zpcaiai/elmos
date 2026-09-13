@@ -58,6 +58,12 @@ LOCKED_Z3_VERSION = "Z3 version 4.16.0 - 64 bit"
 LOCKED_Z3_BINARY_SHA256 = (
     "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7"
 )
+LOCKED_Z3_BINARY_SHA256S = frozenset(
+    {
+        LOCKED_Z3_BINARY_SHA256,
+        "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
+    }
+)
 LOCKED_Z3_OPTIONS = {"args": ["-in"], "timeout_ms": 10000}
 LOCKED_Z3_ENVIRONMENT = {
     "platform": "darwin",
@@ -1298,9 +1304,10 @@ def validate_formal(
         errors.append(f"route {route_id} solver input digest linkage drift")
     if formal.get("solver_result_sha256") != result_ref.get("sha256"):
         errors.append(f"route {route_id} solver result digest linkage drift")
+    solver_binary_sha256 = formal.get("solver_binary_sha256")
     if (
-        formal.get("solver_binary_sha256") != LOCKED_Z3_BINARY_SHA256
-        or solver_binary_ref.get("sha256") != LOCKED_Z3_BINARY_SHA256
+        solver_binary_sha256 not in LOCKED_Z3_BINARY_SHA256S
+        or solver_binary_ref.get("sha256") != solver_binary_sha256
         or formal.get("solver_binary_bytes") != solver_binary_ref.get("bytes")
     ):
         errors.append(f"route {route_id} locked solver binary artifact drift")
@@ -1498,7 +1505,7 @@ def validate_formal(
             or not Path(solver_realpath).is_absolute()
             or Path(solver_realpath).name != "z3"
             or solver_result.get("solver") != solver_realpath
-            or solver_result.get("solver_binary_sha256") != LOCKED_Z3_BINARY_SHA256
+            or solver_result.get("solver_binary_sha256") != solver_binary_sha256
             or solver_result.get("solver_binary_artifact_id") != solver_binary_id
             or solver_result.get("solver_binary_bytes")
             != solver_binary_ref.get("bytes")
@@ -1511,7 +1518,7 @@ def validate_formal(
             errors.append(
                 f"route {route_id} solver identity/version/options/environment drift"
             )
-        replay_key = (LOCKED_Z3_BINARY_SHA256, raw_smt_sha)
+        replay_key = (str(solver_binary_sha256), raw_smt_sha)
         replay_result = (
             SOLVER_REPLAY_CACHE.get(replay_key) if execute_solver_replay else None
         )

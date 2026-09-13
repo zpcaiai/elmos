@@ -508,8 +508,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     php_tree_directory_count=109,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
-    profile_id="github-macos26-20260907.0351.1",
-    image_version="20260907.0351.1",
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
     product_version="26.6.2",
     build_version="25G83",
     dotnet_muxer_sha256="09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4",
@@ -526,6 +526,16 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
+    php_tree_record_count=643,
+    php_tree_file_count=532,
+    php_tree_directory_count=109,
+)
+_HOMEBREW_ROUTE_LATEST_HOSTED_PROFILE = replace(
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    profile_id="github-macos26-20260907.0351.1",
+    image_version="20260907.0351.1",
     php_tree_sha256="ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9",
     php_tree_bytes=129_938_026,
     php_tree_record_count=644,
@@ -548,6 +558,7 @@ _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
     _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    _HOMEBREW_ROUTE_LATEST_HOSTED_PROFILE,
 )
 _HOMEBREW_ROUTE_PROFILE_ID_ENV = "ELMOS_HOMEBREW_ROUTE_PROFILE_ID"
 
@@ -4213,8 +4224,8 @@ _APPLE_ROUTE_LEGACY_PROFILE = AppleRouteHostProfile(
 )
 
 _APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
-    profile_id="github-macos26-20260907.0351.1",
-    image_version="20260907.0351.1",
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
     product_version="26.6.2",
     build_version="25G83",
     xcode=_EXPECTED_XCODE,
@@ -4231,10 +4242,16 @@ _APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
     codesign_sha256=_APPLE_ROUTE_LOCAL_PROFILE.codesign_sha256,
     codesign_bytes=_APPLE_ROUTE_LOCAL_PROFILE.codesign_bytes,
 )
+_APPLE_ROUTE_LATEST_PROFILE = replace(
+    _APPLE_ROUTE_CURRENT_PROFILE,
+    profile_id="github-macos26-20260907.0351.1",
+    image_version="20260907.0351.1",
+)
 
 _APPLE_ROUTE_HOST_PROFILES = (
     _APPLE_ROUTE_LEGACY_PROFILE,
     _APPLE_ROUTE_CURRENT_PROFILE,
+    _APPLE_ROUTE_LATEST_PROFILE,
     _APPLE_ROUTE_LOCAL_PROFILE,
 )
 
