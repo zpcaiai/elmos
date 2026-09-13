@@ -2768,6 +2768,34 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             list(Draft202012Validator(reference_schema).iter_errors(reference)),
         )
 
+    def test_local_bytes_rejects_file_identity_outside_approved_roots(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-evidence-root-") as directory:
+            evidence_root = Path(directory).resolve()
+            local = evidence_root / "gate.json"
+            local.write_bytes(b"bounded gate evidence\n")
+            digest = "sha256:" + hashlib.sha256(local.read_bytes()).hexdigest()
+            reference = {
+                "uri": "file:///outside/approved/evidence/gate.json",
+                "digest": digest,
+                "size_bytes": local.stat().st_size,
+                "media_type": "application/json",
+                "verification": {
+                    "mode": "LOCAL_BYTES",
+                    "local_uri": local.as_uri(),
+                },
+            }
+
+            with self.assertRaisesRegex(
+                SpringLaunchEvidenceError,
+                "file identity must equal its approved local_uri",
+            ):
+                spring_evidence._verify_evidence_reference(
+                    reference,
+                    roots=(evidence_root,),
+                    controlled_index=None,
+                    label="test evidence",
+                )
+
     def test_verifier_ignores_path_shadowed_openssl_and_rejects_bad_signature(self) -> None:
         receipt = self.make_receipt()
         receipt["gates"][0]["execution_attestation"]["signature"] = (
