@@ -153,14 +153,11 @@ def resolve_vb6_toolchain(
         "x86_64",
     }:
         raise RouteError(
-            "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:vb6:expected=Windows/x86-compatible:"
-            f"observed={system}/{machine}"
+            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:vb6:expected=Windows/x86-compatible:observed={system}/{machine}"
         )
 
     raw_manifest = values.get("ELMOS_VB6_TOOLCHAIN_MANIFEST", "").strip()
-    expected_manifest_sha256 = values.get(
-        "ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256", ""
-    ).strip().lower()
+    expected_manifest_sha256 = values.get("ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256", "").strip().lower()
     if not raw_manifest or _SHA256.fullmatch(expected_manifest_sha256) is None:
         raise RouteError("VB6_VENDOR_COMPILER_RUNTIME_REQUIRED")
     manifest_path = Path(raw_manifest)
@@ -209,15 +206,9 @@ def resolve_vb6_toolchain(
     runtime_bytes = _stable_file(runtime, "VB6_RUNTIME_UNSAFE_OR_MISSING")
     compiler_sha256 = _required_text(manifest, "compiler_sha256").lower()
     runtime_sha256 = _required_text(manifest, "runtime_sha256").lower()
-    if (
-        _SHA256.fullmatch(compiler_sha256) is None
-        or hashlib.sha256(compiler_bytes).hexdigest() != compiler_sha256
-    ):
+    if _SHA256.fullmatch(compiler_sha256) is None or hashlib.sha256(compiler_bytes).hexdigest() != compiler_sha256:
         raise RouteError("VB6_COMPILER_DIGEST_MISMATCH")
-    if (
-        _SHA256.fullmatch(runtime_sha256) is None
-        or hashlib.sha256(runtime_bytes).hexdigest() != runtime_sha256
-    ):
+    if _SHA256.fullmatch(runtime_sha256) is None or hashlib.sha256(runtime_bytes).hexdigest() != runtime_sha256:
         raise RouteError("VB6_RUNTIME_DIGEST_MISMATCH")
     if _pe_machine(compiler_bytes, "VB6_COMPILER_PE_IDENTITY_INVALID") != 0x014C:
         raise RouteError("VB6_COMPILER_ARCHITECTURE_MISMATCH")

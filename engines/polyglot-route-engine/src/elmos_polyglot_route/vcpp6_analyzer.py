@@ -35,9 +35,7 @@ _FUNCTION_HEADER = re.compile(
     rf"^\s*(?:(static)\s+)?({_TYPE_PATTERN})\s+"
     r"([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*\{\s*$"
 )
-_PARAMETER = re.compile(
-    rf"^\s*(?:const\s+)?({_TYPE_PATTERN})\s+([A-Za-z_][A-Za-z0-9_]*)\s*$"
-)
+_PARAMETER = re.compile(rf"^\s*(?:const\s+)?({_TYPE_PATTERN})\s+([A-Za-z_][A-Za-z0-9_]*)\s*$")
 _LET = re.compile(
     rf"^\s*(?:(const)\s+)?({_TYPE_PATTERN})\s+"
     r"([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+?)\s*;\s*$"
@@ -189,9 +187,7 @@ def _tokens(text: str, line: _Line, encoding: str) -> list[_Token]:
     while cursor < len(text):
         match = _TOKEN.match(text, cursor)
         if match is None:
-            raise RouteError(
-                f"VCPP6_UNSUPPORTED_EXPRESSION_TOKEN:line={line.number}:column={cursor + 1}"
-            )
+            raise RouteError(f"VCPP6_UNSUPPORTED_EXPRESSION_TOKEN:line={line.number}:column={cursor + 1}")
         kind = match.lastgroup
         assert kind is not None
         raw = match.group(kind)
@@ -223,9 +219,7 @@ class _ExpressionParser:
             raise RouteError("VCPP6_EXPRESSION_REQUIRED")
         expression = self._parse_or()
         if self.index != len(self.tokens):
-            raise RouteError(
-                f"VCPP6_UNEXPECTED_EXPRESSION_TOKEN:{self.tokens[self.index].value}"
-            )
+            raise RouteError(f"VCPP6_UNEXPECTED_EXPRESSION_TOKEN:{self.tokens[self.index].value}")
         return expression
 
     def _peek(self, value: str | None = None) -> _Token | None:
@@ -313,9 +307,7 @@ class _ExpressionParser:
             value_text = re.sub(r"(?i)(?:i64|ll|l)$", "", raw)
             try:
                 value: int | float = (
-                    float(value_text)
-                    if "." in value_text or "e" in value_text.casefold()
-                    else int(value_text)
+                    float(value_text) if "." in value_text or "e" in value_text.casefold() else int(value_text)
                 )
             except ValueError as error:
                 raise RouteError(f"VCPP6_INVALID_NUMERIC_LITERAL:{raw}") from error
@@ -345,9 +337,7 @@ class _ExpressionParser:
             raise RouteError(f"VCPP6_UNSUPPORTED_EXPRESSION:{token.value}")
         folded = token.value.casefold()
         if folded in {"new", "delete", "throw", "sizeof", "typeid"}:
-            raise RouteError(
-                f"VCPP6_CONTROL_OR_EFFECT_SEMANTICS_OUTSIDE_CERTIFIED_SUBSET:{token.value}"
-            )
+            raise RouteError(f"VCPP6_CONTROL_OR_EFFECT_SEMANTICS_OUTSIDE_CERTIFIED_SUBSET:{token.value}")
         if folded in {"true", "false"}:
             return {
                 "kind": "literal",
@@ -380,9 +370,7 @@ class _ExpressionParser:
                 argument["source_span"] = _span(self.source, token.start, closing.end)
                 return argument
             if folded not in self.function_names:
-                raise RouteError(
-                    f"VCPP6_EFFECTFUL_OR_UNKNOWN_CALL_OUTSIDE_CERTIFIED_SUBSET:{token.value}"
-                )
+                raise RouteError(f"VCPP6_EFFECTFUL_OR_UNKNOWN_CALL_OUTSIDE_CERTIFIED_SUBSET:{token.value}")
             raise RouteError(f"VCPP6_CROSS_FUNCTION_CALL_REQUIRES_MODULE_IR:{token.value}")
         name = self.names.get(folded)
         if name is None:
@@ -403,16 +391,12 @@ def _expression(
     function_names: dict[str, str],
     emitted_target: bool,
 ) -> dict[str, Any]:
-    return _ExpressionParser(
-        _tokens(text, line, encoding), source, names, function_names, emitted_target
-    ).parse()
+    return _ExpressionParser(_tokens(text, line, encoding), source, names, function_names, emitted_target).parse()
 
 
 def _read_source(source: Path) -> bytes:
     if source.suffix.casefold() != ".cpp":
-        raise RouteError(
-            f"VCPP6_TRANSLATION_UNIT_KIND_OUTSIDE_CERTIFIED_SUBSET:{source.suffix.casefold() or '<none>'}"
-        )
+        raise RouteError(f"VCPP6_TRANSLATION_UNIT_KIND_OUTSIDE_CERTIFIED_SUBSET:{source.suffix.casefold() or '<none>'}")
     before = source.stat(follow_symlinks=False)
     content = source.read_bytes()
     after = source.stat(follow_symlinks=False)
@@ -444,9 +428,7 @@ def _module_functions(
             continue
         if raw.startswith("#"):
             if _INCLUDE.fullmatch(raw) is None:
-                raise RouteError(
-                    f"VCPP6_PREPROCESSOR_DIRECTIVE_OUTSIDE_CERTIFIED_SUBSET:line={lines[index].number}"
-                )
+                raise RouteError(f"VCPP6_PREPROCESSOR_DIRECTIVE_OUTSIDE_CERTIFIED_SUBSET:line={lines[index].number}")
             directives.append(lines[index])
             index += 1
             continue
@@ -454,12 +436,8 @@ def _module_functions(
         if header is None:
             markers = ("class ", "struct ", "template", "namespace ", "__declspec", "extern ")
             if raw.casefold().startswith(markers):
-                raise RouteError(
-                    f"VCPP6_MODULE_DECLARATION_OUTSIDE_CERTIFIED_SUBSET:line={lines[index].number}"
-                )
-            raise RouteError(
-                f"VCPP6_TOP_LEVEL_STATEMENT_OUTSIDE_CERTIFIED_SUBSET:line={lines[index].number}"
-            )
+                raise RouteError(f"VCPP6_MODULE_DECLARATION_OUTSIDE_CERTIFIED_SUBSET:line={lines[index].number}")
+            raise RouteError(f"VCPP6_TOP_LEVEL_STATEMENT_OUTSIDE_CERTIFIED_SUBSET:line={lines[index].number}")
         depth = _brace_delta(lines[index].text)
         cursor = index + 1
         while cursor < len(lines) and depth > 0:
@@ -518,25 +496,30 @@ def _analyze_function(
                 return statements, index, "close"
             lowered = raw.casefold()
             forbidden = (
-                "try", "catch", "throw", "new ", "delete ", "asm", "__asm",
-                "goto ", "switch ", "do ", "for ", "typedef ", "using ",
+                "try",
+                "catch",
+                "throw",
+                "new ",
+                "delete ",
+                "asm",
+                "__asm",
+                "goto ",
+                "switch ",
+                "do ",
+                "for ",
+                "typedef ",
+                "using ",
             )
             if lowered.startswith(forbidden):
-                raise RouteError(
-                    f"VCPP6_CONTROL_OR_EFFECT_SEMANTICS_OUTSIDE_CERTIFIED_SUBSET:line={line.number}"
-                )
+                raise RouteError(f"VCPP6_CONTROL_OR_EFFECT_SEMANTICS_OUTSIDE_CERTIFIED_SUBSET:line={line.number}")
             match = _LET.fullmatch(raw)
             if match is not None:
                 name = match.group(3)
                 folded = name.casefold()
                 if folded in names:
                     raise RouteError(f"VCPP6_LOCAL_NAME_ALREADY_BOUND:{name}")
-                canonical_type = _canonical_type(
-                    match.group(2), context=f"local:{function_name}.{name}"
-                )
-                initializer = _expression(
-                    match.group(4), line, source, encoding, names, function_names, emitted_target
-                )
+                canonical_type = _canonical_type(match.group(2), context=f"local:{function_name}.{name}")
+                initializer = _expression(match.group(4), line, source, encoding, names, function_names, emitted_target)
                 names[folded] = name
                 statements.append(
                     {
@@ -551,18 +534,14 @@ def _analyze_function(
                 continue
             match = _IF.fullmatch(raw)
             if match is not None:
-                condition = _expression(
-                    match.group(1), line, source, encoding, names, function_names, emitted_target
-                )
+                condition = _expression(match.group(1), line, source, encoding, names, function_names, emitted_target)
                 then_body, stop, terminator = parse_block(index + 1, nested=True)
                 if stop >= len(body_lines):
                     raise RouteError(f"VCPP6_IF_CLOSE_REQUIRED:line={line.number}")
                 else_body: list[dict[str, Any]] = []
                 if terminator == "else":
                     else_body, stop, terminator = parse_block(stop + 1, nested=True)
-                elif stop + 1 < len(body_lines) and _ELSE.fullmatch(
-                    _strip_comment(body_lines[stop + 1].text).strip()
-                ):
+                elif stop + 1 < len(body_lines) and _ELSE.fullmatch(_strip_comment(body_lines[stop + 1].text).strip()):
                     else_body, stop, terminator = parse_block(stop + 2, nested=True)
                 if terminator != "close":
                     raise RouteError(f"VCPP6_IF_CLOSE_REQUIRED:line={line.number}")
@@ -579,9 +558,7 @@ def _analyze_function(
                 continue
             match = _WHILE.fullmatch(raw)
             if match is not None:
-                condition = _expression(
-                    match.group(1), line, source, encoding, names, function_names, emitted_target
-                )
+                condition = _expression(match.group(1), line, source, encoding, names, function_names, emitted_target)
                 loop_body, stop, terminator = parse_block(index + 1, nested=True)
                 if stop >= len(body_lines) or terminator != "close":
                     raise RouteError(f"VCPP6_WHILE_CLOSE_REQUIRED:line={line.number}")
@@ -615,9 +592,7 @@ def _analyze_function(
                 if canonical_name is None:
                     raise RouteError(f"VCPP6_ASSIGNMENT_TARGET_NOT_DECLARED:{raw_name}")
                 if any(parameter["name"].casefold() == canonical_name.casefold() for parameter in parameters):
-                    raise RouteError(
-                        f"VCPP6_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{raw_name}"
-                    )
+                    raise RouteError(f"VCPP6_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{raw_name}")
                 statements.append(
                     {
                         "kind": "assign",
@@ -666,9 +641,7 @@ def _analyze_function(
     }
 
 
-def analyze_vcpp6(
-    source: Path, function_name: str, *, emitted_target: bool = False
-) -> SemanticIR:
+def analyze_vcpp6(source: Path, function_name: str, *, emitted_target: bool = False) -> SemanticIR:
     content = _read_source(source)
     lines, encoding, declarations, _directives = _module_functions(source, content)
     function_names: dict[str, str] = {}
@@ -678,9 +651,7 @@ def analyze_vcpp6(
         if folded in function_names:
             raise RouteError(f"VCPP6_DUPLICATE_FUNCTION_CASE_INSENSITIVE:{name}")
         function_names[folded] = name
-    selected = [
-        item for item in declarations if item[2].group(3).casefold() == function_name.casefold()
-    ]
+    selected = [item for item in declarations if item[2].group(3).casefold() == function_name.casefold()]
     if len(selected) != 1:
         raise RouteError(f"VCPP6_FUNCTION_NOT_FOUND:{function_name}")
     start, end, header = selected[0]
@@ -700,8 +671,7 @@ def analyze_vcpp6(
             "source_language": "vcpp6",
             "source_file": source.name,
             "analyzer": ANALYZER_NAME,
-            "analyzer_version": ANALYZER_VERSION
-            + (";mode=emitted-target" if emitted_target else ""),
+            "analyzer_version": ANALYZER_VERSION + (";mode=emitted-target" if emitted_target else ""),
             "functions": [function],
             "diagnostics": [],
         }
@@ -719,17 +689,13 @@ def analyze_many_vcpp6(
     outcomes: dict[str, SemanticIR | RouteError] = {}
     for name in dict.fromkeys(function_names):
         try:
-            outcomes[name] = analyze_vcpp6(
-                source, name, emitted_target=emitted_target
-            )
+            outcomes[name] = analyze_vcpp6(source, name, emitted_target=emitted_target)
         except RouteError as error:
             outcomes[name] = error
     return outcomes
 
 
-def inventory_vcpp6_module(
-    source: Path, *, emitted_target: bool = False
-) -> dict[str, Any]:
+def inventory_vcpp6_module(source: Path, *, emitted_target: bool = False) -> dict[str, Any]:
     content = _read_source(source)
     lines, encoding, declarations, directives = _module_functions(source, content)
     subjects: list[dict[str, Any]] = []
@@ -746,9 +712,7 @@ def inventory_vcpp6_module(
                 analyzable = False
                 parameter_types.append("unsupported")
             else:
-                parameter_types.append(
-                    _canonical_type(match.group(1), context=f"parameter:{name}")
-                )
+                parameter_types.append(_canonical_type(match.group(1), context=f"parameter:{name}"))
         result_type = _canonical_type(header.group(2), context=f"function:{name}")
         subjects.append(
             {
@@ -756,9 +720,7 @@ def inventory_vcpp6_module(
                 "qualified_name": name,
                 "declaration_kind": "function",
                 "analyzable": analyzable,
-                "source_span": _span(
-                    source, lines[start].start_byte, lines[end].end_byte
-                ),
+                "source_span": _span(source, lines[start].start_byte, lines[end].end_byte),
                 "signature": {
                     "parameter_types": parameter_types,
                     "return_type": result_type,
@@ -774,8 +736,7 @@ def inventory_vcpp6_module(
         "source_language": "vcpp6",
         "source_file": source.name,
         "analyzer": ANALYZER_NAME,
-        "analyzer_version": ANALYZER_VERSION
-        + (";mode=emitted-target" if emitted_target else ""),
+        "analyzer_version": ANALYZER_VERSION + (";mode=emitted-target" if emitted_target else ""),
         "enumeration_status": "PASSED",
         "source_artifact_sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
         "source_artifact_bytes": len(content),
@@ -785,8 +746,7 @@ def inventory_vcpp6_module(
                 "kind": "include",
                 "value": _strip_comment(line.text).strip(),
                 "source_span": _span(source, line.start_byte, line.end_byte),
-                "sha256": "sha256:"
-                + hashlib.sha256(_strip_comment(line.text).strip().encode("ascii")).hexdigest(),
+                "sha256": "sha256:" + hashlib.sha256(_strip_comment(line.text).strip().encode("ascii")).hexdigest(),
             }
             for index, line in enumerate(directives)
         ],

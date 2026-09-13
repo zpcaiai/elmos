@@ -90,13 +90,15 @@ def test_record_definition_rejections() -> None:
 
     # Duplicate field
     with pytest.raises(RouteError, match="DUPLICATE_RECORD_FIELD"):
-        RecordDefinition.from_mapping({
-            "name": "Point",
-            "fields": [
-                {"name": "x", "type": "integer"},
-                {"name": "x", "type": "integer"},
-            ],
-        })
+        RecordDefinition.from_mapping(
+            {
+                "name": "Point",
+                "fields": [
+                    {"name": "x", "type": "integer"},
+                    {"name": "x", "type": "integer"},
+                ],
+            }
+        )
 
     # Empty fields
     with pytest.raises(RouteError):
@@ -659,6 +661,7 @@ def test_python_analyzer_record_lifting(tmp_path: Path) -> None:
     assert stmt2.expression.arguments[1][0] == "y" and stmt2.expression.arguments[1][1].value == "new_y"
 
     from elmos_polyglot_route.emitter import emit
+
     for target in RECORD_TARGET_LANGUAGES:
         emitted = emit(ir, target)
         assert "Point" in emitted.content
@@ -922,6 +925,3 @@ def test_java_analyzer_record_rejections(tmp_path: Path) -> None:
     )
     with pytest.raises(RouteError):
         analyze(f3, "java", "f")
-
-
-

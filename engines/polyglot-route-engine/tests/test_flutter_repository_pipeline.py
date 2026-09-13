@@ -67,9 +67,7 @@ def test_flutter_repository_inventory_discovers_only_typed_pure_dart(
         "PASSED": 4,
     }
     ready = [result for result in discovery["results"] if result["verdict"] == Verdict.READY]
-    assert [(result["source_path"], result["function_name"]) for result in ready] == [
-        ("pure.dart", "add")
-    ]
+    assert [(result["source_path"], result["function_name"]) for result in ready] == [("pure.dart", "add")]
     rejected = [
         result
         for result in discovery["results"]
@@ -82,10 +80,7 @@ def test_flutter_repository_inventory_discovers_only_typed_pure_dart(
         "widget.dart",
     }
     assert all(result["verdict"] == Verdict.UNSUPPORTED for result in rejected)
-    assert all(
-        result["blocker_code"] == "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
-        for result in rejected
-    )
+    assert all(result["blocker_code"] == "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED" for result in rejected)
 
 
 def test_flutter_source_repository_runs_two_files_and_closes_to_python(
@@ -172,15 +167,11 @@ def test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel(
     assert report["included_unit_count"] == 2
     assert report["build_verification"]["status"] == "PASSED"
     assert report["build_verification"]["toolchain"]["language"] == "flutter"
-    assert report["build_verification"]["toolchain"]["version"] == (
-        "Flutter 3.44.1 / Dart 3.12.1"
-    )
+    assert report["build_verification"]["toolchain"]["version"] == ("Flutter 3.44.1 / Dart 3.12.1")
     assert report["certification_status"] == "NOT_CERTIFIED"
 
     assembled = output / "assembled"
-    manifest = json.loads(
-        (assembled / "assembly-manifest.json").read_text(encoding="utf-8")
-    )
+    manifest = json.loads((assembled / "assembly-manifest.json").read_text(encoding="utf-8"))
     assert manifest["build_files"] == [
         "pubspec.yaml",
         "analysis_options.yaml",
@@ -188,14 +179,10 @@ def test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel(
     ]
     assert manifest["build_verification_status"] == "PASSED"
     assert manifest["included_unit_count"] == 2
-    build_receipt = manifest["build_verification"][
-        "flutter_build_toolchain_receipt"
-    ]
+    build_receipt = manifest["build_verification"]["flutter_build_toolchain_receipt"]
     assert build_receipt["kind"] == "elmos.flutter-dart-build-toolchain-receipt"
     assert set(build_receipt["trees"]) == {"dart_sdk"}
-    build_commands = [
-        record["command"] for record in manifest["build_verification"]["commands"]
-    ]
+    build_commands = [record["command"] for record in manifest["build_verification"]["commands"]]
     for command in build_commands:
         assert command[0].endswith("/dart")
         assert not any("flutter_tools.snapshot" in part for part in command)
@@ -208,9 +195,7 @@ def test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel(
     pubspec = (assembled / "pubspec.yaml").read_text(encoding="utf-8")
     assert "dependencies: {}" in pubspec
     assert "sdk: flutter" not in pubspec
-    package_config = json.loads(
-        (assembled / ".dart_tool" / "package_config.json").read_text(encoding="utf-8")
-    )
+    package_config = json.loads((assembled / ".dart_tool" / "package_config.json").read_text(encoding="utf-8"))
     assert package_config == {
         "configVersion": 2,
         "packages": [
@@ -222,9 +207,7 @@ def test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel(
             }
         ],
     }
-    assert "include:" not in (
-        assembled / "analysis_options.yaml"
-    ).read_text(encoding="utf-8")
+    assert "include:" not in (assembled / "analysis_options.yaml").read_text(encoding="utf-8")
     kernel = assembled / "build" / "elmos_repository.dill"
     assert kernel.is_file() and kernel.stat().st_size > 0
     compiled = manifest["build_verification"]["flutter_compiled_artifact"]

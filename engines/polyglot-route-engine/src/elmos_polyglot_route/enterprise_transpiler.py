@@ -16,14 +16,21 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from .ast_compiler import (
-    UniversalAstCompiler,
     UniversalClass,
-    UniversalField as AstField,
-    UniversalMethod as AstMethod,
-    UniversalModule as AstModule,
+    UniversalParam,
     UniversalType,
     default_compiler,
 )
+from .ast_compiler import (
+    UniversalField as AstField,
+)
+from .ast_compiler import (
+    UniversalMethod as AstMethod,
+)
+from .ast_compiler import (
+    UniversalModule as AstModule,
+)
+from .ast_compiler.ir import LiteralExpr
 
 EnterpriseLanguage = Literal[
     "java",
@@ -111,14 +118,15 @@ class EnterpriseSemanticParser:
                         name=af.name,
                         type_name=af.type_info.name,
                         is_required=not getattr(af.type_info, "is_nullable", False),
-                        default_value=af.default_value,
+                        default_value=(
+                            str(getattr(af.default_value, "value", af.default_value))
+                            if af.default_value is not None
+                            else None
+                        ),
                     )
                 )
             for am in ac.methods:
-                params = [
-                    EnterpriseField(name=p.name, type_name=p.type_info.name)
-                    for p in am.params
-                ]
+                params = [EnterpriseField(name=p.name, type_name=p.type_info.name) for p in am.params]
                 ec.methods.append(
                     EnterpriseMethod(
                         name=am.name,
@@ -162,13 +170,12 @@ class EnterpriseEmitter:
                     AstField(
                         name=ef.name,
                         type_info=UniversalType.primitive(ef.type_name),
-                        default_value=ef.default_value,
+                        default_value=LiteralExpr(ef.default_value) if ef.default_value is not None else None,
                     )
                 )
             for em in ec.methods:
                 params = [
-                    AstField(name=p.name, type_info=UniversalType.primitive(p.type_name))
-                    for p in em.parameters
+                    UniversalParam(name=p.name, type_info=UniversalType.primitive(p.type_name)) for p in em.parameters
                 ]
                 ac.methods.append(
                     AstMethod(

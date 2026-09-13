@@ -340,9 +340,7 @@ def _archive_view(
     archived_manifest["build_verification_status"] = "PASSED"
     archived_manifest["build_verification"] = {
         "toolchain_language": manifest["target_language"],
-        "toolchain_version": _current_toolchain_version(
-            cast(Language, manifest["target_language"])
-        ),
+        "toolchain_version": _current_toolchain_version(cast(Language, manifest["target_language"])),
         "commands": [{"command": ["fixture-build"], "stdout": "", "stderr": ""}],
     }
     manifest_bytes = json.dumps(archived_manifest, indent=2, sort_keys=True).encode() + b"\n"
@@ -389,15 +387,11 @@ def test_kotlin_assembly_binds_nested_source_validation_toolchain(tmp_path: Path
         source_language="kotlin",
         source_path="src/identity.kt",
     )
-    expected_toolchain = assembly_module._exact_toolchain_identity(
-        exact_toolchain("kotlin")
-    )
+    expected_toolchain = assembly_module._exact_toolchain_identity(exact_toolchain("kotlin"))
     _rewrite_route_evidence(
         report,
         batch,
-        lambda evidence: evidence["source_validation"].update(
-            {"toolchain": expected_toolchain}
-        ),
+        lambda evidence: evidence["source_validation"].update({"toolchain": expected_toolchain}),
     )
 
     manifest = assemble_project(report, batch, tmp_path / "assembled")
@@ -524,9 +518,7 @@ def test_assembly_rejects_self_consistent_behavior_pointer_rewrite_with_cross_ob
     _rewrite_route_evidence(
         report,
         batch,
-        lambda evidence: evidence["behavior_equivalence"].update(
-            {"artifact_sha256": _digest(behavior_bytes)}
-        ),
+        lambda evidence: evidence["behavior_equivalence"].update({"artifact_sha256": _digest(behavior_bytes)}),
     )
 
     with pytest.raises(RouteError, match="ASSEMBLY_UNIT_BEHAVIOR_EVIDENCE_INVALID"):

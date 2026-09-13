@@ -46,9 +46,7 @@ def _windows_receipt(request_root: Path, windows_root: Path) -> dict[str, object
             request["source_language"],
             request["target_language"],
         )
-        local_report = json.loads(
-            CAMPAIGN._read_bound(request_root, roles["local_report"])
-        )
+        local_report = json.loads(CAMPAIGN._read_bound(request_root, roles["local_report"]))
         report_path = windows_root / corpus["corpus"] / "vb6-side-report.json"
         CAMPAIGN._write_json(
             report_path,
@@ -116,26 +114,20 @@ def test_checked_in_prepare_set_is_digest_complete() -> None:
 
 def test_checked_in_requests_match_cross_host_schema() -> None:
     schema = json.loads(
-        (REPO / "schemas" / "batch29" / "vb6-cross-host-campaign.schema.json").read_text(
-            encoding="utf-8"
-        )
+        (REPO / "schemas" / "batch29" / "vb6-cross-host-campaign.schema.json").read_text(encoding="utf-8")
     )
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema)
     validator.validate(json.loads((PREPARED / "prepare-set-result.json").read_text()))
     for route_key in CAMPAIGN.VB6_EXACT_ROUTE_KEYS:
-        validator.validate(
-            json.loads((PREPARED / route_key / "campaign-request.json").read_text())
-        )
+        validator.validate(json.loads((PREPARED / route_key / "campaign-request.json").read_text()))
 
 
 def test_request_rejects_duplicate_artifact_role(tmp_path: Path) -> None:
     request_root = _copy_request(tmp_path, "java-to-vb6")
     request_path = request_root / "campaign-request.json"
     request = json.loads(request_path.read_text(encoding="utf-8"))
-    request["corpora"][0]["artifacts"][-1] = copy.deepcopy(
-        request["corpora"][0]["artifacts"][0]
-    )
+    request["corpora"][0]["artifacts"][-1] = copy.deepcopy(request["corpora"][0]["artifacts"][0])
     CAMPAIGN._write_json(request_path, request)
 
     with pytest.raises(RouteError, match="VB6_CAMPAIGN_REQUEST_ARTIFACT_SET_INVALID"):
@@ -163,8 +155,7 @@ def test_request_rejects_unbound_identifier_plan(tmp_path: Path) -> None:
     request = json.loads(request_path.read_text(encoding="utf-8"))
     binding = CAMPAIGN._binding(plan_path, request_root)
     request["corpora"][0]["artifacts"] = [
-        binding if item["path"] == binding["path"] else item
-        for item in request["corpora"][0]["artifacts"]
+        binding if item["path"] == binding["path"] else item for item in request["corpora"][0]["artifacts"]
     ]
     CAMPAIGN._write_json(request_path, request)
 
@@ -182,9 +173,7 @@ def test_request_rejects_hard_linked_artifact(tmp_path: Path) -> None:
         CAMPAIGN._load_request(request_root)
 
 
-def test_windows_output_is_not_published_after_failure(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_windows_output_is_not_published_after_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     output = tmp_path / "windows-output"
 
     def fail_after_write(_request: Path, staging: Path) -> None:
@@ -199,9 +188,7 @@ def test_windows_output_is_not_published_after_failure(
     assert not list(tmp_path.glob(".windows-output.staging-*"))
 
 
-def test_prepare_output_is_not_published_after_failure(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_prepare_output_is_not_published_after_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     output = tmp_path / "prepared-output"
 
     def fail_after_write(_repo: Path, _route: str, staging: Path) -> None:
@@ -220,9 +207,7 @@ def test_route_partition_rejects_non_string_entry(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(CAMPAIGN, "VB6_EXACT_ROUTE_KEYS", ("java-to-vb6",))
-    assert not CAMPAIGN._valid_route_partition(
-        {"prepared": [["java-to-vb6"]], "reused": []}, "prepared", "reused"
-    )
+    assert not CAMPAIGN._valid_route_partition({"prepared": [["java-to-vb6"]], "reused": []}, "prepared", "reused")
 
 
 def test_verifier_accepts_exact_receipt_and_rejects_duplicate_run(
@@ -231,13 +216,9 @@ def test_verifier_accepts_exact_receipt_and_rejects_duplicate_run(
     request_root = _copy_request(tmp_path, "java-to-vb6")
     windows_root = tmp_path / "windows"
     receipt = _windows_receipt(request_root, windows_root)
-    result = CAMPAIGN.verify(
-        request_root, windows_root, tmp_path / "verification.json"
-    )
+    result = CAMPAIGN.verify(request_root, windows_root, tmp_path / "verification.json")
     schema = json.loads(
-        (REPO / "schemas" / "batch29" / "vb6-cross-host-campaign.schema.json").read_text(
-            encoding="utf-8"
-        )
+        (REPO / "schemas" / "batch29" / "vb6-cross-host-campaign.schema.json").read_text(encoding="utf-8")
     )
     validator = Draft202012Validator(schema)
     validator.validate(receipt)
@@ -249,14 +230,10 @@ def test_verifier_accepts_exact_receipt_and_rejects_duplicate_run(
     duplicate["runs"][-1] = copy.deepcopy(duplicate["runs"][0])
     CAMPAIGN._write_json(windows_root / "windows-receipt.json", duplicate)
     with pytest.raises(RouteError, match="VB6_CAMPAIGN_WINDOWS_RUN_SET_INVALID"):
-        CAMPAIGN._load_windows_receipt(
-            request_root, windows_root, CAMPAIGN._load_request(request_root)
-        )
+        CAMPAIGN._load_windows_receipt(request_root, windows_root, CAMPAIGN._load_request(request_root))
 
 
-def test_set_execution_and_verification_are_resumable(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_set_execution_and_verification_are_resumable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     route_keys = ("java-to-vb6", "vb6-to-java")
     request_root = tmp_path / "request-set"
     for route_key in route_keys:

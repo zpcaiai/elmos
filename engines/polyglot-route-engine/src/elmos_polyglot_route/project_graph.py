@@ -365,11 +365,7 @@ def verified_java_structural_wrapper(
     treatment. The caller must then retain the original conversion blocker.
     """
 
-    wrappers = [
-        subject
-        for subject in subjects
-        if subject.get("declaration_kind") == "top-level-class-wrapper"
-    ]
+    wrappers = [subject for subject in subjects if subject.get("declaration_kind") == "top-level-class-wrapper"]
     if len(wrappers) != 1:
         return None
     wrapper = wrappers[0]
@@ -598,7 +594,9 @@ def _stable_file(path: Path | str, *, retain_content: bool) -> tuple[bytes | Non
 
 
 def _walk_repository(
-    root: Path, *, retain_content: bool = True,
+    root: Path,
+    *,
+    retain_content: bool = True,
 ) -> tuple[list[_ScannedFile], list[tuple[str, str]]]:
     scanned: list[_ScannedFile] = []
     inventory_issues: list[tuple[str, str]] = []
@@ -689,7 +687,8 @@ def _walk_repository(
                     digest, byte_count = _sha256_bytes(content), len(content)
                 else:
                     content, digest, byte_count = _stable_file(
-                        os.path.join(current, name), retain_content=False,
+                        os.path.join(current, name),
+                        retain_content=False,
                     )
             except (OSError, ProjectGraphError) as error:
                 scanned.append(
@@ -1634,11 +1633,7 @@ def _semantic_inventory_by_path(
             raise ProjectGraphError("SEMANTIC_DISCOVERY_INVENTORY_INVALID")
         inventories[path] = raw
     if source_language != "python":
-        required_paths = {
-            file.path
-            for file in scanned
-            if file.language == source_language
-        }
+        required_paths = {file.path for file in scanned if file.language == source_language}
         if set(inventories) != required_paths:
             raise ProjectGraphError("SEMANTIC_DISCOVERY_INVENTORY_COVERAGE_INVALID")
     return inventories
@@ -1654,12 +1649,7 @@ def _apply_contextual_source_language(
         return list(scanned)
     source_language = semantic_discovery.get("source_language")
     if source_language == "vcpp6":
-        return [
-            replace(file, language="vcpp6")
-            if file.language == "cpp"
-            else file
-            for file in scanned
-        ]
+        return [replace(file, language="vcpp6") if file.language == "cpp" else file for file in scanned]
     if source_language != "react":
         return list(scanned)
     return [
@@ -1709,10 +1699,7 @@ def _react_project_evidence(
             raise ProjectGraphError("REACT_PROJECT_GRAPH_DESCRIPTOR_BINDING_INVALID")
         descriptor_bindings[path] = binding
 
-    expected_source_sha256 = {
-        path: scanned_by_path[path].sha256
-        for path in sorted(semantic_inventories)
-    }
+    expected_source_sha256 = {path: scanned_by_path[path].sha256 for path in sorted(semantic_inventories)}
     if set(expected_source_sha256) != set(semantic_inventories):
         raise ProjectGraphError("REACT_PROJECT_GRAPH_VERIFICATION_INVALID")
     try:
@@ -1755,9 +1742,7 @@ def _inventory_subject_nodes(
     diagnostics: list[dict[str, object]] = []
     coverage_keys: set[str] = set()
     structural_wrappers = [
-        raw
-        for raw in raw_subjects
-        if isinstance(raw, Mapping) and raw.get("subject_kind") == "structural-wrapper"
+        raw for raw in raw_subjects if isinstance(raw, Mapping) and raw.get("subject_kind") == "structural-wrapper"
     ]
     if structural_wrappers:
         wrapper_verification = verified_java_structural_wrapper(
@@ -1769,8 +1754,7 @@ def _inventory_subject_nodes(
             or inventory.get("enumeration_status") != "PASSED"
             or len(structural_wrappers) != 1
             or wrapper_verification is None
-            or structural_wrappers[0].get("structural_wrapper_verification")
-            != wrapper_verification
+            or structural_wrappers[0].get("structural_wrapper_verification") != wrapper_verification
         ):
             raise ProjectGraphError("SEMANTIC_DISCOVERY_STRUCTURAL_WRAPPER_INVALID")
     for raw in raw_subjects:
@@ -1801,8 +1785,7 @@ def _inventory_subject_nodes(
             or any(not isinstance(item, str) for item in subject_diagnostics)
             or raw.get("language") != language
             or raw.get("path") != path
-            or coverage_key
-            != semantic_coverage_key(language, path, subject_kind, qualified_name, occurrence)
+            or coverage_key != semantic_coverage_key(language, path, subject_kind, qualified_name, occurrence)
             or coverage_key in coverage_keys
         ):
             raise ProjectGraphError("SEMANTIC_DISCOVERY_SUBJECT_INVALID")
@@ -1810,10 +1793,7 @@ def _inventory_subject_nodes(
         location = _inventory_source_location(raw, path)
         structural_wrapper = subject_kind == "structural-wrapper"
         if structural_wrapper and (
-            candidate is not False
-            or blockers
-            or semantic_status != "PASSED"
-            or subject_diagnostics
+            candidate is not False or blockers or semantic_status != "PASSED" or subject_diagnostics
         ):
             raise ProjectGraphError("SEMANTIC_DISCOVERY_STRUCTURAL_WRAPPER_INVALID")
         node_kind = "symbol" if subject_kind == "function" else "effect"
@@ -1832,9 +1812,7 @@ def _inventory_subject_nodes(
                 "semantic_index_status": EvidenceStatus.PASSED,
                 "semantic_indexer": inventory.get("analyzer") or "compiler-module-inventory",
                 "conversion_coverage_requirement": (
-                    "NOT_REQUIRED_STRUCTURAL_WRAPPER"
-                    if structural_wrapper
-                    else "REQUIRED"
+                    "NOT_REQUIRED_STRUCTURAL_WRAPPER" if structural_wrapper else "REQUIRED"
                 ),
             }
         )
@@ -1861,11 +1839,7 @@ def _inventory_subject_nodes(
             )
         )
         if not structural_wrapper and (blockers or semantic_status != "PASSED"):
-            code = (
-                str(blockers[0])
-                if blockers
-                else "NATIVE_SYMBOL_SEMANTIC_ANALYSIS_NOT_PASSED"
-            )
+            code = str(blockers[0]) if blockers else "NATIVE_SYMBOL_SEMANTIC_ANALYSIS_NOT_PASSED"
             status = {
                 "FAILED": EvidenceStatus.FAILED,
                 "NOT_RUN": EvidenceStatus.NOT_RUN,
@@ -1915,9 +1889,8 @@ def verify_project_snapshot(snapshot: ProjectGraphSnapshot) -> bool:
     if snapshot.root.is_symlink() or not snapshot.root.is_dir():
         return False
     files, issues = _walk_repository(snapshot.root, retain_content=False)
-    return (
-        tuple(issues) == snapshot.issues
-        and tuple(files) == tuple(replace(file, content=None) for file in snapshot.files)
+    return tuple(issues) == snapshot.issues and tuple(files) == tuple(
+        replace(file, content=None) for file in snapshot.files
     )
 
 
@@ -2302,10 +2275,7 @@ def materialize_project_graph(
                     _diagnostic(
                         safe_ref,
                         blocker_code,
-                        (
-                            f"{path}:{subject.qualified_name} cannot be silently omitted by "
-                            f"{DISCOVERY_PROFILE}."
-                        ),
+                        (f"{path}:{subject.qualified_name} cannot be silently omitted by {DISCOVERY_PROFILE}."),
                         subject.source_location,
                         EvidenceStatus.UNKNOWN,
                         (
@@ -2408,24 +2378,17 @@ def materialize_project_graph(
     snapshot_lines = [
         f"{file.path}\x00{file.sha256 or 'NOT_READ'}\x00{file.role}\x00{file.language or ''}" for file in scanned
     ]
-    snapshot_lines.extend(
-        f"{path}\x00EXCLUDED_NOT_READ\x00{reason}" for path, reason in inventory_issues
-    )
+    snapshot_lines.extend(f"{path}\x00EXCLUDED_NOT_READ\x00{reason}" for path, reason in inventory_issues)
     snapshot_sha256 = _sha256_bytes("\n".join(snapshot_lines).encode("utf-8"))
     repository_complete = not diagnostics and len(scanned) == sum(role_counts.values())
     required_semantic_inventory_paths = {
-        file.path
-        for file in scanned
-        if file.language is not None and file.language != "python"
+        file.path for file in scanned if file.language is not None and file.language != "python"
     }
     supplied_semantic_inventory_paths = set(semantic_inventories)
     other_language_inventory_complete = (
         bool(required_semantic_inventory_paths)
         and supplied_semantic_inventory_paths == required_semantic_inventory_paths
-        and all(
-            inventory.get("enumeration_status") == "PASSED"
-            for inventory in semantic_inventories.values()
-        )
+        and all(inventory.get("enumeration_status") == "PASSED" for inventory in semantic_inventories.values())
     )
     payload: dict[str, object] = {
         "schema_version": SCHEMA_VERSION,
@@ -2436,8 +2399,7 @@ def materialize_project_graph(
         "snapshot_sha256": snapshot_sha256,
         "snapshot_consistency": "PER_FILE_STABLE_READ_NON_ATOMIC",
         "javascript_esm_descriptors": [
-            {"source_path": path, **descriptor}
-            for path, descriptor in sorted(javascript_descriptors.items())
+            {"source_path": path, **descriptor} for path, descriptor in sorted(javascript_descriptors.items())
         ],
         "supported_languages": list(SUPPORTED_LANGUAGES),
         "indexers": {
@@ -2448,11 +2410,7 @@ def materialize_project_graph(
             },
             "other_languages": {
                 "languages": [language for language in SUPPORTED_LANGUAGES if language != "python"],
-                "status": (
-                    EvidenceStatus.PASSED
-                    if other_language_inventory_complete
-                    else EvidenceStatus.NOT_RUN
-                ),
+                "status": (EvidenceStatus.PASSED if other_language_inventory_complete else EvidenceStatus.NOT_RUN),
                 "module_inventory_count": len(semantic_inventories),
                 "required_module_inventory_count": len(required_semantic_inventory_paths),
                 "inventory_coverage_complete": other_language_inventory_complete,

@@ -18,23 +18,19 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from ..ir import (
     AssignStmt,
     BinaryExpr,
     BinaryOperator,
-    ConstructExpr,
     ExprStmt,
     FieldAccessExpr,
     IdentifierExpr,
     IfElseStmt,
     LiteralExpr,
     MethodCallExpr,
-    PrimitiveKind,
     ReturnStmt,
-    ThrowStmt,
-    TryCatchFinallyStmt,
     UnaryExpr,
     UnaryOperator,
     UniversalClass,
@@ -64,7 +60,7 @@ class NativeBridge:
     # C++ via Clang JSON AST
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_cpp_with_clang(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_cpp_with_clang(cls, source_code: str) -> UniversalModule | None:
         """Parses C++ source into UniversalModule using clang -Xclang -ast-dump=json."""
         clang_path = shutil.which("clang") or shutil.which("clang++")
         if not clang_path:
@@ -83,9 +79,11 @@ class NativeBridge:
         try:
             cmd = [
                 clang_path,
-                "-Xclang", "-ast-dump=json",
+                "-Xclang",
+                "-ast-dump=json",
                 "-fsyntax-only",
-                "-x", "c++",
+                "-x",
+                "c++",
                 "-std=c++20",
                 temp_path,
             ]
@@ -145,13 +143,11 @@ class NativeBridge:
                         ret_type = cls._convert_clang_type(member.get("type", {}))
                         body = cls._convert_clang_body(member)
                         is_static = member.get("storageClass") == "static"
-                        u_class.methods.append(UniversalMethod(
-                            name=m_name,
-                            params=params,
-                            return_type=ret_type,
-                            body=body,
-                            is_static=is_static
-                        ))
+                        u_class.methods.append(
+                            UniversalMethod(
+                                name=m_name, params=params, return_type=ret_type, body=body, is_static=is_static
+                            )
+                        )
                 module.classes.append(u_class)
 
             elif kind == "FunctionDecl":
@@ -184,7 +180,7 @@ class NativeBridge:
 
     @classmethod
     def _convert_clang_params(cls, method_node: dict[str, Any]) -> list[UniversalParam]:
-        params = []
+        params: list[UniversalParam] = []
         for inner in method_node.get("inner", []):
             if inner.get("kind") == "ParmVarDecl":
                 p_name = inner.get("name", f"p{len(params)}")
@@ -204,7 +200,7 @@ class NativeBridge:
         return stmts
 
     @classmethod
-    def _convert_clang_stmt(cls, node: dict[str, Any]) -> Optional[UniversalStmt]:
+    def _convert_clang_stmt(cls, node: dict[str, Any]) -> UniversalStmt | None:
         kind = node.get("kind")
         inners = node.get("inner", [])
 
@@ -253,12 +249,18 @@ class NativeBridge:
         return None
 
     @classmethod
-    def _convert_clang_expr(cls, node: dict[str, Any]) -> Optional[UniversalExpr]:
+    def _convert_clang_expr(cls, node: dict[str, Any]) -> UniversalExpr | None:
         kind = node.get("kind")
         inners = node.get("inner", [])
 
         # Unwrap casts & transparent nodes
-        if kind in ("ImplicitCastExpr", "CStyleCastExpr", "ParenExpr", "MaterializeTemporaryExpr", "CXXBindTemporaryExpr"):
+        if kind in (
+            "ImplicitCastExpr",
+            "CStyleCastExpr",
+            "ParenExpr",
+            "MaterializeTemporaryExpr",
+            "CXXBindTemporaryExpr",
+        ):
             if inners:
                 return cls._convert_clang_expr(inners[0])
 
@@ -339,7 +341,7 @@ class NativeBridge:
     # Rust via syn analyzer binary
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_rust_with_syn(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_rust_with_syn(cls, source_code: str) -> UniversalModule | None:
         """Parses Rust code using the compiled native syn analyzer."""
         bin_path = NATIVE_DIR / "rust" / "target" / "debug" / "elmos-rust-analyzer"
         if not bin_path.exists():
@@ -352,7 +354,12 @@ class NativeBridge:
 
         try:
             # 1. Run inventory to get all declared items
-            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
+            inv_res = subprocess.run(
+                [str(bin_path), temp_path, "--inventory"],
+                capture_output=True,
+                text=True,
+                timeout=DEFAULT_SUBPROCESS_TIMEOUT,
+            )
             if inv_res.returncode != 0:
                 logger.debug("Rust syn inventory failed: %s", inv_res.stderr)
                 return None
@@ -366,15 +373,22 @@ class NativeBridge:
                 if kind == "struct":
                     cls_name = "EnterpriseAssetController" if name == "EnterpriseAssetService" else name
                     is_ctrl = "Controller" in cls_name or "Service" in cls_name
-                    module.classes.append(UniversalClass(
-                        name=cls_name,
-                        is_struct=True,
-                        is_controller=is_ctrl,
-                        base_route="/api/v1/assets" if is_ctrl else None,
-                    ))
+                    module.classes.append(
+                        UniversalClass(
+                            name=cls_name,
+                            is_struct=True,
+                            is_controller=is_ctrl,
+                            base_route="/api/v1/assets" if is_ctrl else None,
+                        )
+                    )
                 elif kind == "function":
                     # Analyze specific function body
-                    fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
+                    fn_res = subprocess.run(
+                        [str(bin_path), temp_path, name],
+                        capture_output=True,
+                        text=True,
+                        timeout=DEFAULT_SUBPROCESS_TIMEOUT,
+                    )
                     if fn_res.returncode == 0:
                         fn_data = json.loads(fn_res.stdout)
                         for fn_item in fn_data.get("functions", []):
@@ -396,17 +410,17 @@ class NativeBridge:
         if t in ("integer", "int", "Int64", "i64", "long"):
             return UniversalType.int64()
         elif t in ("i32", "Int32"):
-            return UniversalType.int32()
+            return UniversalType.primitive("i32")
         elif t in ("number", "float", "double", "Float", "Double", "f64"):
             return UniversalType.float64()
         elif t in ("f32", "Float32"):
-            return UniversalType.float32()
+            return UniversalType.primitive("f32")
         elif t in ("string", "String"):
             return UniversalType.string_type()
         elif t in ("boolean", "bool", "Bool"):
-            return UniversalType.bool_type()
+            return UniversalType.boolean()
         elif t in ("void", "()"):
-            return UniversalType.void_type()
+            return UniversalType.void()
         return UniversalType.custom(t)
 
     @classmethod
@@ -426,7 +440,7 @@ class NativeBridge:
         return UniversalMethod(name=f_name, params=params, return_type=ret_t, body=body)
 
     @classmethod
-    def _convert_syn_stmt(cls, stmt_dict: dict[str, Any]) -> Optional[UniversalStmt]:
+    def _convert_syn_stmt(cls, stmt_dict: dict[str, Any]) -> UniversalStmt | None:
         if not stmt_dict:
             return None
         kind = stmt_dict.get("kind")
@@ -440,15 +454,12 @@ class NativeBridge:
             return IfElseStmt(
                 condition=cond or LiteralExpr(True, "bool"),
                 then_body=[s for s in then_body if s is not None],
-                else_body=[s for s in else_body if s is not None]
+                else_body=[s for s in else_body if s is not None],
             )
         elif kind == "while":
             cond = cls._convert_syn_expr(stmt_dict.get("condition", {}))
             body = [cls._convert_syn_stmt(s) for s in stmt_dict.get("body", [])]
-            return WhileStmt(
-                condition=cond or LiteralExpr(True, "bool"),
-                body=[s for s in body if s is not None]
-            )
+            return WhileStmt(condition=cond or LiteralExpr(True, "bool"), body=[s for s in body if s is not None])
         elif kind in ("let", "const", "var"):
             name = stmt_dict.get("name", "v")
             t_str = stmt_dict.get("type", "any")
@@ -457,7 +468,7 @@ class NativeBridge:
                 name=name,
                 type_info=cls._convert_type_str(t_str),
                 initial_value=init_expr,
-                is_constant=(kind == "const")
+                is_constant=(kind == "const"),
             )
         elif kind == "assign":
             target = cls._convert_syn_expr(stmt_dict.get("target", {}))
@@ -471,7 +482,7 @@ class NativeBridge:
         return None
 
     @classmethod
-    def _convert_syn_expr(cls, expr_dict: dict[str, Any]) -> Optional[UniversalExpr]:
+    def _convert_syn_expr(cls, expr_dict: dict[str, Any]) -> UniversalExpr | None:
         if not expr_dict:
             return None
         kind = expr_dict.get("kind")
@@ -479,31 +490,47 @@ class NativeBridge:
             return IdentifierExpr(name=expr_dict.get("value", ""))
         if kind == "literal":
             val = expr_dict.get("value")
-            t_kind = "int" if isinstance(val, int) else ("float" if isinstance(val, float) else ("bool" if isinstance(val, bool) else "string"))
+            t_kind = (
+                "int"
+                if isinstance(val, int)
+                else ("float" if isinstance(val, float) else ("bool" if isinstance(val, bool) else "string"))
+            )
             return LiteralExpr(value=val, type_kind=t_kind)
         if kind == "binary":
             op_str = expr_dict.get("operator", "+")
             left = cls._convert_syn_expr(expr_dict.get("left", {}))
             right = cls._convert_syn_expr(expr_dict.get("right", {}))
             op_map = {
-                "+": BinaryOperator.ADD, "-": BinaryOperator.SUB, "*": BinaryOperator.MUL,
-                "/": BinaryOperator.DIV, "%": BinaryOperator.MOD,
-                "==": BinaryOperator.EQ, "===": BinaryOperator.EQ,
-                "!=": BinaryOperator.NE, "!==": BinaryOperator.NE,
-                "<": BinaryOperator.LT, "<=": BinaryOperator.LE,
-                ">": BinaryOperator.GT, ">=": BinaryOperator.GE,
-                "&&": BinaryOperator.AND, "||": BinaryOperator.OR,
-                "&": BinaryOperator.BIT_AND, "|": BinaryOperator.BIT_OR, "^": BinaryOperator.BIT_XOR,
+                "+": BinaryOperator.ADD,
+                "-": BinaryOperator.SUB,
+                "*": BinaryOperator.MUL,
+                "/": BinaryOperator.DIV,
+                "%": BinaryOperator.MOD,
+                "==": BinaryOperator.EQ,
+                "===": BinaryOperator.EQ,
+                "!=": BinaryOperator.NE,
+                "!==": BinaryOperator.NE,
+                "<": BinaryOperator.LT,
+                "<=": BinaryOperator.LE,
+                ">": BinaryOperator.GT,
+                ">=": BinaryOperator.GE,
+                "&&": BinaryOperator.AND,
+                "||": BinaryOperator.OR,
+                "&": BinaryOperator.BIT_AND,
+                "|": BinaryOperator.BIT_OR,
+                "^": BinaryOperator.BIT_XOR,
             }
-            op = op_map.get(op_str, BinaryOperator.ADD)
+            binary_op = op_map.get(op_str, BinaryOperator.ADD)
             if left and right:
-                return BinaryExpr(left=left, op=op, right=right)
+                return BinaryExpr(left=left, op=binary_op, right=right)
         if kind == "unary":
             op_str = expr_dict.get("operator", "!")
             operand = cls._convert_syn_expr(expr_dict.get("operand", {}))
-            op = UnaryOperator.NOT if op_str == "!" else (UnaryOperator.NEG if op_str == "-" else UnaryOperator.BIT_NOT)
+            unary_op = (
+                UnaryOperator.NOT if op_str == "!" else (UnaryOperator.NEG if op_str == "-" else UnaryOperator.BIT_NOT)
+            )
             if operand:
-                return UnaryExpr(op=op, operand=operand)
+                return UnaryExpr(op=unary_op, operand=operand)
         if kind in ("field_access", "property_access", "member"):
             target = cls._convert_syn_expr(expr_dict.get("target", {}))
             prop = expr_dict.get("property") or expr_dict.get("name", "")
@@ -513,18 +540,14 @@ class NativeBridge:
             target = cls._convert_syn_expr(expr_dict.get("target", {}))
             method_name = expr_dict.get("method") or expr_dict.get("name") or "call"
             args = [cls._convert_syn_expr(a) for a in expr_dict.get("arguments", [])]
-            return MethodCallExpr(
-                target=target,
-                method_name=str(method_name),
-                args=[a for a in args if a is not None]
-            )
+            return MethodCallExpr(target=target, method_name=str(method_name), args=[a for a in args if a is not None])
         return None
 
     # --------------------------------------------------------------------------
     # Go via native go/ast analyzer binary
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_go_with_ast(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_go_with_ast(cls, source_code: str) -> UniversalModule | None:
         """Parses Go source using the native go/ast analyzer binary."""
         bin_path = NATIVE_DIR / "go" / "analyzer"
         if not bin_path.exists():
@@ -541,7 +564,12 @@ class NativeBridge:
 
         try:
             # 1. Run inventory to get all functions
-            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
+            inv_res = subprocess.run(
+                [str(bin_path), temp_path, "--inventory"],
+                capture_output=True,
+                text=True,
+                timeout=DEFAULT_SUBPROCESS_TIMEOUT,
+            )
             if inv_res.returncode != 0:
                 logger.debug("Go analyzer inventory failed: %s", inv_res.stderr)
                 return None
@@ -555,15 +583,22 @@ class NativeBridge:
                 if kind in ("struct", "type"):
                     cls_name = "EnterpriseAssetController" if name == "EnterpriseAssetService" else name
                     is_ctrl = "Controller" in cls_name or "Service" in cls_name
-                    module.classes.append(UniversalClass(
-                        name=cls_name,
-                        is_struct=True,
-                        is_controller=is_ctrl,
-                        base_route="/api/v1/assets" if is_ctrl else None,
-                    ))
+                    module.classes.append(
+                        UniversalClass(
+                            name=cls_name,
+                            is_struct=True,
+                            is_controller=is_ctrl,
+                            base_route="/api/v1/assets" if is_ctrl else None,
+                        )
+                    )
                 elif kind in ("function", "method"):
                     u_meth = UniversalMethod(name=name)
-                    fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
+                    fn_res = subprocess.run(
+                        [str(bin_path), temp_path, name],
+                        capture_output=True,
+                        text=True,
+                        timeout=DEFAULT_SUBPROCESS_TIMEOUT,
+                    )
                     if fn_res.returncode == 0:
                         fn_data = json.loads(fn_res.stdout)
                         for fn_item in fn_data.get("functions", []):
@@ -584,14 +619,16 @@ class NativeBridge:
     # Java via javac Tree API Analyzer
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_java_with_javac(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_java_with_javac(cls, source_code: str) -> UniversalModule | None:
         """Parses Java source using the compiled javac Tree API Analyzer."""
         class_dir = NATIVE_DIR / "java"
-        if not (class_dir / "Analyzer.class").exists():
+        java_binary = shutil.which("java")
+        if not java_binary or not (class_dir / "Analyzer.class").exists():
             return None
 
         import re
-        c_match = re.search(r'(?:public\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)', source_code)
+
+        c_match = re.search(r"(?:public\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)", source_code)
         class_name = c_match.group(1) if c_match else "MainClass"
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -601,8 +638,10 @@ class NativeBridge:
 
             try:
                 inv_res = subprocess.run(
-                    ["java", "-cp", str(class_dir), "Analyzer", file_path, "--inventory"],
-                    capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
+                    [java_binary, "-cp", str(class_dir), "Analyzer", file_path, "--inventory"],
+                    capture_output=True,
+                    text=True,
+                    timeout=DEFAULT_SUBPROCESS_TIMEOUT,
                 )
                 if inv_res.returncode != 0:
                     return None
@@ -621,18 +660,22 @@ class NativeBridge:
                         params = []
                         for p in sig.get("parameters", []):
                             p_type = p.get("source_type", "Object")
-                            params.append(UniversalParam(name=p.get("name", "arg"), type_info=UniversalType.custom(p_type)))
+                            params.append(
+                                UniversalParam(name=p.get("name", "arg"), type_info=UniversalType.custom(p_type))
+                            )
                         u_meth = UniversalMethod(
                             name=name,
                             params=params,
                             return_type=UniversalType.custom(ret_t),
                             visibility=sig.get("visibility", "public"),
-                            is_static=sig.get("static", False)
+                            is_static=sig.get("static", False),
                         )
                         if subj.get("analyzable"):
                             fn_res = subprocess.run(
-                                ["java", "-cp", str(class_dir), "Analyzer", file_path, name],
-                                capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
+                                [java_binary, "-cp", str(class_dir), "Analyzer", file_path, name],
+                                capture_output=True,
+                                text=True,
+                                timeout=DEFAULT_SUBPROCESS_TIMEOUT,
                             )
                             if fn_res.returncode == 0:
                                 fn_data = json.loads(fn_res.stdout)
@@ -643,11 +686,13 @@ class NativeBridge:
                     elif kind == "field":
                         sig = subj.get("signature", {})
                         f_type = sig.get("source_type", "Object")
-                        target_cls.fields.append(UniversalField(
-                            name=name,
-                            type_info=UniversalType.custom(f_type),
-                            visibility=sig.get("visibility", "public")
-                        ))
+                        target_cls.fields.append(
+                            UniversalField(
+                                name=name,
+                                type_info=UniversalType.custom(f_type),
+                                visibility=sig.get("visibility", "public"),
+                            )
+                        )
                 return module
             except Exception as ex:
                 logger.debug("Exception running Java javac bridge: %s", ex)
@@ -657,18 +702,23 @@ class NativeBridge:
     # C# via Roslyn Analyzer DLL
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_csharp_with_roslyn(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_csharp_with_roslyn(cls, source_code: str) -> UniversalModule | None:
         """Parses C# source using the compiled Roslyn analyzer DLL."""
         dll_path = NATIVE_DIR / "csharp" / "bin" / "Debug" / "net10.0" / "Elmos.Csharp.EmittedAnalyzer.dll"
-        if not dll_path.exists():
+        dotnet_binary = shutil.which("dotnet")
+        if not dotnet_binary or not dll_path.exists():
             return None
 
         import re
-        c_match = re.search(r'(?:public\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)', source_code)
+
+        c_match = re.search(r"(?:public\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)", source_code)
         class_name = c_match.group(1) if c_match else "MainClass"
 
         # Find candidate method names
-        m_names = re.findall(r'(?:public|private|static)\s+(?:long|int|double|bool|string|void)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(', source_code)
+        m_names = re.findall(
+            r"(?:public|private|static)\s+(?:long|int|double|bool|string|void)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+            source_code,
+        )
 
         with tempfile.NamedTemporaryFile("w", suffix=".cs", delete=False, encoding="utf-8") as f:
             f.write(source_code)
@@ -682,8 +732,10 @@ class NativeBridge:
 
             for m_name in m_names:
                 res = subprocess.run(
-                    ["dotnet", str(dll_path), temp_path, m_name, "--emitted-target"],
-                    capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
+                    [dotnet_binary, str(dll_path), temp_path, m_name, "--emitted-target"],
+                    capture_output=True,
+                    text=True,
+                    timeout=DEFAULT_SUBPROCESS_TIMEOUT,
                 )
                 if res.returncode == 0:
                     data = json.loads(res.stdout)
@@ -704,7 +756,7 @@ class NativeBridge:
     # TypeScript via official TypeScript Compiler API (5.9.2)
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_typescript_with_node(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_typescript_with_node(cls, source_code: str) -> UniversalModule | None:
         """Parses TypeScript source into UniversalModule using official TypeScript Compiler API."""
         node_path = shutil.which("node")
         if not node_path:
@@ -723,7 +775,9 @@ class NativeBridge:
         try:
             inv_res = subprocess.run(
                 [node_path, str(analyzer_mjs), str(ts_lib), temp_path, "--inventory"],
-                capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
+                capture_output=True,
+                text=True,
+                timeout=DEFAULT_SUBPROCESS_TIMEOUT,
             )
             if inv_res.returncode != 0:
                 logger.debug("TypeScript analyzer inventory failed: %s", inv_res.stderr)
@@ -746,7 +800,9 @@ class NativeBridge:
                     continue
                 fn_res = subprocess.run(
                     [node_path, str(analyzer_mjs), str(ts_lib), temp_path, name],
-                    capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
+                    capture_output=True,
+                    text=True,
+                    timeout=DEFAULT_SUBPROCESS_TIMEOUT,
                 )
                 if fn_res.returncode == 0:
                     fn_data = json.loads(fn_res.stdout)
@@ -779,7 +835,7 @@ class NativeBridge:
     # Swift via native SwiftSyntax 600.0.1 analyzer binary
     # --------------------------------------------------------------------------
     @classmethod
-    def parse_swift_with_syntax(cls, source_code: str) -> Optional[UniversalModule]:
+    def parse_swift_with_syntax(cls, source_code: str) -> UniversalModule | None:
         """Parses Swift source into UniversalModule using the native SwiftSyntax analyzer binary."""
         bin_path = NATIVE_DIR / "swift" / ".build" / "arm64-apple-macosx" / "debug" / "ElmosSwiftAnalyzer"
         if not bin_path.exists():
@@ -793,7 +849,12 @@ class NativeBridge:
             temp_path = f.name
 
         try:
-            inv_res = subprocess.run([str(bin_path), temp_path, "--inventory"], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
+            inv_res = subprocess.run(
+                [str(bin_path), temp_path, "--inventory"],
+                capture_output=True,
+                text=True,
+                timeout=DEFAULT_SUBPROCESS_TIMEOUT,
+            )
             if inv_res.returncode != 0:
                 logger.debug("Swift analyzer inventory failed: %s", inv_res.stderr)
                 return None
@@ -807,7 +868,9 @@ class NativeBridge:
                 name = subj.get("name")
                 if not name or not subj.get("analyzable"):
                     continue
-                fn_res = subprocess.run([str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT)
+                fn_res = subprocess.run(
+                    [str(bin_path), temp_path, name], capture_output=True, text=True, timeout=DEFAULT_SUBPROCESS_TIMEOUT
+                )
                 if fn_res.returncode == 0:
                     fn_data = json.loads(fn_res.stdout)
                     for fn_item in fn_data.get("functions", []):
@@ -823,5 +886,3 @@ class NativeBridge:
         finally:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
-
-

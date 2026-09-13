@@ -8,28 +8,22 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .base import (
     AssignStmt,
     IdentifierExpr,
-    MethodCallExpr,
-    ReturnStmt,
-    UniversalExpr,
     UniversalMethod,
-    UniversalStmt,
-    UniversalType,
     VarDeclStmt,
 )
 
 
 class OwnershipKind(str, Enum):
-    OWNED = "owned"             # Unique owner (Rust value, C++ unique_ptr)
-    SHARED_REF = "shared_ref"   # Immutable borrow (&T, const T&)
-    MUT_REF = "mut_ref"         # Mutable borrow (&mut T, T&)
-    ARC_MANAGED = "arc_managed" # Atomic ref count (Arc<T>, std::shared_ptr)
-    GC_MANAGED = "gc_managed"   # Tracing GC pointer (Java, C#, Go, Python, TS)
-    RAW_PTR = "raw_ptr"         # Unmanaged pointer (*mut T, *const T)
+    OWNED = "owned"  # Unique owner (Rust value, C++ unique_ptr)
+    SHARED_REF = "shared_ref"  # Immutable borrow (&T, const T&)
+    MUT_REF = "mut_ref"  # Mutable borrow (&mut T, T&)
+    ARC_MANAGED = "arc_managed"  # Atomic ref count (Arc<T>, std::shared_ptr)
+    GC_MANAGED = "gc_managed"  # Tracing GC pointer (Java, C#, Go, Python, TS)
+    RAW_PTR = "raw_ptr"  # Unmanaged pointer (*mut T, *const T)
 
 
 @dataclass
@@ -51,7 +45,7 @@ class BorrowState:
     var_name: str
     ownership_kind: OwnershipKind
     is_moved: bool = False
-    moved_at: Optional[str] = None
+    moved_at: str | None = None
     active_shared_borrows: int = 0
     active_mut_borrow: bool = False
 
@@ -70,9 +64,7 @@ class OwnershipAnalyzer:
     def __init__(self, is_rust_mode: bool = True) -> None:
         self.is_rust_mode = is_rust_mode
         self.variables: dict[str, BorrowState] = {}
-        self.regions: dict[str, LifetimeRegion] = {
-            "'static": LifetimeRegion(region_id="'static", is_static=True)
-        }
+        self.regions: dict[str, LifetimeRegion] = {"'static": LifetimeRegion(region_id="'static", is_static=True)}
         self.violations: list[OwnershipViolation] = []
 
     def declare_variable(self, name: str, kind: OwnershipKind = OwnershipKind.OWNED) -> None:
@@ -84,21 +76,25 @@ class OwnershipAnalyzer:
             return
         state = self.variables[var_name]
         if state.is_moved:
-            self.violations.append(OwnershipViolation(
-                violation_type="USE_AFTER_MOVE",
-                var_name=var_name,
-                message=f"Variable '{var_name}' used or moved after it was already moved at {state.moved_at}",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="USE_AFTER_MOVE",
+                    var_name=var_name,
+                    message=f"Variable '{var_name}' used or moved after it was already moved at {state.moved_at}",
+                    location=location,
+                )
+            )
             return
 
         if state.active_shared_borrows > 0 or state.active_mut_borrow:
-            self.violations.append(OwnershipViolation(
-                violation_type="ALIASING_CONFLICT",
-                var_name=var_name,
-                message=f"Cannot move out of '{var_name}' while it is borrowed",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="ALIASING_CONFLICT",
+                    var_name=var_name,
+                    message=f"Cannot move out of '{var_name}' while it is borrowed",
+                    location=location,
+                )
+            )
             return
 
         if state.ownership_kind == OwnershipKind.OWNED:
@@ -111,21 +107,25 @@ class OwnershipAnalyzer:
             return
         state = self.variables[var_name]
         if state.is_moved:
-            self.violations.append(OwnershipViolation(
-                violation_type="USE_AFTER_MOVE",
-                var_name=var_name,
-                message=f"Cannot borrow '{var_name}' because it was previously moved at {state.moved_at}",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="USE_AFTER_MOVE",
+                    var_name=var_name,
+                    message=f"Cannot borrow '{var_name}' because it was previously moved at {state.moved_at}",
+                    location=location,
+                )
+            )
             return
 
         if state.active_mut_borrow:
-            self.violations.append(OwnershipViolation(
-                violation_type="ALIASING_CONFLICT",
-                var_name=var_name,
-                message=f"Cannot borrow '{var_name}' as immutable because it is already borrowed as mutable",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="ALIASING_CONFLICT",
+                    var_name=var_name,
+                    message=f"Cannot borrow '{var_name}' as immutable because it is already borrowed as mutable",
+                    location=location,
+                )
+            )
             return
 
         state.active_shared_borrows += 1
@@ -136,30 +136,41 @@ class OwnershipAnalyzer:
             return
         state = self.variables[var_name]
         if state.is_moved:
-            self.violations.append(OwnershipViolation(
-                violation_type="USE_AFTER_MOVE",
-                var_name=var_name,
-                message=f"Cannot borrow '{var_name}' as mutable because it was previously moved at {state.moved_at}",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="USE_AFTER_MOVE",
+                    var_name=var_name,
+                    message=(
+                        f"Cannot borrow '{var_name}' as mutable because it was previously moved at {state.moved_at}"
+                    ),
+                    location=location,
+                )
+            )
             return
 
         if state.active_shared_borrows > 0:
-            self.violations.append(OwnershipViolation(
-                violation_type="ALIASING_CONFLICT",
-                var_name=var_name,
-                message=f"Cannot borrow '{var_name}' as mutable because it is also borrowed as immutable ({state.active_shared_borrows} active borrows)",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="ALIASING_CONFLICT",
+                    var_name=var_name,
+                    message=(
+                        f"Cannot borrow '{var_name}' as mutable because it is also borrowed as immutable "
+                        f"({state.active_shared_borrows} active borrows)"
+                    ),
+                    location=location,
+                )
+            )
             return
 
         if state.active_mut_borrow:
-            self.violations.append(OwnershipViolation(
-                violation_type="MULTIPLE_MUT_BORROW",
-                var_name=var_name,
-                message=f"Cannot borrow '{var_name}' as mutable more than once at a time",
-                location=location
-            ))
+            self.violations.append(
+                OwnershipViolation(
+                    violation_type="MULTIPLE_MUT_BORROW",
+                    var_name=var_name,
+                    message=f"Cannot borrow '{var_name}' as mutable more than once at a time",
+                    location=location,
+                )
+            )
             return
 
         state.active_mut_borrow = True

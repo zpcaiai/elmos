@@ -4,6 +4,7 @@ Verifies that Python while and monotonic range-for loops correctly lift
 into canonical IR loop statements, reject non-standard or unsupported forms,
 and emit cleanly into target languages.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,21 +25,14 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_python_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    i: int = 0\n"
-        "    while i < n:\n"
-        "        if i == 5:\n"
-        "            break\n"
-        "        i = i + 1\n"
-        "    return i\n",
+        "    i: int = 0\n    while i < n:\n        if i == 5:\n            break\n        i = i + 1\n    return i\n",
     )
     # Note: `i = i + 1` is unannotated assignment, which will be rejected.
     # In single-assignment certified subset, local variables in loop body are `let`.
     # Let's test single-assignment loop body:
     source = _source(
         tmp_path,
-        "    while n > 0:\n"
-        "        break\n"
-        "    return n\n",
+        "    while n > 0:\n        break\n    return n\n",
     )
     semantic = analyze_python(source, "subject")
     statements = semantic.functions[0].body
@@ -53,10 +47,7 @@ def test_python_while_loop_lifts(tmp_path: Path) -> None:
 def test_python_for_range_lifts_one_arg(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    total: int = 0\n"
-        "    for i in range(n):\n"
-        "        continue\n"
-        "    return total\n",
+        "    total: int = 0\n    for i in range(n):\n        continue\n    return total\n",
     )
     semantic = analyze_python(source, "subject")
     statements = semantic.functions[0].body
@@ -75,10 +66,7 @@ def test_python_for_range_lifts_one_arg(tmp_path: Path) -> None:
 def test_python_for_range_lifts_two_args(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    total: int = 0\n"
-        "    for i in range(1, n):\n"
-        "        continue\n"
-        "    return total\n",
+        "    total: int = 0\n    for i in range(1, n):\n        continue\n    return total\n",
     )
     semantic = analyze_python(source, "subject")
     loop = semantic.functions[0].body[1]
@@ -91,10 +79,7 @@ def test_python_for_range_lifts_two_args(tmp_path: Path) -> None:
 def test_python_for_range_lifts_three_args(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    total: int = 0\n"
-        "    for i in range(1, n, 2):\n"
-        "        continue\n"
-        "    return total\n",
+        "    total: int = 0\n    for i in range(1, n, 2):\n        continue\n    return total\n",
     )
     semantic = analyze_python(source, "subject")
     loop = semantic.functions[0].body[1]
@@ -107,11 +92,7 @@ def test_python_for_range_lifts_three_args(tmp_path: Path) -> None:
 def test_python_rejects_while_orelse(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    while n > 0:\n"
-        "        break\n"
-        "    else:\n"
-        "        return 0\n"
-        "    return n\n",
+        "    while n > 0:\n        break\n    else:\n        return 0\n    return n\n",
     )
     with pytest.raises(RouteError, match="PYTHON_WHILE_ORELSE_OUTSIDE_CERTIFIED_SUBSET"):
         analyze_python(source, "subject")
@@ -120,11 +101,7 @@ def test_python_rejects_while_orelse(tmp_path: Path) -> None:
 def test_python_rejects_for_orelse(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for i in range(n):\n"
-        "        continue\n"
-        "    else:\n"
-        "        return 0\n"
-        "    return n\n",
+        "    for i in range(n):\n        continue\n    else:\n        return 0\n    return n\n",
     )
     with pytest.raises(RouteError, match="PYTHON_FOR_ORELSE_OUTSIDE_CERTIFIED_SUBSET"):
         analyze_python(source, "subject")
@@ -133,9 +110,7 @@ def test_python_rejects_for_orelse(tmp_path: Path) -> None:
 def test_python_rejects_non_range_for(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    for i in [1, 2, 3]:\n"
-        "        continue\n"
-        "    return n\n",
+        "    for i in [1, 2, 3]:\n        continue\n    return n\n",
     )
     with pytest.raises(RouteError, match="PYTHON_NON_RANGE_FOR_OUTSIDE_CERTIFIED_SUBSET"):
         analyze_python(source, "subject")

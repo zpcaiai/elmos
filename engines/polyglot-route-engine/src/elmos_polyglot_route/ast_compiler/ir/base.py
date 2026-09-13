@@ -1,7 +1,8 @@
 """Universal AST & Semantic Intermediate Representation (Universal IR).
 
 This module models arbitrary enterprise software constructs across the four critical hazard domains:
-1. Object Graph Lifecycle: Classes, structs, interfaces, enums, fields, constructors, destructors/finalizers, inheritance.
+1. Object Graph Lifecycle: Classes, structs, interfaces, enums, fields,
+   constructors, destructors/finalizers, inheritance.
 2. Async & Concurrency: Async/await, Tasks, Promises, CompletableFutures, Coroutines, Goroutines, Channels, Locks.
 3. Exception Unwinding: Try/catch/finally, throw/raise, Result<T,E>, (T, error) tuples, panic/recover.
 4. Complex Framework & Web API: REST controllers, HTTP route annotations, DI/IoC bindings, DTO models.
@@ -11,31 +12,31 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Sequence
+from typing import Any
 
 
 class PrimitiveKind(str, Enum):
-    I8 = 'i8'
-    I16 = 'i16'
-    I32 = 'i32'
-    I64 = 'i64'
-    U8 = 'u8'
-    U16 = 'u16'
-    U32 = 'u32'
-    U64 = 'u64'
-    F32 = 'f32'
-    F64 = 'f64'
-    BOOL = 'bool'
-    CHAR = 'char'
-    STRING = 'string'
-    VOID = 'void'
-    ANY = 'any'
+    I8 = "i8"
+    I16 = "i16"
+    I32 = "i32"
+    I64 = "i64"
+    U8 = "u8"
+    U16 = "u16"
+    U32 = "u32"
+    U64 = "u64"
+    F32 = "f32"
+    F64 = "f64"
+    BOOL = "bool"
+    CHAR = "char"
+    STRING = "string"
+    VOID = "void"
+    ANY = "any"
 
 
 @dataclass
 class UniversalType:
     kind: str  # primitive, list, map, set, tuple, optional, result, custom, generic
-    name: str = ''
+    name: str = ""
     element_type: UniversalType | None = None
     key_type: UniversalType | None = None
     value_type: UniversalType | None = None
@@ -51,84 +52,84 @@ class UniversalType:
 
     @classmethod
     def string_type(cls) -> UniversalType:
-        return cls(kind='primitive', name='string', is_reference=True)
+        return cls(kind="primitive", name="string", is_reference=True)
 
     @classmethod
     def int64(cls) -> UniversalType:
-        return cls(kind='primitive', name='i64', is_reference=False)
+        return cls(kind="primitive", name="i64", is_reference=False)
 
     @classmethod
     def float64(cls) -> UniversalType:
-        return cls(kind='primitive', name='f64', is_reference=False)
+        return cls(kind="primitive", name="f64", is_reference=False)
 
     @classmethod
     def boolean(cls) -> UniversalType:
-        return cls(kind='primitive', name='bool', is_reference=False)
+        return cls(kind="primitive", name="bool", is_reference=False)
 
     @classmethod
     def void(cls) -> UniversalType:
-        return cls(kind='primitive', name='void', is_reference=False)
+        return cls(kind="primitive", name="void", is_reference=False)
 
     @classmethod
     def list_of(cls, elem: UniversalType) -> UniversalType:
-        return cls(kind='list', name='List', element_type=elem)
+        return cls(kind="list", name="List", element_type=elem)
 
     @classmethod
     def map_of(cls, key: UniversalType, val: UniversalType) -> UniversalType:
-        return cls(kind='map', name='Map', key_type=key, value_type=val)
+        return cls(kind="map", name="Map", key_type=key, value_type=val)
 
     @classmethod
     def set_of(cls, elem: UniversalType) -> UniversalType:
-        return cls(kind='set', name='Set', element_type=elem)
+        return cls(kind="set", name="Set", element_type=elem)
 
     @classmethod
     def optional_of(cls, inner: UniversalType) -> UniversalType:
-        return cls(kind='optional', name='Optional', element_type=inner, is_nullable=True)
+        return cls(kind="optional", name="Optional", element_type=inner, is_nullable=True)
 
     @classmethod
     def result_of(cls, ok_type: UniversalType, err_type: UniversalType) -> UniversalType:
-        return cls(kind='result', name='Result', element_type=ok_type, value_type=err_type)
+        return cls(kind="result", name="Result", element_type=ok_type, value_type=err_type)
 
     @classmethod
     def unique_ptr_of(cls, elem: UniversalType) -> UniversalType:
-        return cls(kind='pointer', name='unique_ptr', element_type=elem, pointer_kind='unique')
+        return cls(kind="pointer", name="unique_ptr", element_type=elem, pointer_kind="unique")
 
     @classmethod
     def shared_ptr_of(cls, elem: UniversalType) -> UniversalType:
-        return cls(kind='pointer', name='shared_ptr', element_type=elem, pointer_kind='shared')
+        return cls(kind="pointer", name="shared_ptr", element_type=elem, pointer_kind="shared")
 
     @classmethod
     def arc_strong(cls, elem: UniversalType) -> UniversalType:
-        return cls(kind='pointer', name='arc_strong', element_type=elem, pointer_kind='strong')
+        return cls(kind="pointer", name="arc_strong", element_type=elem, pointer_kind="strong")
 
     @classmethod
     def custom(cls, name: str) -> UniversalType:
-        return cls(kind='custom', name=name)
+        return cls(kind="custom", name=name)
 
 
 class BinaryOperator(str, Enum):
-    ADD = '+'
-    SUB = '-'
-    MUL = '*'
-    DIV = '/'
-    MOD = '%'
-    EQ = '=='
-    NE = '!='
-    LT = '<'
-    LE = '<='
-    GT = '>'
-    GE = '>='
-    AND = '&&'
-    OR = '||'
-    BIT_AND = '&'
-    BIT_OR = '|'
-    BIT_XOR = '^'
+    ADD = "+"
+    SUB = "-"
+    MUL = "*"
+    DIV = "/"
+    MOD = "%"
+    EQ = "=="
+    NE = "!="
+    LT = "<"
+    LE = "<="
+    GT = ">"
+    GE = ">="
+    AND = "&&"
+    OR = "||"
+    BIT_AND = "&"
+    BIT_OR = "|"
+    BIT_XOR = "^"
 
 
 class UnaryOperator(str, Enum):
-    NEG = '-'
-    NOT = '!'
-    BIT_NOT = '~'
+    NEG = "-"
+    NOT = "!"
+    BIT_NOT = "~"
 
 
 # AST Expressions
@@ -139,7 +140,7 @@ class UniversalExpr:
 @dataclass
 class LiteralExpr(UniversalExpr):
     value: Any
-    type_kind: str = 'string'  # int, float, bool, string, null
+    type_kind: str = "string"  # int, float, bool, string, null
 
 
 @dataclass
@@ -395,7 +396,7 @@ class UniversalParam:
 class UniversalField:
     name: str
     type_info: UniversalType
-    visibility: str = 'public'  # public, private, protected
+    visibility: str = "public"  # public, private, protected
     is_static: bool = False
     is_readonly: bool = False
     default_value: UniversalExpr | None = None
@@ -407,7 +408,7 @@ class UniversalMethod:
     name: str
     params: list[UniversalParam] = field(default_factory=list)
     return_type: UniversalType = field(default_factory=UniversalType.void)
-    visibility: str = 'public'
+    visibility: str = "public"
     is_static: bool = False
     is_async: bool = False
     is_abstract: bool = False
@@ -424,7 +425,7 @@ class UniversalMethod:
 class UniversalConstructor:
     params: list[UniversalParam] = field(default_factory=list)
     body: list[UniversalStmt] = field(default_factory=list)
-    visibility: str = 'public'
+    visibility: str = "public"
 
 
 @dataclass
@@ -480,11 +481,10 @@ class UIComponentDecl:
 @dataclass
 class UniversalModule:
     name: str
-    package_name: str = ''
-    source_language: str = ''
+    package_name: str = ""
+    source_language: str = ""
     imports: list[str] = field(default_factory=list)
     classes: list[UniversalClass] = field(default_factory=list)
     free_functions: list[UniversalMethod] = field(default_factory=list)
     ui_components: list[UIComponentDecl] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
-

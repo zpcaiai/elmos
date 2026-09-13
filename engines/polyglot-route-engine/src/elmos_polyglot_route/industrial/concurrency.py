@@ -17,6 +17,7 @@ from elmos_polyglot_route.ast_compiler.ir import (
     LockStmt,
     SelectStmt,
     SpawnStmt,
+    UniversalAnnotation,
     UniversalMethod,
     UniversalModule,
 )
@@ -236,7 +237,5 @@ class ConcurrencySemanticEngine:
         return found
 
 
-def _annotation(runtime: dict[str, str]):
-    from elmos_polyglot_route.ast_compiler.ir import UniversalAnnotation
-
+def _annotation(runtime: dict[str, str]) -> UniversalAnnotation:
     return UniversalAnnotation(name="IndustrialConcurrency", kwargs=dict(runtime))

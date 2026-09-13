@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..ir import UniversalClass, UniversalField, UniversalMethod, UniversalModule, UniversalParam, UniversalType
+from ..ir import UniversalType
 from .base import BaseEmitter
 
 
@@ -15,10 +15,21 @@ class SwiftEmitter(BaseEmitter):
     def format_type(self, t: UniversalType) -> str:
         if t.kind == "primitive":
             m = {
-                "i8": "Int8", "i16": "Int16", "i32": "Int32", "i64": "Int64",
-                "u8": "UInt8", "u16": "UInt16", "u32": "UInt32", "u64": "UInt64",
-                "f32": "Float", "f64": "Double", "bool": "Bool",
-                "char": "Character", "string": "String", "void": "Void", "any": "Any"
+                "i8": "Int8",
+                "i16": "Int16",
+                "i32": "Int32",
+                "i64": "Int64",
+                "u8": "UInt8",
+                "u16": "UInt16",
+                "u32": "UInt32",
+                "u64": "UInt64",
+                "f32": "Float",
+                "f64": "Double",
+                "bool": "Bool",
+                "char": "Character",
+                "string": "String",
+                "void": "Void",
+                "any": "Any",
             }
             res = m.get(t.name, "Any")
         elif t.kind == "list":
@@ -36,4 +47,3 @@ class SwiftEmitter(BaseEmitter):
         if t.is_nullable and not res.endswith("?"):
             res = f"{res}?"
         return res
-

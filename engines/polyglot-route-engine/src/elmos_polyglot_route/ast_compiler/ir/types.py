@@ -9,16 +9,15 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
 
-from .base import PrimitiveKind, UniversalType
+from .base import UniversalType
 
 
 class Variance(str, Enum):
-    INVARIANT = "invariant"        # T = T
-    COVARIANT = "covariant"        # +T (sub <: super implies F[sub] <: F[super])
-    CONTRAVARIANT = "contravariant"# -T (sub <: super implies F[super] <: F[sub])
-    BIVARIANT = "bivariant"        # both covariant and contravariant
+    INVARIANT = "invariant"  # T = T
+    COVARIANT = "covariant"  # +T (sub <: super implies F[sub] <: F[super])
+    CONTRAVARIANT = "contravariant"  # -T (sub <: super implies F[super] <: F[sub])
+    BIVARIANT = "bivariant"  # both covariant and contravariant
 
 
 class ExtendedTypeKind(str, Enum):
@@ -69,10 +68,7 @@ class TypeLattice:
 
     @classmethod
     def is_subtype_of(
-        cls,
-        sub: UniversalType,
-        super_: UniversalType,
-        class_hierarchy: Optional[Dict[str, List[str]]] = None
+        cls, sub: UniversalType, super_: UniversalType, class_hierarchy: dict[str, list[str]] | None = None
     ) -> bool:
         """Determines if sub is a subtype of super_ (sub <: super_)."""
         if sub == super_:
@@ -143,8 +139,16 @@ class TypeLattice:
 
         # 6. Result<T, E> subtyping
         if sub_kind == sup_kind and sub_kind == "result":
-            ok_sub = cls.is_subtype_of(sub.element_type, super_.element_type, class_hierarchy) if sub.element_type and super_.element_type else True
-            err_sub = cls.is_subtype_of(sub.value_type, super_.value_type, class_hierarchy) if sub.value_type and super_.value_type else True
+            ok_sub = (
+                cls.is_subtype_of(sub.element_type, super_.element_type, class_hierarchy)
+                if sub.element_type and super_.element_type
+                else True
+            )
+            err_sub = (
+                cls.is_subtype_of(sub.value_type, super_.value_type, class_hierarchy)
+                if sub.value_type and super_.value_type
+                else True
+            )
             return ok_sub and err_sub
 
         # 7. Pointer subtyping: unique_ptr <: raw_ptr, shared_ptr <: shared_ptr
@@ -171,10 +175,7 @@ class TypeLattice:
 
     @classmethod
     def compute_lca(
-        cls,
-        t1: UniversalType,
-        t2: UniversalType,
-        class_hierarchy: Optional[Dict[str, List[str]]] = None
+        cls, t1: UniversalType, t2: UniversalType, class_hierarchy: dict[str, list[str]] | None = None
     ) -> UniversalType:
         """Computes Least Common Supertype (Join / LCA) in the type lattice."""
         if t1 == t2:
@@ -196,7 +197,9 @@ class TypeLattice:
             if n1 in cls._SIGNED_INT_WIDENING and n2 in cls._SIGNED_INT_WIDENING:
                 max_idx = max(cls._SIGNED_INT_WIDENING.index(n1), cls._SIGNED_INT_WIDENING.index(n2))
                 return UniversalType.primitive(cls._SIGNED_INT_WIDENING[max_idx])
-            if (n1 in cls._SIGNED_INT_WIDENING and n2 in cls._FLOAT_WIDENING) or (n2 in cls._SIGNED_INT_WIDENING and n1 in cls._FLOAT_WIDENING):
+            if (n1 in cls._SIGNED_INT_WIDENING and n2 in cls._FLOAT_WIDENING) or (
+                n2 in cls._SIGNED_INT_WIDENING and n1 in cls._FLOAT_WIDENING
+            ):
                 return UniversalType.float64()
             if n1 in cls._FLOAT_WIDENING and n2 in cls._FLOAT_WIDENING:
                 max_idx = max(cls._FLOAT_WIDENING.index(n1), cls._FLOAT_WIDENING.index(n2))
@@ -233,10 +236,7 @@ class TypeLattice:
 
     @classmethod
     def compute_glb(
-        cls,
-        t1: UniversalType,
-        t2: UniversalType,
-        class_hierarchy: Optional[Dict[str, List[str]]] = None
+        cls, t1: UniversalType, t2: UniversalType, class_hierarchy: dict[str, list[str]] | None = None
     ) -> UniversalType:
         """Computes Greatest Lower Bound (Meet / GLB) in the type lattice."""
         if t1 == t2:
@@ -257,11 +257,7 @@ class TypeLattice:
         return UniversalType(kind="primitive", name="never")
 
     @classmethod
-    def substitute_generics(
-        cls,
-        target: UniversalType,
-        mapping: Dict[str, UniversalType]
-    ) -> UniversalType:
+    def substitute_generics(cls, target: UniversalType, mapping: dict[str, UniversalType]) -> UniversalType:
         """Recursively substitutes generic type variables with concrete types."""
         if target.kind == ExtendedTypeKind.GENERIC_PARAM.value or target.name in mapping:
             replacement = mapping.get(target.name)
@@ -282,11 +278,7 @@ class TypeLattice:
         return res
 
     @classmethod
-    def check_coercion(
-        cls,
-        from_type: UniversalType,
-        to_type: UniversalType
-    ) -> Tuple[bool, Optional[str]]:
+    def check_coercion(cls, from_type: UniversalType, to_type: UniversalType) -> tuple[bool, str | None]:
         """Checks if from_type can be legally coerced to to_type and returns the strategy."""
         if from_type == to_type:
             return True, "identity"
@@ -301,7 +293,9 @@ class TypeLattice:
                 return True, "explicit_narrowing_cast"
 
         if to_type.kind == "optional" and from_type.kind != "optional":
-            if to_type.element_type and (from_type == to_type.element_type or cls.is_subtype_of(from_type, to_type.element_type)):
+            if to_type.element_type and (
+                from_type == to_type.element_type or cls.is_subtype_of(from_type, to_type.element_type)
+            ):
                 return True, "wrap_optional"
 
         if from_type.kind == "pointer" and to_type.kind == "pointer":

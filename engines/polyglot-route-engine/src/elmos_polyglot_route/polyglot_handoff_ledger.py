@@ -7,10 +7,9 @@ ensuring 100% disposition coverage across arbitrary blackbox enterprise codebase
 from __future__ import annotations
 
 import hashlib
-import json
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any
 
 from .enterprise_transpiler import EnterpriseModule
 

@@ -130,6 +130,7 @@ def repository_language_lifecycle(
         return REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
     return None
 
+
 #: The explicit complete route matrix.  Route-pack presence does not imply a
 #: local pass, repository pass, independent verification, or certification;
 #: those remain separate evidence-bound states for every direction.
@@ -539,8 +540,7 @@ class Expression:
             if type(args_raw) is not list:
                 raise RouteError(f"INVALID_CALL_ARGUMENTS:{_path}.arguments")
             call_args = tuple(
-                cls.from_mapping(arg_item, _path=f"{_path}.arguments[{i}]")
-                for i, arg_item in enumerate(args_raw)
+                cls.from_mapping(arg_item, _path=f"{_path}.arguments[{i}]") for i, arg_item in enumerate(args_raw)
             )
             return cls(
                 kind=kind,
@@ -746,8 +746,7 @@ class Statement:
                 kind=kind,
                 condition=Expression.from_mapping(condition, _path=f"{_path}.condition"),
                 body=tuple(
-                    cls.from_mapping(item, _path=f"{_path}.body[{index}]")
-                    for index, item in enumerate(parsed_body)
+                    cls.from_mapping(item, _path=f"{_path}.body[{index}]") for index, item in enumerate(parsed_body)
                 ),
                 source_span=_optional_source_span(value, _path),
             )
@@ -778,8 +777,7 @@ class Statement:
                 end=Expression.from_mapping(end, _path=f"{_path}.end"),
                 step=Expression.from_mapping(step, _path=f"{_path}.step") if step is not None else None,
                 body=tuple(
-                    cls.from_mapping(item, _path=f"{_path}.body[{index}]")
-                    for index, item in enumerate(parsed_body)
+                    cls.from_mapping(item, _path=f"{_path}.body[{index}]") for index, item in enumerate(parsed_body)
                 ),
                 source_span=_optional_source_span(value, _path),
             )
@@ -932,9 +930,7 @@ class Function:
         documentation = (
             # An empty docstring is legal Python and stays distinguishable from
             # "no docstring at all", so `nonempty` is deliberately not required.
-            _require_string(value["documentation"], f"{_path}.documentation")
-            if "documentation" in value
-            else None
+            _require_string(value["documentation"], f"{_path}.documentation") if "documentation" in value else None
         )
         parameters = _require_mapping_list(value["parameters"], f"{_path}.parameters")
         body = _require_mapping_list(value["body"], f"{_path}.body", nonempty=True)

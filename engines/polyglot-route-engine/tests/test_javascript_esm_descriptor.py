@@ -136,9 +136,7 @@ def test_engine_binds_descriptor_observation_to_the_executed_private_snapshot(
     }
     runtime = {
         "javascript_esm_descriptor": binding,
-        "javascript_esm_descriptor_observation": {
-            "observed_origin_path": str(snapshot)
-        },
+        "javascript_esm_descriptor_observation": {"observed_origin_path": str(snapshot)},
     }
 
     second_runtime = json.loads(json.dumps(runtime))
@@ -148,9 +146,7 @@ def test_engine_binds_descriptor_observation_to_the_executed_private_snapshot(
         [runtime, second_runtime],
     ) == {"observed_origin_path": str(snapshot)}
 
-    runtime["javascript_esm_descriptor_observation"] = {
-        "observed_origin_path": str(tmp_path / "live" / "package.json")
-    }
+    runtime["javascript_esm_descriptor_observation"] = {"observed_origin_path": str(tmp_path / "live" / "package.json")}
     with pytest.raises(
         RouteError,
         match="^JAVASCRIPT_ESM_RUNTIME_DESCRIPTOR_EVIDENCE_MISMATCH$",
@@ -174,30 +170,23 @@ def test_private_js_snapshot_preserves_nested_descriptor_topology(
     private_root = tmp_path / "private"
     private_root.mkdir(mode=0o700)
 
-    source_snapshot, binding, descriptor_bytes, descriptor_snapshot = (
-        engine._private_javascript_source_snapshot(
-            private_root,
-            source,
-            "javascript",
-            source.read_bytes(),
-        )
+    source_snapshot, binding, descriptor_bytes, descriptor_snapshot = engine._private_javascript_source_snapshot(
+        private_root,
+        source,
+        "javascript",
+        source.read_bytes(),
     )
 
     assert binding is not None
     assert descriptor_bytes == package.read_bytes()
     assert descriptor_snapshot is not None
     assert binding["logical_path"] == "../../package.json"
-    assert Path(os.path.relpath(descriptor_snapshot, source_snapshot.parent)).as_posix() == binding[
-        "logical_path"
-    ]
+    assert Path(os.path.relpath(descriptor_snapshot, source_snapshot.parent)).as_posix() == binding["logical_path"]
     observed = engine.javascript_esm_descriptor(source_snapshot)
     assert observed is not None
     assert observed["path"] == str(descriptor_snapshot)
     assert observed["sha256"] == hashlib.sha256(package.read_bytes()).hexdigest()
-    assert (
-        engine._javascript_descriptor_snapshot_for_source(source_snapshot, binding)
-        == descriptor_snapshot
-    )
+    assert engine._javascript_descriptor_snapshot_for_source(source_snapshot, binding) == descriptor_snapshot
 
 
 @pytest.mark.parametrize(
@@ -216,13 +205,11 @@ def test_nested_descriptor_snapshot_reaches_single_and_module_inner_migrations(
     (repository / "package.json").write_text('{"type":"module"}\n', encoding="utf-8")
     private_root = tmp_path / "private"
     private_root.mkdir(mode=0o700)
-    source_snapshot, binding, descriptor_bytes, descriptor_snapshot = (
-        engine._private_javascript_source_snapshot(
-            private_root,
-            source,
-            "javascript",
-            source.read_bytes(),
-        )
+    source_snapshot, binding, descriptor_bytes, descriptor_snapshot = engine._private_javascript_source_snapshot(
+        private_root,
+        source,
+        "javascript",
+        source.read_bytes(),
     )
     assert binding is not None
     assert descriptor_bytes is not None

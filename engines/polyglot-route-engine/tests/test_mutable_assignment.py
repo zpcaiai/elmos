@@ -1,4 +1,5 @@
 """Tests for mutable assignment (`assign`) in Canonical IR, Typechecker, Emitter, and Python Analyzer."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,9 +12,7 @@ from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import SemanticIR
 from elmos_polyglot_route.python_analyzer import analyze_python
 
-_EMITTABLE: tuple[Language, ...] = tuple(
-    language for language in ROUTED_LANGUAGES if language != "vb6"
-)
+_EMITTABLE: tuple[Language, ...] = tuple(language for language in ROUTED_LANGUAGES if language != "vb6")
 
 
 def _name(value: str) -> dict:
@@ -117,39 +116,45 @@ def test_assign_type_checks_cleanly() -> None:
 
 
 def test_assign_to_unbound_variable_fails() -> None:
-    ir = _ir([
-        _assign("unbound", _literal(42)),
-        {"kind": "return", "expression": _literal(0)},
-    ])
+    ir = _ir(
+        [
+            _assign("unbound", _literal(42)),
+            {"kind": "return", "expression": _literal(0)},
+        ]
+    )
     with pytest.raises(RouteError, match="^ASSIGN_NAME_NOT_BOUND:unbound$"):
         types.check(ir)
 
 
 def test_assign_type_mismatch_fails() -> None:
-    ir = _ir([
-        _let("count", "integer", _literal(0)),
-        _assign("count", _literal(True)),
-        {"kind": "return", "expression": _name("count")},
-    ])
+    ir = _ir(
+        [
+            _let("count", "integer", _literal(0)),
+            _assign("count", _literal(True)),
+            {"kind": "return", "expression": _name("count")},
+        ]
+    )
     with pytest.raises(RouteError, match="^ASSIGN_TYPE_MISMATCH:integer:boolean$"):
         types.check(ir)
 
 
 def test_assign_inside_if_branches_to_outer_var() -> None:
-    ir = _ir([
-        _let("res", "integer", _literal(0)),
-        {
-            "kind": "if",
-            "condition": _binary(">", _name("n"), _literal(0)),
-            "then": [
-                _assign("res", _literal(1)),
-            ],
-            "else": [
-                _assign("res", _literal(-1)),
-            ],
-        },
-        {"kind": "return", "expression": _name("res")},
-    ])
+    ir = _ir(
+        [
+            _let("res", "integer", _literal(0)),
+            {
+                "kind": "if",
+                "condition": _binary(">", _name("n"), _literal(0)),
+                "then": [
+                    _assign("res", _literal(1)),
+                ],
+                "else": [
+                    _assign("res", _literal(-1)),
+                ],
+            },
+            {"kind": "return", "expression": _name("res")},
+        ]
+    )
     types.check(ir)
 
 
@@ -222,11 +227,7 @@ def _write_py(tmp_path: Path, code: str) -> Path:
 def test_python_analyzer_lifts_assign(tmp_path: Path) -> None:
     source = _write_py(
         tmp_path,
-        "def run(n: int) -> int:\n"
-        "    s: int = 0\n"
-        "    for i in range(n):\n"
-        "        s = s + i\n"
-        "    return s\n",
+        "def run(n: int) -> int:\n    s: int = 0\n    for i in range(n):\n        s = s + i\n    return s\n",
     )
     ir = analyze_python(source, "run")
     assert len(ir.functions) == 1
@@ -241,11 +242,7 @@ def test_python_analyzer_lifts_assign(tmp_path: Path) -> None:
 def test_python_analyzer_lifts_aug_assign(tmp_path: Path) -> None:
     source = _write_py(
         tmp_path,
-        "def run(n: int) -> int:\n"
-        "    s: int = 0\n"
-        "    for i in range(n):\n"
-        "        s += i\n"
-        "    return s\n",
+        "def run(n: int) -> int:\n    s: int = 0\n    for i in range(n):\n        s += i\n    return s\n",
     )
     ir = analyze_python(source, "run")
     func = ir.functions[0]
@@ -262,9 +259,7 @@ def test_python_analyzer_lifts_aug_assign(tmp_path: Path) -> None:
 def test_python_analyzer_forbids_parameter_reassignment(tmp_path: Path) -> None:
     source = _write_py(
         tmp_path,
-        "def run(x: int) -> int:\n"
-        "    x = x + 1\n"
-        "    return x\n",
+        "def run(x: int) -> int:\n    x = x + 1\n    return x\n",
     )
     with pytest.raises(RouteError, match="^PYTHON_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:x$"):
         analyze_python(source, "run")
@@ -273,9 +268,7 @@ def test_python_analyzer_forbids_parameter_reassignment(tmp_path: Path) -> None:
 def test_python_analyzer_forbids_aug_assign_on_parameter(tmp_path: Path) -> None:
     source = _write_py(
         tmp_path,
-        "def run(x: int) -> int:\n"
-        "    x += 1\n"
-        "    return x\n",
+        "def run(x: int) -> int:\n    x += 1\n    return x\n",
     )
     with pytest.raises(RouteError, match="^PYTHON_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:x$"):
         analyze_python(source, "run")
@@ -284,11 +277,7 @@ def test_python_analyzer_forbids_aug_assign_on_parameter(tmp_path: Path) -> None
 def test_python_analyzer_emitted_target_roundtrip(tmp_path: Path) -> None:
     source = _write_py(
         tmp_path,
-        "def accumulate(n: int) -> int:\n"
-        "    acc: int = 0\n"
-        "    for i in range(n):\n"
-        "        acc += i\n"
-        "    return acc\n",
+        "def accumulate(n: int) -> int:\n    acc: int = 0\n    for i in range(n):\n        acc += i\n    return acc\n",
     )
     ir = analyze_python(source, "accumulate")
     emitted = emit(ir, "python")

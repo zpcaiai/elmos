@@ -57,6 +57,7 @@ class SemanticLoweringEngine:
         module = EnterpriseShimsLowering.lower_module(module, target_lang)
         return module
 
+
 __all__ = [
     "SemanticLoweringEngine",
     "LifecycleLowering",

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..ir import UniversalClass, UniversalField, UniversalMethod, UniversalModule, UniversalParam, UniversalType
+from ..ir import UniversalType
 from .base import BaseEmitter
 
 
@@ -13,10 +13,21 @@ class JavaEmitter(BaseEmitter):
     def format_type(self, t: UniversalType) -> str:
         if t.kind == "primitive":
             m = {
-                "i8": "byte", "i16": "short", "i32": "int", "i64": "long",
-                "u8": "int", "u16": "int", "u32": "long", "u64": "long",
-                "f32": "float", "f64": "double", "bool": "boolean",
-                "char": "char", "string": "String", "void": "void", "any": "Object"
+                "i8": "byte",
+                "i16": "short",
+                "i32": "int",
+                "i64": "long",
+                "u8": "int",
+                "u16": "int",
+                "u32": "long",
+                "u64": "long",
+                "f32": "float",
+                "f64": "double",
+                "bool": "boolean",
+                "char": "char",
+                "string": "String",
+                "void": "void",
+                "any": "Object",
             }
             return m.get(t.name, "Object")
         elif t.kind == "list":
@@ -27,4 +38,3 @@ class JavaEmitter(BaseEmitter):
             v = self.format_type(t.value_type or UniversalType.string_type())
             return f"java.util.Map<{k}, {v}>"
         return t.name or "Object"
-

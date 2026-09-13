@@ -5,6 +5,7 @@ correctly lift into canonical `let` statements, assignments (`x = expr`, `x += e
 lift into `assign`, parameter reassignment is rejected, constant reassignment is rejected,
 undeclared assignments are rejected, and lifted structures emit cleanly across targets.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,22 +19,14 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.kt"
-    content = (
-        "fun total(price: Long, tax: Long): Long {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"fun total(price: Long, tax: Long): Long {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
 
 def _source_unary(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.kt"
-    content = (
-        "fun total(price: Long): Long {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"fun total(price: Long): Long {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -41,8 +34,7 @@ def _source_unary(tmp_path: Path, body: str) -> Path:
 def test_kotlin_annotated_val_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    val subtotal: Long = price + tax\n"
-        "    return subtotal",
+        "    val subtotal: Long = price + tax\n    return subtotal",
     )
     semantic = analyze(source, "kotlin", "total")
     statements = semantic.functions[0].body
@@ -57,8 +49,7 @@ def test_kotlin_annotated_val_local_lifts_to_let(tmp_path: Path) -> None:
 def test_kotlin_annotated_var_local_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var subtotal: Long = price + tax\n"
-        "    return subtotal",
+        "    var subtotal: Long = price + tax\n    return subtotal",
     )
     semantic = analyze(source, "kotlin", "total")
     statements = semantic.functions[0].body
@@ -73,9 +64,7 @@ def test_kotlin_annotated_var_local_lifts_to_let(tmp_path: Path) -> None:
 def test_kotlin_mutable_local_assignment_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var subtotal: Long = price\n"
-        "    subtotal = price + tax\n"
-        "    return subtotal",
+        "    var subtotal: Long = price\n    subtotal = price + tax\n    return subtotal",
     )
     semantic = analyze(source, "kotlin", "total")
     statements = semantic.functions[0].body
@@ -116,12 +105,7 @@ def test_kotlin_compound_assignment_lifts(tmp_path: Path) -> None:
 def test_kotlin_postfix_and_prefix_increment_lifts(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    var count: Long = price\n"
-        "    count++\n"
-        "    ++count\n"
-        "    count--\n"
-        "    --count\n"
-        "    return count",
+        "    var count: Long = price\n    count++\n    ++count\n    count--\n    --count\n    return count",
     )
     semantic = analyze(source, "kotlin", "total")
     statements = semantic.functions[0].body
@@ -140,8 +124,7 @@ def test_kotlin_postfix_and_prefix_increment_lifts(tmp_path: Path) -> None:
 def test_kotlin_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    price = price + 1L\n"
-        "    return price",
+        "    price = price + 1L\n    return price",
     )
     with pytest.raises(
         RouteError,
@@ -153,9 +136,7 @@ def test_kotlin_parameter_reassignment_rejected(tmp_path: Path) -> None:
 def test_kotlin_constant_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    val subtotal: Long = price\n"
-        "    subtotal = subtotal + 1L\n"
-        "    return subtotal",
+        "    val subtotal: Long = price\n    subtotal = subtotal + 1L\n    return subtotal",
     )
     with pytest.raises(
         RouteError,
@@ -167,8 +148,7 @@ def test_kotlin_constant_reassignment_rejected(tmp_path: Path) -> None:
 def test_kotlin_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    unknown = 42L\n"
-        "    return price",
+        "    unknown = 42L\n    return price",
     )
     with pytest.raises(
         RouteError,
@@ -180,8 +160,7 @@ def test_kotlin_undeclared_assignment_target_rejected(tmp_path: Path) -> None:
 def test_kotlin_unannotated_val_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    val subtotal = price\n"
-        "    return subtotal",
+        "    val subtotal = price\n    return subtotal",
     )
     with pytest.raises(
         RouteError,
@@ -213,9 +192,7 @@ def test_kotlin_multiple_sequential_bindings(tmp_path: Path) -> None:
 def test_kotlin_lifted_let_and_assign_emits_to_all_targets(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var acc: Long = price\n"
-        "    acc += tax\n"
-        "    return acc",
+        "    var acc: Long = price\n    acc += tax\n    return acc",
     )
     semantic = analyze(source, "kotlin", "total")
 
