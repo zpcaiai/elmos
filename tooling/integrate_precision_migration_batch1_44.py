@@ -580,8 +580,11 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
     for record in records:
         destination = generated_root / str(record["name"])
         destination.mkdir()
-        skill_text = normalized_skill(record, records)
-        (destination / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        skill_content = promoted_skill_content(
+            normalized_skill(record, records).encode("utf-8"),
+            str(record["name"]),
+        )
+        (destination / "SKILL.md").write_bytes(skill_content)
         write_interface(destination, record, write_openai_yaml)
         installed = dict(record)
         installed["source_sha256"] = sha256(
@@ -590,9 +593,7 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         installed["installed_path"] = (
             f"agent-skills/runtime/{record['name']}/SKILL.md"
         )
-        installed["installed_sha256"] = sha256(
-            (destination / "SKILL.md").read_bytes()
-        )
+        installed["installed_sha256"] = sha256(skill_content)
         installed["workspace_path"] = f".agents/skills/{record['name']}/SKILL.md"
         installed["workspace_sha256"] = installed["installed_sha256"]
         installed["interface_sha256"] = sha256(
@@ -723,9 +724,10 @@ def directories_equal(left: Path, right: Path) -> bool:
 
 
 PROMOTION_METADATA = (
-    'implementation_state: "VERIFIED"\n'
-    'external_evidence_status: "LOCAL_EXECUTED"\n'
-    'production_certification: "NOT_CERTIFIED"\n'
+    "metadata:\n"
+    '  implementation_state: "VERIFIED"\n'
+    '  external_evidence_status: "LOCAL_EXECUTED"\n'
+    '  production_certification: "NOT_CERTIFIED"\n'
 )
 
 
@@ -740,7 +742,7 @@ def normalize_promotion_metadata(content: bytes) -> bytes:
 
 
 def promoted_skill_content(content: bytes, name: str) -> bytes:
-    marker = f"name: {name}\n".encode("utf-8")
+    marker = f"name: {name}\n".encode()
     if content.count(marker) != 1:
         fail(f"cannot apply exact promotion metadata: {name}")
     if PROMOTION_METADATA.encode("utf-8") in content:

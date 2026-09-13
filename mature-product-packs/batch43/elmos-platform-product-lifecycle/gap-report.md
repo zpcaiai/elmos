@@ -1,7 +1,7 @@
 # Batch 43 gap inventory
 
 - Pack: `elmos-platform-product-lifecycle`
-- Skills in scope: 0
+- Skills in scope: 20
 - Blocking gaps: 0
 - Open gaps: 0
 - Repository-owned: 0 blocking / 0 open

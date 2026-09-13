@@ -1,7 +1,7 @@
 # Batch 45 gap inventory
 
 - Pack: `elmos-platform-production-readiness`
-- Skills in scope: 0
+- Skills in scope: 22
 - Blocking gaps: 0
 - Open gaps: 0
 - Repository-owned: 0 blocking / 0 open

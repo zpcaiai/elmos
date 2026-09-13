@@ -20,6 +20,12 @@ agents_skills_dir = ROOT / ".agents/skills"
 runtime_skills_dir = ROOT / "agent-skills/runtime"
 
 promoted = 0
+promotion_metadata = (
+    "metadata:\n"
+    '  implementation_state: "VERIFIED"\n'
+    '  external_evidence_status: "LOCAL_EXECUTED"\n'
+    '  production_certification: "NOT_CERTIFIED"\n'
+)
 for alias, entry in sorted(entries.items()):
     agents_skill_file = agents_skills_dir / alias / "SKILL.md"
     runtime_skill_dir = runtime_skills_dir / alias
@@ -35,22 +41,21 @@ for alias, entry in sorted(entries.items()):
     parts = text.split("---", 2)
     if len(parts) >= 3:
         fm = parts[1]
-        if "implementation_state:" not in fm:
+        fm = re.sub(
+            r'(?m)^(?:  )?(?:implementation_state|external_evidence_status|production_certification):\s*"?[A-Za-z0-9_-]+"?\n?',
+            "",
+            fm,
+        )
+        if "metadata:\n" in fm:
+            fm = fm.replace("metadata:\n", promotion_metadata, 1)
+        else:
             fm = re.sub(
                 rf"^name:\s*{re.escape(alias)}.*$",
-                f'name: {alias}\nimplementation_state: "VERIFIED"\nexternal_evidence_status: "LOCAL_EXECUTED"\nproduction_certification: "NOT_CERTIFIED"',
+                f"name: {alias}\n{promotion_metadata.rstrip()}",
                 fm,
                 flags=re.MULTILINE,
             )
-            if "metadata:" in fm and "implementation_state:" not in fm.split("metadata:")[1]:
-                fm = fm.replace(
-                    "metadata:\n",
-                    'metadata:\n  implementation_state: "VERIFIED"\n  external_evidence_status: "LOCAL_EXECUTED"\n  production_certification: "NOT_CERTIFIED"\n',
-                )
-            text = f"---{fm}---{parts[2]}"
-        else:
-            text = re.sub(r'implementation_state:\s*"?[A-Za-z0-9_-]+"?', 'implementation_state: "VERIFIED"', text)
-            text = re.sub(r'external_evidence_status:\s*"?[A-Za-z0-9_-]+"?', 'external_evidence_status: "LOCAL_EXECUTED"', text)
+        text = f"---{fm}---{parts[2]}"
 
     agents_skill_file.write_text(text, encoding="utf-8")
 

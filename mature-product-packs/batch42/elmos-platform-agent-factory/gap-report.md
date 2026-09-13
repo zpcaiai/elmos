@@ -1,7 +1,7 @@
 # Batch 42 gap inventory
 
 - Pack: `elmos-platform-agent-factory`
-- Skills in scope: 0
+- Skills in scope: 22
 - Blocking gaps: 0
 - Open gaps: 0
 - Repository-owned: 0 blocking / 0 open

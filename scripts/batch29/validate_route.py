@@ -3552,6 +3552,15 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     network = receipt.get("network_isolation")
     sandbox = network.get("sandbox") if isinstance(network, dict) else None
     verifier = network.get("verifier") if isinstance(network, dict) else None
+    toolchain_profile = toolchain.get("profile") if isinstance(toolchain, dict) else None
+    declared_profile_ids = tuple(
+        item.removeprefix("apple-host-profile=")
+        for item in toolchain_profile
+        if isinstance(item, str) and item.startswith("apple-host-profile=")
+    ) if isinstance(toolchain_profile, list) else ()
+    if len(declared_profile_ids) != 1:
+        raise ValueError("receipt must declare one Apple host profile")
+    declared_profile_id = declared_profile_ids[0]
     observed_identity = (
         toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None,
         git.get("sha256") if isinstance(git, dict) else None,
@@ -3561,7 +3570,8 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     matches = tuple(
         profile
         for profile in _APPLE_ROUTE_HOST_PROFILES
-        if (
+        if profile.profile_id == declared_profile_id
+        and (
             "sha256:" + profile.swiftc_sha256,
             "sha256:" + profile.apple_git_sha256,
             "sha256:" + profile.sandbox_exec_sha256,
@@ -3696,7 +3706,7 @@ def _validate_swift_analyzer_receipt_document(
     try:
         registered_contract = _registered_swift_receipt_contract(receipt)
     except (ImportError, KeyError, TypeError, ValueError) as exc:
-        failures.append(f"{label} Apple host profile is not registered: {exc}")
+        failures.append(f"{label} toolchain exact identity is invalid: {exc}")
         return None
     expected_toolchain = registered_contract["toolchain"]
     expected_build_closure = registered_contract["closure"]

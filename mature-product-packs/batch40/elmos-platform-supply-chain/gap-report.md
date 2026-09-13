@@ -1,7 +1,7 @@
 # Batch 40 gap inventory
 
 - Pack: `elmos-platform-supply-chain`
-- Skills in scope: 0
+- Skills in scope: 24
 - Blocking gaps: 0
 - Open gaps: 2
 - Repository-owned: 0 blocking / 2 open
