@@ -17,6 +17,21 @@ import run_client_gate as client_gate  # noqa: E402
 
 
 class PortableClientPackGateTest(unittest.TestCase):
+    def test_frontend_ci_gates_manifests_and_validates_auxiliary_outputs(self) -> None:
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        self.assertIn(
+            "find client-packs -mindepth 2 -maxdepth 2 -type f -name pack.json",
+            workflow,
+        )
+        self.assertNotIn(
+            "find client-packs -mindepth 1 -maxdepth 1 -type d",
+            workflow,
+        )
+        self.assertIn(
+            "python3.11 scripts/batch32/validate_portable_client_packs.py",
+            workflow,
+        )
+
     def test_formal_replay_watchdogs_are_bounded_and_distinct_from_solver_budget(
         self,
     ) -> None:

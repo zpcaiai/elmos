@@ -318,9 +318,11 @@ jobs:
       - name: Replay complete Batch 32 and Batch 35 formal gates
         run: |
           make batch32-check
-          find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
+          find client-packs -mindepth 2 -maxdepth 2 -type f -name pack.json -print | sort | while IFS= read -r manifest; do
+            pack="$(dirname "$manifest")"
             python3.11 scripts/batch32/run_client_gate.py "$pack"
           done
+          python3.11 scripts/batch32/validate_portable_client_packs.py
           make batch35-check
 
   polyglot-route-pack-contracts:
