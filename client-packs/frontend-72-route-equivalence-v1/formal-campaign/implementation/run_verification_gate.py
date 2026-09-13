@@ -891,12 +891,7 @@ def main(repository_root: Path | None = None) -> int:
                             **frontend_defaults,
                             "status": "invalid",
                         },
-                        # The v2 validator owns a strict 600-second budget for
-                        # its self-contained replay.  The supervising process
-                        # must outlive that budget so it can report the actual
-                        # replay decision, while retaining a bounded allowance
-                        # for interpreter startup and JSON serialization.
-                        660,
+                        540,
                     )
                 else:
                     frontend_campaign = {
