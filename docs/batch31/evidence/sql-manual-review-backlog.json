@@ -13352,6 +13352,2166 @@
       }
     },
     {
+      "excerpt": "/* V82: preserve the V57 public ABI and V80 enqueue/billing authority. */ /* Claim serializes tenant capacity;...",
+      "family": "structure",
+      "finding_id": "sql-review-be45d4313d89bd9bfe9e",
+      "fingerprint": "sha256:be45d4313d89bd9bfe9e939e23d333acb0d25595990525fe42fec5b38e5528d9",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL table function must be BEGIN RETURN QUERY SELECT ...; END",
+      "reason_code": "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V82__execution_claim_and_lease_concurrency.sql",
+      "statement_index": 1,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* --------------------------------------------------------------------------- */ /* 8. Heartbeat, checkpoint,...",
+      "family": "structure",
+      "finding_id": "sql-review-586d4f643460469ddfc0",
+      "fingerprint": "sha256:586d4f643460469ddfc09122ebf3aea9653eac519142fe34c73b1c5453ba1dc6",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL table function must be BEGIN RETURN QUERY SELECT ...; END",
+      "reason_code": "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V82__execution_claim_and_lease_concurrency.sql",
+      "statement_index": 2,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_complete_execution_job(p_lease_id VARCHAR, p_runner_node_id VARCHAR, p_token_...",
+      "family": "structure",
+      "finding_id": "sql-review-bebd6fedbe54f151d7a8",
+      "fingerprint": "sha256:bebd6fedbe54f151d7a8567e8efd1929703c42df17de199e2bd5e0267de2a772",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V82__execution_claim_and_lease_concurrency.sql",
+      "statement_index": 3,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* --------------------------------------------------------------------------- */ /* 9. Cancellation and lease...",
+      "family": "structure",
+      "finding_id": "sql-review-90209a039b8c66d6ad09",
+      "fingerprint": "sha256:90209a039b8c66d6ad092a3aa9c367ecc4065214e7fb8b465d8a6f860ee16205",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V82__execution_claim_and_lease_concurrency.sql",
+      "statement_index": 4,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_reconcile_dispatch_counters() RETURNS INT LANGUAGE plpgsql SQL SECURITY DEFIN...",
+      "family": "structure",
+      "finding_id": "sql-review-0df6eafa3c63dd943663",
+      "fingerprint": "sha256:0df6eafa3c63dd94366343acd24962e5033a1f1d0873a9823569456cd3842f24",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V82__execution_claim_and_lease_concurrency.sql",
+      "statement_index": 5,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_reserve_usage_v2(p_reservation_id VARCHAR, p_subscription_id VARCHAR, p_actor...",
+      "family": "types",
+      "finding_id": "sql-review-d98d37f4d44a4a296e2b",
+      "fingerprint": "sha256:d98d37f4d44a4a296e2b733feffaa3f5dcbf30a833e034fcd828b5191aba6b25",
+      "owner": "UNASSIGNED",
+      "reason": "DType.DECIMAL without an explicit precision is arbitrary-precision in postgres; no fixed-precision target type preserves it, so certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)",
+      "reason_code": "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 7,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_settle_usage_v2(p_actor_id VARCHAR, p_reservation_id VARCHAR, p_event_prefix ...",
+      "family": "types",
+      "finding_id": "sql-review-0dfbcc5ddab142fca881",
+      "fingerprint": "sha256:0dfbcc5ddab142fca881683a1952ef3da3950c56ae873e43c97fa4529f849dd3",
+      "owner": "UNASSIGNED",
+      "reason": "DType.DECIMAL without an explicit precision is arbitrary-precision in postgres; no fixed-precision target type preserves it, so certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)",
+      "reason_code": "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 8,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_release_usage_v2(p_actor_id VARCHAR, p_reservation_id VARCHAR, p_reason_code ...",
+      "family": "types",
+      "finding_id": "sql-review-b0d4fe512445cf5d69d6",
+      "fingerprint": "sha256:b0d4fe512445cf5d69d633bf42210e8fb038b2aa0e24e564b39fb8614161ff95",
+      "owner": "UNASSIGNED",
+      "reason": "column type DType.USERDEFINED is outside certified-ddl-v1's type allowlist",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 9,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_usage_event_dimensions() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN     IF ...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-512e5edbd78cc70a148a",
+      "fingerprint": "sha256:512e5edbd78cc70a148a0279ed4d2af27af6539b7fbc14319ff7d017efd3274a",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 10,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_usage_ledger_dimensions() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN     IF...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-a115699b6f321b7ec1e5",
+      "fingerprint": "sha256:a115699b6f321b7ec1e5e5a6e8212deca59e29c15a99e2bdb32c5b7f7fb56a83",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 12,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_products (sku VARCHAR(96) PRIMARY KEY, product_type VARCHAR(32) NOT NULL CHECK (produc...",
+      "family": "constraints",
+      "finding_id": "sql-review-cedaf80c8b0c0f657bd3",
+      "fingerprint": "sha256:cedaf80c8b0c0f657bd317348b5bfcff47749e171736daa39da2d714bfcbd4f0",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 14,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_products_immutable() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN ...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-7d83d7aa4bea623e4526",
+      "fingerprint": "sha256:7d83d7aa4bea623e452621a89e120ea1fda703f216dc2c1fb4ff2793008e9647",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 16,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_orders (order_id VARCHAR(96) PRIMARY KEY, organization_id VARCHAR(96) NOT NULL REFEREN...",
+      "family": "constraints",
+      "finding_id": "sql-review-6e00184f5bf34a21d2cd",
+      "fingerprint": "sha256:6e00184f5bf34a21d2cd8e016a170dd63947bb9549665277e8118d4f065aab23",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 18,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_commercial_order_directory() RETURNS trigger LANGUAGE plpgsql SECURITY D...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-5fa0778c3568b3de2380",
+      "fingerprint": "sha256:5fa0778c3568b3de2380e7ae708b85771e52c54d2f63bef84dd2d8f9ab72cda9",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 20,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_credit_accounts (organization_id VARCHAR(96) PRIMARY KEY REFERENCES organizations (org...",
+      "family": "constraints",
+      "finding_id": "sql-review-89bd4ecc1956e2d819c7",
+      "fingerprint": "sha256:89bd4ecc1956e2d819c706d5582b3bd67572340c71f00102ddc45b57b2be396b",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 22,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_credit_lots (lot_id VARCHAR(96) PRIMARY KEY, organization_id VARCHAR(96) NOT NULL REFE...",
+      "family": "identifiers",
+      "finding_id": "sql-review-54a8ce264bb21a26bba2",
+      "fingerprint": "sha256:54a8ce264bb21a26bba201619cddc85882ed0aa3d4cb9c97b8777731186690b1",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK left-hand column is not a plain identifier (Add)",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 23,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_credit_ledger_entries (ledger_entry_id VARCHAR(96) PRIMARY KEY, organization_id VARCHA...",
+      "family": "constraints",
+      "finding_id": "sql-review-3d7d12c75a84e689d0f7",
+      "fingerprint": "sha256:3d7d12c75a84e689d0f70dd4ef79198b0b58a433346844dde59a9f6d77da96de",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 24,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_credit_ledger_append_only() RETURNS trigger LANGUAGE plpgsql AS $$...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-2bd8cc979582a10c8744",
+      "fingerprint": "sha256:2bd8cc979582a10c87441786aa2183f067386c34604d484dd9c5b7614bfc70b5",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 25,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_credit_reservations (reservation_id VARCHAR(96) PRIMARY KEY, organization_id VARCHAR(9...",
+      "family": "constraints",
+      "finding_id": "sql-review-7ff41a9099630ce88531",
+      "fingerprint": "sha256:7ff41a9099630ce88531967d3ea1610593fbea8b976107df691a1671ae66bd2a",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 28,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_credit_balance_guard() RETURNS trigger LANGUAGE plpgsql AS $$ BEGI...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-66fbd2e2d1d5891bc5f5",
+      "fingerprint": "sha256:66fbd2e2d1d5891bc5f518b7925a1f8f317c6c1943a46d8dbeb460b7eaf6e891",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 30,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_create_order(p_order_id VARCHAR, p_actor_id VARCHAR, p_sku VARCHAR...",
+      "family": "structure",
+      "finding_id": "sql-review-f856c8af0c3610d8c240",
+      "fingerprint": "sha256:f856c8af0c3610d8c240b2c1b3a344bef0ac23cfc25c974f8a332bbb816fdc59",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 32,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_fulfill_order(p_organization_id VARCHAR, p_order_id VARCHAR, p_pro...",
+      "family": "structure",
+      "finding_id": "sql-review-fcaaa3b1be84d37e6e27",
+      "fingerprint": "sha256:fcaaa3b1be84d37e6e271f07f073ac214fe04e0bab4f47086c7d4d09e08bdc5e",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 33,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_mark_order_handoff(p_order_id VARCHAR, p_actor_id VARCHAR) RETURNS...",
+      "family": "structure",
+      "finding_id": "sql-review-830b0e23027bfc8c2771",
+      "fingerprint": "sha256:830b0e23027bfc8c2771fd575135dc2b2dceb10136872e5edc070489bc7f4b72",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 34,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_mark_order_prepare_failed(p_order_id VARCHAR, p_actor_id VARCHAR, ...",
+      "family": "structure",
+      "finding_id": "sql-review-e64454a18f98cc274e7a",
+      "fingerprint": "sha256:e64454a18f98cc274e7a70f146f5c0d40c0e65c3ce1113ef6ce06093a16691b9",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 35,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_reserve_generation(p_reservation_id VARCHAR, p_actor_id VARCHAR, p...",
+      "family": "types",
+      "finding_id": "sql-review-99af5c033e0b248e7595",
+      "fingerprint": "sha256:99af5c033e0b248e7595c0dece9edd5614df0c91a0c5f675a8e92065aba3d05b",
+      "owner": "UNASSIGNED",
+      "reason": "DType.DECIMAL without an explicit precision is arbitrary-precision in postgres; no fixed-precision target type preserves it, so certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)",
+      "reason_code": "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 36,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_settle_generation(p_reservation_id VARCHAR, p_actor_id VARCHAR, p_...",
+      "family": "types",
+      "finding_id": "sql-review-49c7d2a3376d032659c2",
+      "fingerprint": "sha256:49c7d2a3376d032659c260134b5cdd2c6190ce22864ef40fd23407b2f14ff9b3",
+      "owner": "UNASSIGNED",
+      "reason": "DType.DECIMAL without an explicit precision is arbitrary-precision in postgres; no fixed-precision target type preserves it, so certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)",
+      "reason_code": "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 37,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_release_generation(p_reservation_id VARCHAR, p_actor_id VARCHAR) R...",
+      "family": "structure",
+      "finding_id": "sql-review-29717046f1ff4885311d",
+      "fingerprint": "sha256:29717046f1ff4885311de7bd97e2dab5b9ae8fa6a4c8543801144d0fe05a5d0f",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 38,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ DECLARE name text; BEGIN     FOREACH name IN ARRAY ARRAY[         'commercial_orders', 'commercial_credi...",
+      "family": null,
+      "finding_id": "sql-review-24ac3dd7f9c0dfa5e964",
+      "fingerprint": "sha256:24ac3dd7f9c0dfa5e964f9a3de398fb4bf472828269bdd27ce5357a94176d4b4",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 39,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "REVOKE ALL ON commercial_products, commercial_orders, commercial_order_directory,     commercial_credit_accoun...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-b3063e34620dda3369f7",
+      "fingerprint": "sha256:b3063e34620dda3369f7da03cada331f22932213e36130fd6cacfe62f0a221e2",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 40,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* The billing read path expires an elapsed trial before returning balances. */ /* Keep the runtime role on a ...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-56e576755776d6487c70",
+      "fingerprint": "sha256:56e576755776d6487c702fbe176972c6e803abbb5ba4bf053d5f368a3c26ee57",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 52,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER FUNCTION elmos_expire_current_trial() SET search_path = pg_catalog, public",
+      "family": "statement-kind",
+      "finding_id": "sql-review-37ad149aaf9c68dade72",
+      "fingerprint": "sha256:37ad149aaf9c68dade72220dbe3b6249f385ed4d142d83feece1a74ca4e56829",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 53,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ BEGIN     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN         GRANT ...",
+      "family": null,
+      "finding_id": "sql-review-50fb0591561b2f967cfd",
+      "fingerprint": "sha256:50fb0591561b2f967cfd6808aa03ba04aeb194375ae398b9d26e24a3f3702a32",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V83__commercial_credit_and_one_time_orders.sql",
+      "statement_index": 55,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "UPDATE payment_order_directory SET business_order_sha256 = ENCODE(DIGEST(CONVERT_TO(checkout_session_id, 'UTF8...",
+      "family": "structure",
+      "finding_id": "sql-review-08cec62140bf56f7dc96",
+      "fingerprint": "sha256:08cec62140bf56f7dc967546a1c31ff917cf3a4fba19b3f09c3dca00e6b86233",
+      "owner": "UNASSIGNED",
+      "reason": "DML expression node Encode is outside the typed portable route",
+      "reason_code": "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 4,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "UPDATE wallet_topup_order_directory SET business_order_sha256 = ENCODE(DIGEST(CONVERT_TO(out_trade_no, 'UTF8')...",
+      "family": "structure",
+      "finding_id": "sql-review-22031b616c8a03840c38",
+      "fingerprint": "sha256:22031b616c8a03840c381e978ad7490e4cce54dfd27cce4704c79b76c318e20f",
+      "owner": "UNASSIGNED",
+      "reason": "DML expression node Encode is outside the typed portable route",
+      "reason_code": "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 5,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "UPDATE commercial_order_directory SET business_order_sha256 = ENCODE(DIGEST(CONVERT_TO(out_trade_no, 'UTF8'), ...",
+      "family": "structure",
+      "finding_id": "sql-review-bedfbf475d0487b2385c",
+      "fingerprint": "sha256:bedfbf475d0487b2385cc67cd6ed160ff65eeaa1c0af00b0435d1c6271b3c21b",
+      "owner": "UNASSIGNED",
+      "reason": "DML expression node Encode is outside the typed portable route",
+      "reason_code": "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 6,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE payment_order_directory     ALTER COLUMN business_order_sha256 SET NOT NULL,     ADD CONSTRAINT pa...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-f966f3c3e5e1a1acbf94",
+      "fingerprint": "sha256:f966f3c3e5e1a1acbf940efd3af805c4a12859db770b9e50583267700b70b088",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 7,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE wallet_topup_order_directory     ALTER COLUMN business_order_sha256 SET NOT NULL,     ADD CONSTRAI...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-37d6b076e8a397681a2e",
+      "fingerprint": "sha256:37d6b076e8a397681a2e1a24aecb2e83ae62b053e9869ebb2723de96ce800b57",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 8,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE commercial_order_directory     ALTER COLUMN business_order_sha256 SET NOT NULL,     ADD CONSTRAINT...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-39239296a12a02fbd779",
+      "fingerprint": "sha256:39239296a12a02fbd7793169be1b32fbc884f4519200f02ac8aa291a298c09d4",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 9,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_payment_order_directory() RETURNS trigger LANGUAGE plpgsql SECURITY DEFI...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-a1bb5f4a1a2a2b593b75",
+      "fingerprint": "sha256:a1bb5f4a1a2a2b593b75d5b88efb3c5d9c62fcdee2184060fb081cc7af264c4b",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 13,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_wallet_topup_directory() RETURNS trigger LANGUAGE plpgsql SECURITY DEFIN...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-623090497f25aebffaf0",
+      "fingerprint": "sha256:623090497f25aebffaf0e4568529d10bcc82210ffcfe61fb280d93fea5e82307",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 14,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_commercial_order_directory() RETURNS trigger LANGUAGE plpgsql SECURITY D...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-569909899545031a2450",
+      "fingerprint": "sha256:569909899545031a2450f161541076b132597cb24377c2df47c3ef0b58192055",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V84__elmpay_order_digest_lookup.sql",
+      "statement_index": 15,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE wallet_topup_order_directory     ADD COLUMN provider varchar(32),     ALTER COLUMN status TYPE var...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-c8c8d4b766da9535e73d",
+      "fingerprint": "sha256:c8c8d4b766da9535e73d8cd9a03538ea32e1161af4db67e84bcb2addc0edcdd8",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 2,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "UPDATE payment_order_directory AS d SET provider = s.provider FROM payment_checkout_sessions AS s WHERE s.chec...",
+      "family": "structure",
+      "finding_id": "sql-review-9a29b5c7946644663a31",
+      "fingerprint": "sha256:9a29b5c7946644663a31f982fe9203587837bf5044d7c8086d0678de9e972a75",
+      "owner": "UNASSIGNED",
+      "reason": "UPDATE source join columns ('checkout_session_id',) are not a declared unique key",
+      "reason_code": "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 7,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "UPDATE wallet_topup_order_directory AS d SET provider = s.provider FROM wallet_topup_orders AS s WHERE s.out_t...",
+      "family": "structure",
+      "finding_id": "sql-review-11a8fda20d9d523fb8de",
+      "fingerprint": "sha256:11a8fda20d9d523fb8de1d800a3347ccffa4b9a989a6e2b62db9cb425ec0a506",
+      "owner": "UNASSIGNED",
+      "reason": "UPDATE source join columns ('out_trade_no',) are not a declared unique key",
+      "reason_code": "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 8,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "UPDATE commercial_order_directory AS d SET provider = s.provider FROM commercial_orders AS s WHERE s.out_trade...",
+      "family": "structure",
+      "finding_id": "sql-review-48bbb9590893ee150716",
+      "fingerprint": "sha256:48bbb9590893ee15071646bbfd60f68d8b1806319a3feeb4d7c97072cba6f56c",
+      "owner": "UNASSIGNED",
+      "reason": "UPDATE source join columns ('out_trade_no',) are not a declared unique key",
+      "reason_code": "CERTIFIED_UPDATE_SOURCE_KEY_NOT_UNIQUE",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 9,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ DECLARE source_table text; BEGIN     FOREACH source_table IN ARRAY ARRAY[         'payment_checkout_sess...",
+      "family": null,
+      "finding_id": "sql-review-355c2a4ef419ed5c448f",
+      "fingerprint": "sha256:355c2a4ef419ed5c448f979a7db4bd726c98f7cca37cbac38697b015cc04f257",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 13,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE payment_order_directory     ALTER COLUMN provider SET NOT NULL,     ADD CONSTRAINT payment_order_d...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-354cd5d3a60bece91550",
+      "fingerprint": "sha256:354cd5d3a60bece9155025c4f681b3659ad375ac7ed66b5c4880cce8ddadd180",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 14,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE wallet_topup_order_directory     ALTER COLUMN provider SET NOT NULL,     ADD CONSTRAINT wallet_top...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-5b7fec802ae3b9ddf467",
+      "fingerprint": "sha256:5b7fec802ae3b9ddf467dddf16bce7c97f2e3eebadec9e6c204675fda1339414",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 15,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE commercial_order_directory     ALTER COLUMN provider SET NOT NULL,     ADD CONSTRAINT commercial_o...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-173e7178b8a7e6f974dc",
+      "fingerprint": "sha256:173e7178b8a7e6f974dc89fe5343a03f273da7f43795bf4baf16a4bbb45546ab",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 16,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_payment_order_directory() RETURNS trigger LANGUAGE plpgsql SECURITY DEFI...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-2116585eaf3bcad6e05e",
+      "fingerprint": "sha256:2116585eaf3bcad6e05ec6bd0aa6a48e4b6122f806ebdcd90a417e999f6bf23d",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 17,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_wallet_topup_directory() RETURNS trigger LANGUAGE plpgsql SECURITY DEFIN...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-59fed89c70d42872d8f0",
+      "fingerprint": "sha256:59fed89c70d42872d8f0c9be1407bba148e486398d4bcfc5aec63e54b816eb30",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 18,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_commercial_order_directory() RETURNS trigger LANGUAGE plpgsql SECURITY D...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-5723d5438eebd3457243",
+      "fingerprint": "sha256:5723d5438eebd3457243a9cd4586d6529a6f164a99b3e3f0565d2262e854147a",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 19,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* A provider-contacting handoff can have an unknown result. Keep that state distinct */ /* from a known local...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-f15dbc0fecd2c6114a46",
+      "fingerprint": "sha256:f15dbc0fecd2c6114a46de3ed4e35b3e39feded04bd8735672499c4eb80e6d80",
+      "owner": "UNASSIGNED",
+      "reason": "certified-drop-v1 only accepts a single DROP TABLE statement",
+      "reason_code": "CERTIFIED_DROP_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 26,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "ALTER TABLE wallet_topup_orders     ALTER COLUMN status TYPE varchar(24),     DROP CONSTRAINT wallet_topup_ord...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-769369b85502ebae891b",
+      "fingerprint": "sha256:769369b85502ebae891b7b7ada388e3e170b81bd4d9b51c8fd0511ead701b38d",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 27,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_wallet_mark_topup_handoff(p_organization_id VARCHAR, p_topup_order_id VARCHAR...",
+      "family": "structure",
+      "finding_id": "sql-review-bace5dc43f5122b2a1b9",
+      "fingerprint": "sha256:bace5dc43f5122b2a1b913e4526582afa2602dfe663f1571927b1d00ccd7fc47",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 29,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_wallet_mark_topup_prepare_failed(p_organization_id VARCHAR, p_topup_order_id ...",
+      "family": "structure",
+      "finding_id": "sql-review-bedf89cfaec28271277f",
+      "fingerprint": "sha256:bedf89cfaec28271277f6398df7eb2b17134d3435424553462c2245b9dfb2ef2",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 30,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_wallet_credit_topup(p_organization_id VARCHAR, p_topup_order_id VARCHAR, p_pr...",
+      "family": "structure",
+      "finding_id": "sql-review-248fd9189ba596120a4e",
+      "fingerprint": "sha256:248fd9189ba596120a4eaf631040eb4a79a381e0f40fbaddb808415599661884",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 31,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* A checkout request may reach ELMPay even when ELMOS does not receive the */ /* response. A later signed cal...",
+      "family": "structure",
+      "finding_id": "sql-review-067f495f5f5ac5a2b514",
+      "fingerprint": "sha256:067f495f5f5ac5a2b514a899a69f4c4999fb806a6faed87d913309aca7ffd4bd",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 32,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* Reclaim stale generation holds deterministically. Expired lot quantities are not */ /* made spendable again...",
+      "family": "structure",
+      "finding_id": "sql-review-3d0a1b5a8aaba7b8adc4",
+      "fingerprint": "sha256:3d0a1b5a8aaba7b8adc4b133ede48d2d5d558849e3c3a270e70b8c4dccd8708b",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 35,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ BEGIN     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN         GRANT ...",
+      "family": null,
+      "finding_id": "sql-review-01a6887aa1b436f9fc04",
+      "fingerprint": "sha256:01a6887aa1b436f9fc047a7615667e03b0e5574df5fb0e3c444c9e3c211a8951",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V85__payment_provider_binding_and_credit_expiry.sql",
+      "statement_index": 37,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_activate_subscription_period(p_subscription_id VARCHAR, p_quota_allocation_id...",
+      "family": "types",
+      "finding_id": "sql-review-6049804bcd02a6325794",
+      "fingerprint": "sha256:6049804bcd02a6325794d658ef1ab733c58a4c45da305809b38a48730ec14d35",
+      "owner": "UNASSIGNED",
+      "reason": "column type DType.USERDEFINED is outside certified-ddl-v1's type allowlist",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V86__self_service_catalog_2026_09_08.sql",
+      "statement_index": 2,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_grant_trial(p_trial_grant_id VARCHAR, p_subscription_id VARCHAR, p_quota_allo...",
+      "family": "types",
+      "finding_id": "sql-review-e465899615f3e4b083b0",
+      "fingerprint": "sha256:e465899615f3e4b083b0a2b2466308882c9fd2e5c4bb27501601d8b9d9d379e0",
+      "owner": "UNASSIGNED",
+      "reason": "column type DType.USERDEFINED is outside certified-ddl-v1's type allowlist",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "recommended_action": "Record an exact type policy and prove boundary, precision, null, and error behavior.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V86__self_service_catalog_2026_09_08.sql",
+      "statement_index": 3,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ BEGIN     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN         GRANT ...",
+      "family": null,
+      "finding_id": "sql-review-11f5fca29e9c1d0de076",
+      "fingerprint": "sha256:11f5fca29e9c1d0de07631613caa294f0fcc8be5b78b52128e6eabee53d98991",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V86__self_service_catalog_2026_09_08.sql",
+      "statement_index": 6,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_credit_journal_entries (posting_id VARCHAR(128) PRIMARY KEY, transaction_id VARCHAR(96...",
+      "family": "constraints",
+      "finding_id": "sql-review-490689ac8e5e429b1809",
+      "fingerprint": "sha256:490689ac8e5e429b1809f827d8cb3030777166d04aa17c66e356a94c0ce74c1f",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 2,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_credit_journal_immutable() RETURNS trigger LANGUAGE plpgsql AS $$ ...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-f8640a358faa510072fc",
+      "fingerprint": "sha256:f8640a358faa510072fce0bb151d380e9a8e1be0e2ec83c684f906d10d71eead",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 5,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_assert_commercial_credit_transaction_balanced() RETURNS trigger LANGUAGE plpg...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-d5ffea01263fbf53014f",
+      "fingerprint": "sha256:d5ffea01263fbf53014fd4e13b1fd0af5a48198963c30f9f6637b20ebee8f89c",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 8,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_guard_commercial_credit_outbox_event() RETURNS trigger LANGUAGE plpgsql AS $$...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-9b933661c3a8691feeaa",
+      "fingerprint": "sha256:9b933661c3a8691feeaa49ec8d405274c62ef0047a12615649bc9f1e24eba007",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 13,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE TABLE commercial_credit_projection_rebuilds (rebuild_id VARCHAR(96) PRIMARY KEY, organization_id VARCHA...",
+      "family": "identifiers",
+      "finding_id": "sql-review-ac6bec50841b3105e560",
+      "fingerprint": "sha256:ac6bec50841b3105e5608cf2043402463b9a4c4f84436d4aa7047a6c85dfc818",
+      "owner": "UNASSIGNED",
+      "reason": "CHECK left-hand column is not a plain identifier (Length)",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 18,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* A one-time opening transaction preserves pre-V87 balances without pretending */ /* that this migration can ...",
+      "family": "structure",
+      "finding_id": "sql-review-4b2f2866ef788d3e813a",
+      "fingerprint": "sha256:4b2f2866ef788d3e813a2314af593db788c89fe38c2729daf1f34881534a5592",
+      "owner": "UNASSIGNED",
+      "reason": "DML expression node DPipe is outside the typed portable route",
+      "reason_code": "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 20,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "INSERT INTO commercial_credit_journal_entries (posting_id, transaction_id, organization_id, account_code, side...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-01c528c35827a04ada62",
+      "fingerprint": "sha256:01c528c35827a04ada6231fbeddb9156630c1983403cdd0267b42cd785a564de",
+      "owner": "UNASSIGNED",
+      "reason": "INSERT source must be one SELECT in the bounded route",
+      "reason_code": "CERTIFIED_INSERT_UNSUPPORTED_SOURCE",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 21,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* Fire the deferred balance assertions before the migration changes RLS on the */ /* journal tables; PostgreS...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-ad740504f3baed840f05",
+      "fingerprint": "sha256:ad740504f3baed840f059cd1dedb4b63be8134fda82025c8a4864c856f9de4ee",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 22,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_post_commercial_credit_account_change() RETURNS trigger LANGUAGE plpgsql SECU...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-4af8c23ee8cbc4669d90",
+      "fingerprint": "sha256:4af8c23ee8cbc4669d90397defd57ed290aace7b6b24511adfe263fe82af2e5c",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 23,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_credit_reconcile() RETURNS TABLE (organization_id VARCHAR, project...",
+      "family": "structure",
+      "finding_id": "sql-review-05190873f8eecbd7a4f7",
+      "fingerprint": "sha256:05190873f8eecbd7a4f79c29c2c2a891d85155c949a695568f7af6a0abf77e60",
+      "owner": "UNASSIGNED",
+      "reason": "table-function volatility/stability has no one exact cross-dialect route",
+      "reason_code": "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 25,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ BEGIN     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_credit_reconciler') THEN         ...",
+      "family": null,
+      "finding_id": "sql-review-f8ec4347141a415645e9",
+      "fingerprint": "sha256:f8ec4347141a415645e9d6be651dd06dbc85d1af8100a96160229251c7dc4b58",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 26,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_rebuild_credit_projection(p_actor_id VARCHAR, p_reason VARCHAR, p_...",
+      "family": "structure",
+      "finding_id": "sql-review-3bc675268087fea5ce96",
+      "fingerprint": "sha256:3bc675268087fea5ce962466f4f5e5325c81dba12c147967103338d583ae2cfc",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 27,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_claim_commercial_credit_outbox(p_worker_id VARCHAR, p_limit INT, p_lease_seco...",
+      "family": "structure",
+      "finding_id": "sql-review-0db3722e66ebda54b1ce",
+      "fingerprint": "sha256:0db3722e66ebda54b1cebe25032242106606c103292cd1793d961e7eee97f908",
+      "owner": "UNASSIGNED",
+      "reason": "table function body must be a dollar-quoted SQL body",
+      "reason_code": "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 28,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_complete_commercial_credit_outbox(p_event_id VARCHAR, p_worker_id VARCHAR, p_...",
+      "family": "structure",
+      "finding_id": "sql-review-90302839449ee5148eee",
+      "fingerprint": "sha256:90302839449ee5148eee3b711bb9dc95367f939ab78a514ede3dbcb3b22d3beb",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 29,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "/* Journal/audit data stays tenant scoped. The cross-tenant outbox carries only */ /* accounting identifiers a...",
+      "family": null,
+      "finding_id": "sql-review-b74b2f2946b8e987f92b",
+      "fingerprint": "sha256:b74b2f2946b8e987f92bfd90e5c994fb5a7e2add09258c03fae15007f07d9cc5",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 30,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "REVOKE ALL ON commercial_credit_journal_transactions,     commercial_credit_journal_entries, commercial_credit...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-9b65af0a458c9506df82",
+      "fingerprint": "sha256:9b65af0a458c9506df82092d12406903e621c2a6f8459c6a7a33864addbd9123",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 31,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "DO $$ BEGIN     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN         GRANT ...",
+      "family": null,
+      "finding_id": "sql-review-5b913267d81d8fd34686",
+      "fingerprint": "sha256:5b913267d81d8fd3468671db5dcd5c71e836f5ba00fda8cc59447b3ba9ba811a",
+      "owner": "UNASSIGNED",
+      "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
+      "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "statement_index": 39,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_forbid_append_only_mutation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN   ...",
       "family": "statement-kind",
       "finding_id": "sql-review-233f0a8ba4b30a6578c8",
@@ -13415,14 +15575,14 @@
   ],
   "kind": "elmos.batch31.manual-review-backlog",
   "schema_version": 1,
-  "source_report_digest": "sha256:254632b2f3172881969dc31ee6d84366e29b2f38e787268d60af0e699c109626",
+  "source_report_digest": "sha256:2907235a5caec9afce06d3a59b1619e970ea40607e99639703695382414d2bcc",
   "summary": {
     "blocked": 0,
     "in_review": 0,
-    "open": 0,
-    "release_blocked": false,
+    "open": 80,
+    "release_blocked": true,
     "resolved": 362,
-    "total": 435,
+    "total": 515,
     "waived": 73
   }
 }
