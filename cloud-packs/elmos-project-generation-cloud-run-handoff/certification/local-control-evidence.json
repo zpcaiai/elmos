@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-08-08T18:29:12Z",
+  "executed_at": "2026-09-13T04:28:58Z",
   "executor": "local-codex-session",
   "environment": {
-    "python": "3.14.6",
+    "python": "3.12.14",
     "uv": "0.11.16",
     "provider_cli": "NOT_INSTALLED"
   },
@@ -13,33 +13,33 @@
   "passed": 22,
   "failed": 0,
   "source_digests": {
-    "cloud_run_control.py": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd",
-    "deployment_guidance.py": "sha256:b4ae14dfefaa2ef5229ad41b1fced921e24144738c552096ed956143a8007bb7"
+    "cloud_run_control.py": "sha256:a68f121b500d9d0c7a5c4ea61f18d9abaaf99b8035da2e4af2b819b2a14ad53f",
+    "deployment_guidance.py": "sha256:a0e910221d813fc25eb2c88b43436a9d79e4b724ce7d0bd151ba08e901b5d08d"
   },
   "test_digests": {
-    "test_cloud_run_control.py": "sha256:48e35d1d45a658fedade62935bdeb684e3606c2190bdf913e8096852a525296a",
-    "test_deployment_guidance.py": "sha256:9bfdc05881913c6de0dca0113053ce21a8b443622f53b65b5d81fb9a15a835e4"
+    "test_cloud_run_control.py": "sha256:e589f03b7a8793f7020e2cb75bc70e809a163034ec8416bb8c970715c38886a1",
+    "test_deployment_guidance.py": "sha256:f79ac6c9fd48ae4ceb70b45322985a39505b0e5d31b36d644fbed966d69c9d12"
   },
   "repository_bindings": [
     {
       "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
-      "byte_size": 29084,
-      "sha256": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd"
+      "byte_size": 30037,
+      "sha256": "sha256:a68f121b500d9d0c7a5c4ea61f18d9abaaf99b8035da2e4af2b819b2a14ad53f"
     },
     {
       "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/deployment_guidance.py",
-      "byte_size": 21396,
-      "sha256": "sha256:b4ae14dfefaa2ef5229ad41b1fced921e24144738c552096ed956143a8007bb7"
+      "byte_size": 21320,
+      "sha256": "sha256:a0e910221d813fc25eb2c88b43436a9d79e4b724ce7d0bd151ba08e901b5d08d"
     },
     {
       "path": "engines/project-synthesis-engine/tests/test_cloud_run_control.py",
-      "byte_size": 8832,
-      "sha256": "sha256:48e35d1d45a658fedade62935bdeb684e3606c2190bdf913e8096852a525296a"
+      "byte_size": 8738,
+      "sha256": "sha256:e589f03b7a8793f7020e2cb75bc70e809a163034ec8416bb8c970715c38886a1"
     },
     {
       "path": "engines/project-synthesis-engine/tests/test_deployment_guidance.py",
-      "byte_size": 8301,
-      "sha256": "sha256:9bfdc05881913c6de0dca0113053ce21a8b443622f53b65b5d81fb9a15a835e4"
+      "byte_size": 8271,
+      "sha256": "sha256:f79ac6c9fd48ae4ceb70b45322985a39505b0e5d31b36d644fbed966d69c9d12"
     }
   ],
   "coverage": {
