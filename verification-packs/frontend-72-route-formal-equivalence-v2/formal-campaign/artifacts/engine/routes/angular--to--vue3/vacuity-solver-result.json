@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "angular--to--vue3",
-  "formal_input_digest": "sha256:5df65c8f2c52c5abcb923d600d2abae7dd7fd4b4340a41245e17bf1bd554b8d3",
-  "solver_input_digest": "sha256:a5347f1396d8b6485c78b57170bc89c74de450719a8a8e7d9812a14bfb9eca38",
-  "smt2_digest": "sha256:a5347f1396d8b6485c78b57170bc89c74de450719a8a8e7d9812a14bfb9eca38",
+  "formal_input_digest": "sha256:a9055be234028ca78dab77c5d5c6cae3361e605b19d50963bf4fb91b8358dcb2",
+  "solver_input_digest": "sha256:ea94768fa75544debfd588d132ccb265c3b5d0f9ac2373801c6bc7d7c85d416c",
+  "smt2_digest": "sha256:ea94768fa75544debfd588d132ccb265c3b5d0f9ac2373801c6bc7d7c85d416c",
   "precheck_status": "PASSED"
 }

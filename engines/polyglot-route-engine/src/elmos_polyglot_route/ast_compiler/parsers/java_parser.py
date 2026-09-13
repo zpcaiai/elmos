@@ -42,12 +42,12 @@ class JavaAstParser(BaseAstParser):
         module = UniversalModule(name="JavaModule", source_language="java")
 
         # Package
-        pkg_match = re.search(r" package\s+([a-zA-Z0-9_.]+)\s*;", source_code)
+        pkg_match = re.search(r"\bpackage\s+([a-zA-Z0-9_.]+)\s*;", source_code)
         if pkg_match:
             module.package_name = pkg_match.group(1)
 
         # Imports
-        for imp in re.finditer(r"import\s+([a-zA-Z0-9_.*]+)\s*;", source_code):
+        for imp in re.finditer(r"\bimport\s+([a-zA-Z0-9_.*]+)\s*;", source_code):
             module.imports.append(imp.group(1))
 
         # Split into classes
@@ -330,7 +330,7 @@ class JavaAstParser(BaseAstParser):
             return stmts
 
         # Check return
-        ret_match = re.search(r"return\s+([^;]+);", body_str)
+        ret_match = re.search(r"\breturn\s+([^;]+);", body_str)
         if ret_match:
             stmts.append(ReturnStmt(value=RawSnippetExpr(ret_match.group(1).strip())))
         elif body_str.strip():

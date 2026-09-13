@@ -10,10 +10,9 @@ Replaces heuristic regex string replacements with formal first-order logic SMT c
 from __future__ import annotations
 
 import copy
+import importlib
 import logging
 from dataclasses import dataclass
-
-import z3  # type: ignore[import-untyped]
 
 from ..ir import (
     AssignStmt,
@@ -40,6 +39,8 @@ from ..ir import (
     VarDeclStmt,
     WhileStmt,
 )
+
+z3 = importlib.import_module("z3")
 
 logger = logging.getLogger("elmos.ast_compiler.smt_repair")
 

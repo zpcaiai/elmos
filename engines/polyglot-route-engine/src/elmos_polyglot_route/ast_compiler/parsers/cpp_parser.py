@@ -169,7 +169,7 @@ class CppAstParser(BaseAstParser):
                 stmts.append(ReturnStmt(value=LiteralExpr(val)))
             elif line_str.startswith("throw ") and line_str.endswith(";"):
                 val = line_str[6:-1].strip()
-                stmts.append(ThrowStmt(exception_class="std::exception", message=val))
+                stmts.append(ThrowStmt(exception_class="Exception", message=val))
             else:
                 stmts.append(RawSnippetStmt(code=line_str))
         return stmts

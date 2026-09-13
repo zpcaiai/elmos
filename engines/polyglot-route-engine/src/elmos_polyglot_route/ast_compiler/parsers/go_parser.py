@@ -32,7 +32,7 @@ class GoAstParser(BaseAstParser):
         module = UniversalModule(name="GoModule", source_language="go")
 
         # Package
-        pkg_m = re.search(r"package\s+([a-zA-Z0-9_]+)", source_code)
+        pkg_m = re.search(r"\bpackage\s+([a-zA-Z0-9_]+)", source_code)
         if pkg_m:
             module.package_name = pkg_m.group(1)
 

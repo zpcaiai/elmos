@@ -30,7 +30,7 @@ from .ast_compiler import (
 from .ast_compiler import (
     UniversalModule as AstModule,
 )
-from .ast_compiler.ir import RawSnippetExpr, UniversalExpr
+from .ast_compiler.ir import UniversalExpr
 
 EnterpriseLanguage = Literal[
     "java",
@@ -61,7 +61,7 @@ class EnterpriseField:
     type_name: str
     is_required: bool = True
     is_readonly: bool = False
-    default_value: UniversalExpr | str | None = None
+    default_value: UniversalExpr | None = None
 
 
 @dataclass
@@ -166,11 +166,7 @@ class EnterpriseEmitter:
                     AstField(
                         name=ef.name,
                         type_info=UniversalType.primitive(ef.type_name),
-                        default_value=(
-                            ef.default_value
-                            if isinstance(ef.default_value, UniversalExpr) or ef.default_value is None
-                            else RawSnippetExpr(code=ef.default_value)
-                        ),
+                        default_value=ef.default_value,
                     )
                 )
             for em in ec.methods:

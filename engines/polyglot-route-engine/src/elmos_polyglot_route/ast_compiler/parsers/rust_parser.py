@@ -32,7 +32,7 @@ class RustAstParser(BaseAstParser):
         module = UniversalModule(name="RustModule", source_language="rust")
 
         # Uses
-        for u in re.finditer(r"use\s+([a-zA-Z0-9_:]+);", source_code):
+        for u in re.finditer(r"\buse\s+([a-zA-Z0-9_:]+);", source_code):
             module.imports.append(u.group(1))
 
         # Structs

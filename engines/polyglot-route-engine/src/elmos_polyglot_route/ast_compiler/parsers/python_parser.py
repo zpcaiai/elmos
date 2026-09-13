@@ -278,8 +278,7 @@ class PythonAstParser(BaseAstParser):
             elif isinstance(expr.func, ast.Attribute):
                 target = self._parse_expr(expr.func.value)
                 fname = expr.func.attr
-            parsed_args = [self._parse_expr(arg) for arg in expr.args]
-            args = [arg for arg in parsed_args if arg is not None]
+            args = [parsed for arg in expr.args if (parsed := self._parse_expr(arg)) is not None]
             return MethodCallExpr(target=target, method_name=fname, args=args)
         elif isinstance(expr, ast.Await):
             inner = self._parse_expr(expr.value)

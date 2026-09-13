@@ -21,8 +21,7 @@ class AppleConcurrencyLowering:
                 # If target is Objective-C and method was async, adapt to completion handler pattern
                 elif t_lang in ("objc", "objective-c") and m.is_async:
                     m.is_async = False
-                    # Retain method signature, emitter will output completion handler block
-                    if not any(annotation.name == "ObjCAsyncBlock" for annotation in m.annotations):
-                        m.annotations.append(UniversalAnnotation(name="ObjCAsyncBlock"))
+                    # Retain the adaptation in typed IR for the emitter.
+                    m.annotations.append(UniversalAnnotation(name="ObjCAsyncBlock", kwargs={"enabled": "true"}))
 
         return module

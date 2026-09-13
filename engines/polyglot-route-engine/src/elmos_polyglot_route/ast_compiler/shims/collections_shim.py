@@ -54,208 +54,208 @@ def get_collection_type(
 
 
 def list_add(list_expr: str, item_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{list_expr}.add({item_expr})"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{list_expr}.Add({item_expr})"
-    elif language_key in ("python", "py"):
+    elif language in ("python", "py"):
         return f"{list_expr}.append({item_expr})"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{list_expr}.push({item_expr})"
-    elif language_key in ("go", "golang"):
+    elif language in ("go", "golang"):
         return f"{list_expr} = append({list_expr}, {item_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{list_expr}.push({item_expr})"
-    elif language_key == "php":
+    elif language == "php":
         return f"{list_expr}[] = {item_expr}"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"{list_expr}.push_back({item_expr})"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{list_expr}.append({item_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{list_expr} addObject:{item_expr}]"
     return f"{list_expr}.append({item_expr})"
 
 
 def list_size(list_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{list_expr}.size()"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{list_expr}.Count"
-    elif language_key in ("python", "py", "go", "golang"):
+    elif language in ("python", "py", "go", "golang"):
         return f"len({list_expr})"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{list_expr}.length"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{list_expr}.len()"
-    elif language_key == "php":
+    elif language == "php":
         return f"count({list_expr})"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"{list_expr}.size()"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{list_expr}.count"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{list_expr} count]"
     return f"len({list_expr})"
 
 
 def list_contains(list_expr: str, item_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{list_expr}.contains({item_expr})"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{list_expr}.Contains({item_expr})"
-    elif language_key in ("python", "py"):
+    elif language in ("python", "py"):
         return f"({item_expr} in {list_expr})"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{list_expr}.includes({item_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{list_expr}.contains(&{item_expr})"
-    elif language_key == "php":
+    elif language == "php":
         return f"in_array({item_expr}, {list_expr}, true)"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"(std::find({list_expr}.begin(), {list_expr}.end(), {item_expr}) != {list_expr}.end())"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{list_expr}.contains({item_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{list_expr} containsObject:{item_expr}]"
     return f"({item_expr} in {list_expr})"
 
 
 def list_clear(list_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin", "csharp", "cs", "cpp", "c++"):
-        return f"{list_expr}.clear()" if language_key != "csharp" else f"{list_expr}.Clear()"
-    elif language_key in ("python", "py"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin", "csharp", "cs", "cpp", "c++"):
+        return f"{list_expr}.clear()" if language != "csharp" else f"{list_expr}.Clear()"
+    elif language in ("python", "py"):
         return f"{list_expr}.clear()"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{list_expr}.length = 0"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{list_expr}.clear()"
-    elif language_key in ("go", "golang"):
+    elif language in ("go", "golang"):
         return f"{list_expr} = {list_expr}[:0]"
-    elif language_key == "php":
+    elif language == "php":
         return f"{list_expr} = []"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{list_expr}.removeAll()"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{list_expr} removeAllObjects]"
     return f"{list_expr}.clear()"
 
 
 def map_get(map_expr: str, key_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{map_expr}.get({key_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{map_expr}.get(&{key_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{map_expr} objectForKey:{key_expr}]"
     return f"{map_expr}[{key_expr}]"
 
 
 def map_put(map_expr: str, key_expr: str, val_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{map_expr}.put({key_expr}, {val_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{map_expr}.insert({key_expr}, {val_expr})"
-    elif language_key in ("typescript", "ts") and "new Map" in map_expr:
+    elif language in ("typescript", "ts") and "new Map" in map_expr:
         return f"{map_expr}.set({key_expr}, {val_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{map_expr} setObject:{val_expr} forKey:{key_expr}]"
     return f"{map_expr}[{key_expr}] = {val_expr}"
 
 
 def map_contains_key(map_expr: str, key_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{map_expr}.containsKey({key_expr})"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{map_expr}.ContainsKey({key_expr})"
-    elif language_key in ("python", "py"):
+    elif language in ("python", "py"):
         return f"({key_expr} in {map_expr})"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{map_expr}.has({key_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{map_expr}.contains_key(&{key_expr})"
-    elif language_key == "php":
+    elif language == "php":
         return f"array_key_exists({key_expr}, {map_expr})"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"({map_expr}.find({key_expr}) != {map_expr}.end())"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"({map_expr}[{key_expr}] != nil)"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"([{map_expr} objectForKey:{key_expr}] != nil)"
     return f"({key_expr} in {map_expr})"
 
 
 def map_remove(map_expr: str, key_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{map_expr}.remove({key_expr})"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{map_expr}.Remove({key_expr})"
-    elif language_key in ("python", "py"):
+    elif language in ("python", "py"):
         return f"{map_expr}.pop({key_expr}, None)"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{map_expr}.delete({key_expr})"
-    elif language_key in ("go", "golang"):
+    elif language in ("go", "golang"):
         return f"delete({map_expr}, {key_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{map_expr}.remove(&{key_expr})"
-    elif language_key == "php":
+    elif language == "php":
         return f"unset({map_expr}[{key_expr}])"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"{map_expr}.erase({key_expr})"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{map_expr}.removeValue(forKey: {key_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{map_expr} removeObjectForKey:{key_expr}]"
     return f"{map_expr}.remove({key_expr})"
 
 
 def set_add(set_expr: str, item_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{set_expr}.add({item_expr})"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{set_expr}.Add({item_expr})"
-    elif language_key in ("python", "py"):
+    elif language in ("python", "py"):
         return f"{set_expr}.add({item_expr})"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{set_expr}.add({item_expr})"
-    elif language_key in ("go", "golang"):
+    elif language in ("go", "golang"):
         return f"{set_expr}[{item_expr}] = struct{{}}{{}}"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{set_expr}.insert({item_expr})"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"{set_expr}.insert({item_expr})"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{set_expr}.insert({item_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{set_expr} addObject:{item_expr}]"
     return f"{set_expr}.add({item_expr})"
 
 
 def set_contains(set_expr: str, item_expr: str, lang: str) -> str:
-    language_key = lang.lower().strip()
-    if language_key in ("java", "kotlin"):
+    language = lang.lower().strip()
+    if language in ("java", "kotlin"):
         return f"{set_expr}.contains({item_expr})"
-    elif language_key in ("csharp", "cs"):
+    elif language in ("csharp", "cs"):
         return f"{set_expr}.Contains({item_expr})"
-    elif language_key in ("python", "py"):
+    elif language in ("python", "py"):
         return f"({item_expr} in {set_expr})"
-    elif language_key in ("typescript", "ts", "javascript", "js"):
+    elif language in ("typescript", "ts", "javascript", "js"):
         return f"{set_expr}.has({item_expr})"
-    elif language_key in ("rust", "rs"):
+    elif language in ("rust", "rs"):
         return f"{set_expr}.contains(&{item_expr})"
-    elif language_key in ("cpp", "c++"):
+    elif language in ("cpp", "c++"):
         return f"({set_expr}.find({item_expr}) != {set_expr}.end())"
-    elif language_key == "swift":
+    elif language == "swift":
         return f"{set_expr}.contains({item_expr})"
-    elif language_key in ("objc", "objective-c"):
+    elif language in ("objc", "objective-c"):
         return f"[{set_expr} containsObject:{item_expr}]"
     return f"({item_expr} in {set_expr})"

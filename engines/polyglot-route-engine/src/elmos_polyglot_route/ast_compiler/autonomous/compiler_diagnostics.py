@@ -66,7 +66,7 @@ class CompilerDiagnosticParser:
 
         # In-tree strict validators
         if lang in ("vb6", "vb"):
-            ret_code, vb6_diags = Vb6StrictSemanticValidator.validate(code)
+            ret_code, vb6_diagnostics = Vb6StrictSemanticValidator.validate(code)
             native_diags = [
                 NativeCompilerDiagnostic(
                     language="vb6",
@@ -76,12 +76,12 @@ class CompilerDiagnosticParser:
                     message=d.message,
                     category=d.category,
                 )
-                for d in vb6_diags
+                for d in vb6_diagnostics
             ]
-            return ret_code, native_diags, f"VB6 Strict Validation: {len(vb6_diags)} diagnostics"
+            return ret_code, native_diags, f"VB6 Strict Validation: {len(vb6_diagnostics)} diagnostics"
 
         if lang in ("kotlin", "kt"):
-            ret_code, kotlin_diags = KotlinStrictSemanticValidator.validate(code)
+            ret_code, kotlin_diagnostics = KotlinStrictSemanticValidator.validate(code)
             native_diags = [
                 NativeCompilerDiagnostic(
                     language="kotlin",
@@ -91,9 +91,9 @@ class CompilerDiagnosticParser:
                     message=d.message,
                     category=d.category,
                 )
-                for d in kotlin_diags
+                for d in kotlin_diagnostics
             ]
-            return ret_code, native_diags, f"Kotlin Strict Validation: {len(kotlin_diags)} diagnostics"
+            return ret_code, native_diags, f"Kotlin Strict Validation: {len(kotlin_diagnostics)} diagnostics"
 
         with tempfile.TemporaryDirectory(prefix="elmos_diag_") as tmpdir:
             tmppath = Path(tmpdir)
@@ -221,8 +221,8 @@ class CompilerDiagnosticParser:
             try:
                 proc = subprocess.run(cmd, cwd=str(tmppath), capture_output=True, text=True, timeout=60)
                 raw_out = proc.stdout + proc.stderr
-                compiler_diags = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
-                return proc.returncode, compiler_diags, raw_out
+                parsed_diagnostics = cls._parse_raw_output(raw_out, lang, ret_code=proc.returncode)
+                return proc.returncode, parsed_diagnostics, raw_out
             except Exception as e:
                 return 0, [], f"Diagnostic runner warning: {e}"
 

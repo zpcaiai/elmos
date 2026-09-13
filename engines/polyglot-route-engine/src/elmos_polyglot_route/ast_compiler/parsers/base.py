@@ -86,12 +86,10 @@ class BaseAstParser(ABC):
         if t.startswith("[]"):
             elem = self.parse_type(t[2:])
             return UniversalType.list_of(elem)
-        match = re.match(r"^(List|ArrayList|Vec|Array|Sequence|Iterable)<(.+)>$", t)
-        if match:
+        if match := re.match(r"^(List|ArrayList|Vec|Array|Sequence|Iterable)<(.+)>$", t):
             elem = self.parse_type(match.group(2))
             return UniversalType.list_of(elem)
-        match = re.match(r"^(Map|HashMap|Dictionary|dict)<(.+?),\s*(.+?)>$", t)
-        if match:
+        if match := re.match(r"^(Map|HashMap|Dictionary|dict)<(.+?),\s*(.+?)>$", t):
             k = self.parse_type(match.group(2))
             v = self.parse_type(match.group(3))
             return UniversalType.map_of(k, v)
@@ -100,22 +98,19 @@ class BaseAstParser(ABC):
             k = self.parse_type(t[4:close])
             v = self.parse_type(t[close + 1 :])
             return UniversalType.map_of(k, v)
-        match = re.match(r"^(Set|HashSet)<(.+)>$", t)
-        if match:
+        if match := re.match(r"^(Set|HashSet)<(.+)>$", t):
             elem = self.parse_type(match.group(2))
             return UniversalType.set_of(elem)
 
         # Async wrappers: Task<T>, Promise<T>, CompletableFuture<T>, Deferred<T>
-        match = re.match(r"^(Task|Promise|CompletableFuture|Deferred|Future)<(.+)>$", t)
-        if match:
+        if match := re.match(r"^(Task|Promise|CompletableFuture|Deferred|Future)<(.+)>$", t):
             inner = self.parse_type(match.group(2))
             res = UniversalType.custom(t)
             res.element_type = inner
             return res
 
         # Result wrappers: Result<T, E>
-        match = re.match(r"^Result<(.+?),\s*(.+?)>$", t)
-        if match:
+        if match := re.match(r"^Result<(.+?),\s*(.+?)>$", t):
             ok_type = self.parse_type(match.group(1))
             err_type = self.parse_type(match.group(2))
             return UniversalType.result_of(ok_type, err_type)

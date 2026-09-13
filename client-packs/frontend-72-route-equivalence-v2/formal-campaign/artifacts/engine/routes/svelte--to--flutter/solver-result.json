@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "svelte--to--flutter",
-  "formal_input_digest": "sha256:69b37b62d91056d203406bb0217dad7877f0c563af3ec02afc307ad19a0ee20e",
-  "solver_input_digest": "sha256:e4beff41c5d48639b70ca01adc0f87994e6eb4c76e35769cab0099a022164532",
-  "smt2_digest": "sha256:e4beff41c5d48639b70ca01adc0f87994e6eb4c76e35769cab0099a022164532"
+  "formal_input_digest": "sha256:3634be6a92704e41eafa3b2dc0b01c75c470bc3e3a8130823fff5331ef7b13dd",
+  "solver_input_digest": "sha256:783a67eb2a6dd8808d1a8476b76c83ac3a22066d57208f820cc3a29c4cfa3d7a",
+  "smt2_digest": "sha256:783a67eb2a6dd8808d1a8476b76c83ac3a22066d57208f820cc3a29c4cfa3d7a"
 }

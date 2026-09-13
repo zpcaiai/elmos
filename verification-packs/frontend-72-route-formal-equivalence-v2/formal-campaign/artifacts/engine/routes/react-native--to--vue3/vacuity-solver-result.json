@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "react-native--to--vue3",
-  "formal_input_digest": "sha256:4d5fe4415701d82dc2073f5f1aa1eda79350c585f5fe0d5f7583fd90a6183908",
-  "solver_input_digest": "sha256:5e21517f05316d4a6797f01992f16e9fb79ac8dcd775923526315c1889fd527c",
-  "smt2_digest": "sha256:5e21517f05316d4a6797f01992f16e9fb79ac8dcd775923526315c1889fd527c",
+  "formal_input_digest": "sha256:5999a560ca5ce85cd577f5577e89ec6c4cbfd454ca6be02f4cbdbc2b5d71aa20",
+  "solver_input_digest": "sha256:f6054e89ae751844eecf259cb3fbb65278ceef85b4f2c2302f7dfe479af09dbe",
+  "smt2_digest": "sha256:f6054e89ae751844eecf259cb3fbb65278ceef85b4f2c2302f7dfe479af09dbe",
   "precheck_status": "PASSED"
 }

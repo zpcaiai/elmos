@@ -33,12 +33,7 @@ def test_toolchain_build_cache_write_probes_root_and_children(
     )
 
     expected_root = (
-        tmp_path
-        / ".cache"
-        / "elmos-polyglot-route-engine"
-        / "toolchain-build-cache-v1"
-        / "go"
-        / "content-key"
+        tmp_path / ".cache" / "elmos-polyglot-route-engine" / "toolchain-build-cache-v1" / "go" / "content-key"
     )
     assert directories == (expected_root / "gocache", expected_root / "gopath")
     assert list(expected_root.rglob(".elmos-cache-write-probe-*")) == []
@@ -286,9 +281,7 @@ def test_java_codesign_receipt_keeps_strict_verify_and_display_separate(
 
     monkeypatch.setattr(toolchains, "_output", output)
 
-    assert toolchains._java_bundle_signature(bundle) == (
-        "Identifier=net.java.openjdk.jdk"
-    )
+    assert toolchains._java_bundle_signature(bundle) == ("Identifier=net.java.openjdk.jdk")
     assert commands == [
         [
             "/usr/bin/codesign",
@@ -316,8 +309,7 @@ def test_java_codesign_receipt_reports_the_exact_failed_stage(
     def output(command: list[str], **_: object) -> str:
         if failed_flag in command:
             raise RouteError(
-                "EXACT_TOOLCHAIN_UNAVAILABLE:/usr/bin/codesign:"
-                "exit=1:diagnostic=strict verification failed"
+                "EXACT_TOOLCHAIN_UNAVAILABLE:/usr/bin/codesign:exit=1:diagnostic=strict verification failed"
             )
         return ""
 
@@ -332,15 +324,7 @@ def test_temurin_contract_is_explicitly_selected_for_ci_home(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    home = (
-        tmp_path
-        / "hostedtoolcache"
-        / "Java_Temurin-Hotspot_jdk"
-        / "21.0.11-10.0"
-        / "arm64"
-        / "Contents"
-        / "Home"
-    )
+    home = tmp_path / "hostedtoolcache" / "Java_Temurin-Hotspot_jdk" / "21.0.11-10.0" / "arm64" / "Contents" / "Home"
     home.mkdir(parents=True)
     monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
     monkeypatch.setenv("ELMOS_JAVA21_HOME", str(home))
@@ -429,8 +413,9 @@ def test_python_runtime_identity_is_root_portable_and_path_confined(
     )
 
     local_root = str(toolchains._EXPECTED_PYTHON_ROOT)
-    runner_root = "/Users/runner/.local/share/elmos/toolchains/python-build-standalone/" + (
-        local_root.split("/python-build-standalone/", 1)[1]
+    runner_root = (
+        "/Users/runner/.local/share/elmos/toolchains/python-build-standalone/"
+        + (local_root.split("/python-build-standalone/", 1)[1])
     )
     runner_identity = dict(identity)
     for field in toolchains._PYTHON_RUNTIME_PATH_FIELDS:
@@ -526,29 +511,15 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "dotnet_hostfxr_sha256",
         "dotnet_hostpolicy_sha256",
     )
-    assert all(
-        getattr(legacy_hosted, field) == getattr(current_hosted, field)
-        for field in dotnet_fields
-    )
-    assert all(
-        getattr(latest_hosted, field) == getattr(current_hosted, field)
-        for field in dotnet_fields
-    )
-    assert legacy_hosted.php_tree_sha256 == (
-        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
-    )
+    assert all(getattr(legacy_hosted, field) == getattr(current_hosted, field) for field in dotnet_fields)
+    assert all(getattr(latest_hosted, field) == getattr(current_hosted, field) for field in dotnet_fields)
+    assert legacy_hosted.php_tree_sha256 == ("60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f")
     assert legacy_hosted.php_tree_bytes == 129_937_220
-    assert current_hosted.dotnet_muxer_sha256 == (
-        "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
-    )
-    assert current_hosted.php_tree_sha256 == (
-        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
-    )
+    assert current_hosted.dotnet_muxer_sha256 == ("09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4")
+    assert current_hosted.php_tree_sha256 == ("60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f")
     assert current_hosted.php_tree_bytes == 129_937_220
     assert latest_hosted.profile_id == "github-macos26-20260907.0351.1"
-    assert latest_hosted.php_tree_sha256 == (
-        "ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9"
-    )
+    assert latest_hosted.php_tree_sha256 == ("ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9")
     assert latest_hosted.php_tree_bytes == 129_938_026
     assert latest_hosted.php_tree_record_count == 644
     assert latest_hosted.php_tree_file_count == 533
@@ -583,9 +554,7 @@ def test_homebrew_hosted_profile_survives_an_isolated_runtime(
     monkeypatch.setattr(
         toolchains,
         "_output",
-        lambda command, **_kwargs: (
-            profile.product_version if "-productVersion" in command else profile.build_version
-        ),
+        lambda command, **_kwargs: (profile.product_version if "-productVersion" in command else profile.build_version),
     )
     monkeypatch.delenv("ImageVersion", raising=False)
     monkeypatch.setenv(toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV, profile.profile_id)
@@ -741,9 +710,7 @@ def test_swift_analyzer_is_fresh_built_outside_repository_build_cache() -> None:
     assert dependency_cache["bytes"] == native._SWIFT_SYNTAX_TREE_BYTES
     selected_host = toolchains.apple_route_host_profile("swift")
     assert receipt["toolchain"]["swiftc_sha256"] == "sha256:" + selected_host.swiftc_sha256
-    assert receipt["toolchain"]["swift_driver_sha256"] == (
-        "sha256:" + selected_host.swiftc_sha256
-    )
+    assert receipt["toolchain"]["swift_driver_sha256"] == ("sha256:" + selected_host.swiftc_sha256)
     assert receipt["binary"]["sha256"] == "sha256:" + hashlib.sha256(binary.read_bytes()).hexdigest()
     assert receipt["binary"]["bytes"] == binary.stat().st_size
     assert set(receipt) == {
