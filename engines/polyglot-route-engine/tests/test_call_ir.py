@@ -236,13 +236,13 @@ def test_topological_sort_and_recursion_cycle_rejection():
 
 
 def test_python_analyzer_direct_calls():
-    code = '''
+    code = """
 def double_val(x: int) -> int:
     return x * 2
 
 def compute(a: int, b: int) -> int:
     return double_val(a) + double_val(b)
-'''
+"""
     with tempfile.TemporaryDirectory() as tmpdir:
         src = Path(tmpdir) / "math_mod.py"
         src.write_text(code.strip())
@@ -253,10 +253,10 @@ def compute(a: int, b: int) -> int:
 
 
 def test_python_analyzer_recursion_rejected():
-    code = '''
+    code = """
 def loop_fn(x: int) -> int:
     return loop_fn(x - 1)
-'''
+"""
     with tempfile.TemporaryDirectory() as tmpdir:
         src = Path(tmpdir) / "rec.py"
         src.write_text(code.strip())
@@ -319,5 +319,3 @@ def test_emitter_topological_multicall():
     plan_cpp = plan_identifiers(ir, "cpp")
     fn_map = {b.source_name: b.target_name for b in plan_cpp.bindings if b.role == "function"}
     assert code_cpp.index(f"std::int64_t {fn_map['helper']}(") < code_cpp.index(f"std::int64_t {fn_map['caller']}(")
-
-

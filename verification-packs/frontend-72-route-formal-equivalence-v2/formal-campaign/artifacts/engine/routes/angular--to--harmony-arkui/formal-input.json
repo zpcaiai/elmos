@@ -7,12 +7,12 @@
   "route_id": "angular--to--harmony-arkui",
   "tuple": {
     "source_profile": "angular",
-    "source_framework_version": "22.0.8",
+    "source_framework_version": "22.1.4",
     "target_profile": "harmony-arkui",
     "target_framework_version": "6.0.0(20)"
   },
-  "source_project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
-  "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
+  "source_project_digest": "sha256:77c3f2342e3876aeadc4294d9e4461772670012b58bfe764177410d807de9b9f",
+  "target_project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",

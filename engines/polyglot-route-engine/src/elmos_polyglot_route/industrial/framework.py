@@ -55,9 +55,7 @@ class FrameworkSubsetEngine:
             klass.is_controller = True
         klass.is_controller = True
         klass.base_route = klass.base_route or "/api/v1/inventory"
-        klass.annotations = [
-            UniversalAnnotation(name="IndustrialController", kwargs={"style": runtime["controller"]})
-        ]
+        klass.annotations = [UniversalAnnotation(name="IndustrialController", kwargs={"style": runtime["controller"]})]
         for method in klass.methods:
             if not method.http_method:
                 lowered = method.name.lower()

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import random
-from typing import Optional
+
 from ..ir import (
     PrimitiveKind,
     UniversalClass,
@@ -29,8 +29,9 @@ class AstFuzzGenerator:
     FIELD_NAMES = ["serial", "status", "value", "count", "code", "tag", "timestamp", "payload"]
     CLASS_NAMES = ["Asset", "Customer", "Order", "Device", "Account", "Metric", "Entity"]
 
-    def __init__(self, seed: Optional[int] = 42) -> None:
-        self.rng = random.Random(seed)
+    def __init__(self, seed: int | None = 42) -> None:
+        # Deterministic corpus generation is not a cryptographic operation.
+        self.rng = random.Random(seed)  # noqa: S311
 
     def generate_type(self, depth: int = 0) -> UniversalType:
         if depth > 1 or self.rng.random() < 0.7:
@@ -44,17 +45,14 @@ class AstFuzzGenerator:
             v = self.generate_type(depth + 1)
             return UniversalType.map_of(UniversalType.string_type(), v)
 
-    def generate_field(self, name: Optional[str] = None) -> UniversalField:
+    def generate_field(self, name: str | None = None) -> UniversalField:
         fname = name or self.rng.choice(self.FIELD_NAMES)
         ftype = self.generate_type()
         return UniversalField(name=fname, type_info=ftype)
 
-    def generate_method(self, name: str, is_async: bool = False, http_method: Optional[str] = None) -> UniversalMethod:
+    def generate_method(self, name: str, is_async: bool = False, http_method: str | None = None) -> UniversalMethod:
         num_params = self.rng.randint(1, 3)
-        params = [
-            UniversalParam(name=f"param_{i}", type_info=self.generate_type())
-            for i in range(num_params)
-        ]
+        params = [UniversalParam(name=f"param_{i}", type_info=self.generate_type()) for i in range(num_params)]
         return_type = self.generate_type()
         return UniversalMethod(
             name=name,
@@ -62,11 +60,11 @@ class AstFuzzGenerator:
             return_type=return_type,
             is_async=is_async,
             http_method=http_method,
-            http_path=f"/{{param_0}}" if http_method == "GET" else "",
+            http_path="/{param_0}" if http_method == "GET" else "",
             has_exception_handling=True,
         )
 
-    def generate_class(self, name: Optional[str] = None, is_controller: bool = False) -> UniversalClass:
+    def generate_class(self, name: str | None = None, is_controller: bool = False) -> UniversalClass:
         cname = name or self.rng.choice(self.CLASS_NAMES)
         num_fields = self.rng.randint(2, 4)
         chosen_names = self.rng.sample(self.FIELD_NAMES, num_fields)

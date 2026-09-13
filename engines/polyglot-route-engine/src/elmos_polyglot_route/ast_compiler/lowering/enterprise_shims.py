@@ -14,14 +14,9 @@ concurrent collections, and stream pipelines across 8 target languages:
 
 from __future__ import annotations
 
-import copy
-from typing import Any, Dict, List, Optional, Tuple
-
 from ..ir import (
     AssignStmt,
     BinaryExpr,
-    BinaryOperator,
-    CatchClause,
     ConstructExpr,
     ExprStmt,
     FieldAccessExpr,
@@ -32,12 +27,10 @@ from ..ir import (
     MethodCallExpr,
     ReturnStmt,
     TryCatchFinallyStmt,
-    UniversalClass,
     UniversalExpr,
     UniversalField,
     UniversalMethod,
     UniversalModule,
-    UniversalParam,
     UniversalStmt,
     UniversalType,
     VarDeclStmt,
@@ -96,11 +89,7 @@ class EnterpriseShimsLowering:
 
     @classmethod
     def lower_concurrent_map_call(
-        cls,
-        target_expr: UniversalExpr,
-        method_name: str,
-        args: list[UniversalExpr],
-        target_language: str
+        cls, target_expr: UniversalExpr, method_name: str, args: list[UniversalExpr], target_language: str
     ) -> UniversalExpr:
         """Lowers operations like get, put, putIfAbsent, computeIfAbsent, remove."""
         target = target_language.lower().strip()
@@ -187,11 +176,7 @@ class EnterpriseShimsLowering:
 
     @classmethod
     def lower_atomic_call(
-        cls,
-        target_expr: UniversalExpr,
-        method_name: str,
-        args: list[UniversalExpr],
-        target_language: str
+        cls, target_expr: UniversalExpr, method_name: str, args: list[UniversalExpr], target_language: str
     ) -> UniversalExpr:
         target = target_language.lower().strip()
         m = method_name.lower()
@@ -215,15 +200,11 @@ class EnterpriseShimsLowering:
             ordering_seqcst = IdentifierExpr("std::sync::atomic::Ordering::SeqCst")
             if "increment" in m:
                 return MethodCallExpr(
-                    target=target_expr,
-                    method_name="fetch_add",
-                    args=[LiteralExpr(1, "int"), ordering_seqcst]
+                    target=target_expr, method_name="fetch_add", args=[LiteralExpr(1, "int"), ordering_seqcst]
                 )
             elif "decrement" in m:
                 return MethodCallExpr(
-                    target=target_expr,
-                    method_name="fetch_sub",
-                    args=[LiteralExpr(1, "int"), ordering_seqcst]
+                    target=target_expr, method_name="fetch_sub", args=[LiteralExpr(1, "int"), ordering_seqcst]
                 )
             elif m in ("get", "load"):
                 return MethodCallExpr(target=target_expr, method_name="load", args=[ordering_seqcst])
@@ -234,7 +215,7 @@ class EnterpriseShimsLowering:
                 return MethodCallExpr(
                     target=target_expr,
                     method_name="compare_exchange",
-                    args=[args[0], args[1], ordering_seqcst, ordering_seqcst]
+                    args=[args[0], args[1], ordering_seqcst, ordering_seqcst],
                 )
 
         elif target == "csharp":
@@ -247,9 +228,7 @@ class EnterpriseShimsLowering:
             elif "compareand" in m or m == "cas":
                 # Interlocked.CompareExchange(ref location, value, comparand)
                 return MethodCallExpr(
-                    target=interlocked,
-                    method_name="CompareExchange",
-                    args=[target_expr, args[1], args[0]]
+                    target=interlocked, method_name="CompareExchange", args=[target_expr, args[1], args[0]]
                 )
 
         return MethodCallExpr(target=target_expr, method_name=method_name, args=args)
@@ -276,10 +255,7 @@ class EnterpriseShimsLowering:
 
     @classmethod
     def lower_channel_send(
-        cls,
-        channel_expr: UniversalExpr,
-        item_expr: UniversalExpr,
-        target_language: str
+        cls, channel_expr: UniversalExpr, item_expr: UniversalExpr, target_language: str
     ) -> UniversalStmt:
         target = target_language.lower().strip()
 
@@ -311,35 +287,19 @@ class EnterpriseShimsLowering:
         target = target_language.lower().strip()
 
         if target == "java":
-            return MethodCallExpr(
-                target=IdentifierExpr("CompletableFuture"),
-                method_name="allOf",
-                args=futures
-            )
+            return MethodCallExpr(target=IdentifierExpr("CompletableFuture"), method_name="allOf", args=futures)
         elif target == "csharp":
-            return MethodCallExpr(
-                target=IdentifierExpr("Task"),
-                method_name="WhenAll",
-                args=futures
-            )
+            return MethodCallExpr(target=IdentifierExpr("Task"), method_name="WhenAll", args=futures)
         elif target == "rust":
-            return MethodCallExpr(
-                target=IdentifierExpr("tokio"),
-                method_name="try_join",
-                args=futures
-            )
+            return MethodCallExpr(target=IdentifierExpr("tokio"), method_name="try_join", args=futures)
         elif target == "typescript":
             return MethodCallExpr(
                 target=IdentifierExpr("Promise"),
                 method_name="all",
-                args=[MethodCallExpr(target=None, method_name="array", args=futures)]
+                args=[MethodCallExpr(target=None, method_name="array", args=futures)],
             )
         elif target == "python":
-            return MethodCallExpr(
-                target=IdentifierExpr("asyncio"),
-                method_name="gather",
-                args=futures
-            )
+            return MethodCallExpr(target=IdentifierExpr("asyncio"), method_name="gather", args=futures)
 
         return MethodCallExpr(target=IdentifierExpr("Future"), method_name="all", args=futures)
 
@@ -351,7 +311,7 @@ class EnterpriseShimsLowering:
         cls,
         source_collection: UniversalExpr,
         operations: list[tuple[str, UniversalExpr]],  # [('filter', pred_lambda), ('map', map_lambda)]
-        target_language: str
+        target_language: str,
     ) -> UniversalExpr:
         target = target_language.lower().strip()
 
@@ -432,9 +392,17 @@ class EnterpriseShimsLowering:
                 if t.name in ("Arc", "shared_ptr", "unique_ptr"):
                     if (lowered_elem.name or "").startswith("Arc<"):
                         return lowered_elem
-                    elif (lowered_elem.name or "") in ("AtomicI64", "AtomicI32", "AtomicBool", "atomic.Int64", "atomic.Int32"):
+                    elif (lowered_elem.name or "") in (
+                        "AtomicI64",
+                        "AtomicI32",
+                        "AtomicBool",
+                        "atomic.Int64",
+                        "atomic.Int32",
+                    ):
                         return lowered_elem
-                    elif (lowered_elem.name or "").startswith("tokio::sync::mpsc") or (lowered_elem.name or "").startswith("chan "):
+                    elif (lowered_elem.name or "").startswith("tokio::sync::mpsc") or (
+                        lowered_elem.name or ""
+                    ).startswith("chan "):
                         return lowered_elem
                 t.element_type = lowered_elem
         return t
@@ -495,8 +463,12 @@ class EnterpriseShimsLowering:
 
             m_lower = (expr.method_name or "").lower()
             if any(k in m_lower for k in ("incrementandget", "decrementandget", "compareandset", "compareexchange")):
+                if expr.target is None:
+                    return expr
                 return cls.lower_atomic_call(expr.target, expr.method_name, expr.args, target)
             elif m_lower in ("putifabsent", "computeifabsent", "getoradd", "loadorstore"):
+                if expr.target is None:
+                    return expr
                 return cls.lower_concurrent_map_call(expr.target, expr.method_name, expr.args, target)
             elif m_lower in ("allof", "whenall", "try_join"):
                 return cls.lower_async_all_of(expr.args, target)
@@ -513,4 +485,3 @@ class EnterpriseShimsLowering:
             expr.keyword_args = {k: cls._lower_expr(v, target) for k, v in expr.keyword_args.items()}
             return expr
         return expr
-

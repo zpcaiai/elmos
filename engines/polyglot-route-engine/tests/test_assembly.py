@@ -62,10 +62,7 @@ def assemble_project(
         report,
         batch_output,
         destination,
-        allow_deprecated_replay=(
-            "javascript"
-            in {report.get("source_language"), report.get("target_language")}
-        ),
+        allow_deprecated_replay=("javascript" in {report.get("source_language"), report.get("target_language")}),
     )
 
 
@@ -429,12 +426,7 @@ PYTHON_UNIT_B = "def calculate(a: int, b: int) -> int:\n    return a - b\n"
 JAVA_UNIT = (
     "public final class Migrated {\n    public static long add(long a, long b) {\n        return (a + b);\n    }\n}\n"
 )
-CSHARP_UNIT = (
-    "public static class Migrated\n"
-    "{\n"
-    "    public static long Calculate(long value) => value;\n"
-    "}\n"
-)
+CSHARP_UNIT = "public static class Migrated\n{\n    public static long Calculate(long value) => value;\n}\n"
 
 ADDITIONAL_TARGET_UNITS: dict[Language, tuple[str, str]] = {
     "javascript": (
@@ -576,9 +568,7 @@ def test_additional_target_project_shapes_cover_every_additional_unit() -> None:
     ("target_language", "expected_path", "build_files"),
     [
         (language, expected_path, build_files)
-        for language, (expected_path, build_files) in (
-            _ADDITIONAL_TARGET_PROJECT_SHAPES.items()
-        )
+        for language, (expected_path, build_files) in (_ADDITIONAL_TARGET_PROJECT_SHAPES.items())
     ],
 )
 def test_assemble_supports_every_additional_target_project_shape(
@@ -624,9 +614,7 @@ def test_assemble_supports_every_additional_target_project_shape(
         assert "add_library(elmos_migrated SHARED" in cmake
         assert expected_path in cmake
     if target_language == "php":
-        composer = json.loads(
-            (destination / "composer.json").read_text(encoding="utf-8")
-        )
+        composer = json.loads((destination / "composer.json").read_text(encoding="utf-8"))
         assert composer["require"]["php"] == "8.5.9"
     if target_language == "vb6":
         project = (destination / "elmos-migrated.vbp").read_text(encoding="ascii")
@@ -869,16 +857,8 @@ def test_assembly_process_failure_preserves_bounded_sanitized_dual_streams(
 ) -> None:
     stdout_value = "stdout-secret"
     stderr_value = "stderr-secret"
-    stdout = (
-        "STDOUT-HEAD-"
-        + ("A" * 3_000)
-        + f"\ncompiler error at {tmp_path}/source.cs TOKEN={stdout_value}\nCS0101"
-    )
-    stderr = (
-        "STDERR-HEAD-"
-        + ("B" * 3_000)
-        + f"\n/private/runtime/welcome PASSWORD={stderr_value}\nfirst-run warning"
-    )
+    stdout = "STDOUT-HEAD-" + ("A" * 3_000) + f"\ncompiler error at {tmp_path}/source.cs TOKEN={stdout_value}\nCS0101"
+    stderr = "STDERR-HEAD-" + ("B" * 3_000) + f"\n/private/runtime/welcome PASSWORD={stderr_value}\nfirst-run warning"
 
     class FakePopen:
         def __init__(self, command: list[str], **kwargs: Any) -> None:

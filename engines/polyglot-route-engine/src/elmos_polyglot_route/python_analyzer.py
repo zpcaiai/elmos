@@ -726,9 +726,7 @@ def _split_leading_docstring(nodes: list[ast.stmt]) -> tuple[list[ast.stmt], str
         return nodes, None
     first = nodes[0]
     if not (
-        isinstance(first, ast.Expr)
-        and isinstance(first.value, ast.Constant)
-        and isinstance(first.value.value, str)
+        isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str)
     ):
         return nodes, None
     remaining = nodes[1:]

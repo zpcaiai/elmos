@@ -5,6 +5,7 @@ correctly lift into canonical `let` statements, assignments (`x = expr;`, `x += 
 into `assign`, parameter reassignment is rejected, unannotated declarations are rejected, and
 lifted structures emit cleanly across targets and re-analyze as emitted targets.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,22 +19,14 @@ from elmos_polyglot_route.native import analyze
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.ts"
-    content = (
-        "export function total(price: number, tax: number): number {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"export function total(price: number, tax: number): number {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
 
 def _source_unary(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.ts"
-    content = (
-        "export function total(price: number): number {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"export function total(price: number): number {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -41,8 +34,7 @@ def _source_unary(tmp_path: Path, body: str) -> Path:
 def test_typescript_annotated_const_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    const subtotal: number = price + tax;\n"
-        "    return subtotal;",
+        "    const subtotal: number = price + tax;\n    return subtotal;",
     )
     semantic = analyze(source, "typescript", "total")
     statements = semantic.functions[0].body
@@ -57,8 +49,7 @@ def test_typescript_annotated_const_lifts_to_let(tmp_path: Path) -> None:
 def test_typescript_annotated_let_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    let subtotal: number = price + tax;\n"
-        "    return subtotal;",
+        "    let subtotal: number = price + tax;\n    return subtotal;",
     )
     semantic = analyze(source, "typescript", "total")
     statements = semantic.functions[0].body
@@ -73,8 +64,7 @@ def test_typescript_annotated_let_lifts_to_let(tmp_path: Path) -> None:
 def test_typescript_lifted_let_emits_to_all_targets(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    let subtotal: number = price + tax;\n"
-        "    return subtotal;",
+        "    let subtotal: number = price + tax;\n    return subtotal;",
     )
     semantic = analyze(source, "typescript", "total")
     for target in ("java", "go", "python", "rust", "csharp", "typescript"):
@@ -85,8 +75,7 @@ def test_typescript_lifted_let_emits_to_all_targets(tmp_path: Path) -> None:
 def test_typescript_unannotated_let_rejected(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    let subtotal = price;\n"
-        "    return subtotal;",
+        "    let subtotal = price;\n    return subtotal;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "typescript", "total")
@@ -95,8 +84,7 @@ def test_typescript_unannotated_let_rejected(tmp_path: Path) -> None:
 def test_typescript_declaration_without_value_rejected(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    let subtotal: number;\n"
-        "    return price;",
+        "    let subtotal: number;\n    return price;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE"):
         analyze(source, "typescript", "total")
@@ -105,8 +93,7 @@ def test_typescript_declaration_without_value_rejected(tmp_path: Path) -> None:
 def test_typescript_var_rejected(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    var subtotal: number = price;\n"
-        "    return subtotal;",
+        "    var subtotal: number = price;\n    return subtotal;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_VAR_DECLARATION_OUTSIDE_CERTIFIED_SUBSET"):
         analyze(source, "typescript", "total")
@@ -115,9 +102,7 @@ def test_typescript_var_rejected(tmp_path: Path) -> None:
 def test_typescript_assign_statement_lifts(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    let acc: number = 0;\n"
-        "    acc = price;\n"
-        "    return acc;",
+        "    let acc: number = 0;\n    acc = price;\n    return acc;",
     )
     semantic = analyze(source, "typescript", "total")
     statements = semantic.functions[0].body
@@ -135,9 +120,7 @@ def test_typescript_assign_statement_lifts(tmp_path: Path) -> None:
 def test_typescript_compound_assign_lifts(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    let acc: number = 0;\n"
-        "    acc += price;\n"
-        "    return acc;",
+        "    let acc: number = 0;\n    acc += price;\n    return acc;",
     )
     semantic = analyze(source, "typescript", "total")
     statements = semantic.functions[0].body
@@ -154,10 +137,7 @@ def test_typescript_compound_assign_lifts(tmp_path: Path) -> None:
 def test_typescript_inc_dec_lifts(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    let acc: number = price;\n"
-        "    acc++;\n"
-        "    acc--;\n"
-        "    return acc;",
+        "    let acc: number = price;\n    acc++;\n    acc--;\n    return acc;",
     )
     semantic = analyze(source, "typescript", "total")
     statements = semantic.functions[0].body
@@ -172,8 +152,7 @@ def test_typescript_inc_dec_lifts(tmp_path: Path) -> None:
 def test_typescript_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    price = price + 1;\n"
-        "    return price;",
+        "    price = price + 1;\n    return price;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:price"):
         analyze(source, "typescript", "total")
@@ -182,8 +161,7 @@ def test_typescript_parameter_reassignment_rejected(tmp_path: Path) -> None:
 def test_typescript_undeclared_variable_assignment_rejected(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    acc = price;\n"
-        "    return price;",
+        "    acc = price;\n    return price;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_ASSIGNMENT_TARGET_NOT_DECLARED:acc"):
         analyze(source, "typescript", "total")
@@ -192,9 +170,7 @@ def test_typescript_undeclared_variable_assignment_rejected(tmp_path: Path) -> N
 def test_typescript_constant_reassignment_rejected(tmp_path: Path) -> None:
     source = _source_unary(
         tmp_path,
-        "    const acc: number = 0;\n"
-        "    acc = price;\n"
-        "    return acc;",
+        "    const acc: number = 0;\n    acc = price;\n    return acc;",
     )
     with pytest.raises(RouteError, match="TYPESCRIPT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:acc"):
         analyze(source, "typescript", "total")

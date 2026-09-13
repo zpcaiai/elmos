@@ -44,17 +44,13 @@ def test_kotlin_uses_the_exact_standalone_2_2_20_jdk21_tuple() -> None:
     kotlin_root = configured_polyglot_toolchain_root() / "kotlin" / "2.2.20"
     assert toolchain.executable == str(kotlin_root / "bin" / "kotlinc")
     assert toolchain.auxiliary == str(kotlin_root / "bin" / "kotlin")
-    assert toolchain.executable_sha256 == (
-        "90750c977cc043dd2b05c69dd4e052c10377554925dd5a155e74ef732be28c7d"
-    )
+    assert toolchain.executable_sha256 == ("90750c977cc043dd2b05c69dd4e052c10377554925dd5a155e74ef732be28c7d")
     assert "kotlin-build-number=2.2.20-release-333" in toolchain.profile
     assert (
-        "kotlin-compiler-jar-sha256="
-        "8546feb440ec2d59e00d475936523fcd3f528e21c7e8eb8a95e6de5044a6d496"
+        "kotlin-compiler-jar-sha256=8546feb440ec2d59e00d475936523fcd3f528e21c7e8eb8a95e6de5044a6d496"
     ) in toolchain.profile
     assert (
-        "kotlin-stdlib-jar-sha256="
-        "8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7"
+        "kotlin-stdlib-jar-sha256=8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7"
     ) in toolchain.profile
     assert f"kotlin-jvm-home={active_java_home}" in toolchain.profile
     # Exact availability and real local execution are not a proof of the
@@ -109,10 +105,7 @@ def test_kotlin_psi_analyzer_relift_and_real_source_target_runtime(tmp_path: Pat
 def test_kotlin_psi_analyzer_lifts_explicit_immutable_local(tmp_path: Path) -> None:
     source = tmp_path / "local.kt"
     source.write_text(
-        "fun adjusted(value: Long): Long {\n"
-        "    val increment: Long = 2L\n"
-        "    return value + increment\n"
-        "}\n",
+        "fun adjusted(value: Long): Long {\n    val increment: Long = 2L\n    return value + increment\n}\n",
         encoding="utf-8",
     )
 
@@ -138,9 +131,7 @@ def test_kotlin_psi_analyzer_lifts_explicit_immutable_local(tmp_path: Path) -> N
 def test_kotlin_int_is_rejected_instead_of_widened_silently(tmp_path: Path) -> None:
     source = tmp_path / "narrow.kt"
     source.write_text(
-        "fun identity(value: Int): Int {\n"
-        "    return value\n"
-        "}\n",
+        "fun identity(value: Int): Int {\n    return value\n}\n",
         encoding="utf-8",
     )
 
@@ -153,9 +144,7 @@ def test_kotlin_named_function_selection_rejects_zero_matches_explicitly(
 ) -> None:
     source = tmp_path / "missing.kt"
     source.write_text(
-        "fun present(value: Long): Long {\n"
-        "    return value\n"
-        "}\n",
+        "fun present(value: Long): Long {\n    return value\n}\n",
         encoding="utf-8",
     )
 

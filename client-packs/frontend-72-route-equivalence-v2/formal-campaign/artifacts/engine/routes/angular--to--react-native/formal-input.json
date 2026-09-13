@@ -7,12 +7,12 @@
   "route_id": "angular--to--react-native",
   "tuple": {
     "source_profile": "angular",
-    "source_framework_version": "22.0.8",
+    "source_framework_version": "22.1.4",
     "target_profile": "react-native",
     "target_framework_version": "0.86.0"
   },
-  "source_project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
-  "target_project_digest": "sha256:927aa72f948d73cfdcb9bf5182308003c3d28e65b25448140e627f33c4114a57",
+  "source_project_digest": "sha256:77c3f2342e3876aeadc4294d9e4461772670012b58bfe764177410d807de9b9f",
+  "target_project_digest": "sha256:95de96c2dc8edff3d9d9e1d6cb4956db7fe6615508fa49b16776d604c9759223",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",

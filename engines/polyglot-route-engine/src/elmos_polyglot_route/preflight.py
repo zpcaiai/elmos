@@ -44,15 +44,12 @@ def repository_preflight(
             limit=None,
         )
         obligation_count = sum(
-            len(item["candidates"])
-            + (0 if item["candidates"] and item["candidate_enumeration_complete"] else 1)
+            len(item["candidates"]) + (0 if item["candidates"] and item["candidate_enumeration_complete"] else 1)
             for item in inventory
         )
         count_complete = all(bool(item["candidate_enumeration_complete"]) for item in inventory)
         status = "PASSED" if count_complete else "PASSED_WITH_INCOMPLETE_INVENTORY"
-        actual_obligation_count = (
-            sum(len(item["candidates"]) for item in inventory) if count_complete else None
-        )
+        actual_obligation_count = sum(len(item["candidates"]) for item in inventory) if count_complete else None
     except RouteError as error:
         if not str(error).startswith("FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED:"):
             raise
@@ -74,9 +71,7 @@ def repository_preflight(
         "target_language": target_language,
         "obligation_count": obligation_count,
         "reported_obligation_lower_bound": obligation_count,
-        "obligation_count_semantics": (
-            "EXACT_REPORTED_ROWS" if count_complete else "REPORTED_ROW_LOWER_BOUND"
-        ),
+        "obligation_count_semantics": ("EXACT_REPORTED_ROWS" if count_complete else "REPORTED_ROW_LOWER_BOUND"),
         "actual_obligation_count": actual_obligation_count,
         "actual_obligation_count_status": "EXACT" if actual_obligation_count is not None else "UNKNOWN",
         "obligation_limit": MAX_REPOSITORY_FUNCTIONAL_OBLIGATIONS,

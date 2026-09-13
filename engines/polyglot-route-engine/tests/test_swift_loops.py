@@ -5,6 +5,7 @@ Verifies that Swift while loops (`while cond { ... }`) and monotonic for loops
 IR loop statements, reject non-monotonic ranges, repeat-while, labels, loop variable mutations,
 and emit cleanly across targets.
 """
+
 from __future__ import annotations
 
 import shutil
@@ -23,11 +24,7 @@ pytestmark = pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed"
 
 def _source(tmp_path: Path, body: str) -> Path:
     path = tmp_path / "subject.swift"
-    content = (
-        "func subject(_ n: Int64) -> Int64 {\n"
-        f"{body}\n"
-        "}\n"
-    )
+    content = f"func subject(_ n: Int64) -> Int64 {{\n{body}\n}}\n"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -35,11 +32,7 @@ def _source(tmp_path: Path, body: str) -> Path:
 def test_swift_while_loop_lifts(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var count: Int64 = n\n"
-        "    while count > 0 {\n"
-        "        break\n"
-        "    }\n"
-        "    return count",
+        "    var count: Int64 = n\n    while count > 0 {\n        break\n    }\n    return count",
     )
     semantic = analyze(source, "swift", "subject")
     statements = semantic.functions[0].body
@@ -55,11 +48,7 @@ def test_swift_while_loop_lifts(tmp_path: Path) -> None:
 def test_swift_for_loop_lifts_default_step(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Int64 = 0\n"
-        "    for i in 0..<n {\n"
-        "        continue\n"
-        "    }\n"
-        "    return total",
+        "    var total: Int64 = 0\n    for i in 0..<n {\n        continue\n    }\n    return total",
     )
     semantic = analyze(source, "swift", "subject")
     statements = semantic.functions[0].body
@@ -98,11 +87,7 @@ def test_swift_for_loop_lifts_stride(tmp_path: Path) -> None:
 def test_swift_repeat_while_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var count: Int64 = n\n"
-        "    repeat {\n"
-        "        count -= 1\n"
-        "    } while count > 0\n"
-        "    return count",
+        "    var count: Int64 = n\n    repeat {\n        count -= 1\n    } while count > 0\n    return count",
     )
     with pytest.raises(
         RouteError,
@@ -114,10 +99,7 @@ def test_swift_repeat_while_rejected(tmp_path: Path) -> None:
 def test_swift_labeled_loop_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    loop: while n > 0 {\n"
-        "        break\n"
-        "    }\n"
-        "    return n",
+        "    loop: while n > 0 {\n        break\n    }\n    return n",
     )
     with pytest.raises(
         RouteError,
@@ -129,11 +111,7 @@ def test_swift_labeled_loop_rejected(tmp_path: Path) -> None:
 def test_swift_for_closed_range_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Int64 = 0\n"
-        "    for i in 0...n {\n"
-        "        total += i\n"
-        "    }\n"
-        "    return total",
+        "    var total: Int64 = 0\n    for i in 0...n {\n        total += i\n    }\n    return total",
     )
     with pytest.raises(
         RouteError,
@@ -193,11 +171,7 @@ def test_swift_for_non_positive_step_rejected(tmp_path: Path) -> None:
 def test_swift_for_condition_non_monotonic_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Int64 = 0\n"
-        "    for i in 10..<5 {\n"
-        "        total += i\n"
-        "    }\n"
-        "    return total",
+        "    var total: Int64 = 0\n    for i in 10..<5 {\n        total += i\n    }\n    return total",
     )
     with pytest.raises(
         RouteError,
@@ -209,11 +183,7 @@ def test_swift_for_condition_non_monotonic_rejected(tmp_path: Path) -> None:
 def test_swift_for_loop_index_mutation_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    var total: Int64 = 0\n"
-        "    for i in 0..<n {\n"
-        "        i = 10\n"
-        "    }\n"
-        "    return total",
+        "    var total: Int64 = 0\n    for i in 0..<n {\n        i = 10\n    }\n    return total",
     )
     with pytest.raises(
         RouteError,
@@ -225,8 +195,7 @@ def test_swift_for_loop_index_mutation_rejected(tmp_path: Path) -> None:
 def test_swift_break_outside_loop_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    break\n"
-        "    return n",
+        "    break\n    return n",
     )
     with pytest.raises(
         RouteError,
@@ -238,8 +207,7 @@ def test_swift_break_outside_loop_rejected(tmp_path: Path) -> None:
 def test_swift_continue_outside_loop_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
-        "    continue\n"
-        "    return n",
+        "    continue\n    return n",
     )
     with pytest.raises(
         RouteError,

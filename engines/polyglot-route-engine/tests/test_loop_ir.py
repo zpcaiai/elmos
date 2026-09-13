@@ -1,4 +1,5 @@
 """Tests for loops and control flow: while, for, break, and continue statements."""
+
 from __future__ import annotations
 
 import pytest
@@ -8,9 +9,7 @@ from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import SemanticIR
 
-_EMITTABLE: tuple[Language, ...] = tuple(
-    language for language in ROUTED_LANGUAGES if language != "vb6"
-)
+_EMITTABLE: tuple[Language, ...] = tuple(language for language in ROUTED_LANGUAGES if language != "vb6")
 
 
 def _name(value: str) -> dict:

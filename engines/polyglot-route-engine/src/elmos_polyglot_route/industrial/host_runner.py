@@ -15,7 +15,9 @@ class HostRunError(Exception):
 
 def run_python(source: str, entrypoint: str, args: list[Any]) -> Any:
     namespace: dict[str, Any] = {}
-    exec(compile(source, "<industrial-python>", "exec"), namespace, namespace)
+    # The industrial campaign intentionally executes repository-emitted Python;
+    # callers must keep this provider-free host runner inside the test sandbox.
+    exec(compile(source, "<industrial-python>", "exec"), namespace, namespace)  # noqa: S102
     func = namespace.get(entrypoint)
     if func is None:
         # Controller methods are emitted as free functions in Python.
@@ -38,7 +40,8 @@ def toolchain_available(language: str) -> bool:
 
 
 def run_go(source: str, entrypoint: str, args: list[Any]) -> Any:
-    if not shutil.which("go"):
+    go_binary = shutil.which("go")
+    if not go_binary:
         raise HostRunError("go toolchain not available")
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "main.go"
@@ -51,7 +54,7 @@ def run_go(source: str, entrypoint: str, args: list[Any]) -> Any:
         )
         path.write_text(wrapped, encoding="utf-8")
         proc = subprocess.run(
-            ["go", "run", str(path)],
+            [go_binary, "run", str(path)],
             check=False,
             capture_output=True,
             text=True,

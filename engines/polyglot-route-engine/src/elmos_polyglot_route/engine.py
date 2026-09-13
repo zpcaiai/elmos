@@ -284,10 +284,7 @@ def _private_javascript_source_snapshot(
         source_relative_path,
         source_bytes,
     )
-    if (
-        Path(os.path.relpath(descriptor_snapshot, source_snapshot.parent)).as_posix()
-        != str(logical_descriptor)
-    ):
+    if Path(os.path.relpath(descriptor_snapshot, source_snapshot.parent)).as_posix() != str(logical_descriptor):
         raise RouteError("JAVASCRIPT_ESM_PRIVATE_SOURCE_TOPOLOGY_MISMATCH")
     binding = {
         **binding,
@@ -413,8 +410,7 @@ def _bound_javascript_runtime_descriptor_observation(
         if (
             not isinstance(evidence, dict)
             or evidence.get("javascript_esm_descriptor") != stable_expected
-            or evidence.get("javascript_esm_descriptor_observation")
-            != expected_observation
+            or evidence.get("javascript_esm_descriptor_observation") != expected_observation
         ):
             raise RouteError("JAVASCRIPT_ESM_RUNTIME_DESCRIPTOR_EVIDENCE_MISMATCH")
     return expected_observation
@@ -712,13 +708,7 @@ def _enforce_nodejs_semantic_domain(
         environment = {parameter.name: parameter.type for parameter in function.parameters}
         if any(_statement_uses_negative_zero_literal(statement) for statement in function.body):
             languages = {source_language, target_language}
-            runtime = (
-                "JAVASCRIPT"
-                if "javascript" in languages
-                else "REACT"
-                if "react" in languages
-                else "TYPESCRIPT"
-            )
+            runtime = "JAVASCRIPT" if "javascript" in languages else "REACT" if "react" in languages else "TYPESCRIPT"
             raise RouteError(
                 f"{runtime}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED:{source_language}-to-{target_language}:{function.name}"
             )
@@ -1873,18 +1863,10 @@ def _verify_language_prelude(
             (b"#include <stdexcept>", "include", "<stdexcept>"),
             (b"#include <string>", "include", "<string>"),
         ],
-        ("objc", "source"): [
-            (b"#import <Foundation/Foundation.h>", "import", "<Foundation/Foundation.h>")
-        ],
-        ("objc", "target"): [
-            (b"#import <Foundation/Foundation.h>", "import", "<Foundation/Foundation.h>")
-        ],
-        ("php", "source"): [
-            (b"declare(strict_types=1);", "declare", "strict_types=1")
-        ],
-        ("php", "target"): [
-            (b"declare(strict_types=1);", "declare", "strict_types=1")
-        ],
+        ("objc", "source"): [(b"#import <Foundation/Foundation.h>", "import", "<Foundation/Foundation.h>")],
+        ("objc", "target"): [(b"#import <Foundation/Foundation.h>", "import", "<Foundation/Foundation.h>")],
+        ("php", "source"): [(b"declare(strict_types=1);", "declare", "strict_types=1")],
+        ("php", "target"): [(b"declare(strict_types=1);", "declare", "strict_types=1")],
     }.get((language, role), [])
     directives = inventory.get("directives")
     if not isinstance(directives, list):
@@ -2727,8 +2709,7 @@ def _target_call_graph(
     call_rules = {
         rule
         for rule in emitted.normalization_rules
-        if raw_target_ir.source_language not in {"typescript", "react"}
-        and (".call:" in rule or ".non-zero:" in rule)
+        if raw_target_ir.source_language not in {"typescript", "react"} and (".call:" in rule or ".non-zero:" in rule)
     }
     if not call_rules <= set(registered_rules):
         raise RouteError("PURE_MODULE_TARGET_CALL_NORMALIZATION_INVALID")

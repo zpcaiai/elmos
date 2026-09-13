@@ -165,10 +165,7 @@ def test_verified_function_report_is_content_addressed_and_markdown_is_derived(
         "formula": "VERIFIED functional obligations / compiler-completely inventoried functional obligations",
     }
     assert report["evidence_boundary"]["target_behavior_oracle"] == "PASSED_PER_VERIFIED_FUNCTION"
-    assert (
-        report["evidence_boundary"]["source_target_declared_case_equivalence"]
-        == "PASSED_PER_VERIFIED_FUNCTION"
-    )
+    assert report["evidence_boundary"]["source_target_declared_case_equivalence"] == "PASSED_PER_VERIFIED_FUNCTION"
     function = report["functions"][0]
     assert function["mapping"]["confidence"] == 0.7
     assert function["source_blocks"][0]["extraction_method"] == "PYTHON_AST_FUNCTION"
@@ -397,10 +394,7 @@ def test_multiple_functions_and_rejected_candidates_never_shrink_the_denominator
     assert report["metric"]["denominator"] == 2
     assert report["metric"]["success_rate_basis_points"] == 5000
     assert report["status_counts"] == {"VERIFIED": 1, "UNSUPPORTED": 1}
-    assert (
-        report["evidence_boundary"]["source_target_declared_case_equivalence"]
-        == "PASSED_PER_VERIFIED_FUNCTION"
-    )
+    assert report["evidence_boundary"]["source_target_declared_case_equivalence"] == "PASSED_PER_VERIFIED_FUNCTION"
     failed = report["functions"][1]
     assert failed["failure"]["reason_code"] == "PYTHON_PARAMETER_TYPE_REQUIRED"
     assert failed["target_blocks"] == []
@@ -442,10 +436,7 @@ def test_incomplete_declaration_inventory_adds_an_unknown_obligation(tmp_path: P
     assert report["metric"]["exact_fraction"] == "1/1"
     assert report["metric"]["denominator_complete"] is False
     assert report["evidence_boundary"]["target_behavior_oracle"] == "PASSED_PER_VERIFIED_FUNCTION"
-    assert (
-        report["evidence_boundary"]["source_target_declared_case_equivalence"]
-        == "PASSED_PER_VERIFIED_FUNCTION"
-    )
+    assert report["evidence_boundary"]["source_target_declared_case_equivalence"] == "PASSED_PER_VERIFIED_FUNCTION"
     assert report["metric"]["measurement_status"] == "INDETERMINATE"
     assert report["metric"]["reported_obligation_count"] == 2
     assert report["metric"]["unknown_scope_count"] == 1

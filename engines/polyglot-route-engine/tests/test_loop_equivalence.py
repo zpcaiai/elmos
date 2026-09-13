@@ -9,6 +9,7 @@ Verifies that:
 4. Python, TypeScript, and Go emitted targets execute to identical runtime values.
 5. Multi-language round-trip lifting and reanalysis preserves semantic equivalence.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -50,6 +51,7 @@ def _normalize_ir_for_comparison(ir: SemanticIR) -> dict[str, Any]:
 # ==============================================================================
 # 1. Monotonic For Loop Parity (Search loop with return)
 # ==============================================================================
+
 
 def test_monotonic_for_loop_cross_language_parity(tmp_path: Path) -> None:
     # Python
@@ -145,6 +147,7 @@ def test_monotonic_for_loop_cross_language_parity(tmp_path: Path) -> None:
 # ==============================================================================
 # 2. Monotonic For Loop with Custom Step Parity (Local binding + continue/return)
 # ==============================================================================
+
 
 def test_for_loop_custom_step_cross_language_parity(tmp_path: Path) -> None:
     py_file = tmp_path / "subject.py"
@@ -244,6 +247,7 @@ def test_for_loop_custom_step_cross_language_parity(tmp_path: Path) -> None:
 # 3. While Loop with Break Parity (Countdown with Threshold Stop)
 # ==============================================================================
 
+
 def test_while_loop_with_break_cross_language_parity(tmp_path: Path) -> None:
     py_file = tmp_path / "subject.py"
     py_file.write_text(
@@ -331,6 +335,7 @@ def test_while_loop_with_break_cross_language_parity(tmp_path: Path) -> None:
 # 4. Multi-Target Emission Across All Locally Executable Routed Languages
 # ==============================================================================
 
+
 @pytest.mark.parametrize("target", LOCAL_LOOP_TARGETS)
 def test_for_loop_emits_to_every_local_loop_target(tmp_path: Path, target: str) -> None:
     py_file = tmp_path / "subject.py"
@@ -375,10 +380,7 @@ def test_while_loop_emits_to_every_local_loop_target(tmp_path: Path, target: str
 def test_vb6_loop_lowering_boundaries_remain_explicit(tmp_path: Path) -> None:
     for_loop = tmp_path / "for_subject.py"
     for_loop.write_text(
-        "def subject(n: int) -> int:\n"
-        "    for i in range(0, n, 3):\n"
-        "        return i\n"
-        "    return 0\n",
+        "def subject(n: int) -> int:\n    for i in range(0, n, 3):\n        return i\n    return 0\n",
         encoding="utf-8",
     )
     with pytest.raises(RouteError, match="VB6_FOR_LOOP_LOWERING_OUTSIDE_CERTIFIED_SUBSET"):
@@ -386,10 +388,7 @@ def test_vb6_loop_lowering_boundaries_remain_explicit(tmp_path: Path) -> None:
 
     while_loop = tmp_path / "while_subject.py"
     while_loop.write_text(
-        "def subject(n: int) -> int:\n"
-        "    while n > 0:\n"
-        "        break\n"
-        "    return 0\n",
+        "def subject(n: int) -> int:\n    while n > 0:\n        break\n    return 0\n",
         encoding="utf-8",
     )
     with pytest.raises(
@@ -402,6 +401,7 @@ def test_vb6_loop_lowering_boundaries_remain_explicit(tmp_path: Path) -> None:
 # ==============================================================================
 # 5. Differential Runtime Execution (Python vs TypeScript vs Go)
 # ==============================================================================
+
 
 def test_loop_differential_runtime_execution(tmp_path: Path) -> None:
     """Execute emitted Python, TypeScript, and Go artifacts and verify identical output."""
@@ -455,7 +455,7 @@ def test_loop_differential_runtime_execution(tmp_path: Path) -> None:
 
         # 3. Run Go
         go_source = run_dir / f"main_{val}.go"
-        go_code = emitted_go.replace("package main\n", "package main\nimport \"fmt\"\n", 1)
+        go_code = emitted_go.replace("package main\n", 'package main\nimport "fmt"\n', 1)
         go_source.write_text(
             f"{go_code}\nfunc main() {{\n    fmt.Println(subject({val}))\n}}\n",
             encoding="utf-8",
@@ -473,6 +473,7 @@ def test_loop_differential_runtime_execution(tmp_path: Path) -> None:
 # ==============================================================================
 # 6. Multi-Language Round-Trip Lifting & Reanalysis
 # ==============================================================================
+
 
 def test_loop_roundtrip_reanalysis(tmp_path: Path) -> None:
     # Python source -> IR

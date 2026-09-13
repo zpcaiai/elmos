@@ -2,25 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Dict, Type
+from collections.abc import Callable
+
 from .base import BaseEmitter
-from .java_emitter import JavaEmitter
-from .csharp_emitter import CSharpEmitter
-from .python_emitter import PythonEmitter
-from .typescript_emitter import TypeScriptEmitter
-from .go_emitter import GoEmitter
-from .rust_emitter import RustEmitter
-from .kotlin_emitter import KotlinEmitter
-from .php_emitter import PhpEmitter
 from .cpp_emitter import CppEmitter
-from .swift_emitter import SwiftEmitter
-from .objc_emitter import ObjCEmitter
-from .react_emitter import ReactEmitter
+from .csharp_emitter import CSharpEmitter
 from .flutter_emitter import FlutterEmitter
+from .go_emitter import GoEmitter
+from .java_emitter import JavaEmitter
+from .kotlin_emitter import KotlinEmitter
+from .objc_emitter import ObjCEmitter
+from .php_emitter import PhpEmitter
+from .python_emitter import PythonEmitter
+from .react_emitter import ReactEmitter
+from .rust_emitter import RustEmitter
+from .swift_emitter import SwiftEmitter
+from .typescript_emitter import TypeScriptEmitter
 from .vb6_emitter import Vb6Emitter
 from .vcpp6_emitter import Vcpp6Emitter
 
-EMITTER_REGISTRY: Dict[str, Type[BaseEmitter]] = {
+EMITTER_REGISTRY: dict[str, Callable[[], BaseEmitter]] = {
     "java": JavaEmitter,
     "csharp": CSharpEmitter,
     "cs": CSharpEmitter,
@@ -57,6 +58,7 @@ def get_emitter(lang: str) -> BaseEmitter:
         raise ValueError(f"No emitter registered for language: {lang}")
     return cls()
 
+
 __all__ = [
     "BaseEmitter",
     "JavaEmitter",
@@ -77,4 +79,3 @@ __all__ = [
     "get_emitter",
     "EMITTER_REGISTRY",
 ]
-

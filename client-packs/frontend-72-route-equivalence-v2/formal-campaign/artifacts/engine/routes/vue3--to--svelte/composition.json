@@ -4,12 +4,12 @@
   "route_id": "vue3--to--svelte",
   "source_lifting": {
     "profile_id": "vue3",
-    "project_digest": "sha256:2f2ba603f52fa47e6b94086ac635b2dea2817e9dd976c1514a3ec8d6cd4ca088",
+    "project_digest": "sha256:2cbdc09c8712d45c14d1df4003090ac02b918bf1576d4ae70908a270f7d56918",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "target_lowering_relift": {
     "profile_id": "svelte",
-    "project_digest": "sha256:8f4a10ae5d98feefa83392599deb5a8d4398e6a0d41b56df6bfaa02b8562ff7e",
+    "project_digest": "sha256:289541005f124d9695604633922b6345c9e36a72fb7844d93569d998537dea00",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",

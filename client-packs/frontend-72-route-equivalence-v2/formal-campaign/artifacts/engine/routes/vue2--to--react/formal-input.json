@@ -11,8 +11,8 @@
     "target_profile": "react",
     "target_framework_version": "19.2.8"
   },
-  "source_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
-  "target_project_digest": "sha256:f9afd91e0068ad1a903377e20cfea85d95bba26147b298399c8d3e9a757354ef",
+  "source_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
+  "target_project_digest": "sha256:2363b65dbe2e7e4c3712a285ec436aab9869ae9ca41f3764729247f8c9e82fed",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",

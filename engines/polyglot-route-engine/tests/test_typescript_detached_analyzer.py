@@ -160,9 +160,7 @@ def test_typescript_binding_requires_matching_node_closure_profile(
     profile_value: str | None,
 ) -> None:
     _source_path, _parser, receipt, toolchain = _synthetic_analyzer_inputs(tmp_path)
-    profile = tuple(
-        item for item in toolchain.profile if not item.startswith("node-closure-profile=")
-    )
+    profile = tuple(item for item in toolchain.profile if not item.startswith("node-closure-profile="))
     if profile_value is not None:
         profile = (*profile, f"node-closure-profile={profile_value}")
     candidate = ExactToolchain(
@@ -209,10 +207,7 @@ def test_typescript_analyzer_uses_exact_private_snapshot(
     result = native._run_trusted_typescript_analyzer(toolchain, source, "calculate")
 
     assert "typescript-closure=" + "c" * 64 in result["analyzer_version"]
-    assert (
-        "node-closure=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b"
-        in result["analyzer_version"]
-    )
+    assert "node-closure=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b" in result["analyzer_version"]
 
 
 @pytest.mark.parametrize(
@@ -554,12 +549,8 @@ def test_detached_captured_typescript_source_inventory_and_target_relift(
         "PYTHONHASHSEED": "0",
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONNOUSERSITE": "1",
-        "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT": str(
-            toolchains._EXPECTED_TOOLCHAIN_ROOT
-        ),
-        "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX": str(
-            toolchains._EXPECTED_HOMEBREW_PREFIX
-        ),
+        "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT": str(toolchains._EXPECTED_TOOLCHAIN_ROOT),
+        "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX": str(toolchains._EXPECTED_HOMEBREW_PREFIX),
     }
     script = """
 import json

@@ -6,6 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any
 
+from elmos_polyglot_route.ast_compiler.ir import UniversalModule
 from elmos_polyglot_route.industrial.anti_template import emission_is_template, missing_domain_tokens
 from elmos_polyglot_route.industrial.concurrency import ConcurrencySemanticEngine
 from elmos_polyglot_route.industrial.corpora import IndustrialCorpus, all_corpora
@@ -29,7 +30,7 @@ class RouteCorpusResult:
     host_python: bool = False
 
 
-def lower_industrial(module, source: str, target: str):
+def lower_industrial(module: UniversalModule, source: str, target: str) -> UniversalModule:
     lowered = deepcopy(module)
     lowered.source_language = source
     lowered = OwnershipMemoryEngine.lower_module(lowered, source, target)
@@ -45,7 +46,7 @@ def _same_observation(left: Observation, right: Observation) -> bool:
         return False
     if left.status == "ERROR":
         return True
-    return left.value == right.value
+    return bool(left.value == right.value)
 
 
 def prove_route_corpus(source: str, target: str, corpus: IndustrialCorpus) -> RouteCorpusResult:

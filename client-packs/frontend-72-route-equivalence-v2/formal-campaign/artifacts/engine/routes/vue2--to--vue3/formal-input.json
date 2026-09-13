@@ -11,8 +11,8 @@
     "target_profile": "vue3",
     "target_framework_version": "3.5.40"
   },
-  "source_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
-  "target_project_digest": "sha256:2f2ba603f52fa47e6b94086ac635b2dea2817e9dd976c1514a3ec8d6cd4ca088",
+  "source_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
+  "target_project_digest": "sha256:2cbdc09c8712d45c14d1df4003090ac02b918bf1576d4ae70908a270f7d56918",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "2.0",
-  "projectId": "692f6b9ec250664fba3ac9df",
+  "projectId": "7153118c2db2f5d3454a6fbb",
   "direction": {
     "routeId": "angular--to--react",
     "source": "angular",
     "target": "react",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "19.2.8",
     "supportState": "PROJECT_GENERATION_READY",
     "semanticConversionEvidence": "NOT_RUN",
@@ -43,7 +43,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:e8ab5bbe01a8446b247540f05138434fde6b0f8aa3c859fbde71236443d93149",
+  "contentDigest": "sha256:9442ad4ac230cf923452aee427fbbede3f07c521f1346781afca0d9e99299700",
   "ownership": {
     "generated": [
       ".editorconfig",

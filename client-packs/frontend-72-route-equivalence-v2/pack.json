@@ -11,7 +11,7 @@
   "source": {
     "stack": "angular",
     "versions": [
-      "22.0.8"
+      "22.1.4"
     ],
     "language": "TypeScript",
     "language_versions": [
@@ -21,10 +21,10 @@
     "runtime_versions": [
       "26.0.0"
     ],
-    "build_tool": "Angular CLI 22.0.8",
+    "build_tool": "Angular CLI 22.1.4",
     "package_manager": "npm 11.12.1",
     "router": [
-      "Angular Router 22.0.8"
+      "Angular Router 22.1.4"
     ],
     "renderer": [
       "CSR"
@@ -219,11 +219,11 @@
     "holdout": "required"
   },
   "frontend_formal_route_campaign_v2": "formal-campaign/frontend-formal-route-campaign-v2.json",
-  "frontend_formal_campaign_v2_digest": "sha256:1149d7be664e00bfb0de5278cd9257a013019c3549faf53d3bdc0184f4ddc991",
-  "frontend_formal_scope_v2_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
+  "frontend_formal_campaign_v2_digest": "sha256:01ca7aa841eebeeab961b5def4c1ae668f91bd965a01210b3d59d2f7ddccfe1d",
+  "frontend_formal_scope_v2_digest": "sha256:1a3ffe1e99fed96c3123238e4a50e5b202a4dcc7d42189ed226db057f9353893",
   "frontend_formal_peer_v2": {
     "pack_key": "frontend-72-route-formal-equivalence-v2",
-    "campaign_sha256": "sha256:1149d7be664e00bfb0de5278cd9257a013019c3549faf53d3bdc0184f4ddc991",
-    "scope_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2"
+    "campaign_sha256": "sha256:01ca7aa841eebeeab961b5def4c1ae668f91bd965a01210b3d59d2f7ddccfe1d",
+    "scope_digest": "sha256:1a3ffe1e99fed96c3123238e4a50e5b202a4dcc7d42189ed226db057f9353893"
   }
 }

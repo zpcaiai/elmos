@@ -1,5 +1,5 @@
 ; ELMOS bounded-frontend-interaction-v1 symbolic block equivalence
-; formal-input-bytes-digest: sha256:701733a4bc403505bb0be0264c68a0f58fd784b85851000459d96dd4e713ed74
+; formal-input-bytes-digest: sha256:e84ca3e913eb3d09bf57ef599043fe3ebd5119bbdee7a90ed2130844a0d3aaf3
 ; Same-engine self-consistency only; framework/runtime/native soundness is outside this formula.
 (set-logic ALL)
 (declare-const route_path String)

@@ -102,9 +102,7 @@ def test_other_language_ir_emits_vb6_and_relifts_generated_target(tmp_path: Path
         ("ByVal value As Variant", "VB6_TYPE_OUTSIDE_CERTIFIED_SUBSET"),
     ],
 )
-def test_vb6_rejects_implicit_or_reference_semantics(
-    tmp_path: Path, fragment: str, error: str
-) -> None:
+def test_vb6_rejects_implicit_or_reference_semantics(tmp_path: Path, fragment: str, error: str) -> None:
     source = _write(
         tmp_path / "unsafe.bas",
         f"Option Explicit\nPublic Function Identity({fragment}) As Long\nIdentity = value\nEnd Function\n",
@@ -147,10 +145,9 @@ def test_vb6_forms_com_and_cross_function_calls_remain_explicit_gaps(tmp_path: P
 
 
 def test_vb6_candidate_discovery_accepts_ansi_source() -> None:
-    source = (
-        "Option Explicit\r\n' caf\u00e9\r\n"
-        "Public Function Price(ByVal amount As Double) As Double\r\n"
-    ).encode("cp1252")
+    source = ("Option Explicit\r\n' caf\u00e9\r\nPublic Function Price(ByVal amount As Double) As Double\r\n").encode(
+        "cp1252"
+    )
     assert propose_candidates(source, "vb6") == ["Price"]
 
 
@@ -159,10 +156,7 @@ def test_vb6_repository_inventory_and_discovery_are_wired(tmp_path: Path) -> Non
     repository.mkdir()
     _write(
         repository / "Pricing.bas",
-        "Option Explicit\n"
-        "Public Function Price(ByVal amount As Double) As Double\n"
-        "    Price = amount\n"
-        "End Function\n",
+        "Option Explicit\nPublic Function Price(ByVal amount As Double) As Double\n    Price = amount\nEnd Function\n",
     )
 
     plan = plan_repository(repository, "local:legacy-vb6", "vb6", "java")

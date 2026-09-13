@@ -1,8 +1,8 @@
 """Fuzzing and Sanitizer cluster for Universal AST Compiler."""
 
-from .sanitizers import NativeSanitizerRunner, SanitizerResult, SanitizerType
-from .generator import AstFuzzGenerator
 from .fuzz_cluster import DifferentialFuzzCluster, FuzzClusterReport, FuzzRunRecord
+from .generator import AstFuzzGenerator
+from .sanitizers import NativeSanitizerRunner, SanitizerResult, SanitizerType
 
 __all__ = [
     "NativeSanitizerRunner",

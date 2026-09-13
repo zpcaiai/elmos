@@ -1,18 +1,19 @@
-"""Universal AST Compiler orchestrating Parsing, IR Transformation, Lowering, Shimming, Emitting, and L4 Autonomous Self-Repair."""
+"""Universal AST Compiler orchestrating Parsing, IR Transformation, Lowering, Shimming, Emitting, and L4 Autonomous Self-Repair."""  # noqa: E501
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Tuple
-from .ir import UniversalModule
-from .parsers import get_parser
-from .lowering import SemanticLoweringEngine
-from .shims import ShimRegistry
-from .emitters import get_emitter
+from typing import Any
+
 from .autonomous import AutonomousRepairLoop, RepairResult
+from .emitters import get_emitter
+from .ir import UniversalModule
+from .lowering import SemanticLoweringEngine
+from .parsers import get_parser
+from .shims import ShimRegistry
 
 
 class UniversalAstCompiler:
-    """Production Universal AST Semantic Compiler supporting all 210 bidirectional polyglot routes (15 languages) with L4 self-repair."""
+    """Production Universal AST Semantic Compiler supporting all 210 bidirectional polyglot routes (15 languages) with L4 self-repair."""  # noqa: E501
 
     def __init__(self) -> None:
         self.lowering_engine = SemanticLoweringEngine()
@@ -37,7 +38,7 @@ class UniversalAstCompiler:
         source_code: str,
         source_lang: str,
         target_lang: str,
-        options: Optional[Dict[str, Any]] = None,
+        options: dict[str, Any] | None = None,
     ) -> str:
         """Full multi-stage AST compilation pipeline from source to target language."""
         opts = options or {}
@@ -63,7 +64,7 @@ class UniversalAstCompiler:
         source_code: str,
         source_lang: str,
         target_lang: str,
-    ) -> Tuple[str, RepairResult]:
+    ) -> tuple[str, RepairResult]:
         """Compile and execute physical compiler diagnostics and autonomous self-repair."""
         emitted_code = self.compile(source_code, source_lang, target_lang, options={"auto_repair": False})
         repair_res = AutonomousRepairLoop.run(emitted_code, target_lang)
@@ -77,4 +78,3 @@ default_compiler = UniversalAstCompiler()
 def compile_polyglot_ast(source_code: str, source_lang: str, target_lang: str, auto_repair: bool = False) -> str:
     """Convenience functional API for AST compilation."""
     return default_compiler.compile(source_code, source_lang, target_lang, options={"auto_repair": auto_repair})
-

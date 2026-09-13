@@ -3552,6 +3552,22 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     network = receipt.get("network_isolation")
     sandbox = network.get("sandbox") if isinstance(network, dict) else None
     verifier = network.get("verifier") if isinstance(network, dict) else None
+    profile_items = toolchain.get("profile") if isinstance(toolchain, dict) else None
+    declared_profile_ids = (
+        tuple(
+            item.removeprefix("apple-host-profile=")
+            for item in profile_items
+            if isinstance(item, str) and item.startswith("apple-host-profile=")
+        )
+        if isinstance(profile_items, list)
+        else ()
+    )
+    if len(declared_profile_ids) != 1 or not declared_profile_ids[0]:
+        raise ValueError(
+            "toolchain exact identity is invalid: receipt does not declare one "
+            "registered Apple host profile"
+        )
+    declared_profile_id = declared_profile_ids[0]
     observed_identity = (
         toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None,
         git.get("sha256") if isinstance(git, dict) else None,
@@ -3561,7 +3577,8 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     matches = tuple(
         profile
         for profile in _APPLE_ROUTE_HOST_PROFILES
-        if (
+        if profile.profile_id == declared_profile_id
+        and (
             "sha256:" + profile.swiftc_sha256,
             "sha256:" + profile.apple_git_sha256,
             "sha256:" + profile.sandbox_exec_sha256,
@@ -3570,7 +3587,10 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
         == observed_identity
     )
     if len(matches) != 1:
-        raise ValueError("receipt does not select one registered Apple host profile")
+        raise ValueError(
+            "toolchain exact identity is invalid: receipt does not select one "
+            "registered Apple host profile"
+        )
     profile = matches[0]
     component_overrides = {
         role: (sha256_value, byte_count)
