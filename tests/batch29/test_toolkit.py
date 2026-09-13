@@ -995,7 +995,7 @@ class ToolkitTests(unittest.TestCase):
             failures=failures,
         )
         self.assertTrue(
-            any("toolchain exact identity is invalid" in failure for failure in failures),
+            any("Apple host profile is not registered" in failure for failure in failures),
             failures,
         )
 
@@ -1050,11 +1050,28 @@ class ToolkitTests(unittest.TestCase):
                 )
                 self.assertTrue(
                     any(
-                        "toolchain exact identity is invalid" in failure
+                        "Apple host profile is not registered" in failure
                         for failure in failures
                     ),
                     failures,
                 )
+
+                for invalid_profile in ([], [
+                    f"apple-host-profile={profile.profile_id}",
+                    f"apple-host-profile={profile.profile_id}",
+                ]):
+                    malformed = copy.deepcopy(receipt)
+                    malformed["toolchain"]["profile"] = [
+                        item
+                        for item in malformed["toolchain"]["profile"]
+                        if not item.startswith("apple-host-profile=")
+                    ]
+                    malformed["toolchain"]["profile"][1:1] = invalid_profile
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "receipt does not select one registered Apple host profile",
+                    ):
+                        validator._registered_swift_receipt_contract(malformed)
 
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()

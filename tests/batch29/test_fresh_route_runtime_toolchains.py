@@ -363,11 +363,13 @@ def test_ci_node_profiles_bind_the_current_openssl_bottle_identity() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
 
     assert installer.count(
-        'NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"'
-    ) == 2
+        "openssl@3/3.6.3/lib/libcrypto.3.dylib|444|4856256|"
+        "43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
+    ) == 1
     assert installer.count(
-        'NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"'
-    ) == 2
+        "openssl@3/3.6.3/lib/libssl.3.dylib|444|872080|"
+        "26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
+    ) == 1
     assert "a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71" not in installer
     assert "ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca" not in installer
 
