@@ -35,11 +35,6 @@ from _common import (
     resolve_ref,
 )
 
-# The v2 validator performs a self-contained revalidation and a frozen-engine
-# verification, each bounded at 900 seconds. The gate remains fail-closed,
-# while its outer budget covers both phases and report generation.
-FRONTEND_V2_VALIDATOR_TIMEOUT_SECONDS = 1_920
-
 TECHNIQUE_THRESHOLDS = {
     "property": ("property_pass_rate", 1.0),
     "property-based-testing": ("property_pass_rate", 1.0),
@@ -896,7 +891,7 @@ def main(repository_root: Path | None = None) -> int:
                             **frontend_defaults,
                             "status": "invalid",
                         },
-                        FRONTEND_V2_VALIDATOR_TIMEOUT_SECONDS,
+                        540,
                     )
                 else:
                     frontend_campaign = {

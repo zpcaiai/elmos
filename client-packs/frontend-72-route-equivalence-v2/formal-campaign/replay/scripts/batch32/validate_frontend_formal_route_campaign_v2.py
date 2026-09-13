@@ -89,11 +89,9 @@ REQUIRED_RUNTIME_CHANNELS = {
     "vue3": ("browser",),
 }
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
-# Revalidating the full 72-route/864-block frozen pack can exceed ten minutes
-# when the captured TypeScript declaration trees are cold. Keep a finite,
-# fail-closed budget while allowing the complete self-contained replay to run.
-SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 1_500
-FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS = 900
+# Revalidating the full 72-route/864-block frozen pack takes longer than five
+# minutes on the pinned Node 26 macOS runner. Keep a finite fail-closed budget.
+SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 600
 LOCKED_NODE_IDENTITIES = (
     {
         "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
@@ -2540,7 +2538,7 @@ process.stdout.write(JSON.stringify({mismatches}));
             ],
             capture_output=True,
             text=True,
-            timeout=FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS,
+            timeout=180,
             check=False,
         )
         result = json.loads(completed.stdout)
@@ -2561,8 +2559,7 @@ def validate_engine_verifier(
     artifacts: dict[str, dict[str, Any]],
     artifact_files: dict[str, Path],
     used: set[str],
-    live_repository_binding: bool,
-    execute_runtime_replay: bool,
+    live_runtime_replay: bool,
     errors: list[str],
 ) -> None:
     declaration = campaign.get("engine_verifier")
@@ -2674,7 +2671,7 @@ def validate_engine_verifier(
         ),
     ):
         runtime_ref = artifacts.get(str(runtime_by_path.get(runtime_path)), {})
-        if not captured_replay and live_repository_binding:
+        if not captured_replay and live_runtime_replay:
             live = Path(__file__).resolve().parents[2] / live_relative
             if (
                 not live.is_file()
@@ -2685,7 +2682,7 @@ def validate_engine_verifier(
                 errors.append(
                     f"engine verifier live TypeScript runtime drift: {runtime_path}"
                 )
-    if not captured_replay and live_repository_binding:
+    if not captured_replay and live_runtime_replay:
         live_node_types_tree = live_engine_verifier_node_types_tree(
             Path(__file__).resolve().parents[2] / "engines/frontend-client-engine",
             errors,
@@ -2771,7 +2768,7 @@ def validate_engine_verifier(
         or node.get("identities") != expected_identities
     )
     node_realpath: Path | None = None
-    if execute_runtime_replay:
+    if live_runtime_replay:
         node_realpath = locked_node_executable(
             label="engine verifier live replay", errors=errors
         )
@@ -2781,7 +2778,7 @@ def validate_engine_verifier(
     if node_metadata_invalid or live_node_invalid:
         errors.append("engine verifier live Node identity/freshness drift")
         return
-    if execute_runtime_replay:
+    if live_runtime_replay:
         assert node_realpath is not None
         validate_engine_verifier_emit(
             node_realpath=node_realpath,
@@ -2829,7 +2826,7 @@ def validate_engine_verifier(
     if declaration.get("status") != "PASSED":
         errors.append("frozen engine verifier captured status is not PASSED")
         return
-    if not execute_runtime_replay:
+    if not live_runtime_replay:
         return
     assert node_realpath is not None
     try:
@@ -2841,7 +2838,7 @@ def validate_engine_verifier(
             # The full 72-route/864-block verifier exceeds three minutes on
             # the pinned Node 26 macOS runner. It remains fail-closed under a
             # finite production-sized replay budget.
-            timeout=FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS,
+            timeout=600,
             check=False,
         )
         result = json.loads(completed.stdout.strip().splitlines()[-1])
@@ -7930,13 +7927,7 @@ def validate_campaign(
         artifacts=artifacts,
         artifact_files=artifact_files,
         used=used,
-        live_repository_binding=not portable_evidence_only,
-        # A complete validation delegates the expensive frozen Node/Z3 replay
-        # to its self-contained child. A direct --no-replay-execute validation
-        # runs it here instead, so every mode executes it exactly once.
-        execute_runtime_replay=(
-            not portable_evidence_only and (captured_replay or not execute_replay)
-        ),
+        live_runtime_replay=not portable_evidence_only,
         errors=errors,
     )
     engine_id = str(campaign.get("engine_campaign_artifact_id"))

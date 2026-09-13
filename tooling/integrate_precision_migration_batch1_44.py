@@ -593,7 +593,9 @@ def build_expected(staging_root: Path) -> tuple[dict[str, Any], dict[str, Path]]
         installed["installed_path"] = (
             f"agent-skills/runtime/{record['name']}/SKILL.md"
         )
-        installed["installed_sha256"] = sha256(skill_content)
+        installed["installed_sha256"] = sha256(
+            (destination / "SKILL.md").read_bytes()
+        )
         installed["workspace_path"] = f".agents/skills/{record['name']}/SKILL.md"
         installed["workspace_sha256"] = installed["installed_sha256"]
         installed["interface_sha256"] = sha256(
@@ -723,6 +725,11 @@ def directories_equal(left: Path, right: Path) -> bool:
     return left_files == right_files
 
 
+LEGACY_PROMOTION_METADATA = (
+    'implementation_state: "VERIFIED"\n'
+    'external_evidence_status: "LOCAL_EXECUTED"\n'
+    'production_certification: "NOT_CERTIFIED"\n'
+)
 PROMOTION_METADATA = (
     "metadata:\n"
     '  implementation_state: "VERIFIED"\n'
@@ -733,23 +740,31 @@ PROMOTION_METADATA = (
 
 def normalize_promotion_metadata(content: bytes) -> bytes:
     """Remove only the exact repository-owned promotion overlay."""
-    marker = PROMOTION_METADATA.encode("utf-8")
-    if marker not in content:
+    markers = tuple(
+        value.encode("utf-8")
+        for value in (PROMOTION_METADATA, LEGACY_PROMOTION_METADATA)
+    )
+    present = [marker for marker in markers if marker in content]
+    if len(present) != 1 or content.count(present[0]) != 1:
         return content
-    if content.count(marker) != 1:
-        return content
-    return content.replace(marker, b"", 1)
+    return content.replace(present[0], b"", 1)
 
 
 def promoted_skill_content(content: bytes, name: str) -> bytes:
-    marker = f"name: {name}\n".encode()
+    marker = f"name: {name}\n".encode("utf-8")
     if content.count(marker) != 1:
         fail(f"cannot apply exact promotion metadata: {name}")
-    if PROMOTION_METADATA.encode("utf-8") in content:
+    canonical = PROMOTION_METADATA.encode("utf-8")
+    legacy = LEGACY_PROMOTION_METADATA.encode("utf-8")
+    if content.count(canonical) == 1 and legacy not in content:
         return content
+    if content.count(legacy) == 1 and canonical not in content:
+        return content.replace(legacy, canonical, 1)
+    if canonical in content or legacy in content or b"\nmetadata:\n" in content:
+        fail(f"ambiguous promotion metadata: {name}")
     return content.replace(
         marker,
-        marker + PROMOTION_METADATA.encode("utf-8"),
+        marker + canonical,
         1,
     )
 

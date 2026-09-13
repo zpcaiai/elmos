@@ -14,9 +14,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 GATE = ROOT / "scripts/batch35/run_verification_gate.py"
-# The gate gives the complete v2 validator 1920 seconds. Keep the test process
-# bounded while leaving enough time for gate orchestration and atomic reports.
-GATE_TEST_TIMEOUT_SECONDS = 2_040
+GATE_TEST_TIMEOUT_SECONDS = 600
 EXACT_DARWIN_ARM64_REPLAY_ENABLED = (
     os.environ.get("ELMOS_BATCH35_PORTABLE_ONLY") != "true"
     and sys.platform == "darwin"

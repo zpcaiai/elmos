@@ -20,7 +20,12 @@ agents_skills_dir = ROOT / ".agents/skills"
 runtime_skills_dir = ROOT / "agent-skills/runtime"
 
 promoted = 0
-promotion_metadata = (
+legacy_promotion = (
+    'implementation_state: "VERIFIED"\n'
+    'external_evidence_status: "LOCAL_EXECUTED"\n'
+    'production_certification: "NOT_CERTIFIED"\n'
+)
+canonical_promotion = (
     "metadata:\n"
     '  implementation_state: "VERIFIED"\n'
     '  external_evidence_status: "LOCAL_EXECUTED"\n'
@@ -37,24 +42,22 @@ for alias, entry in sorted(entries.items()):
 
     text = agents_skill_file.read_text(encoding="utf-8")
 
-    # Update or insert frontmatter
+    # Update or insert only Skill-Creator-compatible frontmatter metadata.
     parts = text.split("---", 2)
-    if len(parts) >= 3:
+    if len(parts) != 3:
+        raise SystemExit(f"invalid SKILL.md frontmatter: {alias}")
+    if legacy_promotion in text and canonical_promotion not in text:
+        text = text.replace(legacy_promotion, canonical_promotion, 1)
+    elif canonical_promotion not in text:
         fm = parts[1]
-        fm = re.sub(
-            r'(?m)^(?:  )?(?:implementation_state|external_evidence_status|production_certification):\s*"?[A-Za-z0-9_-]+"?\n?',
-            "",
-            fm,
+        if "metadata:" in fm or "implementation_state:" in fm:
+            raise SystemExit(f"ambiguous promotion metadata: {alias}")
+        name_line = re.compile(rf"^name:\s*{re.escape(alias)}\s*$", re.MULTILINE)
+        fm, replacements = name_line.subn(
+            f"name: {alias}\n{canonical_promotion.rstrip()}", fm, count=1
         )
-        if "metadata:\n" in fm:
-            fm = fm.replace("metadata:\n", promotion_metadata, 1)
-        else:
-            fm = re.sub(
-                rf"^name:\s*{re.escape(alias)}.*$",
-                f"name: {alias}\n{promotion_metadata.rstrip()}",
-                fm,
-                flags=re.MULTILINE,
-            )
+        if replacements != 1:
+            raise SystemExit(f"cannot locate exact Skill name: {alias}")
         text = f"---{fm}---{parts[2]}"
 
     agents_skill_file.write_text(text, encoding="utf-8")
