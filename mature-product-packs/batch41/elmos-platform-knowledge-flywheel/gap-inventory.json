@@ -20,9 +20,13 @@
     "support-matrix",
     "zero-tolerance"
   ],
-  "skillCount": 20,
+  "skillCount": 0,
   "blockingCount": 0,
   "openCount": 0,
+  "repositoryBlockingCount": 0,
+  "repositoryOpenCount": 0,
+  "externalGateBlockingCount": 0,
+  "externalGateOpenCount": 0,
   "certifiable": null,
   "gaps": []
 }

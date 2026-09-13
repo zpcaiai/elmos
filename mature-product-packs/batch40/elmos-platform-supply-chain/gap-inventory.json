@@ -21,9 +21,26 @@
     "vex-record",
     "zero-tolerance"
   ],
-  "skillCount": 24,
+  "skillCount": 0,
   "blockingCount": 0,
-  "openCount": 0,
-  "certifiable": null,
-  "gaps": []
+  "openCount": 2,
+  "repositoryBlockingCount": 0,
+  "repositoryOpenCount": 2,
+  "externalGateBlockingCount": 0,
+  "externalGateOpenCount": 0,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "claim-scope",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "claims.json describes b40-local-assurance-controls, which evidence.json does not declare"
+    },
+    {
+      "category": "claim-scope",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "claims.json describes b40-repository-control-contracts, which evidence.json does not declare"
+    }
+  ]
 }
