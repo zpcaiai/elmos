@@ -231,8 +231,9 @@ def test_project_synthesis_installer_seals_rust_before_publishing_wrappers() -> 
     wrapper_call = 'write_rust_wrapper "${target}" "rustc"'
     assert "seal_rust_sysroot()" in content
     assert 'find "${sysroot}" -type l -print -quit' in content
-    assert 'find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +' in content
-    assert 'find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +' in content
+    assert 'find "${sysroot}" -type f -exec chmod 0444 {} +' in content
+    assert 'for executable_path in "${executable_paths[@]}"' in content
+    assert 'chmod 0555 "${sysroot}/${executable_path}"' in content
     assert 'find "${sysroot}" -type d -exec chmod 0555 {} +' in content
     assert content.index(seal_call) < content.index(wrapper_call)
 

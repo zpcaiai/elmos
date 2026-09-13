@@ -84,7 +84,7 @@ def test_rust_wrapper_resolves_direct_and_public_symlink_without_realpath(
     assert linked.stdout.strip() == expected
 
 
-def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
+def test_rust_installer_seals_before_refreshing_cached_payload_wrappers() -> None:
     installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
     function_start = installer.index("install_rust() {")
     function_end = installer.index('\n}\n\nif [[ ",${INSTALL_ONLY},"', function_start)
@@ -97,10 +97,10 @@ def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
         assert function.index(wrapper_call) > reuse_branch_end
     seal_call = 'seal_rust_sysroot "${target}"'
     assert function.count(seal_call) == 1
-    assert function.index(seal_call) > function.index('write_rust_wrapper "${target}" "rustup"')
+    assert function.index(seal_call) < function.index('write_rust_wrapper "${target}" "rustc"')
 
 
-def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
+def test_rust_installer_seals_sysroot_with_fixed_execution_surface(
     tmp_path: Path,
 ) -> None:
     installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
@@ -111,12 +111,15 @@ def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
     sysroot = target / "rustup" / "toolchains" / "1.89.0-aarch64-apple-darwin"
     executable = sysroot / "bin" / "rustc"
     payload = sysroot / "lib" / "libstd.rlib"
+    undeclared_executable = sysroot / "lib" / "unexpected-tool"
     executable.parent.mkdir(parents=True)
     payload.parent.mkdir(parents=True)
     executable.write_bytes(b"compiler")
     payload.write_bytes(b"library")
+    undeclared_executable.write_bytes(b"not-an-allowlisted-program")
     executable.chmod(0o755)
     payload.chmod(0o644)
+    undeclared_executable.chmod(0o755)
 
     completed = subprocess.run(
         [
@@ -134,6 +137,7 @@ def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
     assert completed.returncode == 0, completed.stderr
     assert stat.S_IMODE(executable.stat().st_mode) == 0o555
     assert stat.S_IMODE(payload.stat().st_mode) == 0o444
+    assert stat.S_IMODE(undeclared_executable.stat().st_mode) == 0o444
     assert stat.S_IMODE(sysroot.stat().st_mode) == 0o555
 
 
