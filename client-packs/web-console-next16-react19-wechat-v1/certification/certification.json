@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "status": "certified",
+  "status": "declared",
   "owner": "independent-client-gate",
   "exact_tuple": {
     "source": {
@@ -134,9 +134,9 @@
     "adapter runtime change",
     "corpus baseline acceptance or evidence policy change"
   ],
-  "certification_decision": "CERTIFIED",
-  "production_claim_authorized": true,
-  "approvedBy": "Dr. Stephen Chen, Principal Client Modernization Architect",
-  "verifier": "Marcus Vance, Lead Independent Verification Engineer",
-  "certifier": "Ethan, Third-Party Independent Certification Authority"
+  "certification_decision": "NOT_CERTIFIED",
+  "production_claim_authorized": false,
+  "approvedBy": null,
+  "verifier": null,
+  "certifier": null
 }

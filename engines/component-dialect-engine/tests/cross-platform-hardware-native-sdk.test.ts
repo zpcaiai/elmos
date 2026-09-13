@@ -10,6 +10,7 @@ import {
   CrossPlatformCanvas2dEngine,
   CrossPlatformPaymentEngine,
   CrossPlatformNavBarEngine,
+  NativeCapabilityUnavailableError,
 } from '../src/runtime/hardware';
 
 describe('Cross-Platform Native SDK & Hardware API Engine (M32)', () => {
@@ -75,7 +76,7 @@ describe('Cross-Platform Native SDK & Hardware API Engine (M32)', () => {
 
   describe('High-Performance Canvas 2D Engine', () => {
     it('should initialize 2D context, apply DPR scaling, and normalize touch coordinates', async () => {
-      const canvasEngine = new CrossPlatformCanvas2dEngine();
+      const canvasEngine = new CrossPlatformCanvas2dEngine(true);
       const ctx = await canvasEngine.init('#myCanvas');
 
       expect(ctx).toBeDefined();
@@ -90,6 +91,26 @@ describe('Cross-Platform Native SDK & Hardware API Engine (M32)', () => {
 
       const imageUri = await canvasEngine.exportToImage();
       expect(imageUri).toBeDefined();
+    });
+  });
+
+  describe('Fail-closed production capability boundary', () => {
+    it('never converts missing native runtimes into successful mocks', async () => {
+      const ble = new CrossPlatformBleEngine();
+      const camera = new CrossPlatformCameraEngine();
+      const canvas = new CrossPlatformCanvas2dEngine();
+      const payment = new CrossPlatformPaymentEngine();
+
+      await expect(ble.openAdapter()).rejects.toBeInstanceOf(NativeCapabilityUnavailableError);
+      await expect(camera.scanCode()).rejects.toBeInstanceOf(NativeCapabilityUnavailableError);
+      await expect(camera.takePhoto()).rejects.toBeInstanceOf(NativeCapabilityUnavailableError);
+      await expect(canvas.init('#missing')).rejects.toBeInstanceOf(NativeCapabilityUnavailableError);
+      await expect(payment.requestPayment({
+        timeStamp: '0', nonceStr: 'n', package: 'p', signType: 'RSA', paySign: 's',
+      })).rejects.toBeInstanceOf(NativeCapabilityUnavailableError);
+      await expect(payment.requestPayScore({
+        businessType: 'wxpayScoreEnable', queryString: 'service_id=test',
+      })).rejects.toBeInstanceOf(NativeCapabilityUnavailableError);
     });
   });
 

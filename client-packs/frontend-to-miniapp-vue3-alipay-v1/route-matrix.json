@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "tuples": [
+    {
+      "source_stack": "vue3-sfc-fixture",
+      "source_version": "vue3-source-snapshot-1.0.1-vue-3.5.39",
+      "target_stack": "alipay-native-miniapp",
+      "target_version": "2.10.2",
+      "status": "research",
+      "evidence_refs": []
+    }
+  ],
+  "recertification_triggers": []
+}

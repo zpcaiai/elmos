@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "capabilities": [
+    {
+      "id": "route-and-navigation",
+      "domain": "navigation",
+      "status": "experimental",
+      "owner": "elmos-client-modernization-maintainers",
+      "source_versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "target_versions": [
+        "2.10.2"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "component-and-view",
+      "domain": "component",
+      "status": "experimental",
+      "owner": "elmos-client-modernization-maintainers",
+      "source_versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "target_versions": [
+        "2.10.2"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "state-and-effects",
+      "domain": "state",
+      "status": "experimental",
+      "owner": "elmos-client-modernization-maintainers",
+      "source_versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "target_versions": [
+        "2.10.2"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "forms-and-validation",
+      "domain": "forms",
+      "status": "experimental",
+      "owner": "elmos-client-modernization-quality",
+      "source_versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "target_versions": [
+        "2.10.2"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "identity-and-permission",
+      "domain": "security",
+      "status": "experimental",
+      "owner": "elmos-client-modernization-security",
+      "source_versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "target_versions": [
+        "2.10.2"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    },
+    {
+      "id": "accessibility-i18n-visual",
+      "domain": "quality",
+      "status": "experimental",
+      "owner": "elmos-accessibility-maintainers",
+      "source_versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "target_versions": [
+        "2.10.2"
+      ],
+      "evidence_refs": [],
+      "reason": "Initial scaffold; evidence required."
+    }
+  ]
+}

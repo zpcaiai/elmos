@@ -5,7 +5,7 @@
     {
       "id": "component-implementation-closure",
       "domain": "component",
-      "status": "certified",
+      "status": "experimental",
       "owner": "elmos-frontend-client-engine",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -17,12 +17,12 @@
         "transformations/component-migration-closure.json",
         "target-project/coverage-report.json"
       ],
-      "reason": "71/71 components have target implementations: 32 automatic and 39 explicit hand ports; runtime equivalence verified."
+      "reason": "71/71 components have local target implementations: 32 automatic and 39 explicit hand ports; official runtime equivalence remains NOT_RUN."
     },
     {
       "id": "typed-hook-effect-and-collection-ir",
       "domain": "semantic-ir",
-      "status": "certified",
+      "status": "experimental",
       "owner": "elmos-frontend-client-engine",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -39,7 +39,7 @@
     {
       "id": "wechat-native-target-adapters",
       "domain": "target-generation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "elmos-client-modernization-maintainers",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -56,7 +56,7 @@
     {
       "id": "official-wechat-build-and-device",
       "domain": "runtime-validation",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "elmos-web-console-miniapp-review",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -68,12 +68,12 @@
         "certification/official-wechat-build-evidence.json",
         "certification/external-evidence-status.json"
       ],
-      "reason": "Official WeChat DevTools CLI and physical device verification passed under independent review."
+      "reason": "The official WeChat toolchain tuple is declared, but authenticated build, preview, emulator and physical-device evidence remain NOT_RUN."
     },
     {
       "id": "independent-equivalence-and-quality",
       "domain": "quality",
-      "status": "certified",
+      "status": "detected-only",
       "owner": "elmos-accessibility-review",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -86,7 +86,7 @@
         "corpus/representative-workloads/cases.json",
         "visual-baselines/approved/baseline.json"
       ],
-      "reason": "Independent holdout, differential behavior, visual, accessibility, privacy, performance, security and customer acceptance verified."
+      "reason": "Holdout, differential, visual, accessibility, privacy, performance, security and customer acceptance require independently trusted external execution."
     }
   ]
 }

@@ -34,12 +34,26 @@ export interface WxApiMock {
   [key: string]: unknown;
 }
 
+function isWithinRoot(root: string, candidate: string): boolean {
+  const relative = path.relative(root, candidate);
+  return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative));
+}
+
+function resolveExistingWithinRoot(root: string, candidate: string): string {
+  const resolvedRoot = fs.realpathSync(root);
+  const resolvedCandidate = fs.realpathSync(candidate);
+  if (!isWithinRoot(resolvedRoot, resolvedCandidate)) {
+    throw new Error(`Sandbox path escapes project root: ${candidate}`);
+  }
+  return resolvedCandidate;
+}
+
 export class HeadlessMiniProgramSandbox {
   private projectRoot: string;
   private wxMock: WxApiMock;
 
   constructor(projectRoot: string) {
-    this.projectRoot = projectRoot;
+    this.projectRoot = fs.realpathSync(projectRoot);
     this.wxMock = this.createWxMock();
   }
 
@@ -86,6 +100,7 @@ export class HeadlessMiniProgramSandbox {
     const loadedModules = new Map<string, unknown>();
 
     const loadFile = (filePath: string): unknown => {
+      filePath = resolveExistingWithinRoot(this.projectRoot, filePath);
       if (loadedModules.has(filePath)) {
         return loadedModules.get(filePath);
       }
@@ -109,69 +124,44 @@ export class HeadlessMiniProgramSandbox {
         module: { exports: modExports },
         exports: modExports,
         require: (modPath: string) => {
-          let resolved = modPath;
+          let resolved: string;
           if (modPath.startsWith("./") || modPath.startsWith("../")) {
             resolved = path.resolve(dir, modPath);
             if (!resolved.endsWith(".js")) resolved += ".js";
           } else if (modPath.includes("runtime/")) {
             resolved = path.resolve(this.projectRoot, "runtime", path.basename(modPath));
             if (!resolved.endsWith(".js")) resolved += ".js";
+          } else {
+            throw new Error(`Sandbox module is not allowlisted: ${modPath}`);
           }
-
-          if (!fs.existsSync(resolved)) {
-            // Check fallback in this.projectRoot/runtime
-            const fallback = path.resolve(this.projectRoot, "runtime", path.basename(modPath) + (modPath.endsWith(".js") ? "" : ".js"));
-            if (fs.existsSync(fallback)) {
-              resolved = fallback;
-            }
-          }
-
           if (fs.existsSync(resolved)) {
-            return loadFile(resolved);
+            return loadFile(resolveExistingWithinRoot(this.projectRoot, resolved));
           }
-          return {};
+          throw new Error(`Sandbox module was not found: ${modPath}`);
         },
       };
 
       try {
-        const proxyContext = new Proxy(modContext, {
-          has(target, prop) {
-            if (prop in target) return true;
-            if (typeof prop === "string" && prop in globalThis) return true;
-            return true;
-          },
-          get(target, prop, receiver) {
-            if (prop in target) {
-              return Reflect.get(target, prop, receiver);
-            }
-            if (typeof prop === "string") {
-              if (prop in globalThis) {
-                return (globalThis as Record<string, unknown>)[prop];
-              }
-              if (prop.startsWith("set") || prop.startsWith("on") || prop.startsWith("handle")) {
-                return () => {};
-              }
-              if (prop === "window" || prop === "document") {
-                return {};
-              }
-              if (prop === "fetch") {
-                return () => Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-              }
-              if (prop.endsWith("Error")) {
-                class DynamicError extends Error {
-                  constructor(msg?: string) {
-                    super(msg);
-                    this.name = String(prop);
-                  }
-                }
-                return DynamicError;
-              }
-            }
-            return undefined;
-          },
+        Object.assign(modContext, {
+          console,
+          Promise,
+          Error,
+          TypeError,
+          RangeError,
+          JSON,
+          Math,
+          String,
+          Number,
+          Boolean,
+          Array,
+          Object,
+          setTimeout,
+          clearTimeout,
         });
-        vm.createContext(proxyContext);
-        vm.runInContext(code, proxyContext);
+        const context = vm.createContext(modContext, {
+          codeGeneration: { strings: false, wasm: false },
+        });
+        vm.runInContext(code, context, { timeout: 250 });
         const res = (modContext.module as { exports: unknown }).exports;
         loadedModules.set(filePath, res);
         if (moduleContexts) {
@@ -193,9 +183,22 @@ export class HeadlessMiniProgramSandbox {
    */
   public mountComponent(componentRelativeDir: string, props: Record<string, unknown> = {}): ComponentMountResult {
     const startTime = Date.now();
-    const componentDir = path.isAbsolute(componentRelativeDir)
+    const requestedComponentDir = path.isAbsolute(componentRelativeDir)
       ? componentRelativeDir
       : path.join(this.projectRoot, componentRelativeDir);
+    let componentDir: string;
+    try {
+      componentDir = resolveExistingWithinRoot(this.projectRoot, requestedComponentDir);
+    } catch (error) {
+      return {
+        componentName: path.basename(requestedComponentDir),
+        l3Status: "FAILED",
+        errors: [(error as Error).message],
+        renderedWxml: "",
+        dataSnapshot: {},
+        mountDurationMs: Date.now() - startTime,
+      };
+    }
     const componentName = path.basename(componentDir);
 
     const jsFile = path.join(componentDir, "index.js");
@@ -478,8 +481,15 @@ function escapeAttr(str: string): string {
 function evalExpr(expr: string, scope: Record<string, unknown>): unknown {
   const trimmed = unescapeXml(expr.trim());
   if (trimmed in scope) return scope[trimmed];
+  if (
+    trimmed.length > 2048
+    || /(?:^|[^A-Za-z0-9_$])(?:constructor|prototype|__proto__|globalThis|global|process|require|module|exports|Function|eval|import)(?:$|[^A-Za-z0-9_$])/u.test(trimmed)
+    || /(?:=>|\bfunction\b|\bclass\b|;|`)/u.test(trimmed)
+  ) {
+    return "";
+  }
   try {
-    const defaultScope: Record<string, unknown> = {
+    const defaultScope: Record<string, unknown> = Object.assign(Object.create(null), {
       english: false,
       adminSurface: false,
       mobileOpen: false,
@@ -491,33 +501,23 @@ function evalExpr(expr: string, scope: Record<string, unknown>): unknown {
       operationsNavigation: [],
       navLabel: (it: any) => it?.label || it?.enLabel || '',
       ...scope,
-    };
-    const proxy = new Proxy(defaultScope, {
-      has(target, key) {
-        if (typeof key === "string" && /^(Math|String|Number|Array|Boolean|JSON|parseInt|parseFloat|encodeURIComponent|decodeURIComponent|undefined|null|NaN|Infinity)$/.test(key)) {
-          return false;
-        }
-        return true;
-      },
-      get: (target, prop) => (prop in target ? (target as Record<string, unknown>)[prop as string] : undefined)
     });
-    const safeExpr = trimmed
-      .replace(/\?\./g, ".")
-      .replace(/(?<=[a-zA-Z0-9_\)\]])\.(?=[a-zA-Z_$])/g, "?.");
-    const funcCalls = safeExpr.match(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g);
-    if (funcCalls) {
-      for (const fc of funcCalls) {
-        const fnName = fc.replace(/\s*\($/, "");
-        if (
-          !(fnName in defaultScope) &&
-          !/^(Math|String|Number|Array|Boolean|JSON|parseInt|parseFloat|encodeURIComponent|decodeURIComponent)$/.test(fnName)
-        ) {
-          defaultScope[fnName] = (..._args: unknown[]) => undefined;
-        }
-      }
-    }
-    const fn = new Function('scope', `with(scope) { try { return (${safeExpr}); } catch(e) { return undefined; } }`);
-    const res = fn(proxy);
+    Object.assign(defaultScope, {
+      Math,
+      String,
+      Number,
+      Array,
+      Boolean,
+      JSON,
+      parseInt,
+      parseFloat,
+      encodeURIComponent,
+      decodeURIComponent,
+    });
+    const context = vm.createContext(defaultScope, {
+      codeGeneration: { strings: false, wasm: false },
+    });
+    const res = vm.runInContext(`(${trimmed})`, context, { timeout: 20 });
     if (res !== undefined) return res;
     return "";
   } catch {
@@ -639,7 +639,10 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
               }
               childData = { ...defaultProps, ...(d.data || {}) };
             };
-            eval(js);
+            vm.runInNewContext(js, { Component }, {
+              timeout: 100,
+              contextCodeGeneration: { strings: false, wasm: false },
+            });
           } catch {}
         }
         const childScope: Record<string, unknown> = { ...childData, ...attrMap };
@@ -686,4 +689,3 @@ export function evaluateWxmlTemplate(wxml: string, data: Record<string, unknown>
     return evalTextWithExprs(wxml, data);
   }
 }
-

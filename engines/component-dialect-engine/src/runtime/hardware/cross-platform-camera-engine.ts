@@ -23,7 +23,7 @@ export class CrossPlatformCameraEngine {
   private isStreaming = false;
 
   constructor(mockMode: boolean = false) {
-    this.isMockMode = mockMode || typeof wx === 'undefined' && typeof navigator === 'undefined';
+    this.isMockMode = mockMode;
   }
 
   /**
@@ -55,11 +55,7 @@ export class CrossPlatformCameraEngine {
       });
     }
 
-    // Web fallback
-    return {
-      rawValue: 'MOCK_WEB_BARCODE_77192',
-      format: 'code_128',
-    };
+    throw new NativeCapabilityUnavailableError('camera.scan', 'current-runtime');
   }
 
   /**
@@ -93,11 +89,7 @@ export class CrossPlatformCameraEngine {
       });
     }
 
-    return {
-      width: 640,
-      height: 480,
-      data: 'data:image/png;base64,mock',
-    };
+    throw new NativeCapabilityUnavailableError('camera.capture', 'current-runtime');
   }
 
   /**
@@ -111,13 +103,18 @@ export class CrossPlatformCameraEngine {
    * Start real-time camera stream listener (onCameraFrame / MediaStream)
    */
   public async startCameraStream(listener?: (frame: CameraFrameSnapshot) => void): Promise<void> {
-    this.isStreaming = true;
     if (this.isMockMode && listener) {
+      this.isStreaming = true;
       listener({
         width: 1280,
         height: 720,
         data: new Uint8ClampedArray(1280 * 720 * 4),
       });
+      return;
+    }
+
+    if (this.isMockMode) {
+      this.isStreaming = true;
       return;
     }
 
@@ -135,9 +132,12 @@ export class CrossPlatformCameraEngine {
         });
         if (listenerHandle && listenerHandle.start) {
           listenerHandle.start();
+          this.isStreaming = true;
+          return;
         }
       }
     }
+    throw new NativeCapabilityUnavailableError('camera.stream', 'current-runtime');
   }
 
   /**
@@ -168,4 +168,5 @@ export class CrossPlatformCameraEngine {
  * Backward-compatible alias for CrossPlatformCameraEngine
  */
 export { CrossPlatformCameraEngine as CameraEngine };
+import { NativeCapabilityUnavailableError } from './native-capability-error';
 

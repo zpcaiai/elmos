@@ -136,3 +136,24 @@ test("unrequested target generator remains not applicable through the Skill hand
   assert.equal(taskStates.get("MAPP-025"), "NOT_APPLICABLE");
   assert.equal(taskStates.get("MAPP-026"), "NOT_APPLICABLE");
 });
+
+test("native business and hardware capabilities emit fail-closed adapter ports", () => {
+  const capabilityFiles = vueTodoFiles.map(file => file.path === "src/App.vue" ? {
+    ...file,
+    content: String(file.content).replace(
+      "function submit(){",
+      "function nativePorts(){ wx.requestPayment({}); wx.getLocation({}); wx.openBluetoothAdapter({}); wx.getFileSystemManager(); } function submit(){",
+    ),
+  } : file);
+  const run = runMiniappConversion(conversionInput(capabilityFiles, "vue3", ["wechat"]));
+  const adapterSource = run.generatedProjects[0]!.files["adapters/platform.js"]!;
+  assert.match(adapterSource, /requestPayment: options => requireApi\("requestPayment"\)\(options\)/u);
+  assert.match(adapterSource, /getLocation: options => requireApi\("getLocation"\)\(options\)/u);
+  assert.match(adapterSource, /openBluetoothAdapter: options => requireApi\("openBluetoothAdapter"\)\(options\)/u);
+  assert.match(adapterSource, /getFileSystemManager: options => requireApi\("getFileSystemManager"\)\(options\)/u);
+
+  const module = { exports: {} as Record<string, unknown> };
+  runInNewContext(adapterSource, { module, wx: {} });
+  const adapter = module.exports as Record<string, (options?: unknown) => unknown>;
+  assert.throws(() => adapter.requestPayment!({}), /PLATFORM_CAPABILITY_UNAVAILABLE:requestPayment/u);
+});

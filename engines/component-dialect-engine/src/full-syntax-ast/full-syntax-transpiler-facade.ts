@@ -101,9 +101,9 @@ export class FullSyntaxFrontendTranspiler {
         outputFiles = this.miniappEmitter.emit(targetIr);
         break;
       default:
-        diagnostics.push(`Target framework ${targetFramework} fallback to standard React TSX`);
-        outputFiles = this.reactEmitter.emit(targetIr);
-        break;
+        throw new Error(
+          `Unsupported target framework: ${targetFramework}; cross-framework fallback is forbidden`,
+        );
     }
 
     return {

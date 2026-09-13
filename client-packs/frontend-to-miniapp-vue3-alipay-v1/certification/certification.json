@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "status": "research",
+  "owner": "external-certification-authority-required",
+  "exact_tuple": {
+    "source": {
+      "stack": "vue3-sfc-fixture",
+      "versions": [
+        "vue3-source-snapshot-1.0.1-vue-3.5.39"
+      ],
+      "language": "typescript",
+      "language_versions": [
+        "5.9.2"
+      ],
+      "runtime": "nodejs-source-build-and-static-analysis",
+      "runtime_versions": [
+        "26.0.0"
+      ],
+      "build_tool": "vite-6.0.0",
+      "package_manager": "pnpm-10.12.4",
+      "router": [],
+      "renderer": [],
+      "state": [],
+      "forms": [],
+      "styling": [],
+      "design_system": [],
+      "api_client": [],
+      "identity": [],
+      "i18n": [],
+      "test_tools": [],
+      "browsers": [],
+      "devices": []
+    },
+    "target": {
+      "stack": "alipay-native-miniapp",
+      "versions": [
+        "2.10.2"
+      ],
+      "language": "javascript",
+      "language_versions": [
+        "ecmascript-2022-output-contract"
+      ],
+      "runtime": "alipay-miniapp-runtime-candidate",
+      "runtime_versions": [
+        "2.10.2"
+      ],
+      "build_tool": "local-semantic-ir-candidate-generator-1.0.0",
+      "package_manager": "none-generated-native-project",
+      "router": [],
+      "renderer": [],
+      "state": [],
+      "forms": [],
+      "styling": [],
+      "design_system": [],
+      "api_client": [],
+      "identity": [],
+      "i18n": [],
+      "test_tools": [],
+      "browsers": [],
+      "devices": []
+    }
+  },
+  "evidence_refs": [],
+  "recertification_triggers": []
+}

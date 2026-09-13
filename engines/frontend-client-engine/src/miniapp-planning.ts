@@ -852,6 +852,7 @@ export function auditMiniappPrivacy(
   request: MiniappConversionRequest,
   sourceFiles: Readonly<Record<string, string>>,
 ): readonly MiniappPrivacyAudit[] {
+  const sourceEntries = Object.entries(sourceFiles).sort(([left], [right]) => left.localeCompare(right, "en-US"));
   const secretFindings = Object.entries(sourceFiles).flatMap(([path, content]) => {
     const patterns = [
       /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
@@ -859,17 +860,49 @@ export function auditMiniappPrivacy(
     ];
     return patterns.some(pattern => pattern.test(content)) ? [path] : [];
   }).sort();
+  const forbiddenDynamicCode = sourceEntries.flatMap(([path, content]) =>
+    /(?:\beval\s*\(|\bnew\s+Function\s*\(|\bimport\s*\(\s*["']https?:\/\/)/u.test(content)
+      ? [`MINIAPP_DYNAMIC_CODE_FORBIDDEN:${path}`]
+      : []
+  );
+  const remoteScriptLoading = sourceEntries.flatMap(([path, content]) =>
+    /<script\b[^>]*\bsrc\s*=\s*["']https?:\/\//iu.test(content)
+      ? [`MINIAPP_REMOTE_SCRIPT_FORBIDDEN:${path}`]
+      : []
+  );
+  const sensitiveLogging = sourceEntries.flatMap(([path, content]) =>
+    /console\.(?:log|info|warn|error)\s*\([^\n)]*(?:token|secret|password|phone|openid|unionid|authorization)/iu.test(content)
+      ? [`MINIAPP_SENSITIVE_LOGGING_REVIEW_REQUIRED:${path}`]
+      : []
+  );
+  const privacyAuthorizationSignals: Readonly<Record<MiniappPlatform, readonly RegExp[]>> = {
+    wechat: [/\bwx\.onNeedPrivacyAuthorization\s*\(/u],
+    alipay: [/\bmy\.(?:getPrivacySetting|onNeedPrivacyAuthorization)\s*\(/u],
+    douyin: [/\btt\.(?:getPrivacySetting|onNeedPrivacyAuthorization)\s*\(/u],
+    xiaohongshu: [/\bxhs\.(?:getPrivacySetting|onNeedPrivacyAuthorization)\s*\(/u],
+  };
   return request.targets.map(target => {
     const decisions = resolveMiniappCapabilities(ir, { ...request, targets: [target] });
     const permissions = [...new Set(decisions.flatMap(item => item.permission))].sort();
+    const hasPrivacyAuthorizationAspect = privacyAuthorizationSignals[target.platform]
+      .some(pattern => sourceEntries.some(([, content]) => pattern.test(content)));
     const findings = [
       ...ir.unknowns.filter(item => item.severity === "critical" || item.severity === "error").map(item => item.code),
+      ...forbiddenDynamicCode,
+      ...remoteScriptLoading,
+      ...sensitiveLogging,
+      ...(permissions.length > 0 && !hasPrivacyAuthorizationAspect
+        ? [`MINIAPP_PRIVACY_AUTHORIZATION_ASPECT_REQUIRED:${target.platform}`]
+        : []),
       ...(permissions.length > 0 ? ["PLATFORM_PERMISSION_AND_DISCLOSURE_EXTERNAL_REVIEW_NOT_RUN"] : []),
     ];
+    const hasForbiddenExecutableContent = forbiddenDynamicCode.length > 0 || remoteScriptLoading.length > 0;
     return {
       schemaVersion: "1.0",
       platform: target.platform,
-      verdict: secretFindings.length > 0 ? "failed" as const : findings.length > 0 ? "blocked" as const : "unknown" as const,
+      verdict: secretFindings.length > 0 || hasForbiddenExecutableContent
+        ? "failed" as const
+        : findings.length > 0 ? "blocked" as const : "unknown" as const,
       dataFlows: ir.capabilities.map(capability => ({
         capability: capability.name,
         sensitive: capability.sensitive,

@@ -1,0 +1,71 @@
+{
+  "profile_key": "frontend-to-miniapp-vue3-alipay-v1-target",
+  "version": "0.1.0",
+  "owner": "elmos-client-modernization-maintainers",
+  "framework": "alipay-native-miniapp",
+  "versions": [
+    "2.10.2"
+  ],
+  "language": "javascript",
+  "language_versions": [
+    "ecmascript-2022-output-contract"
+  ],
+  "runtime": "alipay-miniapp-runtime-candidate",
+  "runtime_versions": [
+    "2.10.2"
+  ],
+  "build_tool": "local-semantic-ir-candidate-generator-1.0.0",
+  "package_manager": "none-generated-native-project",
+  "router": [],
+  "rendering_strategy": {
+    "mode": "native-axml-candidate"
+  },
+  "state_strategy": {
+    "provider": "page-data-setdata-candidate"
+  },
+  "form_strategy": {
+    "provider": "native-input-onInput-candidate"
+  },
+  "styling_strategy": {
+    "mode": "acss-native-style-candidate"
+  },
+  "design_system_strategy": {
+    "mode": "fixture-local-token-lowering-candidate"
+  },
+  "api_client_strategy": {
+    "provider": "deny-undeclared-network"
+  },
+  "auth_strategy": {
+    "mode": "deny-undeclared-platform-identity"
+  },
+  "i18n_strategy": {
+    "provider": "literal-en-fixture-copy-candidate"
+  },
+  "accessibility_profile": {
+    "standard": "source-contract-preservation-candidate-v1"
+  },
+  "browser_matrix": ["alipay-mini-program-studio-NOT_RUN"],
+  "device_profiles": ["alipay-mini-program-studio-NOT_RUN", "alipay-physical-device-NOT_RUN"],
+  "test_profiles": [
+    "batch32-static-contract-validation-v1",
+    "official-alipay-build-NOT_RUN",
+    "physical-device-p0-NOT_RUN"
+  ],
+  "provision": {
+    "commands": [
+      "NOT_RUN: install the exact authorized Alipay CLI in an external runner"
+    ]
+  },
+  "health_check": {
+    "commands": [
+      "NOT_RUN: preview candidate in Alipay Mini Program Studio and a physical device"
+    ]
+  },
+  "security": {
+    "content_security_policy": "not-applicable-native-candidate"
+  },
+  "lifecycle": {
+    "support_until": "not-established-research-pack",
+    "upgrade_policy": "platform or toolchain changes require a new exact tuple and recertification"
+  }
+}

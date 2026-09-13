@@ -178,6 +178,34 @@ describe("Headless MiniProgram Sandbox & Zero First-Screen Error Invariant", () 
     expect(res.errors.length).toBeGreaterThan(0);
     expect(res.errors[0]).toContain("Cannot read properties of undefined");
   });
+
+  it("fails closed when a component path escapes the declared project root", () => {
+    const outsideDir = fs.mkdtempSync(path.join(os.tmpdir(), "wechat-outside-proj-"));
+    try {
+      fs.writeFileSync(path.join(outsideDir, "index.js"), "Component({});");
+      const sandbox = new HeadlessMiniProgramSandbox(tempProjDir);
+      const res = sandbox.mountComponent(outsideDir);
+      expect(res.l3Status).toBe("FAILED");
+      expect(res.errors.join("\n")).toContain("escapes project root");
+    } finally {
+      fs.rmSync(outsideDir, { recursive: true, force: true });
+    }
+  });
+
+  it("disables string code generation inside the component VM", () => {
+    const compDir = path.join(tempProjDir, "components", "sample-card");
+    fs.writeFileSync(path.join(compDir, "index.json"), JSON.stringify({ component: true }));
+    fs.writeFileSync(
+      path.join(compDir, "index.js"),
+      "Component({ data: { value: Function('return process')() } });"
+    );
+    fs.writeFileSync(path.join(compDir, "index.wxml"), "<view>{{value}}</view>");
+
+    const sandbox = new HeadlessMiniProgramSandbox(tempProjDir);
+    const res = sandbox.mountComponent("components/sample-card");
+    expect(res.l3Status).toBe("FAILED");
+    expect(res.errors.join("\n")).toMatch(/Code generation from strings disallowed|No Component/u);
+  });
 });
 
 describe("Double-Blind Differential Oracle (>95% Consistency Gate)", () => {

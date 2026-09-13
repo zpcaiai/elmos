@@ -39,6 +39,10 @@ import {
   type MiniappGeneratedProject,
 } from "./miniapp-target-generation.js";
 import {
+  planMiniappOfficialToolchain,
+  type MiniappToolchainStagePlan,
+} from "./miniapp-toolchain.js";
+import {
   evaluateMiniappLocalValidation,
   type MiniappLocalValidationEvaluation,
 } from "./miniapp-validation.js";
@@ -160,6 +164,7 @@ export interface MiniappDeliveryStatus {
   readonly profiles: readonly { readonly platform: MiniappPlatform; readonly toolchainVersion: string; readonly build: "NOT_RUN"; readonly preview: "NOT_RUN"; readonly upload: "NOT_RUN"; readonly review: "NOT_RUN"; readonly release: "NOT_RUN" }[];
   readonly approvalSeparation: readonly ["preview", "upload", "review", "release"];
   readonly credentials: "SECRET_REFERENCES_ONLY";
+  readonly officialToolchainPlans: readonly MiniappToolchainStagePlan[];
 }
 
 export interface MiniappConversionRun {
@@ -554,6 +559,7 @@ function executeMiniappConversion(
     state: "NOT_RUN",
     profiles: request.targets.map(target => ({ platform: target.platform, toolchainVersion: target.toolchainVersion, build: "NOT_RUN", preview: "NOT_RUN", upload: "NOT_RUN", review: "NOT_RUN", release: "NOT_RUN" })),
     approvalSeparation: ["preview", "upload", "review", "release"], credentials: "SECRET_REFERENCES_ONLY",
+    officialToolchainPlans: planMiniappOfficialToolchain(request, generatedProjects),
   };
   const requestText = canonicalizeMiniappConversionRequest(request);
   const inventoryText = canonicalizeMiniappSourceInventory(inventory);

@@ -30,7 +30,7 @@ export class CrossPlatformPaymentEngine {
   private isMockMode: boolean;
 
   constructor(mockMode: boolean = false) {
-    this.isMockMode = mockMode || (typeof wx === 'undefined' && typeof window === 'undefined');
+    this.isMockMode = mockMode;
   }
 
   /**
@@ -73,13 +73,7 @@ export class CrossPlatformPaymentEngine {
       });
     }
 
-    // Web Fallback
-    return {
-      transactionId: `WEB_TX_${Date.now()}`,
-      status: 'SUCCESS',
-      paidAmountCents: 9900,
-      currency: 'CNY',
-    };
+    throw new NativeCapabilityUnavailableError('payment.request', 'current-runtime');
   }
 
   /**
@@ -112,7 +106,7 @@ export class CrossPlatformPaymentEngine {
       });
     }
 
-    return { status: 'SUCCESS' };
+    throw new NativeCapabilityUnavailableError('payment.business-score', 'current-runtime');
   }
 
   /**
@@ -130,4 +124,5 @@ export class CrossPlatformPaymentEngine {
  * Backward-compatible alias for CrossPlatformPaymentEngine
  */
 export { CrossPlatformPaymentEngine as WechatPaymentEngine };
+import { NativeCapabilityUnavailableError } from './native-capability-error';
 

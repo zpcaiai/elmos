@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse
+from datetime import UTC, datetime
 import hashlib
 import json
 import re
@@ -49,6 +50,98 @@ def sha256_file(path: Path) -> str:
 def canonical_digest(value) -> str:
     encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def validate_operator_external_authority(
+    failures: list[str],
+    *,
+    pack: Path,
+    pack_key: object,
+    evidence_path: Path,
+    trust_root_path: Path | None,
+) -> str | None:
+    """Require an operator-owned trust decision outside the repository.
+
+    Repository JSON and repository-held keys cannot independently promote a
+    pack. The operator supplies a short-lived trust root which explicitly
+    authorizes the exact certification evidence digest for one pack.
+    """
+    if trust_root_path is None:
+        failures.append(
+            "certified status requires --external-trust-root outside the repository"
+        )
+        return None
+    try:
+        root = trust_root_path.resolve(strict=True)
+        repository = Path(__file__).resolve().parents[2]
+        try:
+            root.relative_to(repository)
+        except ValueError:
+            pass
+        else:
+            raise ValueError("external trust root must be outside the repository")
+        document = load(root)
+        if set(document) != {
+            "schema_version",
+            "kind",
+            "root_id",
+            "issued_at",
+            "expires_at",
+            "revoked",
+            "pack_authorizations",
+        }:
+            raise ValueError("external trust root shape is not exact")
+        if (
+            document.get("schema_version") != 1
+            or document.get("kind") != "batch32-client-external-trust-root"
+            or document.get("revoked") is not False
+            or not isinstance(document.get("root_id"), str)
+            or not document["root_id"].strip()
+        ):
+            raise ValueError("external trust root identity is invalid")
+        issued_at = datetime.fromisoformat(
+            str(document["issued_at"]).replace("Z", "+00:00")
+        )
+        expires_at = datetime.fromisoformat(
+            str(document["expires_at"]).replace("Z", "+00:00")
+        )
+        now = datetime.now(UTC)
+        if issued_at.tzinfo is None or expires_at.tzinfo is None:
+            raise ValueError("external trust root timestamps must include timezone")
+        if not issued_at <= now < expires_at:
+            raise ValueError("external trust root is not currently valid")
+        authorizations = document.get("pack_authorizations")
+        if not isinstance(authorizations, list):
+            raise ValueError("external trust root authorizations must be a list")
+        expected_digest = sha256_file(evidence_path)
+        matching = [
+            row
+            for row in authorizations
+            if isinstance(row, dict)
+            and set(row) == {
+                "pack_key",
+                "evidence_sha256",
+                "verifier_id",
+                "authorized_at",
+            }
+            and row.get("pack_key") == pack_key
+            and row.get("evidence_sha256") == expected_digest
+            and isinstance(row.get("verifier_id"), str)
+            and row["verifier_id"].strip()
+        ]
+        if len(matching) != 1:
+            raise ValueError(
+                "external trust root does not uniquely authorize this pack evidence digest"
+            )
+        authorized_at = datetime.fromisoformat(
+            str(matching[0]["authorized_at"]).replace("Z", "+00:00")
+        )
+        if authorized_at.tzinfo is None or not issued_at <= authorized_at <= now:
+            raise ValueError("external authorization timestamp is invalid")
+        return sha256_file(root)
+    except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        failures.append(f"external trust authority invalid: {exc}")
+        return None
 
 
 def contains_placeholder(value: Any) -> bool:
@@ -489,11 +582,11 @@ def certification_evidence_is_real(
 def decide_certification(
     *, requested_certified: bool, failures: list[str], portable: bool
 ) -> str:
-    """Return a decision without letting portable validation grant status."""
+    """Return readiness without allowing this repository process to certify."""
     if portable:
         return "NOT_CERTIFIED"
     if requested_certified:
-        return "BLOCKED" if failures else "CERTIFIED"
+        return "BLOCKED" if failures else "READY_FOR_EXTERNAL_GATE"
     return "NOT_CERTIFIED"
 
 
@@ -506,6 +599,14 @@ def main() -> int:
         help=(
             "validate captured evidence without live receipt-bound replay or "
             "writing gate receipts"
+        ),
+    )
+    parser.add_argument(
+        "--external-trust-root",
+        type=Path,
+        help=(
+            "operator-controlled trust root outside the repository; required "
+            "for any certified status"
         ),
     )
     args = parser.parse_args()
@@ -869,7 +970,15 @@ def main() -> int:
         manifest.get("status") == "certified"
         or certification.get("status") == "certified"
     )
+    external_trust_root_sha256 = None
     if requested_certified:
+        external_trust_root_sha256 = validate_operator_external_authority(
+            failures,
+            pack=pack,
+            pack_key=manifest.get("pack_key"),
+            evidence_path=pack / "certification" / "evidence.json",
+            trust_root_path=args.external_trust_root,
+        )
         if (
             manifest.get("status") != "certified"
             or certification.get("status") != "certified"
@@ -1088,6 +1197,7 @@ def main() -> int:
         ),
         "certification_requested": requested_certified,
         "certification_decision": certification_decision,
+        "external_trust_root_sha256": external_trust_root_sha256,
         "pack_status": manifest.get("status"),
         "failures": failures,
     }

@@ -17,6 +17,11 @@ export class CrossPlatformCanvas2dEngine {
   private dpr: number = 1;
   private width: number = 300;
   private height: number = 150;
+  private readonly mockMode: boolean;
+
+  constructor(mockMode: boolean = false) {
+    this.mockMode = mockMode;
+  }
 
   /**
    * Initializes Canvas 2D node for WeChat MiniApp or Web HTML5
@@ -77,10 +82,12 @@ export class CrossPlatformCanvas2dEngine {
       }
     }
 
-    // 3. Headless mock canvas for testing
-    const mockCtx = this.createMock2dContext();
-    this.ctx = mockCtx;
-    return mockCtx;
+    if (this.mockMode) {
+      const mockCtx = this.createMock2dContext();
+      this.ctx = mockCtx;
+      return mockCtx;
+    }
+    throw new NativeCapabilityUnavailableError('canvas.2d', 'current-runtime');
   }
 
   public getContext(): any {
@@ -160,7 +167,8 @@ export class CrossPlatformCanvas2dEngine {
       return this.canvasNode.toDataURL('image/png');
     }
 
-    return 'data:image/png;base64,mock_canvas_export';
+    if (this.mockMode) return 'data:image/png;base64,mock_canvas_export';
+    throw new NativeCapabilityUnavailableError('canvas.export', 'current-runtime');
   }
 
   public async exportAsPngBase64(): Promise<string> {
@@ -188,3 +196,4 @@ export class CrossPlatformCanvas2dEngine {
     };
   }
 }
+import { NativeCapabilityUnavailableError } from './native-capability-error';

@@ -3,6 +3,15 @@ import { FullSyntaxFrontendTranspiler } from '../src/full-syntax-ast/full-syntax
 describe('Full-Syntax Frontend AST Transpiler Engine', () => {
   const transpiler = new FullSyntaxFrontendTranspiler();
 
+  it('fails closed instead of silently emitting React for unsupported targets', () => {
+    expect(() => transpiler.transpile(
+      'export function Example(){ return <main>Example</main>; }',
+      'react',
+      'flutter',
+      { componentNameHint: 'Example' },
+    )).toThrow(/Unsupported target framework: flutter.*fallback is forbidden/);
+  });
+
   describe('Source: React (TSX / JSX)', () => {
     const reactSource = `
       import React, { useState, useEffect } from 'react';

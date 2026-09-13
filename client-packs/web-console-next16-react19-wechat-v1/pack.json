@@ -3,7 +3,7 @@
   "pack_key": "web-console-next16-react19-wechat-v1",
   "version": "1.0.0",
   "mode": "migration",
-  "status": "certified",
+  "status": "experimental",
   "owner": "elmos-frontend-client-engine",
   "maintenance_owner": "elmos-client-modernization-maintainers",
   "ux_owner": "elmos-web-console-miniapp-review",

@@ -44,7 +44,7 @@ export class CrossPlatformBleEngine {
   private mockCharacteristics: Map<string, BleCharacteristic[]> = new Map();
 
   constructor(mockMode: boolean = false) {
-    this.isMockMode = mockMode || typeof wx === 'undefined' && typeof navigator === 'undefined';
+    this.isMockMode = mockMode;
   }
 
   public setEventListeners(listeners: Partial<BleEventMap>): void {
@@ -77,9 +77,7 @@ export class CrossPlatformBleEngine {
       return;
     }
 
-    // Fallback to mock mode if unsupported
-    this.isMockMode = true;
-    this.isAdapterOpened = true;
+    throw new NativeCapabilityUnavailableError('bluetooth', 'current-runtime');
   }
 
   /**
@@ -307,4 +305,5 @@ export class BleHardwareSimulator extends CrossPlatformBleEngine {
     super(true);
   }
 }
+import { NativeCapabilityUnavailableError } from './native-capability-error';
 
