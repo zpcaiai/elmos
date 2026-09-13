@@ -23,12 +23,19 @@
     "zero-tolerance"
   ],
   "skillCount": 22,
-  "blockingCount": 0,
+  "blockingCount": 1,
   "openCount": 0,
-  "repositoryBlockingCount": 0,
+  "repositoryBlockingCount": 1,
   "repositoryOpenCount": 0,
   "externalGateBlockingCount": 0,
   "externalGateOpenCount": 0,
-  "certifiable": null,
-  "gaps": []
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "aggregate",
+      "severity": "blocking",
+      "responsibility": "repository",
+      "detail": "Batch 40 has no certified domain gate to aggregate"
+    }
+  ]
 }
