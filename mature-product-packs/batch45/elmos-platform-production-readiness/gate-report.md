@@ -1,7 +1,7 @@
 # Batch 45 gate
 
-Status: `CERTIFIED`
+Status: `BLOCKED`
 
 ## Failures
 
-- None
+- external trust store is required
