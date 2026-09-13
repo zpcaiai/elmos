@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import importlib.util
 import io
 import json
@@ -165,6 +166,9 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             "external_evidence_status": "NOT_RUN",
             "certification_status": "NOT_CERTIFIED",
         }
+        stale_attempt = REFERENCE.failure_attempt_destination(self.repo, self.route)
+        stale_attempt.parent.mkdir(parents=True)
+        stale_attempt.write_text('{"execution_status":"FAILED"}\n', encoding="utf-8")
         real_replace = os.replace
         with (
             mock.patch.object(REFERENCE, "execute", return_value=success),
@@ -405,6 +409,34 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             REFERENCE.ELMOS_RECIPE_COORDINATE,
             REFERENCE.rewrite_recipe_artifact_coordinates(boot_4_recipe),
         )
+
+    def test_recipe_seed_builds_the_leaf_pom_in_sparse_workspaces(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            recipe_root = repo / "recipes/elmos-java-recipes"
+            artifact = recipe_root / "target/elmos-java-recipes-0.1.0-SNAPSHOT.jar"
+            recipe_root.mkdir(parents=True)
+            (recipe_root / "pom.xml").write_text("<project/>\n", encoding="utf-8")
+            artifact.parent.mkdir(parents=True)
+            artifact.write_bytes(b"repository-owned-recipe")
+            completed = subprocess.CompletedProcess([], 0, stdout="", stderr="")
+
+            with mock.patch.object(REFERENCE, "run", return_value=completed) as run:
+                result, digest = REFERENCE.install_elmos_recipe_artifact(
+                    repo, "/exact/maven-3.9.11/bin/mvn", Path("/exact/java-21")
+                )
+
+            self.assertIs(result, completed)
+            command = run.call_args.args[0]
+            self.assertEqual(command[0], "/exact/maven-3.9.11/bin/mvn")
+            self.assertIn("-f", command)
+            self.assertIn(str(recipe_root / "pom.xml"), command)
+            self.assertNotIn("-pl", command)
+            self.assertNotIn("-am", command)
+            self.assertEqual(
+                digest,
+                hashlib.sha256(b"repository-owned-recipe").hexdigest(),
+            )
 
     def test_built_boot_jar_rejects_missing_and_plain_jars(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
