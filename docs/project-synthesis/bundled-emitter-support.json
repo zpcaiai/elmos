@@ -5,10 +5,20 @@
   "scope": "bundled-api-emitter",
   "local_execution_status": "PASSED_LOCAL",
   "local_evidence": "docs/project-synthesis/local-production-profile-matrix.json",
-  "independent_verification_status": "PASSED",
-  "independent_verification_report": "certification/reports/generation-v1-certification-report.json",
-  "independent_verification_dossier": "certification/dossiers/generation-v1/",
+  "independent_verification_status": "NOT_RUN",
+  "revoked_report_reference": "certification/reports/generation-v1-certification-report.json",
   "claim_ceiling": "limited",
+  "generation_profiles": {
+    "starter-v1": {
+      "status": "IMPLEMENTED",
+      "relations": ["one-to-one", "one-to-many", "many-to-one"]
+    },
+    "relational-v2": {
+      "status": "PASSED_LOCAL",
+      "relations": ["one-to-one", "one-to-many", "many-to-one", "many-to-many"],
+      "many_to_many_lowering": "explicit-association-entity"
+    }
+  },
   "profiles": [
     {
       "language": "java",

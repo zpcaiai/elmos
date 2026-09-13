@@ -43,18 +43,16 @@ MULTI_ENTITY_SHAPE: dict[str, Any] = {
             "singular": "order",
             "plural": "orders",
             "fields": [
-                {"name": "customer_id", "type": "string", "required": True},
+                {"name": "reference", "type": "string", "required": True},
                 {"name": "total", "type": "number", "required": True},
             ],
         },
     ),
     "relations": (
         {
-            "source": "order",
-            "target": "customer",
-            "source_field": "customer_id",
-            "target_field": "id",
-            "kind": "many-to-one",
+            "source": "customer",
+            "target": "order",
+            "kind": "many-to-many",
             "required": True,
         },
     ),
@@ -90,6 +88,7 @@ def main() -> int:
             languages=(arguments.language,),
             persistence="postgresql",
             auth_mode=arguments.auth_mode,
+            generation_profile="relational-v2",
             permissions=tuple(
                 {
                     "actor": "api_user",
@@ -97,7 +96,10 @@ def main() -> int:
                     "resource": str(entity["singular"]),
                     "effect": "allow",
                 }
-                for entity in shape["entities"]
+                for entity in (
+                    *shape["entities"],
+                    {"singular": "customer_order_link"},
+                )
                 for action in ("create", "read", "update", "delete")
             ),
         ),
@@ -124,7 +126,12 @@ def main() -> int:
         "status": evidence["status"],
         "language": arguments.language,
         "auth_mode": arguments.auth_mode,
-        "entity_shape": "multi-entity" if arguments.language in MULTI_ENTITY_TARGETS else "single-entity",
+        "generation_profile": "relational-v2",
+        "entity_shape": (
+            "multi-entity-relational-v2"
+            if arguments.language in MULTI_ENTITY_TARGETS
+            else "single-entity"
+        ),
         "generated_file_count": manifest["file_count"],
         "request_sha256": manifest["request_sha256"],
         "approved_payload_sha256": manifest["approved_payload_sha256"],

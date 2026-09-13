@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "elmos.project-synthesis.database-profile-support",
+  "claim_ceiling": "LOCAL_ENGINEERING",
+  "profiles": [
+    {
+      "id": "postgresql-17.5",
+      "engine": "postgresql",
+      "exact_version": "17.5",
+      "languages": ["java", "python", "csharp", "typescript", "go", "kotlin", "php", "rust"],
+      "auth_modes": ["jwt", "oidc"],
+      "emitter_status": "IMPLEMENTED",
+      "real_engine_status": "PASSED_LOCAL",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "evidence": "docs/project-synthesis/local-production-profile-matrix.json"
+    },
+    {
+      "id": "mysql-8.0.41-python",
+      "engine": "mysql",
+      "exact_version": "8.0.41",
+      "languages": ["python"],
+      "auth_modes": ["jwt", "oidc"],
+      "emitter_status": "IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "evidence": null
+    },
+    {
+      "id": "sqlite-3.45-python",
+      "engine": "sqlite",
+      "exact_version": "3.45",
+      "languages": ["python"],
+      "auth_modes": ["jwt", "oidc"],
+      "emitter_status": "IMPLEMENTED",
+      "real_engine_status": "LOCAL_TEST_ONLY",
+      "external_provider_status": "NOT_APPLICABLE",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "evidence": null
+    },
+    {
+      "id": "mariadb-version-unselected",
+      "engine": "mariadb",
+      "exact_version": null,
+      "languages": [],
+      "auth_modes": [],
+      "emitter_status": "NOT_IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "blocker": "EXACT_VERSION_AND_ROUTE_CONTRACT_REQUIRED"
+    },
+    {
+      "id": "sqlserver-version-unselected",
+      "engine": "sqlserver",
+      "exact_version": null,
+      "languages": [],
+      "auth_modes": [],
+      "emitter_status": "NOT_IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "blocker": "EXACT_VERSION_LICENSE_AND_ROUTE_CONTRACT_REQUIRED"
+    },
+    {
+      "id": "oracle-version-unselected",
+      "engine": "oracle",
+      "exact_version": null,
+      "languages": [],
+      "auth_modes": [],
+      "emitter_status": "NOT_IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "blocker": "EXACT_VERSION_LICENSE_MEDIA_AND_ROUTE_CONTRACT_REQUIRED"
+    },
+    {
+      "id": "tidb-version-unselected",
+      "engine": "tidb",
+      "exact_version": null,
+      "languages": [],
+      "auth_modes": [],
+      "emitter_status": "NOT_IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "blocker": "EXACT_VERSION_MYSQL_COMPATIBILITY_HOLDOUT_REQUIRED"
+    },
+    {
+      "id": "oceanbase-version-unselected",
+      "engine": "oceanbase",
+      "exact_version": null,
+      "languages": [],
+      "auth_modes": [],
+      "emitter_status": "NOT_IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "blocker": "EXACT_VERSION_TENANT_MODE_AND_ROUTE_CONTRACT_REQUIRED"
+    },
+    {
+      "id": "dm8-version-unselected",
+      "engine": "dm8",
+      "exact_version": null,
+      "languages": [],
+      "auth_modes": [],
+      "emitter_status": "NOT_IMPLEMENTED",
+      "real_engine_status": "NOT_RUN",
+      "external_provider_status": "NOT_RUN",
+      "independent_verification_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "blocker": "LICENSED_SERVER_BUILD_MEDIA_AND_DEDICATED_RUNNER_REQUIRED"
+    }
+  ],
+  "managed_provider_profiles": [
+    {
+      "id": "aws-rds-postgresql-17.5",
+      "service": "AWS_RDS",
+      "database_engine": "postgresql",
+      "exact_version": "17.5",
+      "runtime_status": "NOT_RUN",
+      "required_evidence": ["tls", "secret-rotation", "connection-pool", "read-write-topology", "backup-restore"]
+    },
+    {
+      "id": "gcp-cloud-sql-postgresql-17.5",
+      "service": "GCP_CLOUD_SQL",
+      "database_engine": "postgresql",
+      "exact_version": "17.5",
+      "runtime_status": "NOT_RUN",
+      "required_evidence": ["tls", "secret-rotation", "connection-pool", "read-write-topology", "backup-restore"]
+    },
+    {
+      "id": "aliyun-rds-postgresql-17.5",
+      "service": "ALIYUN_RDS",
+      "database_engine": "postgresql",
+      "exact_version": "17.5",
+      "runtime_status": "NOT_RUN",
+      "required_evidence": ["tls", "secret-rotation", "connection-pool", "read-write-topology", "backup-restore"]
+    }
+  ]
+}

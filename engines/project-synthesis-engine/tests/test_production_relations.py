@@ -1,4 +1,4 @@
-"""The PostgreSQL production profile takes three of the four relation kinds.
+"""The relational-v2 production profile lowers all four relation kinds.
 
 Previously `many-to-one` only. Looking at what a relation actually becomes -- a
 foreign-key column on one side referencing the other side's `id` -- two of the
@@ -10,18 +10,17 @@ remaining three turn out to be the same construct rather than new machinery:
   one-to-many  the same relation declared from the other end. `A one-to-many B`
                and `B many-to-one A` describe one foreign key.
 
-`many-to-many` stays out, and it is the one that really is feature work: a join
-table owned by no entity, its own composite primary key, two foreign keys, and
-association endpoints.
+`many-to-many` is lowered into a deterministic association entity with two
+tenant-scoped foreign keys, pair uniqueness, cascade cleanup and the same CRUD
+surface every selected language already generates for explicit entities.
 
 Declared `kind` is preserved so the ER diagram still shows what the author
 wrote; generation reads `canonical_relations` so the emitters keep one path.
 
-The behaviour is executed, not just rendered: see
-`.ai/measurement-2026-08-21/relation-execution-evidence.json`, where each
-migration runs on a real PostgreSQL 16.15 and a second child row for the same
-parent is accepted for many-to-one / one-to-many and refused with a
-UniqueViolation for one-to-one.
+The production acceptance matrix executes the generated migrations and CRUD
+journeys against the exact PostgreSQL profile; unit tests here additionally
+pin the lowering and fail-closed boundaries without making an external or
+certification claim.
 """
 
 from __future__ import annotations
@@ -31,8 +30,13 @@ from typing import Any
 import pytest
 
 from elmos_project_synthesis.intake import approve_request, create_draft
-from elmos_project_synthesis.models import RequestValidationError, SynthesisRequest
+from elmos_project_synthesis.models import (
+    RequestValidationError,
+    SynthesisRequest,
+    association_entity_mapping,
+)
 from elmos_project_synthesis.production_profile import _schema_sql
+from elmos_project_synthesis.workspace import render_workspace
 
 _ENTITIES: tuple[dict[str, Any], ...] = (
     {
@@ -73,10 +77,28 @@ ONE_TO_MANY = {
     "kind": "one-to-many",
     "required": True,
 }
-MANY_TO_MANY = {**MANY_TO_ONE, "kind": "many-to-many"}
+MANY_TO_MANY = {
+    "source": "customer",
+    "target": "order",
+    "kind": "many-to-many",
+    "required": True,
+}
 
 
 def _request(relation: dict[str, Any], *, persistence: str = "postgresql") -> SynthesisRequest:
+    association_permissions = (
+        tuple(
+            {
+                "actor": "api_user",
+                "action": action,
+                "resource": "customer_order_link",
+                "effect": "allow",
+            }
+            for action in ("create", "read", "update", "delete")
+        )
+        if relation["kind"] == "many-to-many"
+        else ()
+    )
     draft = create_draft(
         name=f"relprobe-{relation['kind']}",
         description="Relation kind probe.",
@@ -85,7 +107,12 @@ def _request(relation: dict[str, Any], *, persistence: str = "postgresql") -> Sy
         languages=("java",),
         persistence=persistence,
         auth_mode="jwt" if persistence == "postgresql" else "none",
-        permissions=_PERMISSIONS,
+        permissions=(*_PERMISSIONS, *association_permissions),
+        generation_profile=(
+            "relational-v2"
+            if relation["kind"] == "many-to-many" and persistence != "in-memory"
+            else "starter-v1"
+        ),
     )
     return SynthesisRequest.from_mapping(
         approve_request(draft, actor="test:relations", approved_at="2026-08-25T00:00:00+00:00"),
@@ -122,12 +149,111 @@ def test_the_other_kinds_add_no_uniqueness(label: str, relation: dict[str, Any])
     assert not [line for line in _constraints(_request(relation)) if '"uq_' in line]
 
 
-def test_many_to_many_is_still_refused_because_it_needs_a_join_table() -> None:
-    with pytest.raises(ValueError) as raised:
-        _request(MANY_TO_MANY)
-    # Intake raises it as an unresolved question; either gate refusing is correct,
-    # what matters is that it never reaches generation.
-    assert "OPEN_QUESTIONS_BLOCK_APPROVAL" in str(raised.value)
+def test_many_to_many_lowers_to_a_tenant_scoped_association_entity() -> None:
+    request = _request(MANY_TO_MANY)
+    assert request.generation_profile == "relational-v2"
+    assert request.entities[-1].singular == "customer_order_link"
+    assert [field.name for field in request.entities[-1].fields] == ["customer_id", "order_id"]
+    assert [(relation.source, relation.target) for relation in request.canonical_relations] == [
+        ("customer_order_link", "customer"),
+        ("customer_order_link", "order"),
+    ]
+    schema = _schema_sql(request)
+    assert 'CONSTRAINT "uq_customer_order_link_pair" UNIQUE ("tenant_id", "customer_id", "order_id")' in schema
+    assert schema.count("ON UPDATE CASCADE ON DELETE CASCADE;") == 2
+
+
+def test_many_to_many_long_names_keep_distinct_bounded_singular_and_plural() -> None:
+    mapping = association_entity_mapping(
+        "customer_with_a_long_domain_specific_name_that_reaches_identifier_limit",
+        "order_archive_with_a_long_domain_specific_name_reaching_limit",
+    )
+    assert len(mapping["singular"]) <= 63
+    assert len(mapping["plural"]) <= 63
+    assert mapping["singular"] != mapping["plural"]
+    field_names = [field["name"] for field in mapping["fields"]]
+    assert all(len(name) <= 63 for name in field_names)
+    assert len(set(field_names)) == 2
+
+
+def test_many_to_many_requires_relational_v2_and_explicit_association_permissions() -> None:
+    blocked = create_draft(
+        name="relprobe-many-to-many-blocked",
+        description="Many to many profile gate.",
+        entities=_ENTITIES,
+        relations=(MANY_TO_MANY,),
+        languages=("java",),
+        persistence="postgresql",
+        auth_mode="jwt",
+        permissions=_PERMISSIONS,
+    )
+    assert {question["id"] for question in blocked["open_questions"]} >= {
+        "Q-RELATION-PRODUCTION-001"
+    }
+    with pytest.raises(ValueError, match="OPEN_QUESTIONS_BLOCK_APPROVAL"):
+        approve_request(blocked, actor="test:relations")
+
+    permission_blocked = create_draft(
+        name="relprobe-many-to-many-permission",
+        description="Many to many permission gate.",
+        entities=_ENTITIES,
+        relations=(MANY_TO_MANY,),
+        languages=("java",),
+        persistence="postgresql",
+        auth_mode="jwt",
+        generation_profile="relational-v2",
+        permissions=_PERMISSIONS,
+    )
+    assert "Q-RELATION-PERMISSION-001" in {
+        question["id"] for question in permission_blocked["open_questions"]
+    }
+
+    explicit_association_blocked = create_draft(
+        name="relprobe-many-to-many-explicit-association-permission",
+        description="Explicit association entities have the same permission gate.",
+        entities=(*_ENTITIES, association_entity_mapping("customer", "order")),
+        relations=(MANY_TO_MANY,),
+        languages=("java",),
+        persistence="postgresql",
+        auth_mode="jwt",
+        generation_profile="relational-v2",
+        permissions=_PERMISSIONS,
+    )
+    assert "Q-RELATION-PERMISSION-001" in {
+        question["id"] for question in explicit_association_blocked["open_questions"]
+    }
+
+
+def test_many_to_many_association_is_emitted_for_all_eight_targets() -> None:
+    permissions = (
+        *_PERMISSIONS,
+        *(
+            {
+                "actor": "api_user",
+                "action": action,
+                "resource": "customer_order_link",
+                "effect": "allow",
+            }
+            for action in ("create", "read", "update", "delete")
+        ),
+    )
+    draft = create_draft(
+        name="relprobe-many-to-many-all",
+        description="Many to many eight-language lowering.",
+        entities=_ENTITIES,
+        relations=(MANY_TO_MANY,),
+        persistence="postgresql",
+        auth_mode="jwt",
+        generation_profile="relational-v2",
+        permissions=permissions,
+    )
+    request = SynthesisRequest.from_mapping(
+        approve_request(draft, actor="test:relations", approved_at="2026-08-25T00:00:00+00:00")
+    )
+    files = render_workspace(request)
+    for directory in ("java", "python", "dotnet", "typescript", "go", "kotlin", "php", "rust"):
+        openapi = files[f"{directory}/openapi.yaml"]
+        assert "/api/v1/customer_order_links" in openapi
 
 
 def test_the_declared_kind_survives_for_documentation() -> None:

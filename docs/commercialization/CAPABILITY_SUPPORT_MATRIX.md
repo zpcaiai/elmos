@@ -1,6 +1,6 @@
 # ELMOS 对外能力支持矩阵
 
-生成日期：2026-07-28 · 对应仓库 HEAD `23fd7fa6`
+生成日期：2026-09-14 · Project Synthesis 证据按引擎源码 SHA-256 绑定
 用途：**这是销售、官网、方案书、客户答疑唯一允许引用的能力口径。**
 
 任何对外表述如果超出本矩阵，就是超出证据。第一个企业客户的技术尽调会逐条核对，
@@ -32,12 +32,12 @@
 |---|---|---|
 | Java 21 / Spring Boot | ✅ 支持 | PostgreSQL 17.5 + JWT/OIDC |
 | Python 3.12 / FastAPI | ✅ 支持 | PostgreSQL 17.5 + JWT/OIDC |
-| C# / .NET 10 / ASP.NET Core | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| TypeScript / NestJS-Fastify | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| Go / net-http | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| Kotlin / Ktor | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| Rust / Axum | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| PHP | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
+| C# / .NET 10 / ASP.NET Core | ✅ 多实体 + relational-v2 M:N | PostgreSQL 17.5 + JWT/OIDC |
+| TypeScript / NestJS-Fastify | ✅ 多实体 + relational-v2 M:N | PostgreSQL 17.5 + JWT/OIDC |
+| Go / net-http | ✅ 多实体 + relational-v2 M:N | PostgreSQL 17.5 + JWT/OIDC |
+| Kotlin / Ktor | ✅ 多实体 + relational-v2 M:N | PostgreSQL 17.5 + JWT/OIDC |
+| Rust / Axum | ✅ 多实体 + relational-v2 M:N | PostgreSQL 17.5 + JWT/OIDC |
+| PHP | ✅ 多实体 + relational-v2 M:N | PostgreSQL 17.5 + JWT/OIDC |
 
 验证覆盖：8 目标 × JWT/OIDC 共 16 个生产 Profile，含真实 PostgreSQL 起库、
 迁移、鉴权负向路径（错签名 / 错 audience / 错 issuer / 缺租户声明被拒）、
@@ -45,10 +45,10 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 **必须同时说明的边界**：
 
-- 六个目标是**单实体精确边界**，多实体请求会**失败关闭**而不是静默降级——
-  这是刻意设计，但客户必须在售前就知道
+- 八个目标的 `relational-v2` M:N 已完成源码摘要绑定的 16 组本地实库重放；只能表述为 `PASSED_LOCAL`
+- 跨实体状态机守卫、八语言对称复杂行业原型、分布式中间件和 PostgreSQL 之外的八语言数据库矩阵仍未闭环
 - 生成的 starter 在未选择生产 Profile 时默认使用内存存储且不带身份（RISK-SYNTHESIS-001）
-- 外部托管 PostgreSQL、真实 IdP、云部署、恢复/DR、独立用户验收保持 `NOT_RUN`
+- 外部托管 PostgreSQL、公开 IdP、云部署、恢复/DR、独立用户验收保持 `NOT_RUN`
 
 **售卖方式**：自助订阅（免费体验 / 月付 / 年付）。
 
@@ -125,8 +125,9 @@ CRUD、以及 RLS 跨租户读被阻断。
 ## 4. 常见问法的标准答案
 
 **Q：你们支持多少种语言？**
-A：项目生成支持 8 个目标技术栈，其中 Java 和 Python 支持多实体与关系，
-另外六个当前是单实体边界。跨语言整库转换在路线图上，目前不对外承诺。
+A：项目生成支持 8 个目标技术栈，请求契约均接受多实体与关系；全部八种语言
+已对 `relational-v2` M:N 完成源码摘要绑定的 PostgreSQL 17.5 本地矩阵重放。
+这仍是本地工程证据，不代表云端生产、客户验收或认证。
 
 **Q：能把我们的老系统整体迁移到新语言吗？**
 A：现在不能。整库跨语言转换只在纯函数与受限管线上有验证证据，
@@ -153,4 +154,5 @@ A：在负载测试、恢复演练和独立安全评审完成前，我们按"尽
 1. 本矩阵的每一次放宽，必须先有对应的新证据，并在提交信息中指明证据位置。
 2. 证据等级只能单向提升：`NOT_RUN` → 本地通过 → 独立验证 → 外部认证。
    **不得跳级**，也不得因为销售压力临时改写。
-3. 与 `docs/BUSINESS_LINE_CLOSURE_MATRIX.md` 冲突时，以那份为准，本矩阵随之修订。
+3. Project Synthesis 与历史汇总冲突时，以
+   `docs/project-synthesis/ENTERPRISE_CLOSURE_MATRIX.md` 和机器可读支持矩阵为准。

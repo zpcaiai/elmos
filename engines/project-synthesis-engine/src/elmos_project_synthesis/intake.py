@@ -7,13 +7,17 @@ from datetime import UTC, datetime
 from typing import Any
 
 from .models import (
+    RELATIONAL_GENERATION_PROFILE,
+    STARTER_GENERATION_PROFILE,
     SUPPORTED_AUTH_MODES,
+    SUPPORTED_GENERATION_PROFILES,
     SUPPORTED_LANGUAGES,
     SUPPORTED_PERSISTENCE,
     SUPPORTED_PROFILE_TARGETS,
     SUPPORTED_PROJECT_KINDS,
     TARGET_PROFILES,
     SynthesisRequest,
+    association_entity_mapping,
     identifier,
     project_description,
     project_namespace,
@@ -186,7 +190,7 @@ def infer_relations(
 
 def _rule_predicate(
     statement: str,
-    entity_fields: Mapping[str, set[str]],
+    entity_field_types: Mapping[str, Mapping[str, str]],
 ) -> dict[str, Any] | None:
     comparison = re.fullmatch(
         r"\s*(?P<entity>[A-Za-z][A-Za-z0-9_-]*)\."
@@ -207,7 +211,7 @@ def _rule_predicate(
         return None
     entity_name = identifier(comparison.group("entity"))
     field_name = identifier(comparison.group("field"))
-    if entity_name not in entity_fields or field_name not in entity_fields[entity_name]:
+    if entity_name not in entity_field_types or field_name not in entity_field_types[entity_name]:
         return None
     word = comparison.groupdict().get("word")
     operator = comparison.groupdict().get("operator")
@@ -227,23 +231,28 @@ def _rule_predicate(
     number: int | float = 0 if word else float(value or "0")
     if isinstance(number, float) and number.is_integer():
         number = int(number)
+    scalar: str | int | float = (
+        str(number)
+        if entity_field_types[entity_name][field_name] in {"string", "datetime"}
+        else number
+    )
     return {
         "type": "field-comparison",
         "entity": entity_name,
         "field": field_name,
         "operator": normalized_operator,
-        "value": number,
+        "value": scalar,
     }
 
 
 def infer_business_rules(
     description: str,
-    entity_fields: Mapping[str, set[str]],
+    entity_field_types: Mapping[str, Mapping[str, str]],
 ) -> list[dict[str, Any]]:
     statements = [match.group(1).strip() for match in _RULE_MARKER.finditer(description) if match.group(1).strip()][:50]
     rules: list[dict[str, Any]] = []
     for index, statement in enumerate(dict.fromkeys(statements), 1):
-        predicate = _rule_predicate(statement, entity_fields)
+        predicate = _rule_predicate(statement, entity_field_types)
         rules.append(
             {
                 "id": f"BR-{index:03d}",
@@ -352,6 +361,7 @@ def create_draft(
     project_kind: str = "api",
     persistence: str = "in-memory",
     auth_mode: str = "none",
+    generation_profile: str = STARTER_GENERATION_PROFILE,
     requirement_sources: Iterable[Mapping[str, Any]] = (),
     source_bundle_sha256: str | None = None,
 ) -> dict[str, Any]:
@@ -365,6 +375,14 @@ def create_draft(
         raise ValueError(f"PERSISTENCE_INVALID:{persistence}")
     if auth_mode not in SUPPORTED_AUTH_MODES:
         raise ValueError(f"AUTH_MODE_INVALID:{auth_mode}")
+    if generation_profile not in SUPPORTED_GENERATION_PROFILES:
+        raise ValueError(f"GENERATION_PROFILE_INVALID:{generation_profile}")
+    if generation_profile == RELATIONAL_GENERATION_PROFILE and persistence not in {
+        "postgresql",
+        "sqlite",
+        "mysql",
+    }:
+        raise ValueError("RELATIONAL_PROFILE_REQUIRES_DATABASE")
 
     selected = tuple(dict.fromkeys(languages))
     if not selected:
@@ -400,6 +418,14 @@ def create_draft(
         }
         for item in normalized_entities
     }
+    entity_field_types = {
+        str(item["singular"]): {
+            str(field["name"]): str(field.get("type", ""))
+            for field in item["fields"]
+            if isinstance(field, Mapping) and "name" in field
+        }
+        for item in normalized_entities
+    }
 
     normalized_relations = [dict(item) for item in relations]
     if not normalized_relations:
@@ -415,6 +441,53 @@ def create_draft(
                     "impact": "high",
                 }
             )
+    association_entities: list[dict[str, Any]] = []
+    derived_association_names: set[str] = set()
+    if generation_profile == RELATIONAL_GENERATION_PROFILE:
+        existing_names = {str(item["singular"]) for item in normalized_entities}
+        for relation in normalized_relations:
+            if relation.get("kind") != "many-to-many":
+                continue
+            association = association_entity_mapping(
+                str(relation.get("source", "")),
+                str(relation.get("target", "")),
+            )
+            name = str(association["singular"])
+            derived_association_names.add(name)
+            existing = next(
+                (item for item in normalized_entities if str(item.get("singular")) == name),
+                None,
+            )
+            if existing is not None and existing != association:
+                questions.append(
+                    {
+                        "id": "Q-RELATION-ASSOCIATION-CONFLICT-001",
+                        "question": f"many-to-many 派生关联实体 {name} 与显式实体冲突，请重命名显式实体。",
+                        "impact": "high",
+                    }
+                )
+                continue
+            if name not in existing_names:
+                association_entities.append(association)
+                existing_names.add(name)
+        normalized_entities.extend(association_entities)
+        entity_names = {str(item["singular"]) for item in normalized_entities}
+        entity_fields = {
+            str(item["singular"]): {
+                str(field["name"])
+                for field in item["fields"]
+                if isinstance(field, Mapping) and "name" in field
+            }
+            for item in normalized_entities
+        }
+        entity_field_types = {
+            str(item["singular"]): {
+                str(field["name"]): str(field.get("type", ""))
+                for field in item["fields"]
+                if isinstance(field, Mapping) and "name" in field
+            }
+            for item in normalized_entities
+        }
     if persistence in {"postgresql", "sqlite", "mysql"}:
         # The production profile takes three of the four kinds. `one-to-many`
         # is the same foreign key declared from the other end, so it is judged
@@ -432,14 +505,25 @@ def create_draft(
         unsupported_relations = []
         for relation in normalized_relations:
             _, _, canonical_source_field, canonical_target_field = _canonical(relation)
-            if (
-                relation.get("kind") not in {"many-to-one", "one-to-one", "one-to-many"}
-                or not canonical_source_field
-                or canonical_target_field != "id"
-            ):
+            many_to_many = relation.get("kind") == "many-to-many"
+            if many_to_many:
+                supported = (
+                    generation_profile == RELATIONAL_GENERATION_PROFILE
+                    and canonical_source_field is None
+                    and canonical_target_field is None
+                )
+            else:
+                supported = (
+                    relation.get("kind") in {"many-to-one", "one-to-one", "one-to-many"}
+                    and bool(canonical_source_field)
+                    and canonical_target_field == "id"
+                )
+            if not supported:
                 unsupported_relations.append(relation)
         adjacency: dict[str, set[str]] = {name: set() for name in entity_names}
         for relation in normalized_relations:
+            if relation.get("kind") == "many-to-many":
+                continue
             source, target, _, _ = _canonical(relation)
             if source in adjacency and target in adjacency:
                 adjacency[source].add(target)
@@ -465,7 +549,7 @@ def create_draft(
                     "question": (
                         "PostgreSQL 生产配置接受无环的显式 many-to-one / one-to-one / one-to-many 外键，"
                         "格式必须解析为 source.field -> target.id（one-to-many 从另一端声明，"
-                        "写作 source.id -> target.field）。many-to-many 需要连接表，尚未支持。"
+                        "写作 source.id -> target.field）。many-to-many 仅由 relational-v2 以显式关联实体生成。"
                     ),
                     "impact": "high",
                 }
@@ -474,7 +558,7 @@ def create_draft(
     normalized_rules: list[dict[str, Any]] = []
     for index, raw_rule in enumerate(business_rules, 1):
         if isinstance(raw_rule, str):
-            predicate = _rule_predicate(raw_rule.strip(), entity_fields)
+            predicate = _rule_predicate(raw_rule.strip(), entity_field_types)
             normalized_rules.append(
                 {
                     "id": f"BR-{index:03d}",
@@ -486,7 +570,7 @@ def create_draft(
         else:
             normalized_rules.append(dict(raw_rule))
     if not normalized_rules:
-        normalized_rules = infer_business_rules(normalized_description, entity_fields)
+        normalized_rules = infer_business_rules(normalized_description, entity_field_types)
     if not normalized_rules:
         normalized_rules.append(
             {
@@ -538,6 +622,37 @@ def create_draft(
             for entity_name in sorted(entity_names)
             for action in ("create", "read", "update", "delete")
         ]
+    declared_association_resources = {
+        str(permission.get("resource"))
+        for permission in normalized_permissions
+        if isinstance(permission, Mapping)
+    }
+    missing_association_permissions = sorted(
+        derived_association_names - declared_association_resources
+        if "*" not in declared_association_resources
+        else set()
+    )
+    if missing_association_permissions:
+        for association_name in missing_association_permissions:
+            normalized_permissions.extend(
+                {
+                    "actor": "api_user",
+                    "action": action,
+                    "resource": association_name,
+                    "effect": "deny",
+                }
+                for action in ("create", "read", "update", "delete")
+            )
+        questions.append(
+            {
+                "id": "Q-RELATION-PERMISSION-001",
+                "question": (
+                    "many-to-many 关联资源必须显式声明权限："
+                    + ", ".join(missing_association_permissions)
+                ),
+                "impact": "high",
+            }
+        )
     if auth_mode in {"jwt", "oidc"} and not permission_policy_declared:
         questions.append(
             {
@@ -655,7 +770,9 @@ def create_draft(
         )
 
     draft: dict[str, Any] = {
-        "schema_version": "1.1.0",
+        "schema_version": (
+            "1.2.0" if generation_profile == RELATIONAL_GENERATION_PROFILE else "1.1.0"
+        ),
         "project": {
             "id": f"PRJ-{project_name.upper()}",
             "name": project_name,
@@ -664,6 +781,11 @@ def create_draft(
             "kind": project_kind,
             "persistence": persistence,
             "auth_mode": auth_mode,
+            **(
+                {"generation_profile": generation_profile}
+                if generation_profile == RELATIONAL_GENERATION_PROFILE
+                else {}
+            ),
         },
         "actors": [{"id": "api_user", "name": "API user", "kind": "human"}],
         "entities": normalized_entities,
