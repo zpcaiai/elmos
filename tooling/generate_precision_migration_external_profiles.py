@@ -69,7 +69,7 @@ def build() -> dict[str, Any]:
     profiles: list[dict[str, Any]] = []
     for adapter in adapters["entries"]:
         handler_id = str(adapter["handler_id"])
-        if adapter.get("kind") != "skill" or handler_id.startswith("batch29-route-executor-v1:"):
+        if adapter.get("kind") != "skill" or adapter.get("batch") == 16:
             continue
         skill = str(adapter["skill"])
         contract = contract_by_skill[skill]

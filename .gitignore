@@ -16,6 +16,8 @@ dist/
 **/dist/
 bin/
 **/bin/
+!routes/*/certification/formal-artifacts/engine-sources/runtime/typescript/*/bin/
+!routes/*/certification/formal-artifacts/engine-sources/runtime/typescript/*/bin/tsc
 obj/
 **/obj/
 TestResults/

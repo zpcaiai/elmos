@@ -178,10 +178,7 @@ class TestDM8Lowering:
 
     def test_dm8_upsert_postgres_on_conflict_do_nothing(self, lowerer: DM8DialectLowerer) -> None:
         """Test PostgreSQL ON CONFLICT DO NOTHING lowering to MERGE INTO."""
-        pg_sql = (
-            "INSERT INTO tags (id, name) VALUES (1, 'tech') "
-            "ON CONFLICT (id) DO NOTHING;"
-        )
+        pg_sql = "INSERT INTO tags (id, name) VALUES (1, 'tech') ON CONFLICT (id) DO NOTHING;"
         merged = lowerer.lower_upsert(pg_sql)
         assert merged.startswith("MERGE INTO tags USING")
         assert "ON (tags.id = src.id)" in merged
@@ -268,11 +265,7 @@ class TestOpenGaussLowering:
         """Test openGauss FUNCTION and PROCEDURE envelope lowering."""
         # Function without $$
         func_sql = (
-            "CREATE OR REPLACE FUNCTION get_user_count(tenant VARCHAR)\n"
-            "RETURNS INTEGER AS\n"
-            "BEGIN\n"
-            "  RETURN 42;\n"
-            "END;\n"
+            "CREATE OR REPLACE FUNCTION get_user_count(tenant VARCHAR)\nRETURNS INTEGER AS\nBEGIN\n  RETURN 42;\nEND;\n"
         )
         lowered_func = lowerer.lower_routine(func_sql, routine_type="FUNCTION")
         assert "$$" in lowered_func
@@ -414,4 +407,3 @@ class TestAdversarialASTPreservation:
         q = "SELECT * FROM t WHERE status = 'CHECK NOW() AND SYSDATE: NVL(a, b)';"
         lowered_q = lowerer.lower_query(q, mode=OpenGaussMode.PG)
         assert "'CHECK NOW() AND SYSDATE: NVL(a, b)'" in lowered_q
-

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "jquery--to--flutter",
-  "formal_input_digest": "sha256:1877eb63391f9b38ccb774fee92b4b3a5787fd628fc76712991792467ac365ae",
-  "solver_input_digest": "sha256:5f492da408292579fe8eb2723e3570b3fd0ac87ef221960ecdff2906335256e3",
-  "smt2_digest": "sha256:5f492da408292579fe8eb2723e3570b3fd0ac87ef221960ecdff2906335256e3",
+  "formal_input_digest": "sha256:2ce524c77209764fc9a451e10f58f952290ee803758f529afff7c16ad3c4300a",
+  "solver_input_digest": "sha256:cb2968b9b6992eb246aa96b68175001dd99260b53b262e3a6913e78e14d89ffd",
+  "smt2_digest": "sha256:cb2968b9b6992eb246aa96b68175001dd99260b53b262e3a6913e78e14d89ffd",
   "precheck_status": "PASSED"
 }

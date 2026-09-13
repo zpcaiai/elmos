@@ -47,6 +47,7 @@ type ControlLockObservation = {
 
 const controlLockStaleMs = 15_000;
 const controlLockHeartbeatMs = 5_000;
+const controlLockAcquireTimeoutMs = 15_000;
 
 export class DurableLeaseError extends Error {
   readonly code:
@@ -340,7 +341,9 @@ export async function withDurableQueueControlLock<T>(
   const controlRoot = confined(configuration.root, ".durable-queue", "control");
   await mkdir(controlRoot, { recursive: true, mode: 0o700 });
   const lockPath = confined(controlRoot, `${configuration.line}.lock`);
-  const deadline = Date.now() + 5_000;
+  // A dozen same-job contenders must all observe the durable winner rather
+  // than leaking a transient control-lock timeout on slower filesystems.
+  const deadline = Date.now() + controlLockAcquireTimeoutMs;
   while (Date.now() < deadline) {
     try {
       const now = new Date();

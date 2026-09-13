@@ -525,7 +525,7 @@ LOCKED_FLUTTER_WEB_CFT_DRIVER_URL = (
 )
 LOCKED_Z3_VERSION = "Z3 version 4.16.0 - 64 bit"
 LOCKED_Z3_BINARY_SHA256 = (
-    "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54"
+    "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7"
 )
 LOCKED_Z3_ARGS = ["-in"]
 INTERACTION_ENGINE_ROOT = REPOSITORY_ROOT / "engines/frontend-client-engine"
@@ -565,11 +565,11 @@ LOCKED_INTERACTION_ENGINE_NODE_SHA256 = (
 )
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_FILE_COUNT = 54
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_SHA256 = (
-    "sha256:8ba6d7f44234d1a1a1c5e06a7bd56a4247c425c4a2eda3730109341c089ee285"
+    "sha256:cf4cee530a94b139fa40232bcd4be83b4c3cbaa194d2ea1331e72213d40e3d21"
 )
 LOCKED_INTERACTION_ENGINE_DIST_TREE_FILE_COUNT = 162
 LOCKED_INTERACTION_ENGINE_DIST_TREE_SHA256 = (
-    "sha256:b8d07145a0324393d4ecd6afb7c9675183d8f354251768bb24c718612ed5d225"
+    "sha256:3c60add045f86440bae3eb5696b4059fef751c379ee2d4c19f37dbec1a8a8013"
 )
 LOCKED_INTERACTION_ENGINE_FILE_SHA256 = {
     "cli_source": "sha256:695527da9f1470c4cdf17d9bd1e3f74502382a2945400ca82a770d97a6739c60",
@@ -614,7 +614,7 @@ SOLVER_RESULT_KEYS = {
 }
 
 EXPECTED_PROFILES: dict[str, dict[str, Any]] = {
-    "angular": {"framework_version": "22.0.8", "platforms": ["WEB"], "kind": "node"},
+    "angular": {"framework_version": "22.1.4", "platforms": ["WEB"], "kind": "node"},
     "flutter": {
         "framework_version": "3.44.1",
         "platforms": ["ANDROID", "IOS", "WEB"],
@@ -2901,19 +2901,19 @@ EXPECTED_NODE_PACKAGES: dict[str, dict[str, Any]] = {
             "test": "ng build --configuration development",
         },
         "dependencies": {
-            "@angular/common": "22.0.8",
-            "@angular/compiler": "22.0.8",
-            "@angular/core": "22.0.8",
-            "@angular/platform-browser": "22.0.8",
-            "@angular/router": "22.0.8",
+            "@angular/common": "22.1.4",
+            "@angular/compiler": "22.1.4",
+            "@angular/core": "22.1.4",
+            "@angular/platform-browser": "22.1.4",
+            "@angular/router": "22.1.4",
             "rxjs": "7.8.2",
             "tslib": "2.8.1",
             "zone.js": "0.16.2",
         },
         "devDependencies": {
-            "@angular/build": "22.0.8",
-            "@angular/cli": "22.0.8",
-            "@angular/compiler-cli": "22.0.8",
+            "@angular/build": "22.1.4",
+            "@angular/cli": "22.1.4",
+            "@angular/compiler-cli": "22.1.4",
             "typescript": "6.0.3",
         },
         "commands": [("test",), ("build",)],

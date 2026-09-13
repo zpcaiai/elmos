@@ -1,5 +1,5 @@
 {
-  "certification_decision": "CERTIFIED",
+  "certification_decision": "NOT_CERTIFIED",
   "declared_scope": [
     "web",
     "configuration",
@@ -14,20 +14,19 @@
     "certification/p0-p11-campaign.json",
     "certification/local-execution/2026-09-08/exact-tuple-binding.json",
     "certification/local-execution/2026-09-08/qualification-policy.json",
-    "certification/local-execution/2026-09-08/artifacts/executed-spring-boot-3.5.3.jar",
-    "certification/external-admission.json"
+    "certification/local-execution/2026-09-08/artifacts/executed-spring-boot-3.5.3.jar"
   ],
   "gate_results": {
-    "authorized_customer_repository": "PASSED",
+    "authorized_customer_repository": "NOT_RUN",
     "behavior_equivalence": "PASSED",
     "behavioral_equivalence": "PASSED",
-    "customer_acceptance": "PASSED",
-    "customer_holdout": "PASSED",
+    "customer_acceptance": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
     "development_fixture": "PASSED_LOCAL",
-    "external_certification": "PASSED",
+    "external_certification": "NOT_RUN",
     "github_app_private_repository": "NOT_RUN",
     "holdout": "PASSED",
-    "independent_review": "PASSED",
+    "independent_review": "NOT_RUN",
     "negative_corpus": "PASSED",
     "operability": "PASSED",
     "performance": "PASSED",
@@ -35,9 +34,9 @@
     "public_representative": "PASSED_LOCAL_ENGINEERING",
     "representative_repository": "PASSED",
     "rollback": "PASSED",
-    "rootless_runner": "PASSED",
-    "rootless_transformer": "PASSED",
-    "rootless_verifier": "PASSED",
+    "rootless_runner": "NOT_RUN",
+    "rootless_transformer": "NOT_RUN",
+    "rootless_verifier": "NOT_RUN",
     "sbom": "PASSED",
     "security": "PASSED",
     "source_build": "PASSED",
@@ -70,5 +69,5 @@
     "Customer repository, rootless execution and external independent review remain NOT_RUN."
   ],
   "schema_version": 1,
-  "status": "certified"
+  "status": "limited"
 }

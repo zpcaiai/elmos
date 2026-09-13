@@ -9,10 +9,10 @@
     "source_profile": "jquery",
     "source_framework_version": "4.0.0",
     "target_profile": "angular",
-    "target_framework_version": "22.0.8"
+    "target_framework_version": "22.1.4"
   },
-  "source_project_digest": "sha256:b6f97f365ec00660a6d028964a9c848776c99b4bfa614e159ba57ada1172af1b",
-  "target_project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
+  "source_project_digest": "sha256:f05e7d4b131fe3df67626a3b2941b6caa1a5d6c4103edd09b11ecd607c9a9fba",
+  "target_project_digest": "sha256:77c3f2342e3876aeadc4294d9e4461772670012b58bfe764177410d807de9b9f",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:79265a50236cd5e1174d5aef36777dc727c03c782f8ee242dcbad81c8832c099",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:6044652ab834eec0651dcf73b1f254849b4ec6d6409fbc547ce80cc33d52a41a",
+  "mutation_campaign_digest": "sha256:f257ca11174201035db83dc25ce76715c736c3efbc39989bd3c41236143127fb",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

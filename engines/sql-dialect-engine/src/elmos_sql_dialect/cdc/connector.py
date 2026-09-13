@@ -106,10 +106,7 @@ class MockDatabaseStreamConnector(DatabaseStreamConnector):
 
         # Project columns if specified
         if columns is not None:
-            return [
-                {k: r[k] for k in columns if k in r}
-                for r in slice_rows
-            ]
+            return [{k: r[k] for k in columns if k in r} for r in slice_rows]
         return [dict(r) for r in slice_rows]
 
     def fetch_count(self, table: str) -> int:
@@ -269,7 +266,7 @@ class StreamingDataComparator:
                         pk_col=pk_col,
                         columns=columns,
                     )
-                    aligned_rows += (len(src_rows) - len(diff_res.diff_samples))
+                    aligned_rows += len(src_rows) - len(diff_res.diff_samples)
                     chunk_results.append(diff_res)
 
                 active_src_chunk = next(src_gen, None)

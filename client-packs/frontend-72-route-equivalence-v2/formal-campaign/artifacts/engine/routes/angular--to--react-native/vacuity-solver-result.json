@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "angular--to--react-native",
-  "formal_input_digest": "sha256:aeb7a262ca04ed663350b455b9def59984c418cf43d816fded16cfe3e07f3e3a",
-  "solver_input_digest": "sha256:844ad2015405477c5528649b8af545dcb38bd91310e291b53706352d24e10c85",
-  "smt2_digest": "sha256:844ad2015405477c5528649b8af545dcb38bd91310e291b53706352d24e10c85",
+  "formal_input_digest": "sha256:4d451b3dfb6886d64bed84c38c746ab0ab7238fd4b8501db1a95b63c66cd0719",
+  "solver_input_digest": "sha256:48a89167c62bbbebb2e151af95befb7c2fe46d7d37117d9905fc3f97277dfd3c",
+  "smt2_digest": "sha256:48a89167c62bbbebb2e151af95befb7c2fe46d7d37117d9905fc3f97277dfd3c",
   "precheck_status": "PASSED"
 }

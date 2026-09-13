@@ -647,14 +647,7 @@ CORPUS_KINDS = (
 )
 LOCKED_Z3_VERSION = "Z3 version 4.16.0 - 64 bit"
 LOCKED_Z3_BINARY_SHA256 = (
-    "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54"
-)
-LOCKED_Z3_BINARY_SHA256S = frozenset(
-    {
-        LOCKED_Z3_BINARY_SHA256,
-        "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
-        "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
-    }
+    "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7"
 )
 LOCKED_Z3_OPTIONS = {"args": ["-in"], "timeout_ms": 10000}
 LOCKED_Z3_ENVIRONMENT = {
@@ -1349,7 +1342,6 @@ def capture_solver_binary(
     """Capture the exact verified Z3 producer binary once for all 72 routes."""
 
     solver_path: Path | None = None
-    solver_digest: str | None = None
     for route_id in sorted(route_entries):
         raw = load_json(engine_root / "routes" / route_id / "solver-result.json")
         realpath_value = raw.get("solver_binary_realpath")
@@ -1362,7 +1354,7 @@ def capture_solver_binary(
             or not Path(realpath_value).is_absolute()
             or Path(realpath_value).name != "z3"
             or raw.get("solver") != realpath_value
-            or raw.get("solver_binary_sha256") not in LOCKED_Z3_BINARY_SHA256S
+            or raw.get("solver_binary_sha256") != LOCKED_Z3_BINARY_SHA256
             or raw.get("solver_version") != LOCKED_Z3_VERSION
             or raw.get("invocation") != [realpath_value, "-in"]
             or raw.get("options") != LOCKED_Z3_OPTIONS
@@ -1377,27 +1369,23 @@ def capture_solver_binary(
             str(current) != realpath_value
             or not current.is_file()
             or current.is_symlink()
-            or digest_bytes(current.read_bytes())
-            != raw.get("solver_binary_sha256")
+            or digest_bytes(current.read_bytes()) != LOCKED_Z3_BINARY_SHA256
         ):
             raise RuntimeError(f"ENGINE_SOLVER_BINARY_DRIFT:{route_id}")
         if solver_path is None:
             solver_path = current
-            solver_digest = str(raw["solver_binary_sha256"])
-        elif solver_path != current or solver_digest != raw.get(
-            "solver_binary_sha256"
-        ):
+        elif solver_path != current:
             raise RuntimeError("ENGINE_SOLVER_BINARY_NOT_UNIFORM")
-    if solver_path is None or solver_digest is None:
+    if solver_path is None:
         raise RuntimeError("ENGINE_SOLVER_BINARY_CLOSURE_EMPTY")
     relative = relative_path
     destination = pack_root / relative
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(solver_path, destination)
-    identifier = artifact_identifier("solver-binary", solver_digest)
+    identifier = artifact_identifier("solver-binary", LOCKED_Z3_BINARY_SHA256)
     catalog.add(identifier, "solver-binary-environment", relative)
     reference = catalog.ref(identifier)
-    if reference["sha256"] != solver_digest:
+    if reference["sha256"] != LOCKED_Z3_BINARY_SHA256:
         raise RuntimeError("CAPTURED_SOLVER_BINARY_DIGEST_DRIFT")
     return {
         "artifact_id": identifier,
@@ -6058,7 +6046,7 @@ def normalize_route(
         or not Path(solver_realpath).is_absolute()
         or Path(solver_realpath).name != "z3"
         or raw_solver.get("solver") != solver_realpath
-        or raw_solver.get("solver_binary_sha256") != solver_binary.get("sha256")
+        or raw_solver.get("solver_binary_sha256") != LOCKED_Z3_BINARY_SHA256
         or raw_solver.get("solver_version") != LOCKED_Z3_VERSION
         or raw_solver.get("invocation") != [solver_realpath, "-in"]
         or raw_solver.get("options") != LOCKED_Z3_OPTIONS

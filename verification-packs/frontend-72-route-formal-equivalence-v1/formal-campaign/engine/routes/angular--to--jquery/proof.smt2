@@ -1,5 +1,5 @@
 ; ELMOS bounded-navigation-v1 canonical/source/target/reference equivalence
-; formal-input-bytes-digest: sha256:c5282fb3aea4dc0c1928d30a20b6d512bb6856cb6ac1cb8e18204483dfbdb966
+; formal-input-bytes-digest: sha256:dbe316dca84e49807cfc254a3c8b7502afa6f0c8cf43fb95c8cf81240383971f
 ; Framework/compiler/runtime soundness is explicitly outside this bounded formula.
 (set-logic ALL)
 (declare-const event Int)

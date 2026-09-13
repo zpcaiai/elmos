@@ -18,7 +18,7 @@ from typing import Any
 class TableDependencyNode:
     table_name: str
     dependencies: set[str] = field(default_factory=set)  # tables that table_name depends ON (parents)
-    dependents: set[str] = field(default_factory=set)    # tables that depend on table_name (children)
+    dependents: set[str] = field(default_factory=set)  # tables that depend on table_name (children)
 
 
 @dataclass

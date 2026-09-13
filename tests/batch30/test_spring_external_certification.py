@@ -18,9 +18,11 @@ SPRING_PACK_KEYS = [
     "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
 ]
 
+LOCAL_ONLY_PACK = "spring-boot-2-7-18-to-3-5-3"
+
 
 class SpringExternalCertificationTests(TestCase):
-    def test_all_six_framework_packs_exist_and_certified(self) -> None:
+    def test_all_six_framework_packs_match_current_evidence_boundary(self) -> None:
         for pack_key in SPRING_PACK_KEYS:
             with self.subTest(pack=pack_key):
                 pack_dir = ROOT / "framework-packs" / pack_key
@@ -31,10 +33,21 @@ class SpringExternalCertificationTests(TestCase):
                 certification = json.loads((pack_dir / "certification" / "certification.json").read_text(encoding="utf-8"))
                 admission = json.loads((pack_dir / "certification" / "external-admission.json").read_text(encoding="utf-8"))
 
-                self.assertEqual("certified", manifest.get("status"))
-                self.assertEqual("certified", certification.get("status"))
-                self.assertEqual("CERTIFIED", certification.get("certification_decision"))
-                self.assertEqual("PASSED", evidence.get("external_execution_status"))
+                if pack_key == LOCAL_ONLY_PACK:
+                    self.assertEqual("limited", manifest.get("status"))
+                    self.assertEqual("limited", certification.get("status"))
+                    self.assertEqual(
+                        "NOT_CERTIFIED", certification.get("certification_decision")
+                    )
+                    self.assertEqual("NOT_RUN", evidence.get("external_execution_status"))
+                    self.assertTrue(admission.get("requires_live_external_reverification"))
+                else:
+                    self.assertEqual("certified", manifest.get("status"))
+                    self.assertEqual("certified", certification.get("status"))
+                    self.assertEqual(
+                        "CERTIFIED", certification.get("certification_decision")
+                    )
+                    self.assertEqual("PASSED", evidence.get("external_execution_status"))
                 self.assertEqual(13, len(admission.get("verified_evidence_types", [])))
 
     def test_zero_tolerance_invariants_across_all_packs(self) -> None:

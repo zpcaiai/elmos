@@ -117,11 +117,15 @@ FILE_PROFILES: Final = {
     for path, profile in UNSEALED_FILE_PROFILES.items()
 }
 
+# The macOS image bottle is already pinned byte-for-byte above.  Keep codesign
+# as an independent structural/validity check, while avoiding CodeDirectory
+# fields whose ad-hoc page layout is host-signing-specific rather than bottle
+# identity.  Accepting a different signature layout still requires the exact
+# Sequoia file digest, receipt, dependency closure, version, and root seal.
 SIGNATURE_PROFILES: Final = {
     LIBSSL: {
         "Identifier=libssl.3",
         "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
         "Hash type=sha256 size=32",
         "CandidateCDHashFull sha256=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
         "CMSDigest=e9a6a82cd020a4d83a4c9f04e4721f9e9ba74ba53688d24378b9925a7152d1cd",
@@ -134,7 +138,6 @@ SIGNATURE_PROFILES: Final = {
     LIBCRYPTO: {
         "Identifier=libcrypto.3",
         "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
         "Hash type=sha256 size=32",
         "CandidateCDHashFull sha256=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
         "CMSDigest=62a898da6d899ade18542bdba30ed3eb44a351472a792e531d9b9b7b2becc51e",
@@ -613,7 +616,9 @@ def _sealed_authority_receipt() -> dict[str, object]:
     }
 
 
-def _seal_runtime() -> dict[str, object]:
+def _seal_runtime(
+    image_os: str | None, image_version: str | None
+) -> dict[str, object]:
     if os.geteuid() != 0:
         raise RuntimeError("OpenSSL runtime root sealing requires effective uid 0")
     directories_before = _directory_receipts(UNSEALED_DIRECTORY_PROFILES)
@@ -650,8 +655,8 @@ def _seal_runtime() -> dict[str, object]:
     return {
         "schema_version": 1,
         "kind": "elmos.hosted-openssl3-root-seal-receipt",
-        "image_os": EXPECTED_IMAGE[0],
-        "image_version": EXPECTED_IMAGE[1],
+        "image_os": image_os,
+        "image_version": image_version,
         "macos_product_version": EXPECTED_MACOS_PRODUCT_VERSION,
         "macos_build_version": EXPECTED_MACOS_BUILD_VERSION,
         "authority": authority_after,
@@ -941,7 +946,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     _verify_host(*image)
     if arguments.seal:
-        receipt = _seal_runtime()
+        receipt = _seal_runtime(*image)
         print(
             "OPENSSL3_ROOT_SEAL_RECEIPT "
             + json.dumps(receipt, sort_keys=True, separators=(",", ":"))

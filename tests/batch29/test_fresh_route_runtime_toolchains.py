@@ -316,6 +316,7 @@ def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None
     assert cache_path_lts_label in installer
     assert f"20260728.0273.1:26.5.2:25F84:{cache_path}" in installer
     assert f"20260831.0337.3:26.6.2:25G83:{cache_path_lts_label}" in installer
+    assert f"20260907.0351.1:26.6.2:25G83:{cache_path_lts_label}" in installer
     assert "Java_Temurin-Hotspot_jdk/*" not in installer
     assert signature_verification in installer
     assert environment_binding in installer

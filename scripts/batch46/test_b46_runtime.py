@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import pytest
-from scripts.batch46.b46_skill_runtime import B46SkillRuntime
+import pytest  # noqa: E402
+from scripts.batch46.b46_skill_runtime import B46SkillRuntime  # noqa: E402
 
 
 @pytest.fixture
@@ -90,12 +90,15 @@ def test_b46_runnable_smoke_gate(runtime):
         "evidence": {"startup_ok": True, "readiness_probe_ok": True, "functional_probe_ok": True, "teardown_clean": True}
     })
     assert res_pass["gate_decision"] == "RUNNABLE"
-    assert res_pass["certification_status"] == "CERTIFIED"
+    assert res_pass["local_evidence_status"] == "LOCAL_EXECUTED"
+    assert res_pass["certification_status"] == "NOT_CERTIFIED"
 
     res_fail = runtime.dispatch("b46-runnable-smoke-gate", "evaluate", {
         "evidence": {"startup_ok": False}
     })
     assert res_fail["gate_decision"] == "BLOCKED"
+    assert res_fail["local_evidence_status"] == "FAILED"
+    assert res_fail["certification_status"] == "NOT_CERTIFIED"
 
 
 def test_b46_runtime_lease_quota_reclaim(runtime):

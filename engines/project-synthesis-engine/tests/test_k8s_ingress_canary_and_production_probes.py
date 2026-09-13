@@ -45,7 +45,7 @@ def test_enterprise_k8s_manifests_probe_and_canary():
     assert 'nginx.ingress.kubernetes.io/canary-by-cookie: "canary_user"' in manifests
 
     # 4. Dry run validation
-    controller = K8sDeploymentController()
+    controller = K8sDeploymentController(kubectl_bin="/elmos/test/missing-kubectl")
     valid, msg = controller.dry_run_validate(manifests)
     assert valid is True
 

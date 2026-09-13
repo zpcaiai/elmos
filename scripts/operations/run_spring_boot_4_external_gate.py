@@ -60,7 +60,7 @@ def audit_framework_pack(pack_key: str) -> dict[str, Any]:
     ]
 
     res = subprocess.run(cmd, capture_output=True, text=True, check=False)
-    passed = res.returncode == 0
+    passed = res.returncode == 0 and "decision=CERTIFIED" in res.stdout
 
     return {
         "pack_key": pack_key,
@@ -142,7 +142,7 @@ def verify_dossier() -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit external production certification for Spring Boot 4.x Modernization.")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
-    args = parser.parse_args()
+    _args = parser.parse_args()
 
     results = []
     all_passed = True
@@ -167,7 +167,7 @@ def main() -> int:
         all_passed = False
         print(f"[FAIL] Centralized Independent Dossier: {dossier_audit['blockers']}")
     else:
-        print(f"[PASS [CERTIFIED]] Centralized Independent Dossier: {dossier_audit['dossier_sha256']} ({dossier_audit['target_count']} targets)")
+        print(f"[PASS [SIGNATURE_VALID]] Centralized Independent Dossier: {dossier_audit['dossier_sha256']} ({dossier_audit['target_count']} targets)")
 
     print("--------------------------------------------------------------------------------")
     if all_passed:

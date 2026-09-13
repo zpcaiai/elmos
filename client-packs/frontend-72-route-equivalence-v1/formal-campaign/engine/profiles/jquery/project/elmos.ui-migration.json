@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0",
-  "projectId": "8d87e5e12b86816cec3d6574",
+  "projectId": "bde65b01f999de073bdfde15",
   "direction": {
     "routeId": "angular--to--jquery",
     "source": "angular",
     "target": "jquery",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "4.0.0",
     "supportState": "LEGACY_TARGET_CONDITIONAL",
     "semanticConversionEvidence": "NOT_RUN",
@@ -43,7 +43,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:b377ed9b269c474b876d8a5e19cebe248126ed4e597353c76fc7e96ec0533a14",
+  "contentDigest": "sha256:586b9a6d16af65f2e2d21079e586f01a6d65abf136b1896db06f949c3cabef08",
   "ownership": {
     "generated": [
       ".editorconfig",

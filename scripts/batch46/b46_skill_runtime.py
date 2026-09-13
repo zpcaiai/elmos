@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import hashlib
 import json
-import re
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
+from typing import Any, Dict, Mapping, Optional, Set
 
 
 def _digest(data: Any) -> str:
@@ -176,7 +174,8 @@ class B46SkillRuntime:
             "readiness_ok": readiness_ok,
             "functional_probe_ok": functional_ok,
             "teardown_clean": teardown_clean,
-            "certification_status": "CERTIFIED" if passed else "NOT_CERTIFIED",
+            "local_evidence_status": "LOCAL_EXECUTED" if passed else "FAILED",
+            "certification_status": "NOT_CERTIFIED",
         }
 
     # 12. b46-runtime-lease-quota-reclaim

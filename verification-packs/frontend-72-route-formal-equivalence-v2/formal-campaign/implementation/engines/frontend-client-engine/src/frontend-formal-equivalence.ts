@@ -134,10 +134,9 @@ const unsupportedSemanticBlocks = [
   "component-state-action",
 ] as const;
 const lockedZ3Version = "Z3 version 4.16.0 - 64 bit";
-const lockedZ3BinaryDigest = "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54";
+const lockedZ3BinaryDigest = "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7";
 const lockedZ3BinaryDigests = new Set<string>([
   lockedZ3BinaryDigest,
-  "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
 ]);
 

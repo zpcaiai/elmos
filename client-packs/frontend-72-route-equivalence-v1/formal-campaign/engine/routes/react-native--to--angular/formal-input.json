@@ -9,10 +9,10 @@
     "source_profile": "react-native",
     "source_framework_version": "0.86.0",
     "target_profile": "angular",
-    "target_framework_version": "22.0.8"
+    "target_framework_version": "22.1.4"
   },
-  "source_project_digest": "sha256:bcea48117319a6498a7c51c5baa859c3b68e98f9cc84a38adccebae13de57796",
-  "target_project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+  "source_project_digest": "sha256:c3ebc9be7a22698cea86bf9d174613b8c34e8d565f445f67bf6579e75f026b5c",
+  "target_project_digest": "sha256:5966d1163d18906a56aac4840009ed7286acb3c51c0de8c149c03b6c95d2750a",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-navigation-v1",

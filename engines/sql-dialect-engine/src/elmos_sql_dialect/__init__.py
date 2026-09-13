@@ -29,4 +29,3 @@ __all__ = [
     "translate_sql",
     "translate_upsert",
 ]
-

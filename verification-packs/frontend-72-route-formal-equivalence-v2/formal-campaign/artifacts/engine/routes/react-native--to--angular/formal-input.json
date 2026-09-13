@@ -9,10 +9,10 @@
     "source_profile": "react-native",
     "source_framework_version": "0.86.0",
     "target_profile": "angular",
-    "target_framework_version": "22.0.8"
+    "target_framework_version": "22.1.4"
   },
-  "source_project_digest": "sha256:927aa72f948d73cfdcb9bf5182308003c3d28e65b25448140e627f33c4114a57",
-  "target_project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
+  "source_project_digest": "sha256:95de96c2dc8edff3d9d9e1d6cb4956db7fe6615508fa49b16776d604c9759223",
+  "target_project_digest": "sha256:77c3f2342e3876aeadc4294d9e4461772670012b58bfe764177410d807de9b9f",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:fd2f252831c058126a601d2d0bff2f98ffe1402fe52c8bdd70b752f6bf0ebe2f",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:6044652ab834eec0651dcf73b1f254849b4ec6d6409fbc547ce80cc33d52a41a",
+  "mutation_campaign_digest": "sha256:f257ca11174201035db83dc25ce76715c736c3efbc39989bd3c41236143127fb",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

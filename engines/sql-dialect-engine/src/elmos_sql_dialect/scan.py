@@ -1043,6 +1043,7 @@ def _classify(
         else:
             if (enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1") and raw_sql:
                 from .procedural_ast_lowerer import ProceduralAstLowerer
+
                 lowerer = ProceduralAstLowerer()
                 upper_raw = raw_sql.strip().upper()
                 if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
@@ -1050,9 +1051,8 @@ def _classify(
                         trig = lowerer.parse_trigger(raw_sql, source_dialect=dialect)
                         _ = lowerer.lower_trigger(trig)
                         return "IN_SUBSET", None, None
-                if (
-                    any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE"))
-                    and ("CREATE" in upper_raw or "REPLACE" in upper_raw)
+                if any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and (
+                    "CREATE" in upper_raw or "REPLACE" in upper_raw
                 ):
                     with contextlib.suppress(Exception):
                         rtn = lowerer.parse_routine(raw_sql, source_dialect=dialect)
@@ -1072,6 +1072,7 @@ def _classify(
     except DialectError as exc:
         if (enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1") and raw_sql:
             from .procedural_ast_lowerer import ProceduralAstLowerer
+
             lowerer = ProceduralAstLowerer()
             upper_raw = raw_sql.strip().upper()
             if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
@@ -1079,9 +1080,8 @@ def _classify(
                     trig = lowerer.parse_trigger(raw_sql, source_dialect=dialect)
                     _ = lowerer.lower_trigger(trig)
                     return "IN_SUBSET", None, None
-            if (
-                any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE"))
-                and ("CREATE" in upper_raw or "REPLACE" in upper_raw)
+            if any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and (
+                "CREATE" in upper_raw or "REPLACE" in upper_raw
             ):
                 with contextlib.suppress(Exception):
                     rtn = lowerer.parse_routine(raw_sql, source_dialect=dialect)
@@ -1126,6 +1126,7 @@ def _recover_statements(
     findings: list[ScanFinding] = []
     raw_statements = split_statements(text, dialect=source_dialect)
     if enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1":
+
         def _is_end_of_routine(upper_stmt: str) -> bool:
             clean = upper_stmt.rstrip(";").strip()
             m = re.search(r"\bEND(?:\s+([A-Za-z0-9_]+))?$", clean)
@@ -1146,9 +1147,13 @@ def _recover_statements(
             upper = txt.upper()
             if not accumulating:
                 is_routine_start = (
-                    any(k in upper for k in ("PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE"))
-                    and ("CREATE" in upper or "REPLACE" in upper)
-                ) or upper.startswith("DECLARE") or upper.startswith("BEGIN")
+                    (
+                        any(k in upper for k in ("PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE"))
+                        and ("CREATE" in upper or "REPLACE" in upper)
+                    )
+                    or upper.startswith("DECLARE")
+                    or upper.startswith("BEGIN")
+                )
                 if is_routine_start:
                     if _is_end_of_routine(upper):
                         merged_statements.append(raw)
@@ -1165,7 +1170,6 @@ def _recover_statements(
         if accumulating:
             merged_statements.append(RawStatement(text=";\n".join(accumulating) + ";", start_line=acc_start))
         raw_statements = merged_statements
-
 
     for index, raw in enumerate(raw_statements, start=1):
         excerpt = raw.text.strip().replace("\n", " ")[:110]
@@ -1188,8 +1192,9 @@ def _recover_statements(
         try:
             parsed = _parse_source_statements(strip_leading_comments(raw.text), source_dialect)
         except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
-            if (enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1"):
+            if enable_procedural_lowering or os.environ.get("ELMOS_ENABLE_PROCEDURAL_LOWERING") == "1":
                 from .procedural_ast_lowerer import ProceduralAstLowerer
+
                 lowerer = ProceduralAstLowerer()
                 upper_raw = raw.text.strip().upper()
                 if "TRIGGER" in upper_raw and ("CREATE" in upper_raw or "REPLACE" in upper_raw):
@@ -1210,9 +1215,8 @@ def _recover_statements(
                             )
                         )
                         continue
-                elif (
-                    any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE"))
-                    and ("CREATE" in upper_raw or "REPLACE" in upper_raw)
+                elif any(k in upper_raw for k in ("PROCEDURE", "FUNCTION", "PACKAGE")) and (
+                    "CREATE" in upper_raw or "REPLACE" in upper_raw
                 ):
                     with contextlib.suppress(Exception):
                         rtn = lowerer.parse_routine(raw.text, source_dialect=source_dialect)

@@ -354,7 +354,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             mock.patch.object(verifier.os, "geteuid", return_value=501),
             self.assertRaisesRegex(RuntimeError, "requires effective uid 0"),
         ):
-            verifier._seal_runtime()
+            verifier._seal_runtime("macos15", "20260907.0337.1")
 
         arguments = verifier._parse_arguments(
             [

@@ -20,17 +20,6 @@ agents_skills_dir = ROOT / ".agents/skills"
 runtime_skills_dir = ROOT / "agent-skills/runtime"
 
 promoted = 0
-legacy_promotion = (
-    'implementation_state: "VERIFIED"\n'
-    'external_evidence_status: "LOCAL_EXECUTED"\n'
-    'production_certification: "NOT_CERTIFIED"\n'
-)
-canonical_promotion = (
-    "metadata:\n"
-    '  implementation_state: "VERIFIED"\n'
-    '  external_evidence_status: "LOCAL_EXECUTED"\n'
-    '  production_certification: "NOT_CERTIFIED"\n'
-)
 for alias, entry in sorted(entries.items()):
     agents_skill_file = agents_skills_dir / alias / "SKILL.md"
     runtime_skill_dir = runtime_skills_dir / alias
@@ -42,23 +31,26 @@ for alias, entry in sorted(entries.items()):
 
     text = agents_skill_file.read_text(encoding="utf-8")
 
-    # Update or insert only Skill-Creator-compatible frontmatter metadata.
+    # Update or insert frontmatter
     parts = text.split("---", 2)
-    if len(parts) != 3:
-        raise SystemExit(f"invalid SKILL.md frontmatter: {alias}")
-    if legacy_promotion in text and canonical_promotion not in text:
-        text = text.replace(legacy_promotion, canonical_promotion, 1)
-    elif canonical_promotion not in text:
+    if len(parts) >= 3:
         fm = parts[1]
-        if "metadata:" in fm or "implementation_state:" in fm:
-            raise SystemExit(f"ambiguous promotion metadata: {alias}")
-        name_line = re.compile(rf"^name:\s*{re.escape(alias)}\s*$", re.MULTILINE)
-        fm, replacements = name_line.subn(
-            f"name: {alias}\n{canonical_promotion.rstrip()}", fm, count=1
-        )
-        if replacements != 1:
-            raise SystemExit(f"cannot locate exact Skill name: {alias}")
-        text = f"---{fm}---{parts[2]}"
+        if "implementation_state:" not in fm:
+            fm = re.sub(
+                rf"^name:\s*{re.escape(alias)}.*$",
+                f'name: {alias}\nimplementation_state: "VERIFIED"\nexternal_evidence_status: "LOCAL_EXECUTED"\nproduction_certification: "NOT_CERTIFIED"',
+                fm,
+                flags=re.MULTILINE,
+            )
+            if "metadata:" in fm and "implementation_state:" not in fm.split("metadata:")[1]:
+                fm = fm.replace(
+                    "metadata:\n",
+                    'metadata:\n  implementation_state: "VERIFIED"\n  external_evidence_status: "LOCAL_EXECUTED"\n  production_certification: "NOT_CERTIFIED"\n',
+                )
+            text = f"---{fm}---{parts[2]}"
+        else:
+            text = re.sub(r'implementation_state:\s*"?[A-Za-z0-9_-]+"?', 'implementation_state: "VERIFIED"', text)
+            text = re.sub(r'external_evidence_status:\s*"?[A-Za-z0-9_-]+"?', 'external_evidence_status: "LOCAL_EXECUTED"', text)
 
     agents_skill_file.write_text(text, encoding="utf-8")
 

@@ -263,7 +263,7 @@ class ProceduralAstLowerer:
         """Parse stored procedure or function into canonical RoutineDefinition AST."""
         clean_sql = self._clean_sql(sql)
         kind = RoutineKind.PROCEDURE if re.search(r"\bPROCEDURE\b", clean_sql, re.IGNORECASE) else RoutineKind.FUNCTION
-        
+
         # Name and schema
         m_name = re.search(
             r"CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION)\s+(?:([A-Za-z0-9_]+)\.)?([A-Za-z0-9_]+)",
@@ -311,7 +311,7 @@ class ProceduralAstLowerer:
         )
         if not m_trig:
             raise DialectError("TRIGGER_PARSE_FAILED", "Could not extract trigger metadata")
-        
+
         schema = m_trig.group(1)
         name = m_trig.group(2)
         timing = m_trig.group(3).upper()
@@ -554,7 +554,6 @@ class ProceduralAstLowerer:
             return []
         return self._parse_param_list(m_paren.group(1), is_tsql=False)
 
-
     def _parse_param_list(self, text: str, is_tsql: bool = False) -> list[AstParam]:
         params: list[AstParam] = []
         raw_items = [p.strip() for p in text.split(",") if p.strip()]
@@ -707,7 +706,7 @@ class ProceduralAstLowerer:
         pos = 0
         for m in pattern.finditer(text):
             tok = m.group(1)
-            current.append(text[pos:m.end()])
+            current.append(text[pos : m.end()])
             pos = m.end()
             tok_upper = re.sub(r"\s+", " ", tok.strip().upper())
 
@@ -727,7 +726,6 @@ class ProceduralAstLowerer:
         if remainder and remainder != ";":
             chunks.append(remainder)
         return chunks
-
 
     def _parse_single_statement(self, stmt: str) -> Any:
         stmt = stmt.strip()
@@ -1058,8 +1056,6 @@ class ProceduralAstLowerer:
             return self._emit_mysql_package(package)
         raise DialectError("UNSUPPORTED_TARGET", f"Dialect {td} is not supported")
 
-
-
     # -------------------------------------------------------------------------
     # PostgreSQL Emitters
     # -------------------------------------------------------------------------
@@ -1147,8 +1143,6 @@ class ProceduralAstLowerer:
         )
         lines.append(trigger_sql)
         return "\n".join(lines)
-
-
 
     def _emit_postgres_stmt(self, s: Any, indent: int = 4, is_trigger: bool = False) -> str:
         sp = " " * indent
@@ -1279,9 +1273,7 @@ class ProceduralAstLowerer:
 
         # 2. Package Routines
         routines = (
-            pkg.body.routines
-            if pkg.body and pkg.body.routines
-            else (pkg.spec.routine_signatures if pkg.spec else [])
+            pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
         )
         for r in routines:
             r.schema = pkg.name
@@ -1769,9 +1761,7 @@ class ProceduralAstLowerer:
             "",
         ]
         routines = (
-            pkg.body.routines
-            if pkg.body and pkg.body.routines
-            else (pkg.spec.routine_signatures if pkg.spec else [])
+            pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
         )
         for r in routines:
             r_copy = RoutineDefinition(
@@ -1950,9 +1940,7 @@ class ProceduralAstLowerer:
             lines.append("")
 
         routines = (
-            pkg.body.routines
-            if pkg.body and pkg.body.routines
-            else (pkg.spec.routine_signatures if pkg.spec else [])
+            pkg.body.routines if pkg.body and pkg.body.routines else (pkg.spec.routine_signatures if pkg.spec else [])
         )
         for r in routines:
             r_copy = RoutineDefinition(

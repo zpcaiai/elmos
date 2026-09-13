@@ -6,10 +6,10 @@
   "critical_unknowns": 0,
   "customer_and_independent_evidence": "NOT_RUN",
   "duplicate_message_or_job_effects": 0,
-  "evidence_class": "REVERIFIED_EXTERNAL_CERTIFICATION",
-  "external_execution_status": "PASSED",
-  "holdout_status": "PASSED",
-  "metric_status": "EVALUATED_EXTERNAL_EXACT_SCOPE",
+  "evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "external_execution_status": "NOT_RUN",
+  "holdout_status": "NOT_RUN",
+  "metric_status": "EVALUATED_LOCAL_EXACT_SCOPE",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 85.0,
@@ -23,17 +23,19 @@
   "negative_corpus_status": "PASSED",
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
   "pack_version": "0.3.0",
-  "representative_repository_status": "PASSED",
+  "representative_repository_status": "NOT_RUN",
   "runs": [
-    "external-admission.json"
+    "local-reference-evidence.json",
+    "local-product-journey-evidence.json",
+    "public-reference-route-evidence.json"
   ],
   "schema_version": 1,
   "silent_framework_drops": 0,
-  "source_build_status": "PASSED",
-  "source_startup_status": "PASSED",
-  "target_build_status": "PASSED",
+  "source_build_status": "PASSED_LOCAL",
+  "source_startup_status": "PASSED_LOCAL",
+  "target_build_status": "PASSED_LOCAL",
   "target_repository_runtime_evidence": "NOT_RUN",
-  "target_startup_status": "PASSED",
+  "target_startup_status": "PASSED_LOCAL",
   "test_integrity_violations": 0,
-  "transformation_status": "PASSED"
+  "transformation_status": "PASSED_LOCAL"
 }

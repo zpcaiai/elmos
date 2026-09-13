@@ -220,12 +220,32 @@ def main() -> int:
     if phase_match is None:
         fail("Precision Migration web phase catalog is invalid")
     web_phases = json.loads(phase_match.group(1))
+    child_records = [record for record in manifest["skills"] if record["kind"] == "skill"]
+    declared_count = sum(
+        record["binding"].get("binding_state") == "DECLARED"
+        for record in child_records
+    )
+    local_executed_count = sum(
+        record.get("maturity")
+        in {"LOCAL_EXECUTED", "HOLDOUT_PASSED", "EXTERNAL_VERIFIED", "CERTIFIED"}
+        for record in child_records
+    )
+    installed_only_count = len(child_records) - declared_count
     if (
         len(web_phases) != 12
-        or sum(item.get("skillCount", 0) for item in web_phases) != 587
-        or sum(item.get("adapterDeclaredCount", 0) for item in web_phases) != 587
-        or sum(item.get("localExecutedCount", 0) for item in web_phases) != 587
-        or any(item.get("installedOnlyCount") != 0 for item in web_phases)
+        or sum(item.get("skillCount", 0) for item in web_phases) != len(child_records)
+        or sum(item.get("adapterDeclaredCount", 0) for item in web_phases)
+        != declared_count
+        or sum(item.get("localExecutedCount", 0) for item in web_phases)
+        != local_executed_count
+        or sum(item.get("installedOnlyCount", 0) for item in web_phases)
+        != installed_only_count
+        or any(
+            item.get("skillCount")
+            != item.get("adapterDeclaredCount", 0)
+            + item.get("installedOnlyCount", 0)
+            for item in web_phases
+        )
     ):
         fail("Precision Migration web phase maturity counts drifted")
     adapter_registry = json.loads(ADAPTER_REGISTRY.read_text(encoding="utf-8"))

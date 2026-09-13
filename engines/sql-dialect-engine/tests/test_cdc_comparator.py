@@ -266,12 +266,18 @@ def test_cdc_reconciliation_reporter_non_self_certification(tmp_path: Path) -> N
 
     # Test CLI invocation of reporter
     out_file = tmp_path / "test_report.json"
-    ret = reporter_main([
-        "--source-dialect", "postgres",
-        "--target-dialect", "dm8",
-        "--target-id", "dm8",
-        "--output", str(out_file),
-    ])
+    ret = reporter_main(
+        [
+            "--source-dialect",
+            "postgres",
+            "--target-dialect",
+            "dm8",
+            "--target-id",
+            "dm8",
+            "--output",
+            str(out_file),
+        ]
+    )
     assert ret == 0
     assert out_file.exists()
     loaded = json.loads(out_file.read_text())
@@ -410,15 +416,9 @@ def test_streaming_data_comparator_bisect_diff() -> None:
     total_rows = 5_000
     chunk_size = 1_000
 
-    src_data = [
-        {"id": i, "name": f"Item_{i}", "price": round(i * 0.99, 2)}
-        for i in range(1, total_rows + 1)
-    ]
+    src_data = [{"id": i, "name": f"Item_{i}", "price": round(i * 0.99, 2)} for i in range(1, total_rows + 1)]
     # Target is identical except row 2500 has price corrupted
-    tgt_data = [
-        {"id": i, "name": f"Item_{i}", "price": round(i * 0.99, 2)}
-        for i in range(1, total_rows + 1)
-    ]
+    tgt_data = [{"id": i, "name": f"Item_{i}", "price": round(i * 0.99, 2)} for i in range(1, total_rows + 1)]
     tgt_data[2499]["price"] = 99999.99
 
     src_conn = MockDatabaseStreamConnector({"items": src_data})
@@ -532,4 +532,3 @@ def test_canal_cdc_event_parsing_and_replay() -> None:
     assert len(filtered) == 1
     out_of_window = EventComparator.filter_lsn_window(events, min_lsn=600, max_lsn=700)
     assert len(out_of_window) == 0
-

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "svelte--to--react-native",
-  "formal_input_digest": "sha256:a85518d8cdc452217a2847c6cd021bb11a476da2d5894065a7c8a274d733fb14",
-  "solver_input_digest": "sha256:48c6e854a548f76b8f737a66346a703aca1befb10ca86690f0b5f263a353bb01",
-  "smt2_digest": "sha256:48c6e854a548f76b8f737a66346a703aca1befb10ca86690f0b5f263a353bb01",
+  "formal_input_digest": "sha256:14e380de165118dd5081c7c40a78320529bb5d133e297ec8a5aa562f75261ad8",
+  "solver_input_digest": "sha256:35db0ba4ac869d20783c0d16feedda732186bc6ee015900ec62c13978400b0d9",
+  "smt2_digest": "sha256:35db0ba4ac869d20783c0d16feedda732186bc6ee015900ec62c13978400b0d9",
   "precheck_status": "PASSED"
 }

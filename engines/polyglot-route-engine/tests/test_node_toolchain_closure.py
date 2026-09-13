@@ -669,6 +669,7 @@ def test_ci_installer_pins_every_node_formula_for_each_host_profile() -> None:
     assert 'HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"' in installer
     assert '"20260728.0273.1:26.5.2:25F84"' in installer
     assert '"20260831.0337.3:26.6.2:25G83"' in installer
+    assert '"20260907.0351.1:26.6.2:25G83"' in installer
 
     frontend = installer.split('if [[ "${CI_PROFILE}" == "frontend-formal" ]]', 1)[1].split("\n  exit 0\nfi", 1)[0]
     assert frontend.index("preflight_exact_route_toolchain javascript") < frontend.index('>>"${GITHUB_PATH}"')
