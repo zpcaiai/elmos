@@ -21,7 +21,7 @@
       "id": "CI-02", "job_id": 103663807511,
       "job": "Spring Golden Route Engine", "class": "evidence-governance",
       "root_cause": "Two tests reject an evidence artifact URI outside approved roots while the dossier emits an untrusted CERTIFIED claim",
-      "work_unit": "RELEASE-CONTROL-A", "state": "OPEN"
+      "work_unit": "RELEASE-CONTROL-A", "state": "INTEGRATED_PENDING_RETEST"
     },
     {
       "id": "CI-03", "job_id": 103663807577,
@@ -39,7 +39,7 @@
       "id": "CI-05", "job_id": 103663807604,
       "job": "Web Console", "class": "route-metadata-drift",
       "root_cause": "Translation route pack binding and java-to-csharp inventory status disagree; dependent readiness assertions are masked",
-      "work_unit": "ROUTE-EVIDENCE-DOWNGRADE", "state": "AWAITING_INDEPENDENT_WORK_UNIT"
+      "work_unit": "b1550cf7c1", "state": "INTEGRATED_PENDING_RETEST"
     },
     {
       "id": "CI-06", "job_id": 103663807625,
@@ -63,7 +63,7 @@
       "id": "CI-09", "job_id": 103663807681,
       "job": "Makefile portability and composite targets", "class": "route-metadata-drift",
       "root_cause": "business-line-contracts detects ROUTE_PACK_STATUS_DRIFT for java-to-csharp",
-      "work_unit": "ROUTE-EVIDENCE-DOWNGRADE", "state": "AWAITING_INDEPENDENT_WORK_UNIT"
+      "work_unit": "b1550cf7c1", "state": "INTEGRATED_PENDING_RETEST"
     },
     {
       "id": "CI-10", "job_id": 103664023488,
@@ -75,7 +75,7 @@
       "id": "CI-11", "job_id": 103664099295,
       "job": "Directed language route contracts", "class": "aggregate-dependency",
       "root_cause": "Aggregate contract job fails because required route contract workers failed",
-      "work_unit": "ROUTE-EVIDENCE-DOWNGRADE", "state": "AWAITING_INDEPENDENT_WORK_UNIT"
+      "work_unit": "b1550cf7c1", "state": "INTEGRATED_PENDING_RETEST"
     }
   ]
 }
