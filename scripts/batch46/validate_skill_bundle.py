@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -51,6 +52,47 @@ REQUIRED_RUNTIME_FILES = (
 )
 
 
+def _frontmatter_value(raw: str) -> str | None:
+    """Decode one single-line scalar without treating Skill metadata as code."""
+    value = raw.strip()
+    if not value or value in {"|", ">"}:
+        return None
+    if value.startswith(('"', "'")):
+        if len(value) < 2 or value[-1] != value[0]:
+            return None
+        try:
+            decoded = json.loads(value) if value.startswith('"') else value[1:-1]
+        except (json.JSONDecodeError, IndexError):
+            return None
+        return decoded if isinstance(decoded, str) else None
+    return value
+
+
+def _parse_frontmatter(text: str) -> tuple[str, str] | None:
+    """Read required top-level fields while allowing normalized metadata."""
+    if not text.startswith("---\n"):
+        return None
+    closing = text.find("\n---\n", 4)
+    if closing < 0:
+        return None
+    values: dict[str, str] = {}
+    for line in text[4:closing].splitlines():
+        if not line or line[0].isspace() or ":" not in line:
+            continue
+        key, raw = line.split(":", 1)
+        if key not in {"name", "description"}:
+            continue
+        if key in values:
+            return None
+        value = _frontmatter_value(raw)
+        if value is None:
+            return None
+        values[key] = value
+    if set(values) != {"name", "description"}:
+        return None
+    return values["name"], values["description"]
+
+
 def validate() -> list[str]:
     failures: list[str] = []
     ids: set[int] = set()
@@ -60,21 +102,11 @@ def validate() -> list[str]:
             failures.append(f"missing Skill: {skill_file.relative_to(ROOT)}")
             continue
         text = skill_file.read_text(encoding="utf-8")
-        frontmatter = re.match(
-            r"\A---\n"
-            r"name:\s*([^\n]+)\n"
-            r'implementation_state:\s*"VERIFIED"\n'
-            r'external_evidence_status:\s*"LOCAL_EXECUTED"\n'
-            r'production_certification:\s*"NOT_CERTIFIED"\n'
-            r"description:\s*([^\n]+)\n"
-            r"---\n",
-            text,
-        )
+        frontmatter = _parse_frontmatter(text)
         if not frontmatter:
             failures.append(f"{expected_name}: invalid exact frontmatter")
         else:
-            declared_name = frontmatter.group(1).strip()
-            description = frontmatter.group(2).strip()
+            declared_name, description = frontmatter
             if declared_name != expected_name:
                 failures.append(f"{expected_name}: declared name is {declared_name!r}")
             if len(declared_name) > 64:

@@ -3,7 +3,7 @@ name = "elmos-project-synthesis"
 version = "1.4.0"
 description = "Evidence-bounded ELMOS project synthesis engine"
 requires-python = ">=3.12,<3.15"
-dependencies = []
+dependencies = ["pyyaml==6.0.2"]
 
 [project.scripts]
 elmos-project-synthesis = "elmos_project_synthesis.cli:main"

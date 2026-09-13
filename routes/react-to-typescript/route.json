@@ -8,7 +8,7 @@
     "representative_repository_required": true,
     "source_map_required": true
   },
-  "maintenance_owner": "elmos-polyglot-maintainers",
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
   "owner": "ELMOS Migration Platform",
   "paths": {
     "certification": "certification",
@@ -16,10 +16,10 @@
     "support_matrix": "support-matrix.json"
   },
   "profiles": {
-    "semantic_profile": "typed-pure-function-v1",
-    "target_profile": "typescript-native-compiler"
+    "semantic_profile": "",
+    "target_profile": ""
   },
-  "review_date": "2026-09-10",
+  "review_date": "2026-11-24",
   "route_key": "react-to-typescript",
   "schema_version": 1,
   "source": {
@@ -32,7 +32,7 @@
       "Node.js 26.0.0"
     ]
   },
-  "status": "certified",
+  "status": "research",
   "target": {
     "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "typescript",
@@ -41,5 +41,5 @@
       "Node.js 26.0.0"
     ]
   },
-  "version": "1.0.0"
+  "version": "0.1.0"
 }

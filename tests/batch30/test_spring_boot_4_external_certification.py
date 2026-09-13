@@ -95,7 +95,7 @@ class SpringBoot4ExternalCertificationTests(TestCase):
         )
         self.assertEqual(0, res.returncode, f"Signature verification failed: {res.stderr}")
 
-    def test_full_spring_boot_4_external_gate_rejects_nonportable_intake(self) -> None:
+    def test_committed_spring_boot_4_external_snapshot_fails_closed(self) -> None:
         res = subprocess.run(
             [sys.executable, str(GATE_SCRIPT)],
             capture_output=True,
@@ -103,7 +103,9 @@ class SpringBoot4ExternalCertificationTests(TestCase):
             check=False,
         )
         self.assertEqual(1, res.returncode)
-        self.assertIn("artifact.uri escapes approved evidence roots", res.stdout)
+        self.assertIn("[FAIL]", res.stdout)
+        self.assertIn("RESULT: GATE FAILED", res.stderr)
+        self.assertNotIn("100% CERTIFIED", res.stdout)
 
 
 if __name__ == "__main__":

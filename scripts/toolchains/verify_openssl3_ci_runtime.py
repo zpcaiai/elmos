@@ -27,10 +27,7 @@ EXPECTED_VERSION: Final = (
 )
 EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
 EXPECTED_IMAGES: Final = frozenset(
-    {
-        EXPECTED_IMAGE,
-        ("macos15", "20260907.0337.1"),
-    }
+    {EXPECTED_IMAGE, ("macos15", "20260907.0337.1")}
 )
 EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
 EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
