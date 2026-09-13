@@ -12,7 +12,7 @@
     }
   ],
   "coverage": 1.0,
-  "coverage_scope": "one declared synthetic query contract only",
+  "coverage_scope": "declared synthetic Phase-1 schema and one query contract; no runtime execution",
   "evidence_refs": [
     "certification/local-postgresql-dm8-query-evidence.json"
   ]

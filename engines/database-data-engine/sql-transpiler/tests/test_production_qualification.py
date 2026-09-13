@@ -133,6 +133,20 @@ def _complete_inputs() -> tuple[dict[str, Any], dict[str, Any], dict[str, Ed2551
             "extensions": [],
             "runtimeArtifactDigest": _DIGEST,
         }
+        if target_id == "dm8":
+            target["exactTuple"].update(
+                {
+                    "productVersion": "8.1.3.140",
+                    "edition": "enterprise",
+                    "compatibilityMode": "oracle-compatible-explicit",
+                    "driver": {
+                        "name": "dm-jdbc",
+                        "version": "8.1.3.140",
+                        "artifactDigest": _DIGEST,
+                    },
+                    "collation": "BINARY",
+                }
+            )
         target["disposableEnvironment"] = {
             "environmentId": f"sandbox-{target_id}",
             "kind": "APPROVED_LICENSED_SANDBOX",
@@ -211,6 +225,92 @@ def _sign_all_receipts(
             "evidenceDigests": {
                 field: _role_digest(target_id, f"evidence:{field}")
                 for field in REQUIRED_EXECUTION_EVIDENCE_DIGESTS
+            },
+            "routeEnvironmentSummary": {
+                "sourceEnvironmentId": f"source-sandbox-{target_id}",
+                "sourceEnvironmentKind": "DISPOSABLE_INSTANCE",
+                "targetEnvironmentId": target["disposableEnvironment"]["environmentId"],
+                "targetEnvironmentKind": target["disposableEnvironment"]["kind"],
+                "sourceProductId": "postgresql",
+                "sourceProductVersion": "17.5",
+                "sourceEdition": "community",
+                "sourceDriverName": "psql",
+                "sourceDriverVersion": "17.5",
+                "sourceRuntimeArtifactDigest": _role_digest(
+                    target_id, "source-runtime-artifact"
+                ),
+                "sourceDriverArtifactDigest": _role_digest(
+                    target_id, "source-driver-artifact"
+                ),
+                "sourceDisposable": True,
+                "targetDisposable": True,
+                "environmentsIndependent": True,
+                "networkIsolated": True,
+                "targetPatchVersion": target["exactTuple"]["productVersion"],
+                "targetLicenseRef": target["vendorTools"][0]["licenseRef"],
+                "targetLicenseDigest": _role_digest(target_id, "target-license"),
+                "targetLicenseVerified": True,
+                "targetRuntimeArtifactDigest": target["exactTuple"]["runtimeArtifactDigest"],
+                "targetDriverArtifactDigest": target["exactTuple"]["driver"][
+                    "artifactDigest"
+                ],
+                "deploymentTopology": target["exactTuple"]["deploymentTopology"],
+                "compatibilityMode": target["exactTuple"]["compatibilityMode"],
+                "charset": target["exactTuple"]["charset"],
+                "collation": target["exactTuple"]["collation"],
+                "timeZone": target["exactTuple"]["timeZone"],
+                "rowLevelSecurityMode": (
+                    "DBMS_RLS_ENABLE_RLS_1_NON_MPP"
+                    if target_id == "dm8"
+                    else "TARGET_NATIVE_RLS_EXACT"
+                ),
+            },
+            "databaseSurfaceSummary": {
+                surface: {
+                    "positiveCaseCount": 2,
+                    "negativeCaseCount": 1,
+                    "status": "PASSED",
+                }
+                for surface in qualification_module.PHASE1_DATABASE_SURFACES
+            },
+            "cdcSummary": {
+                "backfillCheckpointed": True,
+                "durableCheckpoint": True,
+                "checkpointCount": 3,
+                "lastSourcePosition": "lsn-00000003",
+                "lastTargetPosition": "checkpoint-00000003",
+                "lagSloMilliseconds": 1000.0,
+                "maximumObservedLagMilliseconds": 125.0,
+                "missingEventCount": 0,
+                "duplicateEffectCount": 0,
+                **{
+                    field: "PASSED"
+                    for field in qualification_module.PHASE1_CDC_CHECKS
+                },
+            },
+            "reconciliationSummary": {
+                "granularity": "TABLE_PRIMARY_KEY_ROW_FIELD",
+                "tableCount": 3,
+                "primaryKeyCount": 3,
+                "rowCount": 100,
+                "fieldCount": 800,
+                "moneyColumnCount": 2,
+                "moneyPrecisionExact": True,
+                "moneyScaleExact": True,
+                "p0DifferenceCount": 0,
+                "missingRowCount": 0,
+                "duplicateRowCount": 0,
+                "fieldMismatchCount": 0,
+            },
+            "failureInjectionSummary": {
+                "scenarios": {
+                    scenario: "PASSED"
+                    for scenario in qualification_module.PHASE1_FAILURE_SCENARIOS
+                },
+                "targetWindowWriteCount": 25,
+                "targetWindowWriteLossCount": 0,
+                "rollbackPreservedTargetWindowWrites": True,
+                "forwardRecoveryVerified": True,
             },
             "performanceSummary": {
                 "runnerClass": "DEDICATED",
@@ -609,6 +709,54 @@ def test_execution_receipt_enforces_dedicated_runner_75ms_contract(
     assert result["summary"]["productionDefinitionOfDoneCount"] == 12
     assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
     assert result["targets"][0]["blockers"][-1]["code"] == "EXECUTION_RECEIPT_INVALID"
+
+
+@pytest.mark.parametrize(
+    ("summary", "path", "value"),
+    (
+        ("routeEnvironmentSummary", ("targetLicenseVerified",), False),
+        ("databaseSurfaceSummary", ("triggers", "negativeCaseCount"), 0),
+        ("cdcSummary", ("deletePropagation",), "FAILED"),
+        ("reconciliationSummary", ("moneyScaleExact",), False),
+        ("failureInjectionSummary", ("scenarios", "diskPressure"), "FAILED"),
+        ("failureInjectionSummary", ("targetWindowWriteLossCount",), 1),
+    ),
+)
+def test_execution_receipt_enforces_every_dm8_phase1_summary(
+    summary: str,
+    path: tuple[str, ...],
+    value: object,
+) -> None:
+    request, trust_store, keys = _complete_inputs()
+    _sign_all_receipts(request, trust_store, keys)
+    execution = request["targets"][0]["receipts"]["execution"]
+    payload = deepcopy(execution["payload"])
+    cursor = payload[summary]
+    for key in path[:-1]:
+        cursor = cursor[key]
+    cursor[path[-1]] = value
+    request["targets"][0]["receipts"]["execution"] = signed_envelope(
+        key_id="executor-key",
+        private_key=keys["executor-key"],
+        payload=payload,
+    )
+
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+
+    assert result["summary"]["productionDefinitionOfDoneCount"] == 12
+    assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
+    assert result["targets"][0]["blockers"][-1]["code"] == "EXECUTION_RECEIPT_INVALID"
+
+
+def test_dm8_input_must_match_the_locked_postgresql_17_5_route() -> None:
+    request, trust_store, _ = _complete_inputs()
+    request["targets"][0]["exactTuple"]["productVersion"] = "8.1.3.141"
+
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+
+    assert result["targets"][0]["state"] == "BLOCKED_INPUT"
+    assert result["targets"][0]["qualificationInputDigest"] is None
+    assert result["targets"][0]["blockers"][0]["code"] == "EXACT_TARGET_TUPLE_REQUIRED"
 
 
 @pytest.mark.parametrize(

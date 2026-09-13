@@ -3,7 +3,7 @@
   "pack_key": "postgresql-to-dm8",
   "owner": "ELMOS Database Migration",
   "status": "blocked",
-  "strategy": "query-contract-first-no-data-movement",
+  "strategy": "checkpoint-backfill-then-cdc-with-detail-reconciliation",
   "source": {
     "engine": "postgresql",
     "versions": ["17.5"],
@@ -30,13 +30,18 @@
     "provisioning": "NOT_RUN"
   },
   "backfill": {
+    "plan_ref": "backfill/plan.json",
+    "batch_size": 1000,
     "partitions": ["NOT_RUN_NO_AUTHORIZED_TARGET"],
-    "checkpoint": "durable",
+    "checkpoint": "tenant_id,id",
+    "checkpoint_store": "durable",
     "idempotent": true
   },
   "cdc": {
     "enabled": false,
     "status": "NOT_RUN",
+    "plan_ref": "cdc/plan.json",
+    "reason": "No authorized DM8 target or durable CDC lease is available.",
     "position_store": "durable",
     "delete_propagation": true
   },
@@ -47,14 +52,20 @@
   "reconciliation": [
     {
       "status": "NOT_RUN",
-      "grain": "row-and-column",
+      "plan_ref": "reconciliation/plan.json",
+      "grain": "table-primary-key-row-field",
       "keys": ["tenant_id", "id"],
+      "money": {"field": "amount", "precision": 19, "scale": 4, "comparison": "exact-value-and-scale"},
       "money_comparison": "exact-decimal-no-tolerance",
-      "required_difference_count": 0
+      "required_difference_count": 0,
+      "required_p0_difference_count": 0
     }
   ],
   "rollback": {
-    "strategy": "retain-postgresql-authority-and-drop-disposable-dm8-schema"
+    "strategy": "retain-postgresql-authority-and-replay-target-window-journal",
+    "cutover_plan_ref": "cutover/plan.json",
+    "failure_injection_plan_ref": "failure-injection/plan.json",
+    "required_target_window_write_loss_count": 0
   },
   "privacy": {
     "classification": "synthetic",

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0",
+  "status": "NOT_RUN",
+  "environment": "DISPOSABLE_NON_PRODUCTION_ONLY",
+  "scenarios": [
+    {"id": "processTermination", "injection": "terminate-cdc-after-source-commit-before-target-ack"},
+    {"id": "networkInterruption", "injection": "isolate-source-target-link-during-active-stream"},
+    {"id": "duplicateEvent", "injection": "replay-same-lsn-and-event-digest"},
+    {"id": "outOfOrderEvent", "injection": "deliver-lower-lsn-after-committed-checkpoint"},
+    {"id": "diskPressure", "injection": "exhaust-disposable-target-or-checkpoint-volume"},
+    {"id": "cdcRestart", "injection": "restart-from-last-durable-committed-checkpoint"},
+    {"id": "cutoverFailure", "injection": "abort-after-write-fence-before-authority-switch"},
+    {"id": "rollback", "injection": "restore-postgresql-authority-and-replay-target-window-journal"}
+  ],
+  "acceptance": {"scenarioFailureCount": 0, "targetWindowWriteLossCount": 0, "unreconciledOutcomeCount": 0, "checkpointRegressionCount": 0}
+}

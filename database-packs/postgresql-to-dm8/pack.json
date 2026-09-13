@@ -22,7 +22,16 @@
   "schema_version": 1,
   "scope": {
     "objects": [
-      "orders-query-contract"
+      "orders-schema",
+      "orders-dml",
+      "orders-type-boundaries",
+      "orders-constraints-indexes",
+      "orders-sequence",
+      "orders-routine",
+      "orders-trigger",
+      "orders-privileges",
+      "orders-row-level-security",
+      "orders-cdc-and-reconciliation"
     ],
     "schemas": [
       "public"
@@ -30,7 +39,13 @@
     "workload_classes": [
       "parameterized-select",
       "ordering",
-      "pagination"
+      "pagination",
+      "ddl-dml-positive-negative",
+      "routine-trigger-security",
+      "checkpoint-backfill-cdc",
+      "field-level-money-reconciliation",
+      "failure-injection-cutover-rollback",
+      "dedicated-runner-p95"
     ]
   },
   "source": {

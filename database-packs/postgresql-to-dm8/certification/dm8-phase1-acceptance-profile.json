@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0",
+  "profileId": "postgresql-17.5-to-dm8-8.1.3.140-phase1",
+  "protocolVersion": "1.3.0",
+  "status": "BLOCKED_EXTERNAL_RESOURCES",
+  "certificationAuthority": "BATCH31_GATE_ONLY",
+  "route": {
+    "source": {
+      "productId": "postgresql",
+      "productVersion": "17.5",
+      "edition": "community",
+      "driver": "psql:17.5",
+      "charset": "UTF8",
+      "collation": "C",
+      "timeZone": "UTC"
+    },
+    "target": {
+      "productId": "dm8",
+      "productVersion": "8.1.3.140",
+      "patchVersion": "8.1.3.140",
+      "edition": "enterprise",
+      "driver": "dm-jdbc:8.1.3.140",
+      "compatibilityMode": "oracle-compatible-explicit",
+      "deploymentTopology": "single-instance-non-mpp",
+      "charset": "UTF-8",
+      "collation": "BINARY",
+      "timeZone": "Asia/Shanghai",
+      "rowLevelSecurityMode": "DBMS_RLS_ENABLE_RLS_1_NON_MPP"
+    }
+  },
+  "externalPins": {
+    "sourceRuntimeArtifactDigest": null,
+    "sourceDriverArtifactDigest": null,
+    "targetRuntimeArtifactDigest": null,
+    "targetDriverArtifactDigest": null,
+    "targetLicenseRef": null,
+    "targetLicenseDigest": null,
+    "targetLicenseVerified": "NOT_RUN",
+    "sourceEnvironmentId": null,
+    "targetEnvironmentId": null,
+    "runnerAttestationDigest": null,
+    "independentVerifierEngagementRef": null
+  },
+  "gates": [
+    {
+      "id": "DM8-P1-01",
+      "name": "exact-route-license-and-artifacts",
+      "required": true,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "DM8-P1-02",
+      "name": "isolated-disposable-source-and-target",
+      "required": true,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "DM8-P1-03",
+      "name": "real-engine-database-surfaces",
+      "required": true,
+      "surfaces": [
+        "ddl",
+        "dml",
+        "typeBoundary",
+        "constraints",
+        "indexes",
+        "sequences",
+        "routines",
+        "triggers",
+        "privileges",
+        "rowLevelSecurity"
+      ],
+      "minimumPositiveCasesPerSurface": 1,
+      "minimumNegativeCasesPerSurface": 1,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "DM8-P1-04",
+      "name": "checkpoint-backfill-and-cdc",
+      "required": true,
+      "checks": [
+        "insertPropagation",
+        "updatePropagation",
+        "deletePropagation",
+        "duplicateSuppression",
+        "outOfOrderHandling",
+        "restartResume"
+      ],
+      "missingEventCount": 0,
+      "duplicateEffectCount": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "DM8-P1-05",
+      "name": "detail-reconciliation",
+      "required": true,
+      "granularity": "TABLE_PRIMARY_KEY_ROW_FIELD",
+      "moneyComparison": "EXACT_PRECISION_AND_SCALE",
+      "p0DifferenceCount": 0,
+      "missingRowCount": 0,
+      "duplicateRowCount": 0,
+      "fieldMismatchCount": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "DM8-P1-06",
+      "name": "failure-cutover-and-rollback",
+      "required": true,
+      "scenarios": [
+        "processTermination",
+        "networkInterruption",
+        "duplicateEvent",
+        "outOfOrderEvent",
+        "diskPressure",
+        "cdcRestart",
+        "cutoverFailure",
+        "rollback"
+      ],
+      "targetWindowWriteLossCount": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "DM8-P1-07",
+      "name": "dedicated-runner-performance",
+      "required": true,
+      "runnerClass": "DEDICATED",
+      "isolation": "EXCLUSIVE_SINGLE_QUALIFICATION",
+      "warmupCountPerQuery": 5,
+      "sampleCountPerQuery": 40,
+      "maximumAttempts": 2,
+      "maximumNormalizedOneMinuteLoad": 1.0,
+      "sourceP95MillisecondsMaximum": 75.0,
+      "targetP95MillisecondsMaximum": 75.0,
+      "status": "NOT_RUN_ENVIRONMENT_INVALID"
+    },
+    {
+      "id": "DM8-P1-08",
+      "name": "independent-verification-and-certification",
+      "required": true,
+      "actorAndOrganizationSeparation": true,
+      "status": "NOT_RUN"
+    }
+  ],
+  "productionCertification": "NOT_CERTIFIED"
+}

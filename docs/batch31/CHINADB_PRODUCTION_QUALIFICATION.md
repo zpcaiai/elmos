@@ -54,7 +54,7 @@ exact commercial capability-snapshot digest. A capability registry or protocol
 change therefore invalidates earlier authorizations and every downstream
 receipt instead of replaying evidence across a recertification boundary.
 
-Protocol `1.2.0` requires two exact, role-specific digest sets in every
+Protocol `1.3.0` requires two exact, role-specific digest sets in every
 execution receipt. Artifact identity covers the source snapshot/catalog/data/
 workload, target snapshot/release, canonical IR, transformation, compatibility
 runtime, runner/toolchain, four physically separated corpora, data fixture,
@@ -71,6 +71,29 @@ than the unchanged 75 ms SLO. An invalid or overloaded environment stays
 measurements. Missing, extra, malformed, or aliased digest roles fail closed.
 The requirements command returns both exact field lists and the performance
 contract for authorized external tooling.
+
+Protocol `1.3.0` also replaces aggregate execution claims with five mandatory,
+strictly shaped Phase-1 summaries. The signed execution receipt must prove:
+
+- separate disposable source and target environments; for the DM8 pilot the
+  source is PostgreSQL 17.5 Community and the target is DM8 8.1.3.140
+  Enterprise with `dm-jdbc` 8.1.3.140, exact patch/runtime/driver/license
+  digests, Oracle-compatible mode, `UTF-8`, `BINARY`, `Asia/Shanghai`, and a
+  non-MPP RLS configuration;
+- non-empty positive and negative real-engine cases for DDL, DML, type
+  boundaries, constraints, indexes, sequences, routines, triggers, privileges,
+  and row-level security;
+- checkpointed backfill and durable CDC positions, insert/update/delete
+  propagation, duplicate suppression, out-of-order handling, restart/resume,
+  zero missing or duplicate effects, and observed lag within the declared SLO;
+- table, primary-key, row, and field reconciliation with exact money precision
+  and scale and zero P0, missing, duplicate, or field differences; and
+- process, network, duplicate, out-of-order, disk-pressure, CDC-restart,
+  cutover-failure, and rollback injection with zero target-window write loss.
+
+Each summary is validated independently of the legacy aggregate `checks`
+object. A signed `PASSED` string cannot replace required counts, bindings,
+measurements, or zero-difference assertions.
 
 ## Exact input required for every target
 
@@ -170,7 +193,7 @@ way to advance that state.
 DM8 is the enforced first target. A Vendor Runner handoff for any of the other
 12 targets is rejected until DM8 has a complete authorization, external
 execution, independent verification, and certification chain. Because protocol
-1.2.0 makes the dedicated Runner 75 ms summary mandatory in the DM8 execution
+1.3.0 makes the complete DM8 Phase-1 summaries and dedicated Runner 75 ms summary mandatory in the DM8 execution
 receipt, this also enforces the rollout order `DM8 -> dedicated 75 ms gate ->
 remaining 12 targets`; callers cannot bypass it by requesting another target
 directly.

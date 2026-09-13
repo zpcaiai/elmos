@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "postgresql-to-dm8",
-  "source_snapshot_digest": "sha256:44e3cc0b0607cd24201a4b313d145e0257bf883bc9751f5957fd7e64ceb53a17",
+  "source_snapshot_digest": "sha256:f30779e30460689f0b7f26e20f085cbfa678a6fdba454a66300571ee8045c4b1",
   "objects": [
     {
       "id": "table:orders",
@@ -13,11 +13,83 @@
           {"name": "id", "type": "signed-64", "nullable": false},
           {"name": "tenant_id", "type": "unicode-text", "nullable": false},
           {"name": "amount_cents", "type": "signed-64", "nullable": false, "minimum": 0, "money_unit": "minor-unit"},
+          {"name": "amount", "type": "decimal", "precision": 19, "scale": 4, "nullable": false, "comparison": "exact-value-and-scale"},
+          {"name": "status", "type": "unicode-text", "nullable": false, "allowed_values": ["NEW", "PAID", "VOID"]},
           {"name": "created_at", "type": "instant", "nullable": false, "timezone": "UTC"}
         ],
         "primary_key": ["id"],
-        "declared_for_query_contract_only": true
+        "unique_keys": [["tenant_id", "id"]],
+        "source_execution": "NOT_RUN",
+        "target_execution": "NOT_RUN"
       },
+      "dependencies": []
+    },
+    {
+      "id": "table:order_audit",
+      "kind": "table",
+      "logical_name": "order_audit",
+      "source_ref": "source-snapshots/ddl/postgresql-schema.sql",
+      "semantics": {
+        "primary_key": ["audit_id"],
+        "money_fields": {"old_amount": {"precision": 19, "scale": 4}, "new_amount": {"precision": 19, "scale": 4}},
+        "execution": "NOT_RUN"
+      },
+      "dependencies": ["table:orders"]
+    },
+    {
+      "id": "sequence:order_id_seq",
+      "kind": "sequence",
+      "logical_name": "order_id_seq",
+      "source_ref": "source-snapshots/ddl/postgresql-schema.sql",
+      "semantics": {"start": 1, "increment": 1, "cycle": false, "execution": "NOT_RUN"},
+      "dependencies": []
+    },
+    {
+      "id": "index:orders_tenant_created",
+      "kind": "index",
+      "logical_name": "idx_orders_tenant_created",
+      "source_ref": "source-snapshots/ddl/postgresql-schema.sql",
+      "semantics": {"columns": ["tenant_id", "created_at DESC"], "unique": false, "execution": "NOT_RUN"},
+      "dependencies": ["table:orders"]
+    },
+    {
+      "id": "routine:mark_order_paid",
+      "kind": "routine",
+      "logical_name": "mark_order_paid",
+      "source_ref": "target-profile/ddl/dm8-schema.sql",
+      "semantics": {"effect": "set-order-status-paid", "target_candidate": true, "execution": "NOT_RUN"},
+      "dependencies": ["table:orders"]
+    },
+    {
+      "id": "trigger:orders_before_update",
+      "kind": "trigger",
+      "logical_name": "trg_orders_before_update",
+      "source_ref": "source-snapshots/ddl/postgresql-schema.sql",
+      "semantics": {"timing": "before-update", "effect": "set-updated-at", "execution": "NOT_RUN"},
+      "dependencies": ["table:orders"]
+    },
+    {
+      "id": "trigger:orders_audit_update",
+      "kind": "trigger",
+      "logical_name": "trg_orders_audit_update",
+      "source_ref": "source-snapshots/ddl/postgresql-schema.sql",
+      "semantics": {"timing": "after-update-of-amount", "effect": "append-order-audit", "execution": "NOT_RUN"},
+      "dependencies": ["table:orders", "table:order_audit"]
+    },
+    {
+      "id": "security:orders-rls",
+      "kind": "row-level-security-policy",
+      "logical_name": "orders_tenant_policy",
+      "source_ref": "target-profile/ddl/dm8-security.sql",
+      "semantics": {"tenant_field": "tenant_id", "applies_to": ["SELECT", "INSERT", "UPDATE", "DELETE"], "sysdba_test_forbidden": true, "dm8_enable_rls": 1, "dm8_mpp_supported": false, "execution": "NOT_RUN"},
+      "dependencies": ["table:orders"]
+    },
+    {
+      "id": "table:elmos_cdc_event_ledger",
+      "kind": "migration-ledger",
+      "logical_name": "elmos_cdc_event_ledger",
+      "source_ref": "target-profile/ddl/dm8-schema.sql",
+      "semantics": {"atomic_with_target_mutation": true, "unique_event_digest": true, "execution": "NOT_RUN"},
       "dependencies": []
     }
   ],
@@ -40,6 +112,23 @@
       "dependencies": ["table:orders"]
     }
   ],
-  "pipelines": [],
+  "pipelines": [
+    {
+      "id": "pipeline:checkpoint-backfill-cdc",
+      "kind": "data-migration-pipeline",
+      "logical_name": "orders_checkpoint_backfill_cdc",
+      "source_ref": "migration/cdc/plan.json",
+      "semantics": {"backfill_checkpoint": ["tenant_id", "id"], "cdc_position": "postgresql-lsn", "delivery": "at-least-once-with-idempotent-effects", "execution": "NOT_RUN"},
+      "dependencies": ["table:orders", "table:order_audit", "table:elmos_cdc_event_ledger"]
+    },
+    {
+      "id": "pipeline:detail-reconciliation",
+      "kind": "reconciliation-pipeline",
+      "logical_name": "table_primary_key_row_field_reconciliation",
+      "source_ref": "migration/reconciliation/plan.json",
+      "semantics": {"money_comparison": "exact-value-and-scale", "p0_difference_required": 0, "execution": "NOT_RUN"},
+      "dependencies": ["pipeline:checkpoint-backfill-cdc"]
+    }
+  ],
   "unsupported_extensions": []
 }

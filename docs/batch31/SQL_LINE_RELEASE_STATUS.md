@@ -22,7 +22,7 @@ The machine-readable authority is `evidence/sql-route-closure-plan.json`:
 ## Ordered path to production
 
 1. Keep the P0 semantic workstream at zero regressions.
-2. Supply an externally mounted DM8 Protocol 1.2.0 request with an exact product
+2. Supply an externally mounted DM8 Protocol 1.3.0 request with an exact product
    tuple, licensed disposable environment, credential references, vendor tools,
    signed authorization/execution receipts, raw evidence digests, and a separate
    operator-pinned Ed25519 trust store.

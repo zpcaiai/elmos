@@ -34,7 +34,7 @@ from .commercial import commercial_capabilities
 from .skill_runtime import MAX_REQUEST_BYTES, parse_skill_request_json
 
 SCHEMA_VERSION = "1.0"
-PROTOCOL_VERSION = "1.2.0"
+PROTOCOL_VERSION = "1.3.0"
 TRUST_DOMAIN = "elmos.chinadb.production-qualification.v1"
 EXPECTED_TARGET_COUNT = 13
 
@@ -102,6 +102,75 @@ PERFORMANCE_CONTRACT: dict[str, Any] = {
     "maximumNormalizedOneMinuteLoad": 1.0,
     "invalidEnvironmentState": "NOT_RUN_ENVIRONMENT_INVALID",
 }
+
+PHASE1_DATABASE_SURFACES = (
+    "ddl",
+    "dml",
+    "typeBoundary",
+    "constraints",
+    "indexes",
+    "sequences",
+    "routines",
+    "triggers",
+    "privileges",
+    "rowLevelSecurity",
+)
+
+PHASE1_CDC_CHECKS = (
+    "insertPropagation",
+    "updatePropagation",
+    "deletePropagation",
+    "duplicateSuppression",
+    "outOfOrderHandling",
+    "restartResume",
+)
+
+PHASE1_FAILURE_SCENARIOS = (
+    "processTermination",
+    "networkInterruption",
+    "duplicateEvent",
+    "outOfOrderEvent",
+    "diskPressure",
+    "cdcRestart",
+    "cutoverFailure",
+    "rollback",
+)
+
+DM8_PHASE1_ROUTE = {
+    "sourceProductId": "postgresql",
+    "sourceProductVersion": "17.5",
+    "sourceEdition": "community",
+    "sourceDriverName": "psql",
+    "sourceDriverVersion": "17.5",
+    "targetProductId": "dm8",
+    "targetProductVersion": "8.1.3.140",
+    "targetPatchVersion": "8.1.3.140",
+    "targetEdition": "enterprise",
+    "targetDriverName": "dm-jdbc",
+    "targetDriverVersion": "8.1.3.140",
+    "compatibilityMode": "oracle-compatible-explicit",
+    "charset": "UTF-8",
+    "collation": "BINARY",
+    "timeZone": "Asia/Shanghai",
+    "rowLevelSecurityMode": "DBMS_RLS_ENABLE_RLS_1_NON_MPP",
+}
+
+
+def phase1_execution_contract() -> dict[str, Any]:
+    """Return the exact, machine-readable DM8-first execution contract."""
+    return {
+        "route": dict(DM8_PHASE1_ROUTE),
+        "databaseSurfaces": list(PHASE1_DATABASE_SURFACES),
+        "cdcChecks": list(PHASE1_CDC_CHECKS),
+        "failureScenarios": list(PHASE1_FAILURE_SCENARIOS),
+        "reconciliationGranularity": "TABLE_PRIMARY_KEY_ROW_FIELD",
+        "moneyComparison": "EXACT_PRECISION_AND_SCALE",
+        "p0DifferenceCount": 0,
+        "targetWindowWriteLossCount": 0,
+        "performance": dict(PERFORMANCE_CONTRACT),
+        "certificationAuthority": "BATCH31_GATE_ONLY",
+    }
+
 
 REQUIRED_EXECUTION_ARTIFACT_DIGESTS = (
     "sourceSnapshotDigest",
@@ -343,6 +412,306 @@ def _validate_performance_summary(value: object) -> dict[str, Any]:
     }
 
 
+def _positive_integer(value: object, name: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(f"{name} must be a positive integer")
+    return value
+
+
+def _zero_integer(value: object, name: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value != 0:
+        raise ValueError(f"{name} must be zero")
+    return value
+
+
+def _validate_route_environment_summary(
+    value: object,
+    *,
+    target_input: Mapping[str, Any],
+) -> dict[str, Any]:
+    name = "execution receipt payload.routeEnvironmentSummary"
+    raw = _object(value, name)
+    fields = {
+        "sourceEnvironmentId",
+        "sourceEnvironmentKind",
+        "targetEnvironmentId",
+        "targetEnvironmentKind",
+        "sourceProductId",
+        "sourceProductVersion",
+        "sourceEdition",
+        "sourceDriverName",
+        "sourceDriverVersion",
+        "sourceRuntimeArtifactDigest",
+        "sourceDriverArtifactDigest",
+        "sourceDisposable",
+        "targetDisposable",
+        "environmentsIndependent",
+        "networkIsolated",
+        "targetPatchVersion",
+        "targetLicenseRef",
+        "targetLicenseDigest",
+        "targetLicenseVerified",
+        "targetRuntimeArtifactDigest",
+        "targetDriverArtifactDigest",
+        "deploymentTopology",
+        "compatibilityMode",
+        "charset",
+        "collation",
+        "timeZone",
+        "rowLevelSecurityMode",
+    }
+    _exact_fields(raw, fields, name)
+    token_fields = fields - {
+        "sourceRuntimeArtifactDigest",
+        "sourceDriverArtifactDigest",
+        "targetLicenseDigest",
+        "targetRuntimeArtifactDigest",
+        "targetDriverArtifactDigest",
+        "sourceDisposable",
+        "targetDisposable",
+        "environmentsIndependent",
+        "networkIsolated",
+        "targetLicenseVerified",
+    }
+    result: dict[str, Any] = {
+        field: _exact_token(raw[field], f"{name}.{field}") for field in sorted(token_fields)
+    }
+    for field in (
+        "sourceRuntimeArtifactDigest",
+        "sourceDriverArtifactDigest",
+        "targetLicenseDigest",
+        "targetRuntimeArtifactDigest",
+        "targetDriverArtifactDigest",
+    ):
+        result[field] = _required_digest(raw[field], f"{name}.{field}")
+    for field in (
+        "sourceDisposable",
+        "targetDisposable",
+        "environmentsIndependent",
+        "networkIsolated",
+        "targetLicenseVerified",
+    ):
+        if raw[field] is not True:
+            raise ValueError(f"{name}.{field} must be true")
+        result[field] = True
+
+    if result["sourceEnvironmentId"] == result["targetEnvironmentId"]:
+        raise ValueError(f"{name} source and target environment ids must differ")
+    target_environment = _object(target_input["disposableEnvironment"], "target environment")
+    if result["targetEnvironmentId"] != target_environment["environmentId"]:
+        raise ValueError(f"{name}.targetEnvironmentId binding mismatch")
+    if result["targetEnvironmentKind"] != target_environment["kind"]:
+        raise ValueError(f"{name}.targetEnvironmentKind binding mismatch")
+    if result["sourceEnvironmentKind"] not in {
+        "DISPOSABLE_INSTANCE",
+        "DISPOSABLE_SCHEMA",
+        "APPROVED_LICENSED_SANDBOX",
+    }:
+        raise ValueError(f"{name}.sourceEnvironmentKind is not disposable")
+
+    exact_tuple = _object(target_input["exactTuple"], "target exact tuple")
+    driver = _object(exact_tuple["driver"], "target exact tuple.driver")
+    expected_bindings = {
+        "targetPatchVersion": exact_tuple["productVersion"],
+        "targetRuntimeArtifactDigest": exact_tuple["runtimeArtifactDigest"],
+        "targetDriverArtifactDigest": driver["artifactDigest"],
+        "deploymentTopology": exact_tuple["deploymentTopology"],
+        "compatibilityMode": exact_tuple["compatibilityMode"],
+        "charset": exact_tuple["charset"],
+        "collation": exact_tuple["collation"],
+        "timeZone": exact_tuple["timeZone"],
+    }
+    for field, expected in expected_bindings.items():
+        if result[field] != expected:
+            raise ValueError(f"{name}.{field} binding mismatch")
+    license_refs = {str(tool["licenseRef"]) for tool in target_input["vendorTools"]}
+    if result["targetLicenseRef"] not in license_refs:
+        raise ValueError(f"{name}.targetLicenseRef is not bound to an approved vendor tool")
+
+    if target_input["targetId"] == "dm8":
+        expected_dm8 = {
+            field: expected
+            for field, expected in DM8_PHASE1_ROUTE.items()
+            if field
+            in {
+                "sourceProductId",
+                "sourceProductVersion",
+                "sourceEdition",
+                "sourceDriverName",
+                "sourceDriverVersion",
+                "targetPatchVersion",
+                "compatibilityMode",
+                "charset",
+                "collation",
+                "timeZone",
+                "rowLevelSecurityMode",
+            }
+        }
+        for field, expected in expected_dm8.items():
+            if result[field].casefold() != str(expected).casefold():
+                raise ValueError(f"{name}.{field} does not match the locked DM8 Phase-1 route")
+        dm8_target = {
+            "productId": DM8_PHASE1_ROUTE["targetProductId"],
+            "productVersion": DM8_PHASE1_ROUTE["targetProductVersion"],
+            "edition": DM8_PHASE1_ROUTE["targetEdition"],
+            "driverName": DM8_PHASE1_ROUTE["targetDriverName"],
+            "driverVersion": DM8_PHASE1_ROUTE["targetDriverVersion"],
+        }
+        observed_dm8 = {
+            "productId": exact_tuple["productId"],
+            "productVersion": exact_tuple["productVersion"],
+            "edition": exact_tuple["edition"],
+            "driverName": driver["name"],
+            "driverVersion": driver["version"],
+        }
+        if {key: str(value).casefold() for key, value in observed_dm8.items()} != {
+            key: str(value).casefold() for key, value in dm8_target.items()
+        }:
+            raise ValueError(f"{name} target tuple does not match the locked DM8 Phase-1 route")
+        if "mpp" in result["deploymentTopology"].casefold():
+            raise ValueError(f"{name} DM8 RLS qualification prohibits MPP topology")
+    return result
+
+
+def _validate_database_surface_summary(value: object) -> dict[str, Any]:
+    name = "execution receipt payload.databaseSurfaceSummary"
+    raw = _object(value, name)
+    _exact_fields(raw, set(PHASE1_DATABASE_SURFACES), name)
+    result: dict[str, Any] = {}
+    for surface in PHASE1_DATABASE_SURFACES:
+        child_name = f"{name}.{surface}"
+        child = _object(raw[surface], child_name)
+        _exact_fields(child, {"positiveCaseCount", "negativeCaseCount", "status"}, child_name)
+        if child["status"] != "PASSED":
+            raise ValueError(f"{child_name}.status must be PASSED")
+        result[surface] = {
+            "positiveCaseCount": _positive_integer(
+                child["positiveCaseCount"], f"{child_name}.positiveCaseCount"
+            ),
+            "negativeCaseCount": _positive_integer(
+                child["negativeCaseCount"], f"{child_name}.negativeCaseCount"
+            ),
+            "status": "PASSED",
+        }
+    return result
+
+
+def _validate_cdc_summary(value: object) -> dict[str, Any]:
+    name = "execution receipt payload.cdcSummary"
+    raw = _object(value, name)
+    fields = {
+        "backfillCheckpointed",
+        "durableCheckpoint",
+        "checkpointCount",
+        "lastSourcePosition",
+        "lastTargetPosition",
+        "lagSloMilliseconds",
+        "maximumObservedLagMilliseconds",
+        "missingEventCount",
+        "duplicateEffectCount",
+        *PHASE1_CDC_CHECKS,
+    }
+    _exact_fields(raw, fields, name)
+    if raw["backfillCheckpointed"] is not True or raw["durableCheckpoint"] is not True:
+        raise ValueError(f"{name} requires checkpointed backfill and a durable checkpoint")
+    result: dict[str, Any] = {
+        "backfillCheckpointed": True,
+        "durableCheckpoint": True,
+        "checkpointCount": _positive_integer(raw["checkpointCount"], f"{name}.checkpointCount"),
+        "lastSourcePosition": _exact_token(raw["lastSourcePosition"], f"{name}.lastSourcePosition"),
+        "lastTargetPosition": _exact_token(raw["lastTargetPosition"], f"{name}.lastTargetPosition"),
+        "missingEventCount": _zero_integer(raw["missingEventCount"], f"{name}.missingEventCount"),
+        "duplicateEffectCount": _zero_integer(
+            raw["duplicateEffectCount"], f"{name}.duplicateEffectCount"
+        ),
+    }
+    lag_slo = _finite_number(raw["lagSloMilliseconds"], f"{name}.lagSloMilliseconds")
+    observed_lag = _finite_number(
+        raw["maximumObservedLagMilliseconds"], f"{name}.maximumObservedLagMilliseconds"
+    )
+    if lag_slo <= 0 or observed_lag < 0 or observed_lag > lag_slo:
+        raise ValueError(f"{name} violates the declared CDC lag SLO")
+    result["lagSloMilliseconds"] = lag_slo
+    result["maximumObservedLagMilliseconds"] = observed_lag
+    for field in PHASE1_CDC_CHECKS:
+        if raw[field] != "PASSED":
+            raise ValueError(f"{name}.{field} must be PASSED")
+        result[field] = "PASSED"
+    return result
+
+
+def _validate_reconciliation_summary(value: object) -> dict[str, Any]:
+    name = "execution receipt payload.reconciliationSummary"
+    raw = _object(value, name)
+    fields = {
+        "granularity",
+        "tableCount",
+        "primaryKeyCount",
+        "rowCount",
+        "fieldCount",
+        "moneyColumnCount",
+        "moneyPrecisionExact",
+        "moneyScaleExact",
+        "p0DifferenceCount",
+        "missingRowCount",
+        "duplicateRowCount",
+        "fieldMismatchCount",
+    }
+    _exact_fields(raw, fields, name)
+    if raw["granularity"] != "TABLE_PRIMARY_KEY_ROW_FIELD":
+        raise ValueError(f"{name}.granularity must be TABLE_PRIMARY_KEY_ROW_FIELD")
+    result: dict[str, Any] = {"granularity": raw["granularity"]}
+    for field in ("tableCount", "primaryKeyCount", "rowCount", "fieldCount", "moneyColumnCount"):
+        result[field] = _positive_integer(raw[field], f"{name}.{field}")
+    for field in ("moneyPrecisionExact", "moneyScaleExact"):
+        if raw[field] is not True:
+            raise ValueError(f"{name}.{field} must be true")
+        result[field] = True
+    for field in (
+        "p0DifferenceCount",
+        "missingRowCount",
+        "duplicateRowCount",
+        "fieldMismatchCount",
+    ):
+        result[field] = _zero_integer(raw[field], f"{name}.{field}")
+    return result
+
+
+def _validate_failure_injection_summary(value: object) -> dict[str, Any]:
+    name = "execution receipt payload.failureInjectionSummary"
+    raw = _object(value, name)
+    _exact_fields(
+        raw,
+        {
+            "scenarios",
+            "targetWindowWriteCount",
+            "targetWindowWriteLossCount",
+            "rollbackPreservedTargetWindowWrites",
+            "forwardRecoveryVerified",
+        },
+        name,
+    )
+    scenarios = _object(raw["scenarios"], f"{name}.scenarios")
+    _exact_fields(scenarios, set(PHASE1_FAILURE_SCENARIOS), f"{name}.scenarios")
+    if any(scenarios[field] != "PASSED" for field in PHASE1_FAILURE_SCENARIOS):
+        raise ValueError(f"{name}.scenarios contains a non-passing required scenario")
+    if raw["rollbackPreservedTargetWindowWrites"] is not True:
+        raise ValueError(f"{name}.rollbackPreservedTargetWindowWrites must be true")
+    if raw["forwardRecoveryVerified"] is not True:
+        raise ValueError(f"{name}.forwardRecoveryVerified must be true")
+    return {
+        "scenarios": {field: "PASSED" for field in PHASE1_FAILURE_SCENARIOS},
+        "targetWindowWriteCount": _positive_integer(
+            raw["targetWindowWriteCount"], f"{name}.targetWindowWriteCount"
+        ),
+        "targetWindowWriteLossCount": _zero_integer(
+            raw["targetWindowWriteLossCount"], f"{name}.targetWindowWriteLossCount"
+        ),
+        "rollbackPreservedTargetWindowWrites": True,
+        "forwardRecoveryVerified": True,
+    }
+
+
 def _timestamp(value: object, name: str) -> datetime:
     if not isinstance(value, str) or not value.endswith("Z"):
         raise ValueError(f"{name} must be an RFC3339 UTC timestamp ending in Z")
@@ -437,6 +806,7 @@ def production_qualification_requirements() -> dict[str, Any]:
             ],
             "requiredArtifactDigests": list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS),
             "requiredEvidenceDigests": list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS),
+            "phase1ExecutionContract": phase1_execution_contract(),
             "performanceContract": dict(PERFORMANCE_CONTRACT),
             "rolloutPrerequisiteTargetId": None if target["targetId"] == "dm8" else "dm8",
             "currentState": "BLOCKED_EXTERNAL_INPUT",
@@ -646,7 +1016,7 @@ def _validate_exact_tuple(value: object, name: str, *, target_id: str) -> dict[s
     product_id = _exact_token(raw["productId"], f"{name}.productId")
     if product_id != target_id:
         raise ValueError(f"{name}.productId must match handler-bound target {target_id}")
-    return {
+    result: dict[str, Any] = {
         "productId": product_id,
         "productVersion": _exact_token(raw["productVersion"], f"{name}.productVersion"),
         "edition": _exact_token(raw["edition"], f"{name}.edition"),
@@ -674,6 +1044,30 @@ def _validate_exact_tuple(value: object, name: str, *, target_id: str) -> dict[s
             raw["runtimeArtifactDigest"], f"{name}.runtimeArtifactDigest"
         ),
     }
+    if target_id == "dm8":
+        dm8_bindings = {
+            "productVersion": DM8_PHASE1_ROUTE["targetProductVersion"],
+            "edition": DM8_PHASE1_ROUTE["targetEdition"],
+            "compatibilityMode": DM8_PHASE1_ROUTE["compatibilityMode"],
+            "charset": DM8_PHASE1_ROUTE["charset"],
+            "collation": DM8_PHASE1_ROUTE["collation"],
+            "timeZone": DM8_PHASE1_ROUTE["timeZone"],
+        }
+        for field, expected in dm8_bindings.items():
+            if str(result[field]).casefold() != str(expected).casefold():
+                raise ValueError(f"{name}.{field} does not match the locked DM8 Phase-1 tuple")
+        driver_bindings = {
+            "name": DM8_PHASE1_ROUTE["targetDriverName"],
+            "version": DM8_PHASE1_ROUTE["targetDriverVersion"],
+        }
+        for field, expected in driver_bindings.items():
+            if str(result["driver"][field]).casefold() != str(expected).casefold():
+                raise ValueError(
+                    f"{name}.driver.{field} does not match the locked DM8 Phase-1 tuple"
+                )
+        if "mpp" in str(result["deploymentTopology"]).casefold():
+            raise ValueError(f"{name}.deploymentTopology cannot be MPP when DM8 RLS is required")
+    return result
 
 
 def _validate_environment(value: object, name: str, now: datetime) -> dict[str, Any]:
@@ -1067,6 +1461,11 @@ def _execution(
         "vendorToolDigests",
         "artifactDigests",
         "evidenceDigests",
+        "routeEnvironmentSummary",
+        "databaseSurfaceSummary",
+        "cdcSummary",
+        "reconciliationSummary",
+        "failureInjectionSummary",
         "performanceSummary",
         "executedAt",
         "checks",
@@ -1102,6 +1501,20 @@ def _execution(
         raise ValueError("execution receipt artifact and evidence digests must not alias")
     payload["artifactDigests"] = artifact_digests
     payload["evidenceDigests"] = evidence_digests
+    payload["routeEnvironmentSummary"] = _validate_route_environment_summary(
+        payload["routeEnvironmentSummary"],
+        target_input=target_input,
+    )
+    payload["databaseSurfaceSummary"] = _validate_database_surface_summary(
+        payload["databaseSurfaceSummary"]
+    )
+    payload["cdcSummary"] = _validate_cdc_summary(payload["cdcSummary"])
+    payload["reconciliationSummary"] = _validate_reconciliation_summary(
+        payload["reconciliationSummary"]
+    )
+    payload["failureInjectionSummary"] = _validate_failure_injection_summary(
+        payload["failureInjectionSummary"]
+    )
     performance_summary = _validate_performance_summary(payload["performanceSummary"])
     if performance_summary["runnerAttestationDigest"] in {
         *artifact_digests.values(),
@@ -1656,6 +2069,7 @@ def prepare_vendor_execution_request(
             "qualificationInputDigest": normalized["qualificationInputDigest"],
             "authorizationEnvelopeDigest": authorization_digest,
             "inputArtifactDigests": artifacts,
+            "phase1ExecutionContract": phase1_execution_contract(),
             "performanceContract": PERFORMANCE_CONTRACT,
         }
     )
@@ -1679,6 +2093,7 @@ def prepare_vendor_execution_request(
         "inputArtifactDigests": artifacts,
         "authorizationEnvelope": authorization,
         "authorizationEnvelopeDigest": authorization_digest,
+        "phase1ExecutionContract": phase1_execution_contract(),
         "performanceContract": dict(PERFORMANCE_CONTRACT),
         "safety": {
             "productionData": False,

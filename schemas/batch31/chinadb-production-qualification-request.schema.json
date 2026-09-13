@@ -394,6 +394,11 @@
         "vendorToolDigests",
         "artifactDigests",
         "evidenceDigests",
+        "routeEnvironmentSummary",
+        "databaseSurfaceSummary",
+        "cdcSummary",
+        "reconciliationSummary",
+        "failureInjectionSummary",
         "performanceSummary",
         "executedAt",
         "checks",
@@ -421,6 +426,11 @@
         },
         "artifactDigests": { "$ref": "#/$defs/artifactDigests" },
         "evidenceDigests": { "$ref": "#/$defs/evidenceDigests" },
+        "routeEnvironmentSummary": { "$ref": "#/$defs/routeEnvironmentSummary" },
+        "databaseSurfaceSummary": { "$ref": "#/$defs/databaseSurfaceSummary" },
+        "cdcSummary": { "$ref": "#/$defs/cdcSummary" },
+        "reconciliationSummary": { "$ref": "#/$defs/reconciliationSummary" },
+        "failureInjectionSummary": { "$ref": "#/$defs/failureInjectionSummary" },
         "performanceSummary": { "$ref": "#/$defs/performanceSummary" },
         "executedAt": { "$ref": "#/$defs/timestamp" },
         "checks": { "$ref": "#/$defs/executionChecks" },
@@ -463,6 +473,144 @@
         "normalizedOneMinuteLoad": { "type": "number", "minimum": 0, "maximum": 1.0 },
         "maximumObservedSourceP95Milliseconds": { "type": "number", "minimum": 0, "maximum": 75.0 },
         "maximumObservedTargetP95Milliseconds": { "type": "number", "minimum": 0, "maximum": 75.0 }
+      }
+    },
+    "routeEnvironmentSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceEnvironmentId", "sourceEnvironmentKind", "targetEnvironmentId",
+        "targetEnvironmentKind", "sourceProductId", "sourceProductVersion",
+        "sourceEdition", "sourceDriverName", "sourceDriverVersion",
+        "sourceRuntimeArtifactDigest", "sourceDriverArtifactDigest",
+        "sourceDisposable", "targetDisposable", "environmentsIndependent",
+        "networkIsolated", "targetPatchVersion", "targetLicenseRef",
+        "targetLicenseDigest", "targetLicenseVerified", "targetRuntimeArtifactDigest",
+        "targetDriverArtifactDigest", "deploymentTopology", "compatibilityMode",
+        "charset", "collation", "timeZone", "rowLevelSecurityMode"
+      ],
+      "properties": {
+        "sourceEnvironmentId": { "$ref": "#/$defs/exactToken" },
+        "sourceEnvironmentKind": { "enum": ["DISPOSABLE_INSTANCE", "DISPOSABLE_SCHEMA", "APPROVED_LICENSED_SANDBOX"] },
+        "targetEnvironmentId": { "$ref": "#/$defs/exactToken" },
+        "targetEnvironmentKind": { "enum": ["DISPOSABLE_INSTANCE", "DISPOSABLE_SCHEMA", "APPROVED_LICENSED_SANDBOX"] },
+        "sourceProductId": { "$ref": "#/$defs/exactToken" },
+        "sourceProductVersion": { "$ref": "#/$defs/exactToken" },
+        "sourceEdition": { "$ref": "#/$defs/exactToken" },
+        "sourceDriverName": { "$ref": "#/$defs/exactToken" },
+        "sourceDriverVersion": { "$ref": "#/$defs/exactToken" },
+        "sourceRuntimeArtifactDigest": { "$ref": "#/$defs/digest" },
+        "sourceDriverArtifactDigest": { "$ref": "#/$defs/digest" },
+        "sourceDisposable": { "const": true },
+        "targetDisposable": { "const": true },
+        "environmentsIndependent": { "const": true },
+        "networkIsolated": { "const": true },
+        "targetPatchVersion": { "$ref": "#/$defs/exactToken" },
+        "targetLicenseRef": { "$ref": "#/$defs/exactToken" },
+        "targetLicenseDigest": { "$ref": "#/$defs/digest" },
+        "targetLicenseVerified": { "const": true },
+        "targetRuntimeArtifactDigest": { "$ref": "#/$defs/digest" },
+        "targetDriverArtifactDigest": { "$ref": "#/$defs/digest" },
+        "deploymentTopology": { "$ref": "#/$defs/exactToken" },
+        "compatibilityMode": { "$ref": "#/$defs/exactToken" },
+        "charset": { "$ref": "#/$defs/exactToken" },
+        "collation": { "$ref": "#/$defs/exactToken" },
+        "timeZone": { "$ref": "#/$defs/exactToken" },
+        "rowLevelSecurityMode": { "$ref": "#/$defs/exactToken" }
+      }
+    },
+    "surfaceCaseSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["positiveCaseCount", "negativeCaseCount", "status"],
+      "properties": {
+        "positiveCaseCount": { "type": "integer", "minimum": 1 },
+        "negativeCaseCount": { "type": "integer", "minimum": 1 },
+        "status": { "const": "PASSED" }
+      }
+    },
+    "databaseSurfaceSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ddl", "dml", "typeBoundary", "constraints", "indexes", "sequences", "routines", "triggers", "privileges", "rowLevelSecurity"],
+      "properties": {
+        "ddl": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "dml": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "typeBoundary": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "constraints": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "indexes": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "sequences": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "routines": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "triggers": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "privileges": { "$ref": "#/$defs/surfaceCaseSummary" },
+        "rowLevelSecurity": { "$ref": "#/$defs/surfaceCaseSummary" }
+      }
+    },
+    "cdcSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backfillCheckpointed", "durableCheckpoint", "checkpointCount", "lastSourcePosition", "lastTargetPosition", "lagSloMilliseconds", "maximumObservedLagMilliseconds", "missingEventCount", "duplicateEffectCount", "insertPropagation", "updatePropagation", "deletePropagation", "duplicateSuppression", "outOfOrderHandling", "restartResume"],
+      "properties": {
+        "backfillCheckpointed": { "const": true },
+        "durableCheckpoint": { "const": true },
+        "checkpointCount": { "type": "integer", "minimum": 1 },
+        "lastSourcePosition": { "$ref": "#/$defs/exactToken" },
+        "lastTargetPosition": { "$ref": "#/$defs/exactToken" },
+        "lagSloMilliseconds": { "type": "number", "exclusiveMinimum": 0 },
+        "maximumObservedLagMilliseconds": { "type": "number", "minimum": 0 },
+        "missingEventCount": { "const": 0 },
+        "duplicateEffectCount": { "const": 0 },
+        "insertPropagation": { "const": "PASSED" },
+        "updatePropagation": { "const": "PASSED" },
+        "deletePropagation": { "const": "PASSED" },
+        "duplicateSuppression": { "const": "PASSED" },
+        "outOfOrderHandling": { "const": "PASSED" },
+        "restartResume": { "const": "PASSED" }
+      }
+    },
+    "reconciliationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["granularity", "tableCount", "primaryKeyCount", "rowCount", "fieldCount", "moneyColumnCount", "moneyPrecisionExact", "moneyScaleExact", "p0DifferenceCount", "missingRowCount", "duplicateRowCount", "fieldMismatchCount"],
+      "properties": {
+        "granularity": { "const": "TABLE_PRIMARY_KEY_ROW_FIELD" },
+        "tableCount": { "type": "integer", "minimum": 1 },
+        "primaryKeyCount": { "type": "integer", "minimum": 1 },
+        "rowCount": { "type": "integer", "minimum": 1 },
+        "fieldCount": { "type": "integer", "minimum": 1 },
+        "moneyColumnCount": { "type": "integer", "minimum": 1 },
+        "moneyPrecisionExact": { "const": true },
+        "moneyScaleExact": { "const": true },
+        "p0DifferenceCount": { "const": 0 },
+        "missingRowCount": { "const": 0 },
+        "duplicateRowCount": { "const": 0 },
+        "fieldMismatchCount": { "const": 0 }
+      }
+    },
+    "failureInjectionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scenarios", "targetWindowWriteCount", "targetWindowWriteLossCount", "rollbackPreservedTargetWindowWrites", "forwardRecoveryVerified"],
+      "properties": {
+        "scenarios": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["processTermination", "networkInterruption", "duplicateEvent", "outOfOrderEvent", "diskPressure", "cdcRestart", "cutoverFailure", "rollback"],
+          "properties": {
+            "processTermination": { "const": "PASSED" },
+            "networkInterruption": { "const": "PASSED" },
+            "duplicateEvent": { "const": "PASSED" },
+            "outOfOrderEvent": { "const": "PASSED" },
+            "diskPressure": { "const": "PASSED" },
+            "cdcRestart": { "const": "PASSED" },
+            "cutoverFailure": { "const": "PASSED" },
+            "rollback": { "const": "PASSED" }
+          }
+        },
+        "targetWindowWriteCount": { "type": "integer", "minimum": 1 },
+        "targetWindowWriteLossCount": { "const": 0 },
+        "rollbackPreservedTargetWindowWrites": { "const": true },
+        "forwardRecoveryVerified": { "const": true }
       }
     },
     "verificationPayload": {

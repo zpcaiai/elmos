@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "status": "CANDIDATE_NOT_RUN",
+  "dataClass": "SYNTHETIC_DISPOSABLE_ONLY",
+  "surfaces": {
+    "ddl": {"positive": ["create-all-source-and-target-objects"], "negative": ["duplicate-primary-key-name-rejected"]},
+    "dml": {"positive": ["insert-update-delete-committed"], "negative": ["delete-with-reader-role-denied"]},
+    "typeBoundary": {"positive": ["amount-number-19-4-max-boundary", "timezone-roundtrip"], "negative": ["amount-overflow-rejected", "non-finite-money-rejected"]},
+    "constraints": {"positive": ["valid-status-and-nonnegative-amount"], "negative": ["negative-amount-rejected", "unknown-status-rejected", "duplicate-primary-key-rejected"]},
+    "indexes": {"positive": ["tenant-created-index-present-and-used"], "negative": ["unexpected-or-missing-index-fails-introspection"]},
+    "sequences": {"positive": ["monotonic-order-id-allocation"], "negative": ["duplicate-explicit-id-rejected"]},
+    "routines": {"positive": ["mark-order-paid-updates-one-row"], "negative": ["reader-cannot-execute-mutating-routine"]},
+    "triggers": {"positive": ["updated-at-and-audit-row-emitted"], "negative": ["failed-update-does-not-emit-audit-row"]},
+    "privileges": {"positive": ["reader-selects-own-visible-rows", "writer-mutates-authorized-row"], "negative": ["reader-write-denied", "writer-ddl-denied"]},
+    "rowLevelSecurity": {"positive": ["tenant-a-sees-tenant-a"], "negative": ["tenant-a-cannot-read-tenant-b", "tenant-a-cannot-insert-tenant-b", "sysdba-session-invalid-for-rls-test"]}
+  }
+}

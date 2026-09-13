@@ -4626,7 +4626,12 @@ class TestCdcReplicationAndDataIntegrity:
 
     @pytest.fixture
     def cdc_engine(self) -> ChinaDbCdcEngine:
-        return ChinaDbCdcEngine()
+        engine = ChinaDbCdcEngine()
+        engine.orchestrator.execute_query(
+            "dm8",
+            "CREATE TABLE accounts (acc_id VARCHAR(32) PRIMARY KEY, balance REAL);",
+        )
+        return engine
 
     def test_cdc_apply_insert_event(self, cdc_engine: ChinaDbCdcEngine) -> None:
         evt = ChangeEvent(
@@ -4640,6 +4645,9 @@ class TestCdcReplicationAndDataIntegrity:
         assert ok is True
 
     def test_cdc_apply_update_event(self, cdc_engine: ChinaDbCdcEngine) -> None:
+        cdc_engine.orchestrator.execute_query(
+            "dm8", "INSERT INTO accounts (acc_id, balance) VALUES ('A100', 1500.0);"
+        )
         evt = ChangeEvent(
             table_name="accounts",
             op_type=CdcOpType.UPDATE,
@@ -4652,6 +4660,9 @@ class TestCdcReplicationAndDataIntegrity:
         assert ok is True
 
     def test_cdc_apply_delete_event(self, cdc_engine: ChinaDbCdcEngine) -> None:
+        cdc_engine.orchestrator.execute_query(
+            "dm8", "INSERT INTO accounts (acc_id, balance) VALUES ('A100', 2500.0);"
+        )
         evt = ChangeEvent(
             table_name="accounts",
             op_type=CdcOpType.DELETE,
@@ -4678,10 +4689,10 @@ class TestCdcReplicationAndDataIntegrity:
 
     def test_cdc_table_hash_reconciliation(self, cdc_engine: ChinaDbCdcEngine) -> None:
         db = cdc_engine.orchestrator.get_database("dm8")
-        db.execute_sql("CREATE TABLE IF NOT EXISTS accounts (id INT PRIMARY KEY, val VARCHAR(10));")
-        db.execute_sql("INSERT INTO accounts VALUES (1, 'X'), (2, 'Y');")
+        db.execute_sql("CREATE TABLE reconcile_accounts (id INT PRIMARY KEY, val VARCHAR(10));")
+        db.execute_sql("INSERT INTO reconcile_accounts VALUES (1, 'X'), (2, 'Y');")
         src_rows = [{"id": 1, "val": "X"}, {"id": 2, "val": "Y"}]
-        receipt = cdc_engine.reconcile_table_data(src_rows, "dm8", "accounts", ["id"])
+        receipt = cdc_engine.reconcile_table_data(src_rows, "dm8", "reconcile_accounts", ["id"])
         assert receipt.is_consistent is True
         assert receipt.matched_count == 2
         assert receipt.mismatched_count == 0

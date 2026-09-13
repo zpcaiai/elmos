@@ -208,9 +208,7 @@ class ProtocolLabDatabase:
                 rows = [tuple(r) for r in cur.fetchall()]
                 return col_names, rows, cur.rowcount if cur.rowcount >= 0 else 0
             except sqlite3.Error as exc:
-                raise ValueError(
-                    f"PROTOCOL_LAB_UNSUPPORTED_SQL: {exc}"
-                ) from exc
+                raise ValueError(f"PROTOCOL_LAB_UNSUPPORTED_SQL: {exc}") from exc
 
     def _handle_tidb_noop_procedure_block(
         self, sql: str
@@ -230,9 +228,7 @@ class ProtocolLabDatabase:
         )
         return [], [], 0
 
-    def _handle_create_sequence(
-        self, sql: str
-    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+    def _handle_create_sequence(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         match = re.fullmatch(
             r"CREATE\s+SEQUENCE\s+(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)"
             r"(?P<options>(?:\s+(?:START\s+WITH\s+[+-]?\d+|"
@@ -262,9 +258,7 @@ class ProtocolLabDatabase:
         )
         return [], [], 0
 
-    def _handle_drop_sequence(
-        self, sql: str
-    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+    def _handle_drop_sequence(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         match = re.fullmatch(
             r"DROP\s+SEQUENCE\s+(?:IF\s+EXISTS\s+)?"
             r"(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)\s*",
@@ -293,9 +287,7 @@ class ProtocolLabDatabase:
             )
         )
 
-    def _handle_sequence_nextval(
-        self, sql: str
-    ) -> tuple[list[str], list[tuple[Any, ...]], int]:
+    def _handle_sequence_nextval(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         match = re.fullmatch(
             r"SELECT\s+(?:(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)\.NEXTVAL"
             r"(?:\s+FROM\s+DUAL)?|NEXTVAL\s*\(\s*'"
@@ -318,13 +310,25 @@ class ProtocolLabDatabase:
         clean = re.sub(r"\bVARCHAR2\((\d+)\)", r"VARCHAR(\1)", clean, flags=re.I)
         clean = re.sub(r"\bNUMBER\((\d+),\s*(\d+)\)", r"DECIMAL(\1,\2)", clean, flags=re.I)
         clean = re.sub(r"\bNUMBER\b", r"NUMERIC", clean, flags=re.I)
-        clean = re.sub(r"\bSERIAL\s+PRIMARY\s+KEY\b", r"INTEGER PRIMARY KEY AUTOINCREMENT", clean, flags=re.I)
-        clean = re.sub(r"\bBIGSERIAL\s+PRIMARY\s+KEY\b", r"INTEGER PRIMARY KEY AUTOINCREMENT", clean, flags=re.I)
+        clean = re.sub(
+            r"\bSERIAL\s+PRIMARY\s+KEY\b", r"INTEGER PRIMARY KEY AUTOINCREMENT", clean, flags=re.I
+        )
+        clean = re.sub(
+            r"\bBIGSERIAL\s+PRIMARY\s+KEY\b",
+            r"INTEGER PRIMARY KEY AUTOINCREMENT",
+            clean,
+            flags=re.I,
+        )
         clean = re.sub(r"\bSERIAL\b", r"INTEGER", clean, flags=re.I)
         clean = re.sub(r"\bBIGSERIAL\b", r"INTEGER", clean, flags=re.I)
         clean = re.sub(r"\bBYTEA\b", r"BLOB", clean, flags=re.I)
         # Strip schema prefixes like public.accounts
-        clean = re.sub(r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:[A-Za-z0-9_]+\.)([A-Za-z0-9_]+)", r"CREATE TABLE IF NOT EXISTS \1", clean, flags=re.I)
+        clean = re.sub(
+            r"\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:[A-Za-z0-9_]+\.)([A-Za-z0-9_]+)",
+            r"CREATE TABLE IF NOT EXISTS \1",
+            clean,
+            flags=re.I,
+        )
         # Strip storage and engine clauses
         clean = re.sub(r"\s+ENGINE\s*=\s*\w+", "", clean, flags=re.I)
         clean = re.sub(r"\s+DEFAULT\s+CHARSET\s*=\s*[\w\d]+", "", clean, flags=re.I)
@@ -383,12 +387,34 @@ class ProtocolLabDatabase:
 
     def _auto_create_table_from_insert(self, tname: str, sql: str) -> None:
         """Auto-create table schema when insert occurs before explicit DDL."""
-        m = re.search(r"\((.*?)\)\s*VALUES", sql, re.I | re.S)
-        if m:
-            cols = [c.strip().strip('"`[]').lower() for c in m.group(1).split(",")]
-            col_defs = ", ".join(f"'{c}' TEXT" for c in cols)
+        columns_match = re.search(r"\((.*?)\)\s*VALUES", sql, re.I | re.S)
+        values_match = re.search(r"\bVALUES\s*\((.*)\)\s*$", sql, re.I | re.S)
+        if columns_match:
+            cols = [
+                column.strip().strip('"`[]').lower() for column in columns_match.group(1).split(",")
+            ]
+            sqlite_types = ["TEXT"] * len(cols)
+            if values_match:
+                with contextlib.suppress(sqlite3.Error):
+                    probe = self._sqlite.execute(f"SELECT {values_match.group(1)}").fetchone()
+                    if probe is not None and len(probe) == len(cols):
+                        sqlite_types = [self._sqlite_type_for_value(value) for value in probe]
+            col_defs = ", ".join(
+                f"'{column}' {sqlite_type}"
+                for column, sqlite_type in zip(cols, sqlite_types, strict=True)
+            )
             self._sqlite.execute(f"CREATE TABLE IF NOT EXISTS '{tname}' ({col_defs});")
             self._sync_table_def(tname)
+
+    @staticmethod
+    def _sqlite_type_for_value(value: Any) -> str:
+        if isinstance(value, bool | int):
+            return "INTEGER"
+        if isinstance(value, float):
+            return "REAL"
+        if isinstance(value, bytes):
+            return "BLOB"
+        return "TEXT"
 
     def _handle_create_table(self, sql: str) -> tuple[list[str], list[tuple[Any, ...]], int]:
         m = re.search(
@@ -476,10 +502,14 @@ class ProtocolLabDatabase:
         if "COUNT(" in sql.upper():
             m_cnt = re.search(r"SELECT\s+COUNT\([^)]*\)\s+FROM\s+([A-Za-z0-9_]+)", sql, re.I)
             if m_cnt:
-                tname = m_cnt.group(1).lower()
-                tbl = self.tables.get(tname)
-                cnt = len(tbl.rows) if tbl else 0
-                return ["count"], [(cnt,)], 1
+                try:
+                    cur = self._sqlite.execute(sql)
+                    rows = [tuple(row) for row in cur.fetchall()]
+                    return [description[0] for description in cur.description], rows, len(rows)
+                except sqlite3.OperationalError as error:
+                    if "no such table" in str(error).lower():
+                        return ["count"], [(0,)], 1
+                    raise
 
         try:
             cur = self._sqlite.execute(sql)

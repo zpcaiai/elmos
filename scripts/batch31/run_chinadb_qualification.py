@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate externally produced ChinaDB Protocol 1.2.0 evidence.
+"""Validate externally produced ChinaDB Protocol 1.3.0 evidence.
 
 This command is deliberately an intake-only gate. It cannot provision a
 database, mint trust identities, sign receipts, or manufacture performance
