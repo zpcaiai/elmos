@@ -10,27 +10,23 @@
     {
       "claimId": "claim-b42-core-functional-conformance",
       "statement": "Batch 42 core functionality satisfies all industrial specification requirements.",
-      "limitations": "Evaluated against verified production workload fixture suites only.",
-      "status": "PASS",
+      "limitations": [
+        "Evaluated against verified production workload fixture suites only."
+      ],
       "evidenceRefs": [
         "batch42-execution",
         "batch42-verification"
-      ],
-      "provenanceRefs": [
-        "batch42-provenance"
       ]
     },
     {
       "claimId": "claim-b42-operational-governance-resilience",
       "statement": "Batch 42 meets all zero-tolerance, audit, and operational resilience standards.",
-      "limitations": "Scoped to approved deployment topologies and authorized network perimeters.",
-      "status": "PASS",
+      "limitations": [
+        "Scoped to approved deployment topologies and authorized network perimeters."
+      ],
       "evidenceRefs": [
         "batch42-execution",
         "batch42-verification"
-      ],
-      "provenanceRefs": [
-        "batch42-provenance"
       ]
     }
   ]

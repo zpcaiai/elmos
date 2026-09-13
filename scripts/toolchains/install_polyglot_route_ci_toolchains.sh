@@ -66,6 +66,9 @@ case "${CI_PROFILE}" in
       "20260831.0337.3:26.6.2:25G83")
         HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
         ;;
+      "20260907.0351.1:26.6.2:25G83")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260907.0351.1"
+        ;;
       *)
         printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
           "${HOST_PROFILE}" >&2
@@ -163,8 +166,7 @@ PY
     ;;
   frontend-formal)
     if [[ "${ImageOS:-}" != "macos15" \
-      || ( "${ImageVersion:-}" != "20260829.0321.1" \
-        && "${ImageVersion:-}" != "20260907.0337.1" ) \
+      || "${ImageVersion:-}" != "20260907.0337.1" \
       || "$(sw_vers -productVersion)" != 15.* ]]; then
       printf 'The frontend formal Node closure requires an exact allowlisted GitHub macos15 image.\n' >&2
       exit 2

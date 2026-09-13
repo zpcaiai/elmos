@@ -16,6 +16,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/toolchains/diagnose_apple_route_ci.py"
 PREPARE = ROOT / "scripts/toolchains/prepare_apple_route_ci_host.sh"
+INSTALLER = ROOT / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
 
 
 def _load_diagnostic():
@@ -620,6 +621,10 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
         ):
             self.assertIn(exact_host_value, prepare)
             self.assertIn(exact_host_value, source)
+        self.assertIn(
+            '"20260907.0351.1:26.6.2:25G83")',
+            INSTALLER.read_text(encoding="utf-8"),
+        )
         self.assertIn("/usr/sbin/chown -R -P -x 0:0", prepare)
         self.assertIn("os.fchown(descriptor, 0, 0)", prepare)
         self.assertIn("os.fchmod(descriptor, 0o755)", prepare)
