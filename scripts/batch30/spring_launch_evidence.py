@@ -4815,8 +4815,13 @@ def _verify_evidence_reference(
     mode = verification.get("mode")
     if mode == "LOCAL_BYTES":
         _exact_fields(verification, {"mode", "local_uri"}, f"{label}.verification")
+        local_uri = verification.get("local_uri")
+        if urlparse(uri).scheme == "file" and local_uri != uri:
+            raise SpringLaunchEvidenceError(
+                f"{label}.uri file identity must equal its approved local_uri"
+            )
         local = {
-            "uri": verification.get("local_uri"),
+            "uri": local_uri,
             "digest": digest,
             "size_bytes": size,
             "media_type": media_type,

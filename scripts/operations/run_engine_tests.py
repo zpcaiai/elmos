@@ -10,6 +10,7 @@ entrypoint while preserving each engine's real command.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -73,6 +74,96 @@ ENVIRONMENT_MARKERS: Final = (
 
 class RegistryError(ValueError):
     """The engine test registry is incomplete or unsafe."""
+
+
+class RepositoryStateError(RuntimeError):
+    """The source-tree mutation guard could not inspect the repository."""
+
+
+@dataclass(frozen=True)
+class RepositoryState:
+    """Content digests for Git-tracked paths dirty at capture time."""
+
+    dirty_paths: tuple[tuple[str, str], ...]
+
+
+def _git_bytes(*arguments: str) -> bytes:
+    completed = subprocess.run(
+        ["git", *arguments],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise RepositoryStateError(
+            f"git {' '.join(arguments)} failed with {completed.returncode}: {detail}"
+        )
+    return completed.stdout
+
+
+def _path_digest(path: Path) -> str:
+    try:
+        if path.is_symlink():
+            payload = os.readlink(path).encode("utf-8", errors="surrogateescape")
+            return "symlink:" + hashlib.sha256(payload).hexdigest()
+        if not path.exists():
+            return "missing"
+        if path.is_dir():
+            return "directory"
+        if not path.is_file():
+            return "other"
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for block in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(block)
+        return "file:" + digest.hexdigest()
+    except OSError as exc:
+        raise RepositoryStateError(
+            f"cannot hash repository path {path}: {exc}"
+        ) from exc
+
+
+def capture_repository_state() -> RepositoryState:
+    """Capture enough state to detect mutations of Git-tracked source files.
+
+    The dirty path set detects clean tracked files becoming changed or deleted.
+    Content hashes cover files that were already dirty before a test, whose Git
+    status could otherwise stay unchanged after another write or deletion.
+    """
+
+    changed = _git_bytes("diff", "--name-only", "-z", "HEAD", "--")
+    paths = {
+        item.decode("utf-8", errors="surrogateescape")
+        for item in changed.split(b"\0")
+        if item
+    }
+    dirty_paths = tuple(
+        (relative, _path_digest(ROOT / relative)) for relative in sorted(paths)
+    )
+    return RepositoryState(dirty_paths=dirty_paths)
+
+
+def repository_state_change_summary(
+    before: RepositoryState, after: RepositoryState
+) -> str | None:
+    if before == after:
+        return None
+    before_paths = dict(before.dirty_paths)
+    after_paths = dict(after.dirty_paths)
+    changed_paths = sorted(
+        path
+        for path in set(before_paths) | set(after_paths)
+        if before_paths.get(path) != after_paths.get(path)
+    )
+    details: list[str] = []
+    if changed_paths:
+        preview = ", ".join(changed_paths[:12])
+        if len(changed_paths) > 12:
+            preview += f", ... ({len(changed_paths)} paths)"
+        details.append(f"dirty path content changed: {preview}")
+    return "; ".join(details) or "tracked repository state changed"
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -352,6 +443,21 @@ def build_command(
     return [_expand(item, engine, run_root) for item in step["argv"]]
 
 
+def _terminate_process_group(process: subprocess.Popen[str]) -> int:
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return process.wait()
+    try:
+        return process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        return process.wait()
+
+
 def _stream_process(
     command: list[str],
     *,
@@ -399,15 +505,11 @@ def _stream_process(
         exit_code = process.wait(timeout=timeout_seconds)
     except subprocess.TimeoutExpired:
         timed_out = True
-        try:
-            os.killpg(process.pid, signal.SIGTERM)
-            exit_code = process.wait(timeout=5)
-        except (ProcessLookupError, subprocess.TimeoutExpired):
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            exit_code = process.wait()
+        exit_code = _terminate_process_group(process)
+    except BaseException:
+        _terminate_process_group(process)
+        reader.join(timeout=5)
+        raise
     reader.join(timeout=5)
     if reader.is_alive():
         warning = "\nengine test output reader did not terminate cleanly\n"
@@ -463,6 +565,14 @@ def run_step(
     if step["kind"] == "maven" and java_home:
         environment["JAVA_HOME"] = java_home
     (run_root / "tmp").mkdir(parents=True, exist_ok=True)
+    guard_verdict: str | None = None
+    guard_detail: str | None = None
+    try:
+        before_state = capture_repository_state()
+    except RepositoryStateError as exc:
+        before_state = None
+        guard_verdict = "SOURCE_GUARD_ERROR"
+        guard_detail = str(exc)
     started = time.monotonic()
     with log_path.open("w", encoding="utf-8", errors="replace") as log:
         log.write(f"cwd={ROOT}\n")
@@ -470,14 +580,33 @@ def run_step(
         log.flush()
         print(f"\n[{engine}] {step['name']}")
         print("  " + " ".join(command))
-        exit_code, output, timed_out = _stream_process(
-            command,
-            environment=environment,
-            timeout_seconds=step["timeout_seconds"],
-            log=log,
-        )
+        if before_state is None:
+            exit_code, output, timed_out = None, "", False
+        else:
+            exit_code, output, timed_out = _stream_process(
+                command,
+                environment=environment,
+                timeout_seconds=step["timeout_seconds"],
+                log=log,
+            )
+            try:
+                after_state = capture_repository_state()
+                guard_detail = repository_state_change_summary(
+                    before_state, after_state
+                )
+                if guard_detail is not None:
+                    guard_verdict = "SOURCE_MUTATION"
+            except RepositoryStateError as exc:
+                guard_verdict = "SOURCE_GUARD_ERROR"
+                guard_detail = str(exc)
+        if guard_verdict is not None:
+            guard_message = f"{guard_verdict}: {guard_detail}\n"
+            sys.stdout.write(guard_message)
+            log.write(guard_message)
     elapsed = time.monotonic() - started
-    if step["kind"] == "pytest":
+    if guard_verdict is not None:
+        verdict, summary = guard_verdict, None
+    elif step["kind"] == "pytest":
         verdict, summary = classify_pytest(exit_code, output, timed_out=timed_out)
     else:
         verdict = classify_command(exit_code, output, timed_out=timed_out)
