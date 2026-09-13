@@ -319,7 +319,7 @@ jobs:
         run: |
           make batch32-check
           find client-packs -mindepth 2 -maxdepth 2 -type f -name pack.json -print | sort | while IFS= read -r manifest; do
-            pack="$(dirname "$manifest")"
+            pack="${manifest%/pack.json}"
             python3.11 scripts/batch32/run_client_gate.py "$pack"
           done
           python3.11 scripts/batch32/validate_portable_client_packs.py

@@ -1,6 +1,6 @@
 # Engine test entrypoint
 
-ELMOS has 42 top-level engine directories and 43 test steps: the
+ELMOS has 52 top-level engine directories and 54 test steps: the
 `database-data-engine` owns both a Java worker and the nested Python SQL
 transpiler. The authoritative mapping is
 `scripts/operations/engine-test-registry.json`.
@@ -33,11 +33,21 @@ Each run writes an owner-only `result.json`. Pytest results distinguish:
 - `PASSED` and `PASSED_WITH_SKIPS`;
 - `FAILED`;
 - `COLLECTION_ERROR`, `PYTEST_INTERNAL_ERROR` and `NO_TESTS_COLLECTED`;
-- `ENVIRONMENT`, `TIMEOUT` and `NO_SUMMARY`.
+- `ENVIRONMENT`, `TIMEOUT` and `NO_SUMMARY`;
+- `SOURCE_MUTATION` and `SOURCE_GUARD_ERROR`.
 
 A zero exit code without a real pytest summary is not accepted. Collection
 errors are not inferred from `FAILED` lines, and output is parsed as text even
 when a tamper test writes NUL bytes.
+
+Every step snapshots the Git-tracked working-tree state before and after
+execution. A test that changes or deletes tracked source fails as
+`SOURCE_MUTATION`, including when it rewrites a path that was already dirty.
+If the snapshot itself cannot be obtained, execution fails closed as
+`SOURCE_GUARD_ERROR`. Interrupting a step terminates its complete child process
+group so a detached test cannot continue mutating the checkout in the
+background. Existing untracked files are outside this Git-backed guard and
+should not be used as authoritative source input.
 
 ## Why the registry is explicit
 

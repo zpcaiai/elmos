@@ -224,7 +224,13 @@ def _lexical_file_path(reference: dict[str, Any], roots: tuple[Path, ...], label
     if not isinstance(uri, str) or not uri:
         raise ExternalIntakeError(f"{label}.uri is required")
     parsed = urlparse(uri)
-    if parsed.scheme != "file" or parsed.netloc not in {"", "localhost"}:
+    if (
+        parsed.scheme != "file"
+        or parsed.netloc not in {"", "localhost"}
+        or not parsed.path.startswith("/")
+        or parsed.query
+        or parsed.fragment
+    ):
         raise ExternalIntakeError(f"{label}.uri must be a local file URI")
     raw = Path(unquote(parsed.path))
     lexical = Path(os.path.abspath(raw))
@@ -624,6 +630,21 @@ def evaluate_external_intake(
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Validate an intake without mutating certification state."""
+    pack = pack_dir.resolve(strict=True)
+    roots = _approved_roots(evidence_roots)
+    external_roots = tuple(
+        root
+        for root in roots
+        if not (
+            root == pack
+            or root in pack.parents
+            or pack in root.parents
+        )
+    )
+    if not external_roots:
+        raise ExternalIntakeError(
+            "external evidence requires an explicit evidence root disjoint from the framework pack"
+        )
     item = _require_object(intake, "intake")
     intake_fields = {
         "schema_version", "namespace", "intake_id", "producer_organization_id",
@@ -662,7 +683,7 @@ def evaluate_external_intake(
         pack_dir,
         item.get("artifact"),
         item.get("execution_profile"),
-        evidence_roots=evidence_roots,
+        evidence_roots=roots,
     )
     binding = _require_object(item.get("binding"), "intake.binding")
     if binding != expected_binding:
@@ -678,11 +699,14 @@ def evaluate_external_intake(
         primary_artifacts["artifact"]["digest"],
         primary_artifacts["execution_profile"]["digest"],
     }
-    roots = _approved_roots(evidence_roots)
     for evidence_type in REQUIRED_EVIDENCE:
         evidence_item = _require_object(evidence[evidence_type], f"evidence.{evidence_type}")
         _require_exact_fields(evidence_item, {"content", "attestation"}, f"evidence.{evidence_type}")
-        content = _verify_reference(evidence_item["content"], roots, f"evidence.{evidence_type}.content")
+        content = _verify_reference(
+            evidence_item["content"],
+            external_roots,
+            f"evidence.{evidence_type}.content",
+        )
         if content["digest"] in content_digests:
             raise ExternalIntakeError("each required evidence role must bind distinct content bytes")
         content_digests.add(content["digest"])
