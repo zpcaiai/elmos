@@ -6,7 +6,7 @@
   "packType": "agent-factory",
   "version": "0.1.0",
   "owner": "Zackary Vance, Director of Agentic Systems",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:db6f45c02c18a2a0063b653ad8c91219b283d264e9390ea5b4ad140f08d265ca",
   "environmentDigest": "sha256:465eda4047b18104c82d93c1201a9a94415fd5095f3221318d93c32e4ee84d40",
   "requiredBatches": [

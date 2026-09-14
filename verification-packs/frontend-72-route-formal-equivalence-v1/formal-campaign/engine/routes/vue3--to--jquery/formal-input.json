@@ -11,8 +11,8 @@
     "target_profile": "jquery",
     "target_framework_version": "4.0.0"
   },
-  "source_project_digest": "sha256:830facbbdbefcb003490f232251a6f5ebd9c5090d192ed0bf3b11396952711fb",
-  "target_project_digest": "sha256:a5432c7df1ffa8f7d1ede783c8848215ad5d423c7dae8f5a824d0bd19a274709",
+  "source_project_digest": "sha256:229149b086150e45c175c18012f8097ab79b94c9fee1f8d78c17121ef0b5718a",
+  "target_project_digest": "sha256:a8d47f3b6bac54041e4972605cd7ce226cd8b2a9220670f8a39386baae723071",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-navigation-v1",

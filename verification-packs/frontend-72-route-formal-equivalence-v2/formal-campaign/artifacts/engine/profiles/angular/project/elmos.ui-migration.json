@@ -6,7 +6,7 @@
     "source": "flutter",
     "target": "angular",
     "sourceProfileVersion": "3.44.1",
-    "targetProfileVersion": "22.0.8",
+    "targetProfileVersion": "22.1.4",
     "supportState": "ADAPTER_REQUIRED",
     "semanticConversionEvidence": "NOT_RUN",
     "runtimeEvidence": "NOT_RUN",
@@ -15,7 +15,7 @@
   "targetProfile": {
     "id": "angular",
     "label": "Angular",
-    "frameworkVersion": "22.0.8",
+    "frameworkVersion": "22.1.4",
     "profileVersion": "1.0.0",
     "status": "ACTIVE",
     "platforms": [
@@ -27,10 +27,10 @@
     "runtimeVersion": "26.0.0",
     "nodeVersion": "26.0.0",
     "buildTool": "Angular CLI",
-    "buildToolVersion": "22.0.8",
+    "buildToolVersion": "22.1.4",
     "packageManager": "npm",
     "packageManagerVersion": "11.12.1",
-    "router": "Angular Router 22.0.8",
+    "router": "Angular Router 22.1.4",
     "state": "Angular signals",
     "rendering": "CSR",
     "testTool": "Angular build and browser E2E profile",
@@ -43,7 +43,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:072816b245f02c14a18309d44d0864e6df9d6fa81632f5f59adbebaa8a8cdb06",
+  "contentDigest": "sha256:f055463f5a3cda511d0190cc745f9572d4286b2b2a450643f467e5e01752df12",
   "ownership": {
     "generated": [
       ".editorconfig",

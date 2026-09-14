@@ -1,6 +1,6 @@
 # ELMOS 有界前端交互验证
 
-This project was generated from typed UI Interaction IR for the directional route `angular@22.0.8 -> vue2`.
+This project was generated from typed UI Interaction IR for the directional route `angular@22.1.4 -> vue2`.
 
 ## Generated scope
 

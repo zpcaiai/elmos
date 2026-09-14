@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "projectId": "b54c7c9e1c72c40a1c4fd35f",
+  "projectId": "a34fdfb68f3b62bca4820acd",
   "obligations": [
     "Resolve and review an immutable dependency lock with an approved network and supply-chain policy.",
     "Build and start the generated target with the exact target profile.",

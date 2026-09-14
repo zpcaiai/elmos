@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0-sequoia/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "flutter--to--vue2",
-  "formal_input_digest": "sha256:75c370196a0cf5a621cd374ba0a91a2fe71098b81b73be23b906f40cc2553aca",
-  "solver_input_digest": "sha256:c5c6429d10542fd8b0f3add3ff34b4d27c3e3a9e0ae4b21f425539c261c8c966",
-  "smt2_digest": "sha256:c5c6429d10542fd8b0f3add3ff34b4d27c3e3a9e0ae4b21f425539c261c8c966"
+  "formal_input_digest": "sha256:ca504dab3712d14d5a46d49c38db79c4074208367ee962bc653fdafb2101f120",
+  "solver_input_digest": "sha256:e4e3543ef05d05968e3a36f99ebef84153204dbbc2b2bae2b6e70b99b528c3c7",
+  "smt2_digest": "sha256:e4e3543ef05d05968e3a36f99ebef84153204dbbc2b2bae2b6e70b99b528c3c7"
 }

@@ -5,7 +5,7 @@
   "capabilities": [
     {
       "capabilityId": "b40-ai-model-supply-chain",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -15,7 +15,7 @@
     },
     {
       "capabilityId": "b40-artifact-container-signing",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -25,7 +25,7 @@
     },
     {
       "capabilityId": "b40-compliance-control-crosswalk",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -35,7 +35,7 @@
     },
     {
       "capabilityId": "b40-container-kubernetes-iac-scanning",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -45,7 +45,7 @@
     },
     {
       "capabilityId": "b40-customer-audit-evidence",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -55,7 +55,7 @@
     },
     {
       "capabilityId": "b40-dast-iast-integration",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -65,7 +65,7 @@
     },
     {
       "capabilityId": "b40-dependency-sca-governance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -75,7 +75,7 @@
     },
     {
       "capabilityId": "b40-independent-security-assessment",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -85,7 +85,7 @@
     },
     {
       "capabilityId": "b40-isolated-trusted-builder",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -95,7 +95,7 @@
     },
     {
       "capabilityId": "b40-license-ip-provenance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -105,7 +105,7 @@
     },
     {
       "capabilityId": "b40-psirt-security-incident",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -115,7 +115,7 @@
     },
     {
       "capabilityId": "b40-runner-update-supply-chain",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -125,7 +125,7 @@
     },
     {
       "capabilityId": "b40-sast-integration",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -135,7 +135,7 @@
     },
     {
       "capabilityId": "b40-sbom-component-identity",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -145,7 +145,7 @@
     },
     {
       "capabilityId": "b40-secret-credential-scanning",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -155,7 +155,7 @@
     },
     {
       "capabilityId": "b40-secure-code-review-approval",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -165,7 +165,7 @@
     },
     {
       "capabilityId": "b40-secure-sdlc-ssdf",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -175,7 +175,7 @@
     },
     {
       "capabilityId": "b40-security-architecture-review",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -185,7 +185,7 @@
     },
     {
       "capabilityId": "b40-security-supply-chain-gate",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -195,7 +195,7 @@
     },
     {
       "capabilityId": "b40-slsa-provenance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -205,7 +205,7 @@
     },
     {
       "capabilityId": "b40-supply-chain-compliance-factory",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -215,7 +215,7 @@
     },
     {
       "capabilityId": "b40-threat-modeling",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -225,7 +225,7 @@
     },
     {
       "capabilityId": "b40-vex-applicability",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",
@@ -235,7 +235,7 @@
     },
     {
       "capabilityId": "b40-vulnerability-patch-sla",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch40-execution",

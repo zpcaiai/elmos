@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0",
-  "projectId": "4edf148b1ecff291e4242d00",
+  "projectId": "4e1f32b762e16d1e09cca60e",
   "direction": {
     "routeId": "angular--to--vue2",
     "source": "angular",
     "target": "vue2",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "2.7.16",
     "supportState": "LEGACY_TARGET_CONDITIONAL",
     "semanticConversionEvidence": "NOT_RUN",
@@ -43,7 +43,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:701e7d25917dc80e3030895d9f95aecf4faaddd8daa1207dc3e13e4ca3037415",
+  "contentDigest": "sha256:5035f910908f3ba6b80f1895f71025e8cfe647084121d971e53713c519c71c0f",
   "ownership": {
     "generated": [
       ".editorconfig",

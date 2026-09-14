@@ -43,6 +43,7 @@ EXPECTED_PACK_MODES = {
 EXPECTED_AUXILIARY_OUTPUTS = {
     "web-console-full-syntax-wechat": "web-console-next16-react19-wechat-v1",
 }
+RELEASE_CONTROL_INCIDENT = "ELMOS-CERT-KEY-2026-09-13-01"
 
 
 class PortableGateError(RuntimeError):
@@ -192,35 +193,92 @@ def validate_ordinary(pack: Path, manifest: dict[str, Any]) -> PackOutcome:
     )
 
 
-def validate_auxiliary_output(path: Path, owner_pack: str) -> None:
-    if path.is_symlink():
-        raise PortableGateError(f"auxiliary output may not be a symlink: {path}")
-    entries = {item.name for item in path.iterdir()}
-    if entries != {"target-project", "transformations"}:
+def certified_paths(value: Any, path: str = "$") -> list[str]:
+    findings: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_path = f"{path}.{key}"
+            if isinstance(child, str) and child == "CERTIFIED":
+                findings.append(child_path)
+            findings.extend(certified_paths(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            findings.extend(certified_paths(child, f"{path}[{index}]"))
+    return findings
+
+
+def validate_auxiliary_output(output: Path, owner_pack: str) -> None:
+    """Validate a generated target without pretending it is a client pack."""
+    if output.is_symlink():
+        raise PortableGateError(f"auxiliary output may not be a symlink: {output.name}")
+    root_entries = {item.name for item in output.iterdir()}
+    if root_entries != {"target-project", "transformations"}:
         raise PortableGateError(
-            f"{path.name} auxiliary output inventory mismatch: {sorted(entries)}"
+            f"{output.name} auxiliary output inventory mismatch: {sorted(root_entries)}"
         )
-    files = [item for item in path.rglob("*") if item.is_file()]
+    files = [item for item in output.rglob("*") if item.is_file()]
     if not files or any(item.is_symlink() for item in files):
-        raise PortableGateError(f"{path.name} auxiliary output is empty or unsafe")
-    closure = load_object(path / "transformations/component-migration-closure.json")
+        raise PortableGateError(f"{output.name} auxiliary output is empty or unsafe")
+    handoff = load_object(output / "target-project/handoff.json")
+    closure = load_object(output / "transformations/component-migration-closure.json")
+    if handoff.get("pack_key") != output.name:
+        raise PortableGateError(f"{output.name} handoff identity mismatch")
     if closure.get("kind") != "elmos.frontend-component-migration-closure":
-        raise PortableGateError(f"{path.name} has an invalid closure kind")
+        raise PortableGateError(f"{output.name} has an invalid closure kind")
     if closure.get("pack_key") != owner_pack:
-        raise PortableGateError(f"{path.name} is not bound to {owner_pack}")
+        raise PortableGateError(f"{output.name} source pack identity mismatch")
     if closure.get("certification") != "NOT_CERTIFIED":
-        raise PortableGateError(f"{path.name} may not grant certification")
-    for field in ("runtime_evidence", "production_evidence"):
-        if closure.get(field) != "NOT_RUN":
-            raise PortableGateError(f"{path.name} {field} must remain NOT_RUN")
+        raise PortableGateError(f"{output.name} must remain NOT_CERTIFIED")
+    control = closure.get("release_control_downgrade")
+    if not isinstance(control, dict) or control.get("incident_id") != RELEASE_CONTROL_INCIDENT:
+        raise PortableGateError(f"{output.name} lacks release-control downgrade binding")
+    findings = certified_paths(closure)
+    if findings:
+        raise PortableGateError(
+            f"{output.name} retains unsupported certification claims: {findings[:5]}"
+        )
+    entries = closure.get("entries")
+    if not isinstance(entries, list) or len(entries) != 71:
+        raise PortableGateError(f"{output.name} component inventory is not exact")
+    declared_files: set[str] = set()
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise PortableGateError(f"{output.name} entry {index} is invalid")
+        if entry.get("certification") != "NOT_CERTIFIED":
+            raise PortableGateError(f"{output.name} entry {index} is not fail-closed")
+        if entry.get("runtime_evidence") != "LOCAL_EXECUTED_SELF_ATTESTED":
+            raise PortableGateError(f"{output.name} entry {index} overstates runtime evidence")
+        if entry.get("independent_evidence") != "NOT_RUN":
+            raise PortableGateError(f"{output.name} entry {index} overstates independent evidence")
+        target_files = entry.get("target_files")
+        if not isinstance(target_files, list) or len(target_files) != 4:
+            raise PortableGateError(f"{output.name} entry {index} target inventory is invalid")
+        for relative in target_files:
+            if not isinstance(relative, str) or not relative.startswith("target-project/components/"):
+                raise PortableGateError(f"{output.name} entry {index} target path is invalid")
+            target = output / relative
+            if not target.is_file() or target.is_symlink():
+                raise PortableGateError(f"{output.name} target is missing or unsafe: {relative}")
+            declared_files.add(relative)
+    actual_files = {
+        path.relative_to(output).as_posix()
+        for path in (output / "target-project/components").rglob("*")
+        if path.is_file()
+    }
+    if declared_files != actual_files:
+        raise PortableGateError(
+            f"{output.name} target inventory drifted: "
+            f"missing={sorted(declared_files - actual_files)[:5]} "
+            f"unexpected={sorted(actual_files - declared_files)[:5]}"
+        )
 
 
 def validate_all(pack_root: Path) -> list[PackOutcome]:
     resolved_root = pack_root.resolve(strict=True)
     if not resolved_root.is_dir() or resolved_root.is_symlink():
         raise PortableGateError("client pack root must be a real directory")
-    packs = sorted(path for path in resolved_root.iterdir() if path.is_dir())
-    actual_names = {pack.name for pack in packs}
+    directories = sorted(path for path in resolved_root.iterdir() if path.is_dir())
+    actual_names = {path.name for path in directories}
     expected_names = set(EXPECTED_PACK_MODES)
     allowed_names = expected_names | set(EXPECTED_AUXILIARY_OUTPUTS)
     if not expected_names.issubset(actual_names) or not actual_names.issubset(
@@ -235,7 +293,7 @@ def validate_all(pack_root: Path) -> list[PackOutcome]:
         output = resolved_root / name
         if output.exists():
             validate_auxiliary_output(output, owner_pack)
-    packs = [pack for pack in packs if pack.name in EXPECTED_PACK_MODES]
+    packs = [path for path in directories if path.name in EXPECTED_PACK_MODES]
     prepared: list[tuple[Path, dict[str, Any], bool, bool]] = []
     seen_pack_keys: set[str] = set()
     for pack in packs:
