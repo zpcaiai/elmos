@@ -6,7 +6,7 @@
   "packType": "deployment-lifecycle",
   "version": "0.1.0",
   "owner": "Elena Rostova, Principal Deployment Architect",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:3c6fa7df3c5c1dee57acef70a49daad4cf31f4d0861f2d52b54a087905cdee37",
   "environmentDigest": "sha256:fa417a7c599e515e3f2981a0d32065a08747de7cb23ce2377911b4ac698e408f",
   "requiredBatches": [

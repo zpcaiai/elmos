@@ -3,12 +3,12 @@
   "route_id": "angular--to--jquery",
   "source_lifting": {
     "profile_id": "angular",
-    "project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+    "project_digest": "sha256:5966d1163d18906a56aac4840009ed7286acb3c51c0de8c149c03b6c95d2750a",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {
     "profile_id": "jquery",
-    "project_digest": "sha256:a5432c7df1ffa8f7d1ede783c8848215ad5d423c7dae8f5a824d0bd19a274709",
+    "project_digest": "sha256:a8d47f3b6bac54041e4972605cd7ce226cd8b2a9220670f8a39386baae723071",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",

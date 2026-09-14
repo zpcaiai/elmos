@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-13T00:00:00+08:00",
+  "source_run": {
+    "repository": "zpcaiai/elmos",
+    "workflow": "CI",
+    "run_id": 34734671980,
+    "candidate_sha": "8651202bce0283b67bbd8889c8174403c48c3302",
+    "url": "https://github.com/zpcaiai/elmos/actions/runs/34734671980",
+    "job_summary": {"success": 13, "failure": 11, "skipped": 1}
+  },
+  "merge_policy": "BLOCK_MAIN_UNTIL_ALL_REQUIRED_CHECKS_PASS_ON_ONE_EXACT_CANDIDATE_SHA",
+  "failures": [
+    {
+      "id": "CI-01", "job_id": 103663807500,
+      "job": "Isolated browser Runner journeys", "class": "validator-drift",
+      "root_cause": "Batch 46 exact frontmatter validation rejects 16 skills and leaves no uploadable artifact",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-02", "job_id": 103663807511,
+      "job": "Spring Golden Route Engine", "class": "evidence-governance",
+      "root_cause": "Two tests reject an evidence artifact URI outside approved roots while the dossier emits an untrusted CERTIFIED claim",
+      "work_unit": "RELEASE-CONTROL-A", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-03", "job_id": 103663807577,
+      "job": "Directed route engine core qualification", "class": "hosted-image-drift",
+      "root_cause": "Apple host allowlist does not recognize 20260907.0351.1:26.6.2:25G83",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-04", "job_id": 103663807600,
+      "job": "Frontend Client Engine", "class": "hosted-image-drift",
+      "root_cause": "OpenSSL root-seal workflow expects macOS 15.7.9 while the runner reports macos26",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-05", "job_id": 103663807604,
+      "job": "Web Console", "class": "route-metadata-drift",
+      "root_cause": "Translation route pack binding and java-to-csharp inventory status disagree; dependent readiness assertions are masked",
+      "work_unit": "b1550cf7c1", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-06", "job_id": 103663807625,
+      "job": "Project Synthesis and operability", "class": "implementation-regression",
+      "root_cause": "Kubernetes dry-run/canary assertions and rootless sandbox command fail",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-07", "job_id": 103663807643,
+      "job": "Precision Migration trust and coverage", "class": "hosted-image-drift",
+      "root_cause": "Temurin home is not bound to the exact macos26 hosted-image identity",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-08", "job_id": 103663807654,
+      "job": "Directed route pack contract prerequisites", "class": "hosted-image-drift",
+      "root_cause": "Apple route prerequisite rejects the unrecognized macos26 profile",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-09", "job_id": 103663807681,
+      "job": "Makefile portability and composite targets", "class": "route-metadata-drift",
+      "root_cause": "business-line-contracts detects ROUTE_PACK_STATUS_DRIFT for java-to-csharp",
+      "work_unit": "b1550cf7c1", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-10", "job_id": 103664023488,
+      "job": "Directed route engine qualification", "class": "aggregate-dependency",
+      "root_cause": "Aggregate job fails because required directed-route workers failed",
+      "work_unit": "PR-102", "state": "INTEGRATED_PENDING_RETEST"
+    },
+    {
+      "id": "CI-11", "job_id": 103664099295,
+      "job": "Directed language route contracts", "class": "aggregate-dependency",
+      "root_cause": "Aggregate contract job fails because required route contract workers failed",
+      "work_unit": "b1550cf7c1", "state": "INTEGRATED_PENDING_RETEST"
+    }
+  ]
+}

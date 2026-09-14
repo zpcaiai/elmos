@@ -2,12 +2,12 @@
   "schema_version": "1.0",
   "kind": "frontend-formal-profile-project",
   "profile_id": "angular",
-  "framework_version": "22.0.8",
+  "framework_version": "22.1.4",
   "platforms": [
     "WEB"
   ],
   "project_path": "project",
-  "project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+  "project_digest": "sha256:5966d1163d18906a56aac4840009ed7286acb3c51c0de8c149c03b6c95d2750a",
   "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
   "file_count": 24,
   "files": [
@@ -58,17 +58,17 @@
     },
     {
       "path": "conversion/route.json",
-      "sha256": "sha256:40a08b97685ba704a4af71857615c6b11a13ed53e79a86f31aa8c4cf39f697bc",
+      "sha256": "sha256:18a209c776fcfb6deab83fe95ad81c67dc8da9ed618ba203cd170f61c29c631e",
       "byte_count": 307
     },
     {
       "path": "elmos.ui-migration.json",
-      "sha256": "sha256:3333296f6d5100ccb3ca71ad47efbe9b17846680da346ffdfd21afb63d5bdffb",
+      "sha256": "sha256:4b570d3aa9debb7515f43bfb4b07e01bf8d9904aa309a199c5c6dcf1c2358836",
       "byte_count": 2438
     },
     {
       "path": "package.json",
-      "sha256": "sha256:73da1a858ece1560f0f9469e9d2a179056d313ebf8fc16ab4f92821d1283ed57",
+      "sha256": "sha256:8fba2fca0a65a8ab3c2c905d1abcf1f6da426f9e8c92627fac1ec5215cb4d0ef",
       "byte_count": 711
     },
     {
@@ -113,7 +113,7 @@
     },
     {
       "path": "target-profile/profile.json",
-      "sha256": "sha256:8a0800b40cad299e4745d4aa001c94187493b4779fdf796583010ab69a8504ee",
+      "sha256": "sha256:98b98ed2c75785a8cbb11b57bd6555e8c20276232f0420a683c091b9a799d5b8",
       "byte_count": 725
     },
     {
@@ -132,5 +132,5 @@
       "byte_count": 7150
     }
   ],
-  "manifest_digest": "sha256:393ff96dadbd17f48ed658515bc0d1aad8c9c2a571a6c382566f2a4bb1baac49"
+  "manifest_digest": "sha256:9e635a62e2226c52e1577f96d89041982dbc724764c8ed20ffd1a9593196771e"
 }

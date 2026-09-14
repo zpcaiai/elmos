@@ -3,12 +3,12 @@
   "route_id": "vue3--to--angular",
   "source_lifting": {
     "profile_id": "vue3",
-    "project_digest": "sha256:830facbbdbefcb003490f232251a6f5ebd9c5090d192ed0bf3b11396952711fb",
+    "project_digest": "sha256:229149b086150e45c175c18012f8097ab79b94c9fee1f8d78c17121ef0b5718a",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {
     "profile_id": "angular",
-    "project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+    "project_digest": "sha256:5966d1163d18906a56aac4840009ed7286acb3c51c0de8c149c03b6c95d2750a",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",

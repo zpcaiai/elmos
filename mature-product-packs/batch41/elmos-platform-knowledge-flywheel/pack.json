@@ -6,7 +6,7 @@
   "packType": "knowledge-flywheel",
   "version": "0.1.0",
   "owner": "Dr. Maya Lin, Head of Knowledge Intelligence",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:9518a8ecbd45d360eed2dda18e375778c98daca92ca349d3e007c10e075d6f03",
   "environmentDigest": "sha256:11899c2f63a1c39c27e9a437e8449aede343b83db209657ca7d5f9653ec085da",
   "requiredBatches": [

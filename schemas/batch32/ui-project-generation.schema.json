@@ -309,7 +309,7 @@
     },
     "angularSource": {
       "if": { "properties": { "source": { "properties": { "framework": { "const": "angular" } } } } },
-      "then": { "properties": { "source": { "properties": { "version": { "const": "22.0.8" }, "platform": { "const": "WEB" } } } } }
+      "then": { "properties": { "source": { "properties": { "version": { "const": "22.1.4" }, "platform": { "const": "WEB" } } } } }
     },
     "flutterSource": {
       "if": { "properties": { "source": { "properties": { "framework": { "const": "flutter" } } } } },

@@ -7,12 +7,12 @@
   "route_id": "angular--to--harmony-arkui",
   "tuple": {
     "source_profile": "angular",
-    "source_framework_version": "22.0.8",
+    "source_framework_version": "22.1.4",
     "target_profile": "harmony-arkui",
     "target_framework_version": "6.0.0(20)"
   },
-  "source_project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
-  "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
+  "source_project_digest": "sha256:77c3f2342e3876aeadc4294d9e4461772670012b58bfe764177410d807de9b9f",
+  "target_project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:1ddb369625b52a91334d631d29535b1f19705efcb884ab73dc8c601520a8f430",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:6044652ab834eec0651dcf73b1f254849b4ec6d6409fbc547ce80cc33d52a41a",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

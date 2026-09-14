@@ -1,0 +1,9 @@
+# Group A is the sole integration authority. Repository settings must require
+# CODEOWNERS approval on protected branches for this file to be enforceable.
+* @zpcaiai
+
+# Release-critical surfaces are repeated for audit readability.
+/.github/ @zpcaiai
+/certification/ @zpcaiai
+/release-control/ @zpcaiai
+/scripts/release_control/ @zpcaiai

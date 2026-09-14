@@ -88,6 +88,26 @@ test("nine exact target profiles create a complete 72-route directed matrix", ()
   assert.ok(routes.every(route => route.certification === "NOT_CERTIFIED"));
 });
 
+test("Angular generation stays on the remediated exact patch line", () => {
+  const profile = uiTargetProfiles().find(value => value.id === "angular");
+  assert.ok(profile);
+  assert.equal(profile.frameworkVersion, "22.1.4");
+  assert.equal(profile.buildToolVersion, "22.1.4");
+  const manifest = JSON.parse(generateUiProject(request("angular")).files["package.json"]!);
+  for (const dependency of [
+    "@angular/common",
+    "@angular/compiler",
+    "@angular/core",
+    "@angular/platform-browser",
+    "@angular/router",
+  ]) {
+    assert.equal(manifest.dependencies[dependency], "22.1.4", dependency);
+  }
+  for (const dependency of ["@angular/build", "@angular/cli", "@angular/compiler-cli"]) {
+    assert.equal(manifest.devDependencies[dependency], "22.1.4", dependency);
+  }
+});
+
 test("every core target generates deterministic project and configuration files", () => {
   for (const profile of uiTargetProfiles()) {
     const first = generateUiProject(request(profile.id));

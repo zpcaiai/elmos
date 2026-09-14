@@ -6,7 +6,7 @@
   "packType": "finops-economics",
   "version": "0.1.0",
   "owner": "David Sterling, Head of Cloud FinOps & Economics",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:a67b3d06d766621c1a1ebd86967bbcded2be26ac7d604b74ba05abd362b62aa3",
   "environmentDigest": "sha256:01babb09e40492b12e5cba25bb009fb16b27b86acdba3dff106371fe41ed331a",
   "requiredBatches": [
