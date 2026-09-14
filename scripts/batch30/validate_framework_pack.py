@@ -473,7 +473,7 @@ def main() -> int:
         errors.append(f"missing pack dir: {pack}")
     for rel in REQUIRED_DIRS:
         if not (pack / rel).exists():
-            errors.append(f"missing: {pack / rel}")
+            errors.append(f"missing: {(pack / rel).as_posix()}")
     manifest = {}
     try:
         manifest = load(pack / "pack.json")

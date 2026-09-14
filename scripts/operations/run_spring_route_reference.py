@@ -339,8 +339,10 @@ class SecurityConfiguration {
             .requestMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
             .requestMatchers(HttpMethod.POST, "/api/orders").authenticated()
             .requestMatchers("/api/persisted-orders/**").authenticated()
+            .requestMatchers("/api/capabilities/**").authenticated()
             .anyRequest().denyAll()
-        ).csrf(csrf -> csrf.ignoringRequestMatchers("/api/orders", "/api/persisted-orders/**"))
+        ).csrf(csrf -> csrf.ignoringRequestMatchers(
+            "/api/orders", "/api/persisted-orders/**", "/api/capabilities/**"))
             .httpBasic(withDefaults());
         return http.build();
     }
@@ -380,8 +382,10 @@ class SecurityConfiguration {
             .antMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
             .antMatchers(HttpMethod.POST, "/api/orders").authenticated()
             .antMatchers("/api/persisted-orders/**").authenticated()
+            .antMatchers("/api/capabilities/**").authenticated()
             .anyRequest().denyAll()
-        ).csrf(csrf -> csrf.ignoringAntMatchers("/api/orders", "/api/persisted-orders/**"))
+        ).csrf(csrf -> csrf.ignoringAntMatchers(
+            "/api/orders", "/api/persisted-orders/**", "/api/capabilities/**"))
             .httpBasic(withDefaults());
         return http.build();
     }
@@ -494,6 +498,124 @@ class PersistenceController {
 }
 """
 
+_CAPABILITY_CONTRACTS = """package io.elmos.reference;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Configuration
+@EnableCaching
+@EnableScheduling
+class CapabilityConfiguration {}
+
+final class OrderMessage {
+    private final String id;
+
+    OrderMessage(String id) {
+        this.id = id;
+    }
+
+    String id() {
+        return id;
+    }
+}
+
+@Service
+class CapabilityContracts {
+    private final ApplicationEventPublisher publisher;
+    private final AtomicInteger cacheLoads = new AtomicInteger();
+    private final AtomicInteger messageDeliveries = new AtomicInteger();
+    private final AtomicInteger schedulerTicks = new AtomicInteger();
+
+    CapabilityContracts(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+    }
+
+    boolean dependencyInjected() {
+        return publisher != null;
+    }
+
+    @Cacheable(cacheNames = "orders")
+    public int cachedOrder(String id) {
+        return cacheLoads.incrementAndGet();
+    }
+
+    int cacheLoads() {
+        return cacheLoads.get();
+    }
+
+    int publish(String id) {
+        publisher.publishEvent(new OrderMessage(id));
+        return messageDeliveries.get();
+    }
+
+    @EventListener
+    public void onOrderMessage(OrderMessage message) {
+        if (message.id() != null) {
+            messageDeliveries.incrementAndGet();
+        }
+    }
+
+    int messageDeliveries() {
+        return messageDeliveries.get();
+    }
+
+    @Scheduled(fixedDelayString = "${fixture.scheduler.fixed-delay-ms:25}")
+    public void scheduledTick() {
+        schedulerTicks.incrementAndGet();
+    }
+
+    boolean schedulerActive() {
+        return schedulerTicks.get() > 0;
+    }
+}
+
+@RestController
+@RequestMapping("/api/capabilities")
+class CapabilityController {
+    private final CapabilityContracts capabilities;
+
+    CapabilityController(CapabilityContracts capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    @GetMapping("/dependency-injection")
+    Map<String, Boolean> dependencyInjection() {
+        return Map.of("injected", capabilities.dependencyInjected());
+    }
+
+    @GetMapping("/cache/{id}")
+    Map<String, Integer> cache(@PathVariable String id) {
+        int first = capabilities.cachedOrder(id);
+        int second = capabilities.cachedOrder(id);
+        return Map.of("first", first, "second", second, "loads", capabilities.cacheLoads());
+    }
+
+    @PostMapping("/message/{id}")
+    Map<String, Integer> message(@PathVariable String id) {
+        return Map.of("deliveries", capabilities.publish(id));
+    }
+
+    @GetMapping("/scheduler")
+    Map<String, Boolean> scheduler() {
+        return Map.of("active", capabilities.schedulerActive());
+    }
+}
+"""
+
 _TEST_SECURITY_JUNIT5 = """package io.elmos.reference;
 
 import static org.hamcrest.Matchers.is;
@@ -515,6 +637,9 @@ import org.springframework.test.web.servlet.MockMvc;
 class OrderControllerSecurityTest {
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private CapabilityContracts capabilities;
 
     @Test
     void rejectsUnauthenticatedOrderReads() throws Exception {
@@ -538,6 +663,101 @@ class OrderControllerSecurityTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\\\"customerId\\\":\\\"\\\"}"))
             .andExpect(status().isBadRequest());
+    }
+}
+"""
+
+_TEST_SECURITY_PERSISTENCE_CAPABILITIES_JUNIT5 = """package io.elmos.reference;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class OrderControllerSecurityTest {
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private CapabilityContracts capabilities;
+
+    @Test
+    void rejectsUnauthenticatedOrderReads() throws Exception {
+        mvc.perform(get("/api/orders/42"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void preservesAuthenticatedOrderContract() throws Exception {
+        mvc.perform(get("/api/orders/42").with(httpBasic("operator", "operator-password")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(42)))
+            .andExpect(jsonPath("$.status", is("READY")))
+            .andExpect(jsonPath("$.amountCents", is(5250)));
+    }
+
+    @Test
+    void preservesAuthenticatedValidationContract() throws Exception {
+        mvc.perform(post("/api/orders")
+                .with(httpBasic("operator", "operator-password"))
+                .contentType("application/json")
+                .content("{\\\"customerId\\\":\\\"\\\"}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void rollsBackTransactionalWrites() throws Exception {
+        mvc.perform(post("/api/persisted-orders/rollback")
+                .with(httpBasic("operator", "operator-password")))
+            .andExpect(status().is5xxServerError());
+
+        mvc.perform(get("/api/persisted-orders/count")
+                .with(httpBasic("operator", "operator-password")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count", is(0)));
+    }
+
+    @Test
+    void preservesConstructorDependencyInjection() {
+        assertNotNull(capabilities);
+        assertTrue(capabilities.dependencyInjected());
+    }
+
+    @Test
+    void preservesApplicationEventDelivery() {
+        int before = capabilities.messageDeliveries();
+        assertEquals(before + 1, capabilities.publish("junit-message"));
+    }
+
+    @Test
+    void preservesCacheHitSemantics() {
+        int before = capabilities.cacheLoads();
+        int first = capabilities.cachedOrder("junit-cache");
+        int second = capabilities.cachedOrder("junit-cache");
+        assertEquals(first, second);
+        assertEquals(before + 1, capabilities.cacheLoads());
+    }
+
+    @Test
+    void schedulerExecutesInTheApplicationContext() throws InterruptedException {
+        long deadline = System.nanoTime() + 2_000_000_000L;
+        while (!capabilities.schedulerActive() && System.nanoTime() < deadline) {
+            Thread.sleep(10L);
+        }
+        assertTrue(capabilities.schedulerActive());
     }
 }
 """
@@ -640,6 +860,8 @@ class Route:
     security: str = ""
     # Optional exact-provider persistence/transaction contract for a route fixture.
     persistence: str = ""
+    # Optional DI, application-event, simple-cache, and scheduler contracts.
+    capabilities: str = ""
     # "maven" (POM + rewrite-maven-plugin) or "gradle" (build.gradle + the
     # Worker's init-script rewrite driver on the pinned Gradle toolchain).
     build_tool: str = "maven"
@@ -690,12 +912,13 @@ ROUTES: dict[str, Route] = {
         source_boot="2.7.18",
         source_java="17",
         controller=_CONTROLLER_JAVA11,
-        test=_TEST_SECURITY_PERSISTENCE_JUNIT5,
+        test=_TEST_SECURITY_PERSISTENCE_CAPABILITIES_JUNIT5,
         properties=_PROPERTIES_PERSISTENCE,
         health_path="/actuator/health",
-        extra_starters=("validation", "security", "data-jpa"),
+        extra_starters=("validation", "security", "data-jpa", "cache"),
         security=_SECURITY_BOOT2,
         persistence=_PERSISTENCE_ENTITY_JAVAX,
+        capabilities=_CAPABILITY_CONTRACTS,
     ),
     "boot-3.5-maven-to-boot-4.1.0-java-21": Route(
         route_id="boot-3.5-maven-to-boot-4.1.0-java-21",
@@ -766,6 +989,11 @@ def reports_release(version_output: str, release: str) -> bool:
     return False
 
 
+def java_executable(home: Path) -> Path:
+    """Return the platform-native Java launcher for a verified JDK home."""
+    return home / "bin" / ("java.exe" if os.name == "nt" else "java")
+
+
 def java_home(release: str) -> Path:
     """Locate a JDK for ``release`` and confirm it really is that release.
 
@@ -802,11 +1030,14 @@ def java_home(release: str) -> Path:
         raise RunFailure(
             f"JAVA_{release}_MISSING: set ELMOS_JAVA_{release}_HOME to a JDK {release} home")
 
-    if not (candidate / "bin/java").is_file():
-        raise RunFailure(f"JAVA_HOME_INVALID:{source} -> {candidate} has no bin/java")
+    executable = java_executable(candidate)
+    if not executable.is_file():
+        raise RunFailure(
+            f"JAVA_HOME_INVALID:{source} -> {candidate} has no {executable.name}"
+        )
 
     probe = subprocess.run(
-        [str(candidate / "bin/java"), "-version"],
+        [str(executable), "-version"],
         text=True, capture_output=True, check=False,
     )
     # `java -version` writes to stderr on every JDK that matters here.
@@ -834,7 +1065,9 @@ def run(
 ) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     environment["JAVA_HOME"] = str(home)
-    environment["PATH"] = f"{home / 'bin'}:{environment.get('PATH', '')}"
+    environment["PATH"] = os.pathsep.join(
+        (str(home / "bin"), environment.get("PATH", ""))
+    )
     for key in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY",
                 "https_proxy", "http_proxy", "all_proxy"):
         environment.pop(key, None)
@@ -988,6 +1221,10 @@ def materialize(project: Path, route: Route) -> None:
         (source / "PersistedOrderRepository.java").write_text(_PERSISTENCE_REPOSITORY, encoding="utf-8")
         (source / "OrderTransactionService.java").write_text(_PERSISTENCE_SERVICE, encoding="utf-8")
         (source / "PersistenceController.java").write_text(_PERSISTENCE_CONTROLLER, encoding="utf-8")
+    if route.capabilities:
+        (source / "CapabilityContracts.java").write_text(
+            route.capabilities, encoding="utf-8"
+        )
     (resources / "application.properties").write_text(route.properties, encoding="utf-8")
 
 
@@ -1064,17 +1301,20 @@ def start_and_probe(
     project: Path, *, home: Path, health_path: str, log_path: Path,
     security_enabled: bool = False,
     persistence_enabled: bool = False,
+    capabilities_enabled: bool = False,
     build_tool: str = "maven",
 ) -> dict[str, Any]:
     jar = built_boot_jar(project, build_tool)
     port = free_port()
     environment = os.environ.copy()
     environment["JAVA_HOME"] = str(home)
-    environment["PATH"] = f"{home / 'bin'}:{environment.get('PATH', '')}"
+    environment["PATH"] = os.pathsep.join(
+        (str(home / "bin"), environment.get("PATH", ""))
+    )
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("wb") as log:
         process = subprocess.Popen(
-            [str(home / "bin/java"), "-jar", str(jar),
+            [str(java_executable(home)), "-jar", str(jar),
              f"--server.port={port}", "--server.address=127.0.0.1"],
             cwd=project, env=environment, stdin=subprocess.DEVNULL,
             stdout=log, stderr=subprocess.STDOUT,
@@ -1136,6 +1376,43 @@ def start_and_probe(
                     "count_status": count_status,
                     "count_response": count_response,
                 }
+            if capabilities_enabled:
+                capability_headers = auth_headers if security_enabled else {}
+                dependency_injection = request_json(
+                    port,
+                    "/api/capabilities/dependency-injection",
+                    headers=capability_headers,
+                )
+                cache = request_json(
+                    port,
+                    "/api/capabilities/cache/runtime-cache",
+                    headers=capability_headers,
+                )
+                message_status, message_body = request_status(
+                    port,
+                    "POST",
+                    "/api/capabilities/message/runtime-message",
+                    headers={"Content-Type": "application/json", **capability_headers},
+                    body="{}",
+                    timeout=10.0,
+                )
+                try:
+                    message = json.loads(message_body)
+                except json.JSONDecodeError as exc:
+                    raise RunFailure(
+                        f"MESSAGING_INVALID_JSON:/api/capabilities/message:{exc}"
+                    ) from exc
+                scheduler = request_json(
+                    port, "/api/capabilities/scheduler", headers=capability_headers
+                )
+                result.update(
+                    {
+                        "dependency_injection": dependency_injection,
+                        "cache": cache,
+                        "messaging": {"status": message_status, "response": message},
+                        "scheduler": scheduler,
+                    }
+                )
             return result
         finally:
             process.terminate()
@@ -1368,11 +1645,13 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
         source, home=source_home, health_path=route.health_path,
         log_path=logs / "source-runtime.log", security_enabled=bool(route.security),
         persistence_enabled=bool(route.persistence),
+        capabilities_enabled=bool(route.capabilities),
         build_tool=route.build_tool)
     target_runtime = start_and_probe(
         target, home=target_home, health_path="/actuator/health",
         log_path=logs / "target-runtime.log", security_enabled=bool(route.security),
         persistence_enabled=bool(route.persistence),
+        capabilities_enabled=bool(route.capabilities),
         build_tool=route.build_tool)
 
     if source_runtime["responses"] != target_runtime["responses"]:
@@ -1390,6 +1669,13 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "PERSISTENCE_BEHAVIOR_DIFFERENCE\n"
             f"source={json.dumps(source_runtime.get('persistence'), sort_keys=True)}\n"
             f"target={json.dumps(target_runtime.get('persistence'), sort_keys=True)}")
+    for capability in ("dependency_injection", "messaging", "cache", "scheduler"):
+        if source_runtime.get(capability) != target_runtime.get(capability):
+            raise RunFailure(
+                f"{capability.upper()}_BEHAVIOR_DIFFERENCE\n"
+                f"source={json.dumps(source_runtime.get(capability), sort_keys=True)}\n"
+                f"target={json.dumps(target_runtime.get(capability), sort_keys=True)}"
+            )
 
     return {
         "schema_version": 1,
@@ -1454,6 +1740,11 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
 def utc_now() -> str:
     """Return a stable, machine-readable UTC timestamp for attempt auditing."""
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def portable_evidence_text(value: str) -> str:
+    """Use canonical separators in evidence emitted on every host."""
+    return value.replace("\\", "/")
 
 
 def write_json_atomic(destination: Path, payload: dict[str, Any]) -> None:
@@ -1537,7 +1828,11 @@ def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> di
         "route_id": evidence["route_id"],
         "execution_status": evidence["execution_status"],
         "behavioral_parity": evidence["behavioral_parity"],
-        "scope": ["web", "configuration", "lifecycle", "security", "persistence", "transactions"],
+        "scope": [
+            "web", "dependency-injection", "configuration", "validation",
+            "authentication", "authorization", "persistence", "transactions",
+            "messaging", "cache", "scheduler", "lifecycle",
+        ],
         "source": {
             "version": source["boot"],
             "java": source["java"],
@@ -1574,6 +1869,33 @@ def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> di
             "source": source_runtime.get("persistence", "NOT_RUN"),
             "target": target_runtime.get("persistence", "NOT_RUN"),
         },
+        "dependency_injection": {
+            "status": "PASSED_LOCAL" if "dependency_injection" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "source": source_runtime.get("dependency_injection", "NOT_RUN"),
+            "target": target_runtime.get("dependency_injection", "NOT_RUN"),
+        },
+        "messaging": {
+            "status": "PASSED_LOCAL" if "messaging" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "provider_scope": "SPRING_APPLICATION_EVENT_IN_PROCESS_ONLY",
+            "source": source_runtime.get("messaging", "NOT_RUN"),
+            "target": target_runtime.get("messaging", "NOT_RUN"),
+        },
+        "cache": {
+            "status": "PASSED_LOCAL" if "cache" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "provider_scope": "SPRING_CONCURRENT_MAP_ONLY",
+            "source": source_runtime.get("cache", "NOT_RUN"),
+            "target": target_runtime.get("cache", "NOT_RUN"),
+        },
+        "scheduler": {
+            "status": "PASSED_LOCAL" if "scheduler" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "provider_scope": "SPRING_TASK_SCHEDULER_SINGLE_PROCESS_ONLY",
+            "source": source_runtime.get("scheduler", "NOT_RUN"),
+            "target": target_runtime.get("scheduler", "NOT_RUN"),
+        },
         "independent_verification": "NOT_RUN",
         "external_execution_status": "NOT_RUN",
         "authorized_customer_repository": "NOT_RUN",
@@ -1607,7 +1929,7 @@ def record_failure_attempt(
             "route_id": route.route_id,
             "attempted_at": utc_now(),
             "execution_status": "FAILED",
-            "failure": str(failure),
+            "failure": portable_evidence_text(str(failure)),
             "evidence_scope": "LOCAL_ATTEMPT_AUDIT_ONLY",
             "certification_eligible": False,
             "canonical_evidence": {

@@ -290,8 +290,8 @@ class SpringCleanSourceBuildTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary, patch.object(
             subject.shutil, "disk_usage", side_effect=usage
         ), patch.object(subject.subprocess, "Popen", return_value=process), patch.object(
-            subject.os, "killpg"
-        ) as killpg:
+            subject, "terminate_process_group"
+        ) as terminate:
             root = Path(temporary)
             with self.assertRaises(subject.CapacityFailure):
                 subject.run_command(
@@ -304,7 +304,7 @@ class SpringCleanSourceBuildTest(unittest.TestCase):
                     command_evidence=[],
                     minimum_start_bytes=subject.MINIMUM_BUILD_FREE_BYTES,
                 )
-        killpg.assert_called_once_with(42, subject.signal.SIGTERM)
+        terminate.assert_called_once_with(process)
 
     def test_command_runner_terminates_child_when_interrupted(self) -> None:
         process = Mock()

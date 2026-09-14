@@ -36,6 +36,21 @@ CAPACITY_POLL_INTERVAL_SECONDS = 2.0
 PROCESS_GROUP_TERMINATION_GRACE_SECONDS = 5.0
 
 
+def _process_group_options() -> dict[str, Any]:
+    if os.name == "nt":
+        return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    return {"start_new_session": True}
+
+
+def _canonical_output(raw: bytes) -> tuple[str, bytes]:
+    text = (
+        raw.decode("utf-8", errors="replace")
+        .replace("\r\n", "\n")
+        .replace("\r", "\n")
+    )
+    return text, text.encode("utf-8")
+
+
 def capacity_observation(path: Path, operation: str) -> dict[str, Any]:
     """Observe capacity without raising so an in-flight process can be stopped."""
 
@@ -77,6 +92,28 @@ def _terminate_process_group(
     }
     if process.poll() is not None:
         record["already_exited"] = True
+        return record
+    if os.name == "nt":
+        try:
+            process.send_signal(signal.CTRL_BREAK_EVENT)
+            record["ctrl_break_sent"] = True
+        except (OSError, ValueError):
+            record["ctrl_break_sent"] = False
+        try:
+            process.wait(timeout=PROCESS_GROUP_TERMINATION_GRACE_SECONDS)
+        except subprocess.TimeoutExpired:
+            completed = subprocess.run(
+                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            record["forced_tree_kill_sent"] = completed.returncode == 0
+            process.wait(timeout=PROCESS_GROUP_TERMINATION_GRACE_SECONDS)
+        record["group_exists_after_sigterm_grace"] = process.poll() is None
+        record["exit_code_after_termination"] = process.returncode
         return record
     try:
         os.killpg(process.pid, signal.SIGTERM)
@@ -171,7 +208,7 @@ def run_capacity_bounded_command(
             env=environment,
             stdout=output_handle,
             stderr=subprocess.STDOUT,
-            start_new_session=True,
+            **_process_group_options(),
         )
 
         def publish_running() -> None:
@@ -224,6 +261,9 @@ def run_capacity_bounded_command(
             output_handle.flush()
             output_handle.seek(0)
             interrupted_output = output_handle.read()
+            interrupted_text, interrupted_canonical = _canonical_output(
+                interrupted_output
+            )
             if progress_callback is not None:
                 progress_callback(
                     {
@@ -243,13 +283,11 @@ def run_capacity_bounded_command(
                             "type": type(exc).__name__,
                             "message": str(exc) or "operation interrupted",
                         },
-                        "output": interrupted_output.decode(
-                            "utf-8", errors="replace"
-                        ),
+                        "output": interrupted_text,
                         "output_sha256": hashlib.sha256(
-                            interrupted_output
+                            interrupted_canonical
                         ).hexdigest(),
-                        "output_bytes": len(interrupted_output),
+                        "output_bytes": len(interrupted_canonical),
                     }
                 )
             raise
@@ -263,7 +301,7 @@ def run_capacity_bounded_command(
         output_handle.seek(0)
         output_bytes_value = output_handle.read()
 
-    output_text = output_bytes_value.decode("utf-8", errors="replace")
+    output_text, canonical_output = _canonical_output(output_bytes_value)
     execution = {
         "command": command,
         "started_at": started_at,
@@ -277,8 +315,8 @@ def run_capacity_bounded_command(
         "process_group_isolated": True,
         "termination": termination,
         "output": output_text,
-        "output_sha256": hashlib.sha256(output_bytes_value).hexdigest(),
-        "output_bytes": len(output_bytes_value),
+        "output_sha256": hashlib.sha256(canonical_output).hexdigest(),
+        "output_bytes": len(canonical_output),
     }
     if progress_callback is not None:
         progress_callback(execution)
