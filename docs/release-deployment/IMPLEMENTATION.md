@@ -377,6 +377,27 @@ define the generation, history, source revision and inventory checks used by Flu
 
 ## Evidence and authority
 
+### Native execution supervision follow-up
+
+The host now binds a separate authorization guard to every resolved native process.
+It checks the lease and host authorization before launch, while waiting (250 ms
+poll interval), and before returning success. Revocation or a guard error kills the
+native process and leaves dispatch reconciliation required. POSIX process groups
+are terminated; Windows local qualification only terminates the parent process.
+This does not replace a dedicated supervisor's cgroup/container process-tree
+isolation, credential revocation, or externally enforced network policy.
+
+Completed result polling revalidates the independent evidence decision. Terraform
+rejects unbound module inputs before reading provider state, rechecks approved input
+digests around apply, and rejects final state lineage replacement or serial
+regression. Transitive module support remains unimplemented until its files and
+refresh inputs are fully bound; root-only qualification cannot establish it.
+
+The local machine's Docker daemon was unavailable during this follow-up. Dedicated
+isolated worker installation, actual authorization/credential/evidence service
+bindings, real cloud acceptance and the other gaps in the matrix above remain
+outstanding. No installation or provider receipt is manufactured by these changes.
+
 All 25 source acceptance scenarios stay NOT_RUN until their real target environment
 and raw execution evidence exist. The local qualifier is self-attested engineering
 evidence. Only the applicable Batch 38 gate and separate external authority can

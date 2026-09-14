@@ -59,11 +59,16 @@ test_apply_waits_for_exact_generation_and_replay_is_read_only (test_kubernetes_c
 test_uid_replacement_rejected_before_mutation (test_kubernetes_controller.KubernetesControllerTests.test_uid_replacement_rejected_before_mutation) ... ok
 test_unknown_never_reapplies (test_kubernetes_controller.KubernetesControllerTests.test_unknown_never_reapplies) ... ok
 test_canonical_context_cannot_cross_tenant (test_native_runner_host.NativeHostTests.test_canonical_context_cannot_cross_tenant) ... ok
+test_completed_evidence_revocation_blocks_poll (test_native_runner_host.NativeHostTests.test_completed_evidence_revocation_blocks_poll) ... ok
 test_dispatch_completes_only_after_canonical_claim_and_evidence (test_native_runner_host.NativeHostTests.test_dispatch_completes_only_after_canonical_claim_and_evidence) ... ok
 test_invalid_sandbox_proof_denied_before_inspection (test_native_runner_host.NativeHostTests.test_invalid_sandbox_proof_denied_before_inspection) ... ok
 test_lost_claim_never_executes_native_tool (test_native_runner_host.NativeHostTests.test_lost_claim_never_executes_native_tool) ... ok
 test_lost_completion_reconciles_existing_artifact (test_native_runner_host.NativeHostTests.test_lost_completion_reconciles_existing_artifact) ... ok
 test_unknown_native_outcome_is_not_retried (test_native_runner_host.NativeHostTests.test_unknown_native_outcome_is_not_retried) ... ok
+test_revocation_terminates_running_process_without_success_capture (test_native_supervision.SupervisionTests.test_revocation_terminates_running_process_without_success_capture) ... ok
+test_revoked_before_launch_never_spawns (test_native_supervision.SupervisionTests.test_revoked_before_launch_never_spawns) ... ok
+test_state_replacement_or_serial_regression_never_succeeds (test_native_supervision.SupervisionTests.test_state_replacement_or_serial_regression_never_succeeds) ... ok
+test_unbound_modules_rejected_before_provider_state_read (test_native_supervision.SupervisionTests.test_unbound_modules_rejected_before_provider_state_read) ... ok
 test_acr_verifies_manifest_config_bytes_and_architecture (test_provider_adapters.AdapterTest.test_acr_verifies_manifest_config_bytes_and_architecture) ... ok
 test_cloud_assistant_request_idempotency_and_redaction (test_provider_adapters.AdapterTest.test_cloud_assistant_request_idempotency_and_redaction) ... ok
 test_ecs_discovery_checks_resources_region_tags_and_status (test_provider_adapters.AdapterTest.test_ecs_discovery_checks_resources_region_tags_and_status) ... ok
@@ -104,6 +109,6 @@ test_security_policy_drift_blocks_write (test_tls_controller.TlsControllerTests.
 test_wrong_certificate_bytes_never_call_provider (test_tls_controller.TlsControllerTests.test_wrong_certificate_bytes_never_call_provider) ... ok
 
 ----------------------------------------------------------------------
-Ran 104 tests in 149.262s
+Ran 109 tests in 136.713s
 
 OK

@@ -5,6 +5,7 @@ canonical tool ledger and immutable evidence repository. None are synthesized fr
 browser requests. Unknown dispatches are read/reconciled, never re-executed here.
 """
 from dataclasses import asdict
+from copy import copy
 from .contracts import Pending, digest, require, sha
 from .service import verified
 
@@ -23,7 +24,21 @@ class NativeRunnerHost:
         # Recheck current revocation, workspace ownership, provider credentials,
         # image/toolchain digests and sandbox policy before every native action.
         self.authority.require(request,lease,action)
-        return self.workers.resolve(lease.scope,request,kind)
+        worker = self.workers.resolve(lease.scope,request,kind)
+        from .native_worker import NativeTerraformWorker, NativeHelmWorker, PinnedNativeProcess
+        if isinstance(worker,(NativeTerraformWorker,NativeHelmWorker)):
+            require(isinstance(worker.process,PinnedNativeProcess), 'native_supervised_process_required')
+            # Per-invocation copies prevent concurrent leases replacing each
+            # other's authorization callback on a registered worker instance.
+            worker = copy(worker)
+            worker.process = copy(worker.process)
+            prior_guard = worker.process.guard
+            def guard():
+                require(self.clock() < lease.expires_at, 'lease_expired')
+                self.authority.require(request,lease,action)
+                if prior_guard is not None: prior_guard()
+            worker.process.guard = guard
+        return worker
 
     def admit(self, request, lease):
         worker = self._worker(request,lease,'terraform')
@@ -77,6 +92,7 @@ class NativeRunnerHost:
         self._worker(request,lease,'terraform')
         reference = self.ledger.completed_reference(invocation,request,lease)
         if reference is None: return None
+        self.evidence.require_verified(lease.scope,invocation,digest(request),reference)
         envelope = self.evidence.read(lease.scope,invocation,digest(request),reference)
         body = verified(self.trust,'iac_native_result',envelope)
         require(body.get('request_digest') == digest(request) and body.get('invocation_id') == invocation,

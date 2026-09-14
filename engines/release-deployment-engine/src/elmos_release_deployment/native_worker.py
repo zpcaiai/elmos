@@ -11,6 +11,7 @@ from pathlib import Path
 import signal
 import subprocess
 import threading
+import time
 
 from .contracts import Pending, canonical, digest, require, sha
 from .host_bridge import strict_json
@@ -24,22 +25,25 @@ class ProcessResult:
 
 
 class PinnedNativeProcess:
-    def __init__(self, binary, binary_digest, workspace, environment, capture=None):
+    def __init__(self, binary, binary_digest, workspace, environment, capture=None, guard=None):
         self.binary, self.workspace = Path(binary), Path(workspace)
         sha(binary_digest)
         require(self.binary.is_absolute() and self.workspace.is_absolute(), 'native_absolute_paths')
         self.binary_digest = binary_digest
         self.environment = dict(environment)
         self.capture = capture
+        self.guard = guard
         require(all(type(k) is str and type(v) is str and '\x00' not in k+v
                     for k,v in self.environment.items()), 'native_environment')
 
     def run(self, argv, timeout=60, limit=4194304):
+        if self.guard is not None: self.guard()
         require(type(argv) is list and all(type(v) is str and '\x00' not in v for v in argv), 'native_argv')
         require(type(timeout) is int and 1 <= timeout <= 1800 and 0 < limit <= 16777216, 'native_budgets')
         require(not self.binary.is_symlink() and not any(p.is_symlink() for p in self.binary.parents) and self.binary.is_file()
                 and digest(self.binary.read_bytes()) == self.binary_digest, 'native_binary_drift')
-        require(self.workspace.is_dir() and not self.workspace.is_symlink(), 'native_workspace')
+        require(self.workspace.is_dir() and not self.workspace.is_symlink()
+                and not any(p.is_symlink() for p in self.workspace.parents), 'native_workspace')
         process = subprocess.Popen([str(self.binary), *argv], cwd=self.workspace, env=self.environment,
             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             start_new_session=(os.name == 'posix'))
@@ -65,12 +69,19 @@ class PinnedNativeProcess:
         readers = [threading.Thread(target=drain,args=(stream,buffer),daemon=True)
                    for stream,buffer in zip((process.stdout,process.stderr),buffers)]
         for reader in readers: reader.start()
+        deadline = time.monotonic()+timeout
         try:
-            process.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
+            while process.poll() is None:
+                if self.guard is not None: self.guard()
+                remaining = deadline-time.monotonic()
+                if remaining <= 0: raise subprocess.TimeoutExpired(argv,timeout)
+                try: process.wait(timeout=min(0.25,remaining))
+                except subprocess.TimeoutExpired: pass
+            if self.guard is not None: self.guard()
+        except Exception:
             stop()
             process.wait(timeout=10)
-            raise Pending('native_process_timeout_requires_reconciliation') from None
+            raise Pending('native_process_interrupted_requires_reconciliation') from None
         finally:
             for reader in readers: reader.join(10)
         require(not overflow.is_set() and not any(r.is_alive() for r in readers), 'native_output_bounds')
@@ -145,6 +156,10 @@ class NativeTerraformWorker:
             elif type(node) is list:
                 for value in node: no_provisioners(value)
         no_provisioners(plan.get('configuration',{}))
+        # Refresh reads module files outside the root configuration digest. Until
+        # transitive module inputs are bound, admitting these plans is unsafe.
+        require(not plan.get('configuration',{}).get('root_module',{}).get('module_calls'),
+                'terraform_module_inputs_unbound')
         changes = plan.get('resource_changes',[])
         require(type(changes) is list and len(changes) <= 100, 'terraform_change_bounds')
         addresses = []
@@ -158,18 +173,23 @@ class NativeTerraformWorker:
         state = self._state()
         require(digest(state) == request['before_state_digest'], 'terraform_before_state_drift')
         return {'plan_resources':sorted(addresses),'plan_mode':request['mode'],
-                'before_state_digest':digest(state),'plan_observation_digest':digest(plan)}
+                'before_state_digest':digest(state),'plan_observation_digest':digest(plan),
+                'state_lineage':state['lineage'],'state_serial':state['serial']}
 
     def execute(self, request):
         before = self.inspect(request)
+        self._inputs(request)
         result = self.process.run(['apply','-input=false','-lock=true','-lock-timeout=60s',str(self.plan_file)],1800)
         if result.code != 0: raise Pending('terraform_apply_failed_requires_reconciliation')
+        self._inputs(request)
         # No state repair or blind retry. Refresh-only plan is read-only to managed
         # resources and exit 2 means the observed infrastructure differs from state.
         refresh = self.process.run(['plan','-refresh-only','-detailed-exitcode','-input=false',
                                     '-lock=true','-lock-timeout=60s'],1800)
         if refresh.code != 0: raise Pending('terraform_refresh_not_reconciled')
         state = self._state()
+        require(state['lineage'] == before['state_lineage'] and state['serial'] >= before['state_serial'],
+                'terraform_state_identity_drift')
         addresses = []
         for resource in state.get('resources',[]):
             require(resource.get('mode') == 'managed', 'terraform_state_resource_kind')

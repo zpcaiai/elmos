@@ -86,6 +86,13 @@ class NativeHostTests(unittest.TestCase):
         self.assertEqual(self.id,self.host.reconcile(self.request,self.lease))
         self.assertIsNone(self.host.poll(self.id,self.request,self.lease))
 
+    def test_completed_evidence_revocation_blocks_poll(self):
+        invocation=self.host.submit(self.request,self.lease)
+        def revoked(*args): raise Denied('evidence_revoked')
+        self.require_verified=revoked
+        with self.assertRaisesRegex(Denied,'evidence_revoked'):
+            self.host.poll(invocation,self.request,self.lease)
+
     def test_unknown_native_outcome_is_not_retried(self):
         self.failure=True
         with self.assertRaises(Pending): self.host.submit(self.request,self.lease)
