@@ -4,3 +4,16 @@ engines/polyglot-route-engine/native/javascript/vendor/typescript-5.9.2/LICENSE.
 client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/** -diff -text
 client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
 verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
+# Digest-bound Spring pack text must have the same bytes on every checkout.
+framework-packs/spring-*/**/*.json text eol=lf
+framework-packs/spring-*/**/*.properties text eol=lf
+framework-packs/spring-*/**/*.xml text eol=lf
+framework-packs/spring-*/**/*.yml text eol=lf
+framework-packs/spring-*/**/*.yaml text eol=lf
+framework-packs/spring-*/**/*.java text eol=lf
+framework-packs/spring-*/**/*.md text eol=lf
+framework-packs/spring-*/**/*.log text eol=lf
+framework-packs/spring-*/**/*.pem text eol=lf
+framework-packs/spring-*/**/*.txt text eol=lf
+framework-packs/spring-*/**/*.py text eol=lf
+evidence/spring-routes/**/*.json text eol=lf
