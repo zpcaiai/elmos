@@ -69,6 +69,25 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(error.exception.code, 401)
         error.exception.close()
 
+    def test_client_cannot_raise_running_task_quota(self) -> None:
+        self.server.max_running_tasks = 1
+        tasks = []
+        for index in range(2):
+            _, created = self.request("/v1/tasks", method="POST", body={"project_id": uid(), "objective": "quota"}, key=f"create-{index}")
+            task = created["task_id"]
+            tasks.append(task)
+            self.request(f"/v1/tasks/{task}/queue", method="POST", body={}, key=f"queue-{index}")
+        self.request(f"/v1/tasks/{tasks[0]}/run", method="POST", body={}, key="run-first")
+        for payload, expected in (({"max_running_tasks": 9999}, 403), ({}, 409)):
+            with self.subTest(payload=payload), self.assertRaises(urllib.error.HTTPError) as error:
+                self.request(f"/v1/tasks/{tasks[1]}/run", method="POST", body=payload, key="run-second")
+            self.assertEqual(error.exception.code, expected)
+            error.exception.close()
+        self.assertEqual(self.store.get_task(self.tenant, tasks[1])["status"], "QUEUED")
+        self.request(f"/v1/tasks/{tasks[0]}/pause", method="POST", body={}, key="pause-first")
+        _, result = self.request(f"/v1/tasks/{tasks[1]}/run", method="POST", body={}, key="run-second")
+        self.assertEqual(result["status"], "RUNNING")
+
     def test_task_and_branch_objectives_fail_closed(self) -> None:
         project_id = uid()
         for objective in (None, 7, "   "):

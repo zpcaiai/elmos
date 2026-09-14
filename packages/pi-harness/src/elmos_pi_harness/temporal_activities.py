@@ -7,6 +7,7 @@ idempotency, evidence, and late-executor fencing stay inside this boundary.
 from __future__ import annotations
 
 import inspect
+import re
 from collections.abc import Awaitable, Callable, Mapping
 from typing import Any, Protocol
 
@@ -48,7 +49,7 @@ class TemporalTaskActivity:
         self.store = store
         self.backend = backend
         self.actor_id = require_nonempty(actor_id, "actor_id", 256)
-        if max_running_tasks < 1:
+        if type(max_running_tasks) is not int or max_running_tasks < 1:
             raise ValueError("max_running_tasks must be positive")
         self.max_running_tasks = max_running_tasks
 
@@ -233,15 +234,23 @@ class TemporalTaskActivity:
     ) -> dict[str, Any] | None:
         if task_state not in {state.value for state in self.RESULT_STATES}:
             return None
-        page = self.store.events(value.tenant_id, value.task_id, limit=1000)
-        for event in reversed(page["items"]):
-            payload = event["payload"]
-            if payload.get("activity_idempotency_key") != idempotency_key:
-                continue
-            result = payload.get("activity_result")
-            if not isinstance(result, Mapping):
-                raise ConflictError("persisted Temporal activity result is invalid")
-            return self._validate_result(value, result)
+        after_sequence = 0
+        while True:
+            page = self.store.events(value.tenant_id, value.task_id, after_sequence=after_sequence, limit=1000)
+            for event in reversed(page["items"]):
+                payload = event["payload"]
+                if payload.get("activity_idempotency_key") != idempotency_key:
+                    continue
+                result = payload.get("activity_result")
+                if not isinstance(result, Mapping):
+                    raise ConflictError("persisted Temporal activity result is invalid")
+                return self._validate_result(value, result)
+            cursor = page["next_sequence"]
+            if cursor is None:
+                break
+            if type(cursor) is not int or cursor <= after_sequence:
+                raise ConflictError("activity replay history cursor did not advance")
+            after_sequence = cursor
         raise ConflictError("terminal activity state has no replayable result")
 
     @classmethod
@@ -269,7 +278,7 @@ class TemporalTaskActivity:
         evidence_digest = require_nonempty(
             result.get("evidence_digest"), "evidence_digest", 71
         )
-        if not evidence_digest.startswith("sha256:") or len(evidence_digest) != 71:
+        if re.fullmatch(r"sha256:[0-9a-f]{64}", evidence_digest) is None:
             raise ValueError("activity evidence_digest must be a SHA-256 digest")
         canonical_bytes(result)
         return result

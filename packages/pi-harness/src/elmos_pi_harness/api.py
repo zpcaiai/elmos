@@ -44,6 +44,7 @@ class HarnessHTTPServer(ThreadingHTTPServer):
         ssl_context: ssl.SSLContext | None = None,
         allow_unauthenticated_for_testing: bool = False,
         max_body_bytes: int = 1_048_576,
+        max_running_tasks: int = 3,
     ) -> None:
         if (
             not api_token
@@ -61,9 +62,12 @@ class HarnessHTTPServer(ThreadingHTTPServer):
             )
         if max_body_bytes < 1024:
             raise ValueError("max_body_bytes is too small")
+        if type(max_running_tasks) is not int or max_running_tasks < 1:
+            raise ValueError("max_running_tasks must be a positive integer")
         self.store = store
         self.api_token = api_token
         self.max_body_bytes = max_body_bytes
+        self.max_running_tasks = max_running_tasks
         self.allow_unauthenticated_for_testing = allow_unauthenticated_for_testing
         self.identity_authenticator = identity_authenticator
         self.ssl_context = ssl_context
@@ -274,6 +278,8 @@ class HarnessRequestHandler(BaseHTTPRequestHandler):
                 "retry",
                 "approve",
             }:
+                if "max_running_tasks" in body:
+                    raise PolicyDeniedError("running-task quota is owned by server policy")
                 target = {
                     "queue": "QUEUED",
                     "planning": "PLANNING",
@@ -292,7 +298,7 @@ class HarnessRequestHandler(BaseHTTPRequestHandler):
                     idempotency_key=key,
                     actor_id=actor_id,
                     payload=body,
-                    max_running_tasks=int(body.get("max_running_tasks", 3)),
+                    max_running_tasks=self.server.max_running_tasks,
                 )
                 return self._send(200, result)
             if tail == "branch":

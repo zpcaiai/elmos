@@ -494,7 +494,7 @@ class DurableStore:
         tenant_id = require_uuid(tenant_id, "tenant_id")
         task_id = require_uuid(task_id, "task_id")
         target_state = TaskState(target)
-        if max_running_tasks < 1:
+        if type(max_running_tasks) is not int or max_running_tasks < 1:
             raise ValueError("max_running_tasks must be positive")
         payload_value: dict[str, Any] = dict(payload or {})
         body: dict[str, Any] = {
@@ -514,7 +514,10 @@ class DurableStore:
             if target_state is TaskState.SUCCEEDED:
                 if payload_value.get("verification_passed") is not True:
                     raise ConflictError("successful task requires an explicit passing verification result")
-                if row["passed_verifications"] < row["required_verifications"]:
+                verifications = self._verification_results_locked(tenant_id, task_id)
+                if not verifications or not all(verifications.values()):
+                    raise ConflictError("successful task requires recorded passing verification gates")
+                if sum(verifications.values()) < row["required_verifications"]:
                     raise ConflictError("successful task is missing required verification gates")
             if target_state is TaskState.RUNNING and current is not TaskState.RUNNING:
                 active = self._connection.execute(
@@ -524,28 +527,52 @@ class DurableStore:
                     raise QuotaExceededError("tenant running-task quota exceeded")
             now = utc_now()
             self._connection.execute("UPDATE task SET state=?,updated_at=? WHERE task_id=? AND tenant_id=?", (target_state.value, now, task_id, tenant_id))
+            if target_state is TaskState.RUNNING:
+                self._connection.execute("UPDATE task SET passed_verifications=0 WHERE tenant_id=? AND task_id=?", (tenant_id, task_id))
             event = self._append_event_locked(tenant_id, task_id, f"task.{target_state.value.lower()}", payload_value, actor_id)
             response = {"task_id": task_id, "status": target_state.value, "event_sequence": event["task_sequence"], "replayed": False}
             self._finish_idempotency_locked(tenant_id, scope, key, response)
             return response
 
     def set_required_verifications(self, tenant_id: str, task_id: str, required: int) -> None:
-        if required < 0:
+        if type(required) is not int or required < 0:
             raise ValueError("required verification count cannot be negative")
         with self._write():
-            self._task_locked(require_uuid(tenant_id, "tenant_id"), require_uuid(task_id, "task_id"))
+            row = self._task_locked(require_uuid(tenant_id, "tenant_id"), require_uuid(task_id, "task_id"))
+            if required < row["required_verifications"]:
+                raise ConflictError("required verification gates cannot be weakened")
+            if TaskState(row["state"]) in {TaskState.SUCCEEDED, TaskState.CANCELLED, TaskState.FAILED}:
+                raise ConflictError("terminal task verification requirements are immutable")
             self._connection.execute("UPDATE task SET required_verifications=?,updated_at=? WHERE task_id=?", (required, utc_now(), task_id))
+
+    def _verification_results_locked(self, tenant_id: str, task_id: str) -> dict[str, bool]:
+        rows = self._connection.execute(
+            "SELECT event_type,payload_json FROM task_event WHERE tenant_id=? AND task_id=? AND event_type IN (?,?) ORDER BY task_sequence",
+            (tenant_id, task_id, "verification.completed", "task.running"),
+        ).fetchall()
+        latest: dict[str, bool] = {}
+        for row in rows:
+            if row["event_type"] == "task.running":
+                latest.clear()
+                continue
+            payload = self._decode(row["payload_json"])
+            latest[payload["type"]] = payload["passed"] is True
+        return latest
 
     def record_verification(self, tenant_id: str, task_id: str, passed: bool, *, actor_id: str, verification_type: str) -> dict[str, Any]:
         tenant_id = require_uuid(tenant_id, "tenant_id")
         task_id = require_uuid(task_id, "task_id")
         verification_type = require_nonempty(verification_type, "verification_type", 128)
+        if type(passed) is not bool:
+            raise ValueError("verification result must be a boolean")
         with self._write():
             row = self._task_locked(tenant_id, task_id)
-            if passed:
-                self._connection.execute("UPDATE task SET passed_verifications=passed_verifications+1,updated_at=? WHERE task_id=?", (utc_now(), task_id))
+            if row["state"] != TaskState.VERIFYING.value:
+                raise ConflictError("verification results require a task in VERIFYING state")
             event = self._append_event_locked(tenant_id, task_id, "verification.completed", {"type": verification_type, "passed": passed}, actor_id)
-            return {"task_id": task_id, "passed": passed, "event_sequence": event["task_sequence"], "passed_verifications": row["passed_verifications"] + int(passed)}
+            passed_count = sum(self._verification_results_locked(tenant_id, task_id).values())
+            self._connection.execute("UPDATE task SET passed_verifications=?,updated_at=? WHERE task_id=?", (passed_count, utc_now(), task_id))
+            return {"task_id": task_id, "passed": passed, "event_sequence": event["task_sequence"], "passed_verifications": passed_count}
 
     def events(self, tenant_id: str, task_id: str, *, after_sequence: int = 0, limit: int = 100) -> dict[str, Any]:
         tenant_id = require_uuid(tenant_id, "tenant_id")
@@ -709,6 +736,10 @@ class DurableStore:
                 if existing["tenant_id"] != tenant_id:
                     raise LeaseConflictError("workspace is not available")
                 if (existing["owner_execution_id"] == lease.owner_execution_id and existing["repository_id"] == lease.repository_id and existing["base_revision"] == lease.base_revision):
+                    if int(existing["generation"]) != lease.generation:
+                        raise StaleGenerationError("workspace lease generation is stale")
+                    if existing["lease_expires_at"] <= now:
+                        raise LeaseConflictError("workspace lease has expired")
                     return {"bound": True, "idempotent": True, "lease": self._lease_dict(existing)}
                 raise LeaseConflictError("workspace_owned_by_other_execution")
             self._ensure_tenant_locked(tenant_id)
@@ -739,6 +770,8 @@ class DurableStore:
             if row["owner_execution_id"] != owner_execution_id or int(row["generation"]) != generation:
                 raise StaleGenerationError("workspace lease generation is stale")
             now = utc_now()
+            if row["lease_expires_at"] <= now:
+                raise LeaseConflictError("workspace lease has expired")
             self._connection.execute("UPDATE workspace_lease SET heartbeat_at=?,lease_expires_at=?,updated_at=? WHERE workspace_id=?", (now, utc_after(lease_seconds), now, workspace_id))
             return self._lease_dict(self._connection.execute("SELECT * FROM workspace_lease WHERE workspace_id=?", (workspace_id,)).fetchone())
 
@@ -771,14 +804,22 @@ class DurableStore:
         with self._write():
             self._task_locked(tenant_id, task_id)
             now = utc_now()
+            if workspace_id is not None:
+                lease = self._connection.execute("SELECT * FROM workspace_lease WHERE tenant_id=? AND workspace_id=?", (tenant_id, workspace_id)).fetchone()
+                if lease is None:
+                    raise NotFoundError("workspace lease not found")
+                if lease["owner_execution_id"] != owner_execution_id:
+                    raise StaleGenerationError("checkpoint owner does not own the workspace lease")
+                if lease["lease_expires_at"] <= now:
+                    raise LeaseConflictError("workspace lease has expired")
             self._connection.execute("INSERT INTO checkpoint(checkpoint_id,tenant_id,task_id,workspace_id,owner_execution_id,state_json,workspace_digest,created_at) VALUES(?,?,?,?,?,?,?,?)", (checkpoint_id, tenant_id, task_id, workspace_id, owner_execution_id, self._json(dict(state)), workspace_digest, now))
             return {"checkpoint_id": checkpoint_id, "tenant_id": tenant_id, "task_id": task_id, "workspace_id": workspace_id, "owner_execution_id": owner_execution_id, "created_at": now}
 
     def begin_tool_call(self, tenant_id: str, invocation: ToolInvocation, identity: ExecutorIdentity) -> dict[str, Any]:
         tenant_id = require_uuid(tenant_id, "tenant_id")
-        self.assert_active_executor(tenant_id, invocation.environment_id, identity)
         with self._write():
-            self._task_locked(tenant_id, invocation.task_id)
+            self.assert_active_executor(tenant_id, invocation.environment_id, identity)
+            task = self._task_locked(tenant_id, invocation.task_id)
             existing = self._connection.execute("SELECT * FROM tool_call WHERE tenant_id=? AND task_id=? AND idempotency_key=?", (tenant_id, invocation.task_id, invocation.idempotency_key)).fetchone()
             if existing:
                 if existing["request_digest"] != invocation.request_digest:
@@ -786,10 +827,16 @@ class DurableStore:
                 if existing["result_json"] is not None:
                     return {"replayed": True, "result": ToolResult.from_dict(self._decode(existing["result_json"]))}
                 raise ConflictError("tool call is already in progress")
+            self._assert_tool_task_state(task["state"])
             now = utc_now()
             self._connection.execute("INSERT INTO tool_call(call_id,tenant_id,task_id,environment_id,authority_snapshot_id,capability,request_digest,idempotency_key,executor_id,executor_generation,state,started_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", (invocation.call_id, tenant_id, invocation.task_id, invocation.environment_id, invocation.authority_snapshot_id, invocation.capability, invocation.request_digest, invocation.idempotency_key, identity.executor_id, identity.generation, "REQUESTED", now))
             self._append_event_locked(tenant_id, invocation.task_id, "tool.requested", {"call_id": invocation.call_id, "capability": invocation.capability, "executor_generation": identity.generation}, "runtime")
             return {"replayed": False, "call_id": invocation.call_id, "state": "REQUESTED"}
+
+    @staticmethod
+    def _assert_tool_task_state(state: str) -> None:
+        if TaskState(state) not in {TaskState.CREATED, TaskState.QUEUED, TaskState.PLANNING, TaskState.RUNNING, TaskState.VERIFYING}:
+            raise ConflictError("task state does not allow tool execution: " + state)
 
     def mark_tool_executing(self, tenant_id: str, call_id: str, identity: ExecutorIdentity) -> None:
         tenant_id = require_uuid(tenant_id, "tenant_id")
@@ -799,8 +846,11 @@ class DurableStore:
             if row is None:
                 raise NotFoundError("tool call not found")
             self.assert_active_executor(tenant_id, row["environment_id"], identity)
+            if row["executor_id"] != identity.executor_id or int(row["executor_generation"]) != identity.generation:
+                raise StaleGenerationError("tool call belongs to a different executor generation")
             if row["state"] != "REQUESTED":
                 raise ConflictError("tool call is not requestable")
+            self._assert_tool_task_state(self._task_locked(tenant_id, row["task_id"])["state"])
             self._connection.execute("UPDATE tool_call SET state='EXECUTING' WHERE tenant_id=? AND call_id=?", (tenant_id, call_id))
 
     def complete_tool_call(self, tenant_id: str, call_id: str, identity: ExecutorIdentity, result: ToolResult) -> ToolResult:
@@ -813,8 +863,15 @@ class DurableStore:
             if row is None:
                 raise NotFoundError("tool call not found")
             self.assert_active_executor(tenant_id, row["environment_id"], identity)
+            if row["executor_id"] != identity.executor_id or int(row["executor_generation"]) != identity.generation:
+                raise StaleGenerationError("tool call belongs to a different executor generation")
             if row["result_json"] is not None:
-                return ToolResult.from_dict(self._decode(row["result_json"]))
+                previous = ToolResult.from_dict(self._decode(row["result_json"]))
+                if previous.to_dict() != result.to_dict():
+                    raise ConflictError("tool completion differs from the durable result")
+                return previous
+            if row["state"] != "EXECUTING":
+                raise ConflictError("tool call has not started execution")
             now = utc_now()
             self._connection.execute("UPDATE tool_call SET state=?,result_json=?,finished_at=? WHERE tenant_id=? AND call_id=?", (result.status.upper(), self._json(result.to_dict()), now, tenant_id, call_id))
             self._append_event_locked(tenant_id, row["task_id"], "tool.completed" if result.status == "completed" else "tool.failed", {"call_id": call_id, "status": result.status, "executor_generation": identity.generation}, "runtime")

@@ -70,7 +70,7 @@ TASK_TRANSITIONS: dict[TaskState, frozenset[TaskState]] = {
     TaskState.WAITING_APPROVAL: frozenset({TaskState.RUNNING, TaskState.CANCEL_REQUESTED, TaskState.CANCELLED}),
     TaskState.PAUSED: frozenset({TaskState.QUEUED, TaskState.RUNNING, TaskState.CANCEL_REQUESTED, TaskState.CANCELLED}),
     TaskState.CANCEL_REQUESTED: frozenset({TaskState.CANCELLED}),
-    TaskState.RETRY_QUEUED: frozenset({TaskState.RUNNING, TaskState.CANCELLED}),
+    TaskState.RETRY_QUEUED: frozenset({TaskState.RUNNING, TaskState.CANCEL_REQUESTED, TaskState.CANCELLED}),
     TaskState.CANCELLED: frozenset(),
     TaskState.SUCCEEDED: frozenset(),
     TaskState.FAILED: frozenset({TaskState.RETRY_QUEUED}),

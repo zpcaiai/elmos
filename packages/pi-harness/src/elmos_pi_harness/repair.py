@@ -71,8 +71,8 @@ class FailureClassifier:
     @classmethod
     def classify(cls, error_text: str, exit_code: int | None = None) -> FailureClassification:
         suspect_files: list[str] = []
-        for match in cls._FILE_PATTERN.finditer(error_text):
-            path = match.group(1) or match.group(2)
+        for file_match in cls._FILE_PATTERN.finditer(error_text):
+            path = file_match.group(1) or file_match.group(2)
             if path and path not in suspect_files and not path.startswith(("/usr/", "/opt/", "<")):
                 suspect_files.append(path)
 
@@ -402,5 +402,4 @@ class SelfHealingController:
         digest = f"sha256:{hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()}"
         data["evidence_digest"] = digest
         return data
-
 

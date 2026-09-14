@@ -39,6 +39,10 @@ Production-facing code surfaces are also implemented:
 
 Run locally:
 
+The [foundation regression closure](docs/FOUNDATION_CLOSURE_20260914.md)
+documents scheduling, cancellation, recovery, quota and verification behavior,
+including replay commands and external evidence boundaries.
+
 ```bash
 python3 -m pip install -e 'packages/pi-harness[production,dev]'
 make -C packages/pi-harness test

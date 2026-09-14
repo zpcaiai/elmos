@@ -18,9 +18,11 @@ class ModelTurn:
     def __post_init__(self) -> None:
         if self.kind not in {"final", "tool"}:
             raise ValueError("model turn kind must be final or tool")
-        if self.kind == "final" and not self.text:
+        if self.kind == "final" and (not isinstance(self.text, str) or not self.text.strip()):
             raise ValueError("final model turn requires text")
-        if self.kind == "tool" and self.tool is None:
+        if self.kind == "final" and self.tool is not None:
+            raise ValueError("final model turn cannot carry a tool invocation")
+        if self.kind == "tool" and not isinstance(self.tool, ToolInvocation):
             raise ValueError("tool model turn requires a ToolInvocation")
 
 
@@ -39,7 +41,7 @@ ToolExecutor = Callable[[ToolInvocation], ToolResult]
 
 class AgentLoop:
     def __init__(self, *, max_turns: int = 32) -> None:
-        if max_turns < 1 or max_turns > 10_000:
+        if type(max_turns) is not int or max_turns < 1 or max_turns > 10_000:
             raise ValueError("max_turns out of range")
         self.max_turns = max_turns
 
@@ -51,14 +53,22 @@ class AgentLoop:
             if cancelled and cancelled():
                 return AgentRun("cancelled", None, turn_number - 1, tuple(results), tuple(events))
             decision = model(tuple(context))
+            if not isinstance(decision, ModelTurn):
+                raise TypeError("model must return a ModelTurn")
             events.append({"type": "model.turn", "turn": turn_number, "kind": decision.kind})
+            if cancelled and cancelled():
+                return AgentRun("cancelled", None, turn_number, tuple(results), tuple(events))
             if decision.kind == "final":
                 return AgentRun("completed", decision.text, turn_number, tuple(results), tuple(events))
             assert decision.tool is not None
             result = execute_tool(decision.tool)
+            if not isinstance(result, ToolResult):
+                raise TypeError("tool executor must return a ToolResult")
             if result.call_id != decision.tool.call_id:
                 raise ValueError("tool executor returned a different call_id")
             results.append(result)
             context.append({"role": "tool", "call_id": result.call_id, "result": result.to_dict()})
             events.append({"type": "tool.result", "turn": turn_number, "call_id": result.call_id, "status": result.status})
+            if cancelled and cancelled():
+                return AgentRun("cancelled", None, turn_number, tuple(results), tuple(events))
         return AgentRun("turn_limit_exceeded", None, self.max_turns, tuple(results), tuple(events))
