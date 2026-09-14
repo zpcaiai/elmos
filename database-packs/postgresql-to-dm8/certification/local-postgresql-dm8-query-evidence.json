@@ -301,7 +301,7 @@
     "implementationStatus": "LOCAL_ADAPTER",
     "label": "DM8",
     "timeZone": "Asia/Shanghai",
-    "version": "8.1.3.140"
+    "version": "8.1.4.6"
   },
   "targetSql": "SELECT\n  id,\n  tenant_id,\n  amount_cents,\n  created_at\nFROM orders\nWHERE\n  tenant_id = :p1\nORDER BY\n  created_at DESC\nFETCH FIRST 10 ROWS ONLY;\n",
   "verification": {

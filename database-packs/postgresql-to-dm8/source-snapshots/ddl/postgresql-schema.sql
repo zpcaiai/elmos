@@ -47,8 +47,10 @@ CREATE FUNCTION orders_audit_update() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO order_audit(order_id, tenant_id, old_amount, new_amount)
-    VALUES (OLD.id, OLD.tenant_id, OLD.amount, NEW.amount);
+    INSERT INTO order_audit(
+        order_id, tenant_id, old_amount, new_amount, changed_at
+    )
+    VALUES (OLD.id, OLD.tenant_id, OLD.amount, NEW.amount, NEW.updated_at);
     RETURN NEW;
 END;
 $$;

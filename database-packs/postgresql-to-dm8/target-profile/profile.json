@@ -5,9 +5,9 @@
   "owner": "ELMOS ChinaDB Adapter Maintainers",
   "engine": "dm8",
   "versions": [
-    "8.1.3.140"
+    "8.1.4.6"
   ],
-  "patch_version": "8.1.3.140",
+  "patch_version": "rev244896",
   "edition": "enterprise",
   "dialect": "dm8-oracle-compatible",
   "driver_versions": [
@@ -22,9 +22,17 @@
       "dmserver --version",
       "disql SELECT id_code FROM v$instance"
     ],
-    "image_digests": [],
-    "image_digest_status": "NOT_PROVISIONED",
-    "required_architecture": "operator-selected-exact-linux-architecture"
+    "image_reference": "dm8_single:dm8_20241022_rev244896_x86_rh6_64",
+    "image_source": "https://download.dameng.com/eco/dm8/dm8_20241022_x86_rh6_64_single.tar",
+    "image_digests": [
+      "sha256:f745b299b7623ece3a82fcb072b259d8dad4c131ee4cda4c316a2da91dea79a7"
+    ],
+    "image_digest_status": "LOCAL_TAR_IMAGE_ID_PINNED",
+    "required_architecture": "linux/amd64",
+    "server_build_identifier": "03134284294-20241009-244896-20119",
+    "driver_artifact_digests": {
+      "dm-jdbc:8.1.3.140": "sha256:9af4ff4d6ed15948507f528a18ab9b7196b3600d9169ad7998c19869031a3c6f"
+    }
   },
   "health_check": {
     "query": "SELECT 1"
@@ -49,7 +57,7 @@
     "rls": {
       "mode": "DBMS_RLS_ENABLE_RLS_1_NON_MPP",
       "enable_rls": 1,
-      "initialization": "SP_INIT_RLS_SYS(1)",
+      "initialization": "SP_CREATE_SYSTEM_PACKAGES(1,'DBMS_RLS')_IF_ABSENT",
       "mpp_supported": false
     }
   }

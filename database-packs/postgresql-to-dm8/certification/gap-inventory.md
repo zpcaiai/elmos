@@ -3,11 +3,14 @@
 Repository-owned local query preparation is complete for the declared bounded
 scope. It does not close the following external gates:
 
-- Provision licensed, disposable PostgreSQL 17.5 and DM8 8.1.3.140 Enterprise
-  engines with the exact drivers, compatibility mode, charset, collation, and
-  timezone recorded by the pack. Record immutable source/target image and
-  driver digests, exact patch output, and an Enterprise-license verification
-  receipt; every one is currently `NOT_RUN` / unprovisioned.
+- Replace the default trial key with a formal Enterprise license for the pinned
+  DM8 8.1.4.6 rev244896 Linux/amd64 image and verify it through `V$LICENSE`.
+- Provision licensed, disposable PostgreSQL 17.5 and DM8 8.1.4.6 rev244896
+  Enterprise engines with the exact drivers, compatibility mode, charset, collation, and
+  timezone recorded by the pack. Reverify the locally pinned source/target
+  image and driver identities, exact patch output, and an Enterprise-license
+  verification receipt in the external environment; that external evidence is
+  currently `NOT_RUN` / unprovisioned.
 - Execute source and target schema, query, type-boundary, transaction,
   constraint, security, and failure-path workloads.
 - Use independent holdout and representative corpora; the reserved directories

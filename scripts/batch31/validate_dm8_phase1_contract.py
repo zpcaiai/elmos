@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the fail-closed PostgreSQL 17.5 -> DM8 8.1.3.140 Phase-1 contract.
+"""Validate the fail-closed PostgreSQL 17.5 -> DM8 8.1.4.6 Phase-1 contract.
 
 This validator checks repository-owned structure and exact pins. It never
 executes a database and never produces a certification decision.
@@ -42,6 +42,7 @@ GATE_IDS = {f"DM8-P1-{index:02d}" for index in range(1, 9)}
 REQUIRED_FILES = {
     "source-snapshots/ddl/postgresql-schema.sql",
     "target-profile/ddl/dm8-schema.sql",
+    "target-profile/ddl/dm8-security-admin.sql",
     "target-profile/ddl/dm8-security.sql",
     "target-profile/config/dm8-rls-bootstrap.sql",
     "corpus/development/dm8-phase1-cases.json",
@@ -115,7 +116,7 @@ def validate(pack: Path, repo_root: Path) -> tuple[list[str], list[str]]:
     }
     exact_target = {
         "engine": "dm8",
-        "versions": ["8.1.3.140"],
+        "versions": ["8.1.4.6"],
         "edition": "enterprise",
         "driver_versions": ["dm-jdbc:8.1.3.140"],
         "charset": "UTF-8",
@@ -127,7 +128,26 @@ def validate(pack: Path, repo_root: Path) -> tuple[list[str], list[str]]:
     for field, expected in exact_target.items():
         _require_equal(errors, f"target.{field}", manifest_target.get(field), expected)
         _require_equal(errors, f"target profile.{field}", target.get(field), expected)
-    _require_equal(errors, "target patch", target.get("patch_version"), "8.1.3.140")
+    _require_equal(errors, "target patch", target.get("patch_version"), "rev244896")
+    provision = target.get("provision", {})
+    _require_equal(
+        errors,
+        "target image digest",
+        provision.get("image_digests"),
+        ["sha256:f745b299b7623ece3a82fcb072b259d8dad4c131ee4cda4c316a2da91dea79a7"],
+    )
+    _require_equal(
+        errors,
+        "target build identifier",
+        provision.get("server_build_identifier"),
+        "03134284294-20241009-244896-20119",
+    )
+    _require_equal(
+        errors,
+        "target JDBC artifact digest",
+        provision.get("driver_artifact_digests", {}).get("dm-jdbc:8.1.3.140"),
+        "sha256:9af4ff4d6ed15948507f528a18ab9b7196b3600d9169ad7998c19869031a3c6f",
+    )
     providers = target.get("providers", {})
     _require_equal(
         errors,
@@ -147,7 +167,7 @@ def validate(pack: Path, repo_root: Path) -> tuple[list[str], list[str]]:
         errors,
         "DM8 RLS initialization",
         rls.get("initialization"),
-        "SP_INIT_RLS_SYS(1)",
+        "SP_CREATE_SYSTEM_PACKAGES(1,'DBMS_RLS')_IF_ABSENT",
     )
     _require_equal(errors, "DM8 RLS MPP support", rls.get("mpp_supported"), False)
 
@@ -208,6 +228,25 @@ def validate(pack: Path, repo_root: Path) -> tuple[list[str], list[str]]:
         errors,
         "CDC duplicate effects",
         cdc.get("acceptance", {}).get("duplicateEffectCount"),
+        0,
+    )
+    lag_gate = cdc.get("lagGate", {})
+    _require_equal(
+        errors,
+        "CDC steady-state lag threshold",
+        lag_gate.get("maximumSteadyStateMilliseconds"),
+        10000,
+    )
+    _require_equal(
+        errors,
+        "CDC recovery lag threshold",
+        lag_gate.get("maximumRecoveryMilliseconds"),
+        120000,
+    )
+    _require_equal(
+        errors,
+        "CDC pending WAL bytes gate",
+        lag_gate.get("pendingWalBytesMaximumAtGate"),
         0,
     )
     target_ledger = cdc.get("targetTransactionLedger", {})
@@ -302,6 +341,17 @@ def validate(pack: Path, repo_root: Path) -> tuple[list[str], list[str]]:
         and "elmos_cdc_event_ledger" not in target_schema.read_text()
     ):
         errors.append("target schema is missing the atomic CDC event ledger")
+    if (
+        target_schema.is_file()
+        and "elmos_target_window_journal" not in target_schema.read_text()
+    ):
+        errors.append("target schema is missing the rollback target-window journal")
+    _require_equal(
+        errors,
+        "target-window journal",
+        cutover.get("targetWindowJournal", {}).get("table"),
+        "elmos_target_window_journal",
+    )
 
     if manifest.get("status") == "certified":
         errors.append("pack cannot be certified without external Phase-1 evidence")

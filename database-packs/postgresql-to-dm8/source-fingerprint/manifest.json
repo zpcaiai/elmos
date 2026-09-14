@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "postgresql-to-dm8",
-  "snapshot_digest": "sha256:f30779e30460689f0b7f26e20f085cbfa678a6fdba454a66300571ee8045c4b1",
+  "snapshot_digest": "sha256:4bf010917906e975060780094b6a4257ef6955fee82191382e603c6ec39538c9",
   "engine_facts": {
     "engine": "postgresql",
     "version": "17.5",

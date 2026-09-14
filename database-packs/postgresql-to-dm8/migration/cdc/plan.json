@@ -4,6 +4,12 @@
   "deliverySemantics": "AT_LEAST_ONCE_WITH_IDEMPOTENT_EFFECTS",
   "sourcePosition": "postgresql-lsn",
   "checkpointDurability": "FSYNC_AND_ATOMIC_REPLACE_OR_EXTERNAL_DURABLE_STORE",
+  "lagGate": {
+    "measurement": "SOURCE_COMMIT_TO_TARGET_COMMIT_UPPER_BOUND",
+    "maximumSteadyStateMilliseconds": 10000,
+    "maximumRecoveryMilliseconds": 120000,
+    "pendingWalBytesMaximumAtGate": 0
+  },
   "targetTransactionLedger": {
     "table": "elmos_cdc_event_ledger",
     "atomicWithTargetMutation": true,
