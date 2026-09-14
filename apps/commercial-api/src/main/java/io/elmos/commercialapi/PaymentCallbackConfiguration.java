@@ -269,6 +269,7 @@ public class PaymentCallbackConfiguration {
     ElmPayCheckoutGateway elmPayCheckoutGateway(
             ObjectMapper objectMapper,
             @Value("${elmos.billing.elmpay.base-url:}") String baseUrl,
+            @Value("${elmos.billing.elmpay.checkout-public-base-url:}") String checkoutPublicBaseUrl,
             @Value("${elmos.billing.elmpay.project-id:}") String projectId,
             @Value("${elmos.billing.elmpay.api-token-file:}") String tokenFile,
             @Value("${elmos.billing.elmpay.return-route-id:elmos-payment-complete}")
@@ -283,7 +284,8 @@ public class PaymentCallbackConfiguration {
         var catalog = PricingPlanCatalog.chinaSelfServeDraft();
         return new ElmPayCheckoutGateway(
                 PaymentProvider.parse(catalog.paymentProvider()), URI.create(required(baseUrl,
-                        "ELMPay base URL")), UUID.fromString(required(projectId,
+                        "ELMPay base URL")), URI.create(required(checkoutPublicBaseUrl,
+                        "ELMPay checkout public base URL")), UUID.fromString(required(projectId,
                         "ELMPay project ID")), returnRouteId, allowHttp,
                 Path.of(required(tokenFile, "ELMPay API token file")),
                 elmPayHttpClient(allowHttp, keyStoreFile, keyStorePasswordFile,

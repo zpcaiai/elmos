@@ -216,6 +216,79 @@ class JdbcCommercialOrderStoreLiveTest {
     }
 
     @Test
+    void concurrentOrderCreationConvergesAndWalletDailyCapCannotBeRaced() throws Exception {
+        String suffix = UUID.randomUUID().toString();
+        String commercialOrg = "commercial-create-race-" + suffix;
+        insertOrganization(commercialOrg);
+        String idempotency = "commercial-create-race-idem-" + suffix;
+        try (var executor = Executors.newFixedThreadPool(2)) {
+            List<Callable<String>> calls = java.util.stream.IntStream.range(0, 2)
+                    .<Callable<String>>mapToObj(index -> () -> createOrder(
+                            commercialOrg, "actor-a", "race-order-" + index + "-" + suffix,
+                            "elmos-credit-500", null, idempotency))
+                    .toList();
+            var results = executor.invokeAll(calls);
+            assertEquals(results.get(0).get(), results.get(1).get());
+        }
+        assertEquals(1, count("select count(*) from commercial_orders "
+                + "where organization_id = ?", commercialOrg));
+
+        String walletOrg = "wallet-create-race-" + suffix;
+        insertOrganization(walletOrg);
+        admin.sql("insert into wallet_topup_policies(organization_id, min_amount_minor, "
+                        + "max_amount_minor, daily_amount_limit_minor, updated_by) "
+                        + "values (?, 100, 1000, 1000, 'test')")
+                .param(walletOrg).update();
+        WalletPort wallet = new JdbcWalletStore(
+                admin, new TransactionTemplate(new DataSourceTransactionManager(adminDataSource)));
+        try (var executor = Executors.newFixedThreadPool(2)) {
+            List<Callable<Boolean>> calls = java.util.stream.IntStream.range(0, 2)
+                    .<Callable<Boolean>>mapToObj(index -> () -> {
+                        try {
+                            String order = "daily-cap-race-" + index + "-" + suffix;
+                            wallet.createTopupOrder(order, walletOrg, "actor-a",
+                                    new BigDecimal("600"), "ALIPAY", order,
+                                    "daily-cap-race-idem-" + index + "-" + suffix, 1800);
+                            return true;
+                        } catch (WalletPort.WalletStateException refused) {
+                            assertEquals("ELMOS_WALLET_TOPUP_DAILY_LIMIT_EXCEEDED", refused.code());
+                            return false;
+                        }
+                    }).toList();
+            long accepted = 0;
+            for (var future : executor.invokeAll(calls)) if (future.get()) accepted++;
+            assertEquals(1, accepted);
+        }
+        assertEquals(1, count("select count(*) from wallet_topup_orders "
+                + "where organization_id = ?", walletOrg));
+
+        // An abandoned unpaid checkout must release the daily cap after its TTL.
+        // The stored CREATED state intentionally remains untouched so a late provider
+        // success still follows the existing paid-after-expiry reconciliation path.
+        admin.sql("update wallet_topup_orders set created_at = now() - interval '2 hours', "
+                        + "expires_at = now() - interval '1 hour' "
+                        + "where organization_id = ? and status = 'CREATED'")
+                .param(walletOrg).update();
+        String afterExpiry = "after-expiry-" + suffix;
+        assertEquals(afterExpiry, wallet.createTopupOrder(
+                afterExpiry, walletOrg, "actor-a", new BigDecimal("600"), "ALIPAY",
+                afterExpiry, "after-expiry-idem-" + suffix, 1800));
+        assertEquals(2, count("select count(*) from wallet_topup_orders "
+                + "where organization_id = ?", walletOrg));
+
+        String existing = "wallet-replay-" + suffix;
+        String replayKey = "wallet-replay-idem-" + suffix;
+        assertEquals(existing, wallet.createTopupOrder(existing, walletOrg, "actor-a",
+                new BigDecimal("100"), "ALIPAY", existing, replayKey, 1800));
+        WalletPort.WalletStateException conflict = assertThrows(
+                WalletPort.WalletStateException.class,
+                () -> wallet.createTopupOrder("wallet-replay-other-" + suffix,
+                        walletOrg, "actor-a", new BigDecimal("200"), "ALIPAY",
+                        "wallet-replay-other-" + suffix, replayKey, 1800));
+        assertEquals("ELMOS_WALLET_TOPUP_IDEMPOTENCY_CONFLICT", conflict.code());
+    }
+
+    @Test
     void expiredGenerationReservationReleasesCreditsAndEntitlements() {
         String suffix = UUID.randomUUID().toString();
         String organization = "commercial-expiry-" + suffix;

@@ -1,3 +1,5 @@
+import { describeCheckoutHandoffProblem } from "../checkoutHandoffPolicy";
+
 /**
  * 充值请求与交接响应的校验规则。
  *
@@ -76,12 +78,6 @@ export function requireTopupAmountMinor(body: unknown): number {
   return amountMinor;
 }
 
-type HandoffShape = {
-  paymentProvider?: unknown;
-  checkoutUrl?: unknown;
-  qrCodeUrl?: unknown;
-};
-
 /**
  * 交接响应必须<b>恰好</b>是跳转型或扫码型之一。
  *
@@ -93,28 +89,26 @@ type HandoffShape = {
  * 两种都必须挡下，所以判据是 hasRedirect === hasQrCode。
  */
 export function describeTopupHandoffProblem(payload: unknown): string | null {
-  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
-    return "充值交接响应不是对象";
+  if (payload !== null && typeof payload === "object" && !Array.isArray(payload)) {
+    const body = payload as Record<string, unknown>;
+    const status = body.status;
+    // 幂等重放可能读到已经付款/入账的原订单。终态不应再携带可付款入口，
+    // 否则用户可能为同一笔充值再次付款。
+    if (status === "PAID" || status === "CREDITED") {
+      if (typeof body.topupOrderId !== "string" || !ORDER_PATTERN.test(body.topupOrderId)) {
+        return "终态充值交接响应缺少可识别的 topupOrderId";
+      }
+      if (typeof body.paymentProvider !== "string"
+          || !TOPUP_PROVIDERS.has(body.paymentProvider)) {
+        return "终态充值交接响应缺少可识别的 paymentProvider";
+      }
+      if (body.checkoutSurface != null || body.checkoutUrl != null || body.qrCodeUrl != null) {
+        return "终态充值订单不得再次返回付款入口";
+      }
+      return null;
+    }
   }
-  const body = payload as HandoffShape;
-  const provider = body.paymentProvider;
-  if (typeof provider !== "string" || !TOPUP_PROVIDERS.has(provider)) {
-    return "充值交接响应缺少可识别的 paymentProvider";
-  }
-  const hasRedirect = typeof body.checkoutUrl === "string" && body.checkoutUrl.length > 0;
-  const hasQrCode = typeof body.qrCodeUrl === "string" && body.qrCodeUrl.length > 0;
-  if (hasRedirect === hasQrCode) {
-    return hasRedirect
-      ? "充值交接同时给了跳转地址与二维码，无法判定支付方式"
-      : "充值交接既没有跳转地址也没有二维码";
-  }
-  if (provider === "WECHAT_PAY_NATIVE" && !hasQrCode) {
-    return "微信 Native 支付必须返回二维码内容";
-  }
-  if (provider !== "WECHAT_PAY_NATIVE" && !hasRedirect) {
-    return `${provider} 必须返回跳转地址`;
-  }
-  return null;
+  return describeCheckoutHandoffProblem(payload, false);
 }
 
 /**

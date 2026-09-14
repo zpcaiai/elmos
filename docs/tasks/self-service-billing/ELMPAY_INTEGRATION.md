@@ -24,7 +24,8 @@ ELMPay 不向 webhook 暴露原始业务订单号。ELMOS 为订阅、钱包充�
 
 必须配置：
 
-- `ELMOS_ELMPAY_BASE_URL`、`ELMOS_ELMPAY_TENANT_ID`、`ELMOS_ELMPAY_PROJECT_ID`
+- `ELMOS_ELMPAY_BASE_URL`、`ELMOS_ELMPAY_CHECKOUT_PUBLIC_BASE_URL`、
+  `ELMOS_ELMPAY_TENANT_ID`、`ELMOS_ELMPAY_PROJECT_ID`
 - `ELMOS_ELMPAY_API_TOKEN_FILE`（短期、项目绑定 token 的 0400 挂载文件）
 - `ELMOS_ELMPAY_WEBHOOK_KEY_ID`、`ELMOS_ELMPAY_WEBHOOK_SECRET_FILE`
 - `ELMOS_ELMPAY_RETURN_ROUTE_ID`
@@ -40,6 +41,9 @@ ELMPay 不向 webhook 暴露原始业务订单号。ELMOS 为订阅、钱包充�
 ## ELMPay 侧要求
 
 - API 主体的 tenant/project/merchant 与 ELMOS 配置完全一致，并具备 checkout 写权限。
+- `ELMOS_ELMPAY_CHECKOUT_PUBLIC_BASE_URL` 必须与 ELMPay 的
+  `ELMPAY_CHECKOUT_PUBLIC_BASE_URL` 完全一致（不含 query/fragment）；ELMOS 会校验响应 URL
+  的公开基址、`session` 与响应 session ID 的绑定及片段 token，任一不一致都不会交给浏览器。
 - 为同一 tenant/project 注册状态为 `ACTIVE` 的 ELMOS HTTPS webhook endpoint。
 - 为该 project 注册有效的 signing key；ELMOS 挂载的是同一 key ID 对应的 32..128
   字节 secret，轮换时保留重叠窗口。
