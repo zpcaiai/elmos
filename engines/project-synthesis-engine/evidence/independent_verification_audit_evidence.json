@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "business_line": "多语言项目生成 (/generation - Business Line 5)",
   "audit_profile": "INDEPENDENT_VERIFICATION_GATE_V1",
-  "generated_at": "2026-09-14T10:58:54.892515+00:00",
+  "generated_at": "2026-09-14T14:46:26.195879+00:00",
   "runner": {
     "os": "darwin",
     "python_version": "3.12.12",
@@ -18,7 +18,7 @@
     "total_suites_executed": 7,
     "total_tests_executed": 47,
     "total_tests_passed": 47,
-    "total_duration_seconds": 20.637
+    "total_duration_seconds": 2.728
   },
   "suites": [
     {
@@ -31,11 +31,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 6.659,
+      "duration_seconds": 0.262,
       "passed": true,
       "tests_passed": 13,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 13 items\n\ntests/test_production_relations.py .............                         [100%]\n\n============================== 13 passed in 0.74s ==============================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 13 items\n\ntests/test_production_relations.py .............                         [100%]\n\n============================== 13 passed in 0.06s ==============================",
       "phase": "Phase 1: Polyglot Multi-Entity Relations",
       "file_sha256": "7304fd4a5c181550cb097650b87895f7859247535786dea337ce714ceb9f084b"
     },
@@ -49,11 +49,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 2.601,
+      "duration_seconds": 0.347,
       "passed": true,
       "tests_passed": 7,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 8 items\n\ntests/test_mysql_generation.py .......s                                  [100%]\n\n========================= 7 passed, 1 skipped in 0.35s =========================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 8 items\n\ntests/test_mysql_generation.py .......s                                  [100%]\n\n========================= 7 passed, 1 skipped in 0.11s =========================",
       "phase": "Phase 2: MySQL 8.x Persistence Profiles",
       "file_sha256": "70c0adf57490dde84e6c90486dee6f3bcb9f6ba6e390be2b460b3cd6f6a9e71c"
     },
@@ -67,11 +67,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 1.811,
+      "duration_seconds": 0.252,
       "passed": true,
       "tests_passed": 7,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 7 items\n\ntests/test_polyglot_multi_entity_and_mysql.py .......                    [100%]\n\n============================== 7 passed in 0.21s ===============================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 7 items\n\ntests/test_polyglot_multi_entity_and_mysql.py .......                    [100%]\n\n============================== 7 passed in 0.06s ===============================",
       "phase": "Phase 1-2: Polyglot Multi-Entity & MySQL Generation",
       "file_sha256": "d40a298807c048cc20ca1ac6733ad867f83b4d4ce93dfeae5d0dad09fa46e0d0"
     },
@@ -85,11 +85,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 1.619,
+      "duration_seconds": 0.682,
       "passed": true,
       "tests_passed": 6,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 6 items\n\ntests/test_enterprise_middleware_generation.py ......                    [100%]\n\n============================== 6 passed in 0.72s ===============================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 6 items\n\ntests/test_enterprise_middleware_generation.py ......                    [100%]\n\n============================== 6 passed in 0.48s ===============================",
       "phase": "Phase 3: Enterprise Distributed Middleware",
       "file_sha256": "a524fd6e71bba989a092deda16ef2924424912a16a8ae9ea5539aee93346574c"
     },
@@ -103,11 +103,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 3.608,
+      "duration_seconds": 0.347,
       "passed": true,
       "tests_passed": 3,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 3 items\n\ntests/test_hosted_runner_fleet_e2e_scheduler.py ...                      [100%]\n\n============================== 3 passed in 0.79s ===============================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 3 items\n\ntests/test_hosted_runner_fleet_e2e_scheduler.py ...                      [100%]\n\n============================== 3 passed in 0.14s ===============================",
       "phase": "Phase 4: Hosted Runner Fleet & Sandbox",
       "file_sha256": "1c1c9c594972069a6e539992d37592d73bee598414d640e217af1bf32eb29083"
     },
@@ -121,11 +121,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 2.184,
+      "duration_seconds": 0.423,
       "passed": true,
       "tests_passed": 5,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 5 items\n\ntests/test_backup_restore_and_sre_resilience.py .....                    [100%]\n\n============================== 5 passed in 0.94s ===============================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 5 items\n\ntests/test_backup_restore_and_sre_resilience.py .....                    [100%]\n\n============================== 5 passed in 0.24s ===============================",
       "phase": "Phase 5: Production SRE & RISK-SYNTHESIS-001",
       "file_sha256": "4b36eba9b416576e4fde3befe5356c9952207172f1d401491cdae0394b5258ca"
     },
@@ -139,11 +139,11 @@
         "-v"
       ],
       "exit_code": 0,
-      "duration_seconds": 2.124,
+      "duration_seconds": 0.411,
       "passed": true,
       "tests_passed": 6,
       "tests_failed": 0,
-      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 6 items\n\ntests/test_domain_pack_gen_scenarios.py ......                           [100%]\n\n============================== 6 passed in 0.17s ===============================",
+      "stdout_tail": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.12, pytest-9.0.3, pluggy-1.6.0\nrootdir: /Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine\nconfigfile: pyproject.toml\ncollected 6 items\n\ntests/test_domain_pack_gen_scenarios.py ......                           [100%]\n\n============================== 6 passed in 0.11s ===============================",
       "phase": "Phase 6: Domain Pack Scenarios GEN-001..006",
       "file_sha256": "9a6f46108e9b921742c35a4ad87afdb74d2c0c745d8ec009cc44244dedfcdbaf"
     }
