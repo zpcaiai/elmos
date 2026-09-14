@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .models import FileChange, MigrationCategory, MigrationPlan, MigrationResult, MigrationRule, RiskLevel
+from .java_ast import JavaASTRewriter
 
 
 @functools.lru_cache(maxsize=1024)
@@ -133,75 +134,23 @@ class RuleEngine:
     def rewrite_spring_mvc_annotations(self, code: str) -> Tuple[str, int]:
         """
         Rewrites deprecated or verbose Spring MVC @RequestMapping into modern
-        composed annotations (@GetMapping, @PostMapping, etc.) and maintains import hygiene.
-        Masks comments to prevent false positives in documentation or commented-out code.
+        composed annotations (@GetMapping, @PostMapping, etc.) via compiler-grade AST parsing
+        and structured AST visitor traversal, completely eliminating regex matching.
         """
-        masked = mask_comments_only(code)
-
-        method_mapping = {
-            "GET": "GetMapping",
-            "POST": "PostMapping",
-            "PUT": "PutMapping",
-            "DELETE": "DeleteMapping",
-            "PATCH": "PatchMapping",
-        }
-
-        # Case 1: path then method, e.g. @RequestMapping(value = "/api/orders", method = RequestMethod.GET)
-        p1 = r'@RequestMapping\s*\(\s*(?:(?:value|path)\s*=\s*)?(?P<path>"[^"]*")\s*,\s*method\s*=\s*RequestMethod\.(?P<method>[A-Z]+)\s*\)'
-        # Case 2: method then path, e.g. @RequestMapping(method = RequestMethod.GET, value = "/api/orders")
-        p2 = r'@RequestMapping\s*\(\s*method\s*=\s*RequestMethod\.(?P<method>[A-Z]+)\s*,\s*(?:(?:value|path)\s*=\s*)?(?P<path>"[^"]*")\s*\)'
-        # Case 3: method only, e.g. @RequestMapping(method = RequestMethod.GET)
-        p3 = r'@RequestMapping\s*\(\s*method\s*=\s*RequestMethod\.(?P<method>[A-Z]+)\s*\)'
-
-        matches = []
-        for rx_str in (p1, p2, p3):
-            rx = _compile_regex(rx_str)
-            for m in rx.finditer(masked):
-                matches.append((m.start(), m.end(), m.groupdict()))
-
-        if not matches:
-            return code, 0
-
-        # Replace backwards using exact character spans
-        matches.sort(key=lambda x: x[0], reverse=True)
-        count = 0
-        res = code
-        for start, end, gd in matches:
-            method = gd.get("method", "").upper()
-            path = gd.get("path")
-            composed = method_mapping.get(method)
-            if not composed:
-                continue
-            count += 1
-            replacement = f"@{composed}({path})" if path else f"@{composed}"
-            res = res[:start] + replacement + res[end:]
-
+        rewritten, count = JavaASTRewriter.rewrite_spring_mvc_annotations(code)
         if count > 0:
-            return self.normalize_imports(res), count
+            return self.normalize_imports(rewritten), count
         return code, 0
 
     def rewrite_webmvc_configurer_adapter(self, code: str) -> Tuple[str, int]:
         """
-        Rewrites deprecated 'extends WebMvcConfigurerAdapter' to 'implements WebMvcConfigurer'.
+        Rewrites deprecated 'extends WebMvcConfigurerAdapter' to 'implements WebMvcConfigurer'
+        via compiler-grade AST TypeDeclaration visitor traversal, completely eliminating regex matching.
         """
-        masked = mask_comments_only(code)
-        count = 0
-        res = code
-
-        # Class extends -> implements
-        matches = list(re.finditer(r"\bextends\s+WebMvcConfigurerAdapter\b", masked))
-        for m in sorted(matches, key=lambda x: x.start(), reverse=True):
-            res = res[:m.start()] + "implements WebMvcConfigurer" + res[m.end():]
-            count += 1
-
-        # Import replacement
-        masked_res = mask_comments_only(res)
-        import_matches = list(re.finditer(r"\borg\.springframework\.web\.servlet\.config\.annotation\.WebMvcConfigurerAdapter\b", masked_res))
-        for m in sorted(import_matches, key=lambda x: x.start(), reverse=True):
-            res = res[:m.start()] + "org.springframework.web.servlet.config.annotation.WebMvcConfigurer" + res[m.end():]
-            count += 1
-
-        return res, count
+        rewritten, count = JavaASTRewriter.rewrite_webmvc_configurer_adapter(code)
+        if count > 0:
+            return self.normalize_imports(rewritten), count
+        return code, 0
 
     def normalize_imports(self, code: str) -> str:
         """
