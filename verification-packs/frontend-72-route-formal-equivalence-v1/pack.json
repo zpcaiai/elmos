@@ -11,7 +11,7 @@
     "target_artifact_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb",
     "workload_key": "bounded-navigation-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:9a54837ed76686be97fcd2c49067afa6c556c7297edd2e808753bf6f00b0f56c"
+    "environment_digest": "sha256:9fdd401a215022ba72a3d5da52f4a76fc05891751040e58a3134e1f2edcf9be4"
   },
   "contracts": {
     "validation_profile": "validation-profile.json",
@@ -32,11 +32,11 @@
     "advanced-verification"
   ],
   "frontend_formal_route_campaign": "formal-campaign/frontend-formal-route-campaign.json",
-  "frontend_formal_campaign_digest": "sha256:ba1d4c809ca2f7de5a9ff155552c6a8540b1da16f395867ac8e63c987d40354d",
+  "frontend_formal_campaign_digest": "sha256:917c1059a26a6b9b0cdc040ddb97385c0a3a91f25b74185657906a61fa2313fb",
   "frontend_formal_scope_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb",
   "frontend_formal_peer": {
     "pack_key": "frontend-72-route-equivalence-v1",
-    "campaign_sha256": "sha256:ba1d4c809ca2f7de5a9ff155552c6a8540b1da16f395867ac8e63c987d40354d",
+    "campaign_sha256": "sha256:917c1059a26a6b9b0cdc040ddb97385c0a3a91f25b74185657906a61fa2313fb",
     "scope_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb"
   }
 }

@@ -131,6 +131,25 @@ class DependabotAlertEvidenceTest(unittest.TestCase):
                 queried_at=QUERIED_AT,
             )
 
+    def test_fixed_alert_sla_is_measured_without_counting_dismissals_as_compliant(self) -> None:
+        fixed_fast = alert(40, "fixed", "high")
+        fixed_fast.update({
+            "created_at": "2026-08-01T00:00:00Z",
+            "fixed_at": "2026-08-02T00:00:00Z",
+        })
+        fixed_slow = alert(41, "fixed", "high")
+        fixed_slow.update({
+            "created_at": "2026-08-01T00:00:00Z",
+            "fixed_at": "2026-08-10T00:00:00Z",
+        })
+        dismissed = alert(42, "dismissed", "high")
+        code, report = self.run_cli([fixed_fast, fixed_slow, dismissed])
+        self.assertEqual(0, code)
+        self.assertEqual(0.5, report["metrics"]["vulnerabilitySlaCompliance"])
+        self.assertEqual(2, report["vulnerabilitySla"]["evaluatedCount"])
+        self.assertEqual(1, report["vulnerabilitySla"]["breachCount"])
+        self.assertEqual({"dismissed": 1}, report["vulnerabilitySla"]["excludedStateCounts"])
+
 
 if __name__ == "__main__":
     unittest.main()

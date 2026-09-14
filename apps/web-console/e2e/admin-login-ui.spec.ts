@@ -88,6 +88,10 @@ test("admin navigation and commands require the server-issued admin session", as
   await expect(page.getByText("管理员会话", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "打开账户菜单" }).click();
   await expect(page.getByText("管理员会话", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "账户与组织" })).toHaveAttribute(
+    "href",
+    "/account",
+  );
   const mobileNavigationOverlay = page.getByRole("button", { name: "关闭导航遮罩" });
   if ((page.viewportSize()?.width ?? 0) <= 900) {
     await expect(mobileNavigationOverlay).toBeVisible();
@@ -130,6 +134,9 @@ test("ordinary users cannot discover admin navigation or admin commands", async 
   await page.goto("/");
   await expect(page.getByRole("button", { name: "打开账户菜单" })).toBeVisible();
   await expect(page.getByRole("link", { name: /运营管理端/ })).toHaveCount(0);
+  await page.getByRole("button", { name: "打开账户菜单" }).click();
+  await expect(page.getByRole("link", { name: "账户与组织" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "安全退出" })).toBeVisible();
   await page.getByRole("button", { name: "打开全局搜索" }).click();
   await expect(page.getByRole("option", { name: /查看操作日志与性能/ })).toHaveCount(0);
 });

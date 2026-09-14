@@ -52,6 +52,9 @@ test("authenticated account menu label follows English navigation mode", async (
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("button", { name: "Open account menu" })).toBeVisible();
   await expect(page.getByRole("button", { name: "打开账户菜单" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Open account menu" }).click();
+  await expect(page.getByRole("link", { name: "Account and organizations" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Sign out securely" })).toBeVisible();
 });
 
 test("skip link moves keyboard focus to main content", async ({ page }) => {

@@ -4,4 +4,10 @@ Status: `BLOCKED`
 
 ## Failures
 
-- Certification withdrawn by `ELMOS-CERT-KEY-2026-09-13-01` because the repository-held certifier key is revoked. Re-execute exact-scope evidence and obtain a repository-external independent signature under a new trusted key.
+- certification status is not CERTIFIED
+- certification evidenceRefs are empty
+- holdoutPassRate below 1.0
+- representativePassRate below 1.0
+- metric supplyChainCoverageRate below 0.95
+- metric signaturePassRate below 1.0
+- evidence manifest is invalid: [Errno 2] No such file or directory: 'mature-product-packs/batch40/elmos-platform-supply-chain/evidence-manifest.json'

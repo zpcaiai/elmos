@@ -536,8 +536,15 @@ def collect_gaps(batch: int, pack: Path) -> dict:
     skills = sorted(path.name for path in (ROOT / ".agents" / "skills").glob(f"b{batch}-*") if path.is_dir())
     gaps: list[dict] = []
 
-    def add(category: str, severity: str, detail: str) -> None:
-        gaps.append({"category": category, "severity": severity, "detail": detail})
+    def add(
+        category: str, severity: str, detail: str, responsibility: str = "repository",
+    ) -> None:
+        gaps.append({
+            "category": category,
+            "severity": severity,
+            "responsibility": responsibility,
+            "detail": detail,
+        })
 
     documents: dict[str, dict] = {}
     for name in expected:
@@ -558,7 +565,7 @@ def collect_gaps(batch: int, pack: Path) -> dict:
 
     for name in ("evidence-manifest.json", "certification-request.json", "certification-request.sig"):
         if not (pack / name).is_file():
-            add("evidence", "blocking", f"{name} has not been produced")
+            add("evidence", "blocking", f"{name} has not been produced", "external-gate")
 
     for name, payload in documents.items():
         owner = payload.get("owner")
@@ -608,7 +615,16 @@ def collect_gaps(batch: int, pack: Path) -> dict:
             add("metric", "blocking", f"{metric} is absent from metrics.json (threshold {threshold})")
             continue
         if not entry.get("measured") or entry.get("value") is None:
-            add("metric", "blocking", f"{metric} has not been measured (threshold {threshold})")
+            responsibility = (
+                "external-gate"
+                if metric in {"independentAssessmentClosureRate", "signatureVerificationRate"}
+                else "repository"
+            )
+            add(
+                "metric", "blocking",
+                f"{metric} has not been measured (threshold {threshold})",
+                responsibility,
+            )
             continue
         if not entry.get("evidenceRefs"):
             add("metric", "blocking", f"{metric} reports {entry.get('value')} with no evidence reference")
@@ -626,7 +642,21 @@ def collect_gaps(batch: int, pack: Path) -> dict:
     for flag in profile.get("zeroTolerance", template_profile["zeroTolerance"]):
         entry = evaluated.get(flag)
         if entry is None or not entry.get("evaluated") or entry.get("observed") is None:
-            add("zero-tolerance", "blocking", f"{flag} has not been evaluated")
+            responsibility = (
+                "external-gate"
+                if flag in {
+                    "builderAttestationFailures",
+                    "crossTenantEvidenceLeaks",
+                    "runnerDowngradeAcceptances",
+                    "tamperedArtifactsAccepted",
+                    "unsignedProductionArtifacts",
+                }
+                else "repository"
+            )
+            add(
+                "zero-tolerance", "blocking", f"{flag} has not been evaluated",
+                responsibility,
+            )
         elif entry.get("observed") != 0:
             add("zero-tolerance", "blocking", f"{flag} observed {entry.get('observed')}, must be zero")
         elif not entry.get("evidenceRefs"):
@@ -636,15 +666,22 @@ def collect_gaps(batch: int, pack: Path) -> dict:
         directory = pack / corpus
         populated = [item for item in directory.rglob("*") if item.is_file() and item.stat().st_size > 0] if directory.is_dir() else []
         if not populated:
-            add("corpus", "blocking", f"{corpus} corpus is empty")
+            add("corpus", "blocking", f"{corpus} corpus is empty", "external-gate")
     evidence_dir = pack / "evidence"
     if not evidence_dir.is_dir() or not any(item.is_file() for item in evidence_dir.rglob("*")):
         add("evidence", "blocking", "evidence directory holds no artefacts")
 
     if not certification.get("approvedBy"):
-        add("approval", "blocking", "no accountable approver is recorded on the certification")
+        add(
+            "approval", "blocking",
+            "no accountable approver is recorded on the certification",
+            "external-gate",
+        )
     if certification.get("status") != "CERTIFIED":
-        add("status", "open", f"certification status is {certification.get('status')}")
+        add(
+            "status", "open", f"certification status is {certification.get('status')}",
+            "external-gate",
+        )
 
     claims = documents.get("evidence", {}).get("claims", [])
     narratives = {
@@ -686,6 +723,8 @@ def collect_gaps(batch: int, pack: Path) -> dict:
                 add("aggregate", "blocking", f"Batch {lower} has no certified domain gate to aggregate")
 
     blocking = sum(1 for gap in gaps if gap["severity"] == "blocking")
+    repository_gaps = [gap for gap in gaps if gap["responsibility"] == "repository"]
+    external_gaps = [gap for gap in gaps if gap["responsibility"] == "external-gate"]
     return {
         "batch": batch,
         "packKey": documents.get("program", {}).get("packKey", pack.name),
@@ -694,6 +733,14 @@ def collect_gaps(batch: int, pack: Path) -> dict:
         "skillCount": len(skills),
         "blockingCount": blocking,
         "openCount": len(gaps) - blocking,
+        "repositoryBlockingCount": sum(
+            gap["severity"] == "blocking" for gap in repository_gaps
+        ),
+        "repositoryOpenCount": sum(gap["severity"] == "open" for gap in repository_gaps),
+        "externalGateBlockingCount": sum(
+            gap["severity"] == "blocking" for gap in external_gaps
+        ),
+        "externalGateOpenCount": sum(gap["severity"] == "open" for gap in external_gaps),
         "certifiable": False if gaps else None,
         "gaps": gaps,
     }
@@ -710,6 +757,8 @@ def write_gap_report(pack: Path, inventory: dict) -> None:
         f"- Skills in scope: {inventory['skillCount']}",
         f"- Blocking gaps: {inventory['blockingCount']}",
         f"- Open gaps: {inventory['openCount']}",
+        f"- Repository-owned: {inventory['repositoryBlockingCount']} blocking / {inventory['repositoryOpenCount']} open",
+        f"- External gate: {inventory['externalGateBlockingCount']} blocking / {inventory['externalGateOpenCount']} open",
         "",
         "This inventory is a work list. It grants no status and is not evidence.",
         "",
@@ -720,7 +769,9 @@ def write_gap_report(pack: Path, inventory: dict) -> None:
             continue
         lines.extend([f"## {severity.title()}", ""])
         for gap in selected:
-            lines.append(f"- [{gap['category']}] {gap['detail']}")
+            lines.append(
+                f"- [{gap['category']} / {gap['responsibility']}] {gap['detail']}"
+            )
         lines.append("")
     (pack / "gap-report.md").write_text("\n".join(lines), encoding="utf-8")
 

@@ -139,47 +139,29 @@
 
 ### Batch 40 — 安全供应链合规（`elmos-platform-supply-chain`）
 
-**问责审批**（1）
+当前精确结果为 14 个 blocking、13 个 open：仓库侧 1 blocking / 12 open，
+外部门禁侧 13 blocking / 1 open。责任边界由 `gap-inventory.json` 的
+`responsibility` 字段机器记录。
 
-- no accountable approver is recorded on the certification
+已完成的有界本地证据：
 
-**语料**（2）
+- 13/13 个 CI、威胁模型与证据图控制通过；20 个 checkout 均关闭凭据持久化，Action
+  使用完整 commit pin，任务使用固定 runner 与显式 timeout。
+- `auditEvidenceFreshnessRate`、`evidenceTraceCoverage`、
+  `provenanceCoverage`、`secureSdlcControlCoverage` 和
+  `threatModelCoverage` 在明确的本地范围内均为 1.0；这不是独立认证。
+- Dependabot 当前 0 open；185 个 fixed 中 167 个满足严重度 SLA、18 个超期，
+  合规率为 0.9027。105 个 dismissed 不计作 SLA 成功。
+- secret scan 的 actionable finding 为 0；直接声明依赖版本覆盖率为 1.0。
 
-- holdout corpus is empty
-- representative corpus is empty
+仓库侧 blocking 是 427 个外部直接组件尚无批准的 license decision。11 个
+能力仍为 experimental，漏洞 SLA 0.9027 仍低于 1.0。
 
-**证据**（3）
-
-- evidence-manifest.json has not been produced
-- certification-request.json has not been produced
-- certification-request.sig has not been produced
-
-**指标**（8）
-
-- auditEvidenceFreshnessRate has not been measured (threshold 1.0)
-- evidenceTraceCoverage has not been measured (threshold 0.98)
-- independentAssessmentClosureRate has not been measured (threshold 1.0)
-- provenanceCoverage has not been measured (threshold 1.0)
-- secureSdlcControlCoverage has not been measured (threshold 1.0)
-- signatureVerificationRate has not been measured (threshold 1.0)
-- …另有 2 条同类项，见 `mature-product-packs/batch40/elmos-platform-supply-chain/gap-report.md`
-
-**来源与摘要**（2）
-
-- pack.json artifactDigest is still the zero digest
-- pack.json environmentDigest is still the zero digest
-
-**零容忍项**（9）
-
-- criticalOpenVulnerabilities has not been evaluated
-- secretLeaks observed 11, must be zero
-- unsignedProductionArtifacts has not been evaluated
-- tamperedArtifactsAccepted has not been evaluated
-- unresolvedLicenseBlocks has not been evaluated
-- builderAttestationFailures has not been evaluated
-- …另有 3 条同类项，见 `mature-product-packs/batch40/elmos-platform-supply-chain/gap-report.md`
-
-待办：24 个能力在支持矩阵中仍为 experimental；sbomCoverage is 0.9199, below the required 1.0；certification status is NOT_RUN；claim b40-credential-scan-triage is INCONCLUSIVE
+外部门禁仍缺：独立 assessment 与 signature verification 两项指标、5 项生产
+零容忍执行结果、holdout 与 representative 两份独立语料、问责审批、证据
+manifest、认证 request、离线签名和独立 trust store。因此 certification 保持
+`NOT_RUN`，生产认证保持 `NOT_CERTIFIED`。完整交接见
+`docs/batch40/EXTERNAL_GATE_HANDOFF.md`。
 
 ### Batch 41 — 知识飞轮（`elmos-platform-knowledge-flywheel`）
 

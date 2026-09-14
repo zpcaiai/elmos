@@ -23,116 +23,142 @@
   "skillCount": 20,
   "blockingCount": 1,
   "openCount": 21,
+  "repositoryBlockingCount": 0,
+  "repositoryOpenCount": 20,
+  "externalGateBlockingCount": 1,
+  "externalGateOpenCount": 1,
   "certifiable": false,
   "gaps": [
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-automation-buildgreen-prediction is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-diagnostic-root-cause-recommendation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-effort-duration-cost-prediction is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-holdout-feedback-calibration is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-human-curation-governance is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-knowledge-confidence-provenance is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-knowledge-flywheel-gate is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-knowledge-freshness-versioning is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-knowledge-graph-ontology is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-knowledge-isolation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-knowledge-marketplace-sharing is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-migration-entity-relations is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-migration-knowledge-factory is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-migration-risk-prediction is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-migration-run-ingestion is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-pattern-antipattern-extraction is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-privacy-preserving-learning is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-recipe-mapping-recommendation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-similar-project-retrieval is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b41-target-stack-recommendation is only experimental in the support matrix"
     },
     {
       "category": "approval",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "no accountable approver is recorded on the certification"
     },
     {
       "category": "status",
       "severity": "open",
+      "responsibility": "external-gate",
       "detail": "certification status is NOT_RUN"
     }
   ]

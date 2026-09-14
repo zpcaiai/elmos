@@ -68,6 +68,14 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
         self.assertIn('pack="${manifest%/pack.json}"', replay)
         self.assertNotIn("-maxdepth 1 -type d", replay)
 
+    def test_route_jobs_fail_fast_on_rust_and_php_tree_drift(self) -> None:
+        self.assertEqual(
+            self.workflow.count("- name: Fail fast on exact PHP and Rust tree drift"),
+            2,
+        )
+        self.assertEqual(self.workflow.count("_rust_tree_identities()"), 2)
+        self.assertEqual(self.workflow.count("_php_tree_identity()"), 2)
+
     def test_web_console_binds_chinadb_runtime_after_python_312_consumers(self) -> None:
         job = _job(self.workflow, "web-console", "precision-migration-b01-44")
         polyglot_sync = job.index("uv --directory engines/polyglot-route-engine sync --locked --no-dev")

@@ -24,116 +24,142 @@
   "skillCount": 20,
   "blockingCount": 1,
   "openCount": 21,
+  "repositoryBlockingCount": 0,
+  "repositoryOpenCount": 20,
+  "externalGateBlockingCount": 1,
+  "externalGateOpenCount": 1,
   "certifiable": false,
   "gaps": [
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-automated-upgrade-tooling is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-compatibility-test-matrix is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-customer-upgrade-readiness is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-database-migration-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-deprecation-removal is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-event-schema-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-feature-flag-progressive-enable is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-product-lifecycle-factory is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-product-lifecycle-gate is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-psp-uir-schema-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-public-api-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-recipe-pack-extension-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-release-channel-governance is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-release-documentation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-rolling-mixed-version-upgrade is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-runner-protocol-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-sdk-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-security-fix-backport is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-support-eol-policy is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-version-specification is only experimental in the support matrix"
     },
     {
       "category": "approval",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "no accountable approver is recorded on the certification"
     },
     {
       "category": "status",
       "severity": "open",
+      "responsibility": "external-gate",
       "detail": "certification status is NOT_RUN"
     }
   ]

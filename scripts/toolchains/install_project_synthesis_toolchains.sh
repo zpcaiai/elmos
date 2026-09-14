@@ -279,16 +279,83 @@ write_rust_wrapper() {
 seal_rust_sysroot() {
   local target="$1"
   local sysroot="${target}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin"
+  local component_manifest="${sysroot}/lib/rustlib/components"
   if [[ ! -d "${sysroot}" || -L "${sysroot}" ]]; then
     printf 'Rust %s sysroot is unavailable or unsafe.\n' "${RUST_VERSION}" >&2
     exit 3
   fi
+  if [[ -n "$(find "${sysroot}" -type l -print -quit)" ]]; then
+    printf 'Rust %s sysroot contains an unsafe symbolic link.\n' "${RUST_VERSION}" >&2
+    exit 3
+  fi
+  if [[ ! -f "${component_manifest}" || -L "${component_manifest}" ]]; then
+    printf 'Rust %s component manifest is unavailable or unsafe.\n' "${RUST_VERSION}" >&2
+    exit 3
+  fi
+  # rustup preserves the same exact component payload but has emitted the
+  # component names in more than one order across hosted runners.  The order
+  # has no runtime meaning, yet it is part of the qualified byte-for-byte tree
+  # identity.  Fail closed on the set first, then write the one canonical
+  # order used by the repository's digest-bound Rust 1.89.0 closure.
+  local expected_components observed_components
+  expected_components="$(printf '%s\n' \
+    cargo-aarch64-apple-darwin \
+    rust-std-aarch64-apple-darwin \
+    rustc-aarch64-apple-darwin \
+    clippy-preview-aarch64-apple-darwin \
+    rustfmt-preview-aarch64-apple-darwin | LC_ALL=C sort)"
+  observed_components="$(LC_ALL=C sort "${component_manifest}")"
+  if [[ "$(wc -l <"${component_manifest}" | tr -d ' ')" != "5" \
+    || "${observed_components}" != "${expected_components}" ]]; then
+    printf 'Rust %s component manifest has an unexpected component set.\n' \
+      "${RUST_VERSION}" >&2
+    exit 3
+  fi
+  chmod u+w "${component_manifest}"
+  printf '%s\n' \
+    cargo-aarch64-apple-darwin \
+    rust-std-aarch64-apple-darwin \
+    rustc-aarch64-apple-darwin \
+    clippy-preview-aarch64-apple-darwin \
+    rustfmt-preview-aarch64-apple-darwin \
+    >"${component_manifest}"
   # Compiler and analyzer outputs belong in their isolated CARGO_HOME and
   # CARGO_TARGET_DIR. The installed compiler closure is immutable input: make
   # every payload read-only so a long route campaign cannot silently mutate a
   # previously qualified sysroot and poison later route identities.
-  find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +
-  find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +
+  # Do not inherit executable bits from rustup's extraction host.  GitHub's
+  # hosted macOS images can unpack the same byte-identical Rust distribution
+  # with different mode bits, which would make the qualified tree identity
+  # depend on the runner.  Start from a read-only baseline and restore execute
+  # permission only for the fixed Rust 1.89.0 program surface.
+  find "${sysroot}" -type f -exec chmod 0444 {} +
+  local executable_path
+  local executable_paths=(
+    bin/cargo
+    bin/cargo-clippy
+    bin/cargo-fmt
+    bin/clippy-driver
+    bin/rust-gdb
+    bin/rust-gdbgui
+    bin/rust-lldb
+    bin/rustc
+    bin/rustdoc
+    bin/rustfmt
+    lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/ld.lld
+    lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/ld64.lld
+    lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/lld-link
+    lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/wasm-ld
+    lib/rustlib/aarch64-apple-darwin/bin/rust-lld
+    lib/rustlib/aarch64-apple-darwin/bin/rust-objcopy
+    lib/rustlib/aarch64-apple-darwin/bin/wasm-component-ld
+    lib/rustlib/aarch64-apple-darwin/lib/libstd-c34d9c6bd90bce09.dylib
+    libexec/rust-analyzer-proc-macro-srv
+  )
+  for executable_path in "${executable_paths[@]}"; do
+    if [[ -f "${sysroot}/${executable_path}" && ! -L "${sysroot}/${executable_path}" ]]; then
+      chmod 0555 "${sysroot}/${executable_path}"
+    fi
+  done
   find "${sysroot}" -type d -exec chmod 0555 {} +
 }
 
@@ -320,13 +387,13 @@ install_rust() {
   # cached Rust payload can remain byte-identical while an older installer has
   # left stale wrappers behind, so refresh the three repository-owned launchers
   # on every successful install/reuse path before publishing public links.
+  seal_rust_sysroot "${target}"
   write_rust_wrapper "${target}" "rustc"
   write_rust_wrapper "${target}" "cargo"
   write_rust_wrapper "${target}" "rustup"
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"
   link_if_available "rustup" "${target}/bin/rustup"
-  seal_rust_sysroot "${target}"
 }
 
 if [[ ",${INSTALL_ONLY}," == *',go,'* ]]; then

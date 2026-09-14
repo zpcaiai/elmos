@@ -29,6 +29,12 @@ ALLOWED_SEVERITIES = {"critical", "high", "medium", "low"}
 SEVERITY_ALIASES = {"moderate": "medium"}
 REPOSITORY_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
+SLA_SECONDS = {
+    "critical": 24 * 60 * 60,
+    "high": 7 * 24 * 60 * 60,
+    "medium": 30 * 24 * 60 * 60,
+    "low": 90 * 24 * 60 * 60,
+}
 
 
 class AlertSnapshotError(ValueError):
@@ -81,6 +87,18 @@ def _severity(alert: dict[str, Any], number: int) -> str:
             f"open alert {number} has no supported security severity"
         )
     return value
+
+
+def _timestamp(value: Any, label: str) -> datetime:
+    if not isinstance(value, str) or not value:
+        raise AlertSnapshotError(f"{label} is missing")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise AlertSnapshotError(f"{label} is not ISO-8601") from exc
+    if parsed.tzinfo is None:
+        raise AlertSnapshotError(f"{label} has no timezone")
+    return parsed.astimezone(timezone.utc)
 
 
 def _normalized_alert(alert: dict[str, Any], state: str, number: int) -> dict[str, Any]:
@@ -179,6 +197,35 @@ def analyze_snapshot(
         f"{item['package']} ({item['manifestPath']})"
         for item in open_alerts[max_open:]
     ]
+    sla_evaluated: list[dict[str, Any]] = []
+    sla_incomplete: list[int] = []
+    for alert in alerts:
+        if alert.get("state") != "fixed":
+            continue
+        number = alert["number"]
+        try:
+            severity = _severity(alert, number)
+            created = _timestamp(alert.get("created_at"), f"fixed alert {number} created_at")
+            resolved = _timestamp(alert.get("fixed_at"), f"fixed alert {number} fixed_at")
+        except AlertSnapshotError:
+            sla_incomplete.append(number)
+            continue
+        elapsed = int((resolved - created).total_seconds())
+        if elapsed < 0:
+            raise AlertSnapshotError(f"fixed alert {number} predates its creation")
+        limit = SLA_SECONDS[severity]
+        sla_evaluated.append({
+            "number": number,
+            "severity": severity,
+            "elapsedSeconds": elapsed,
+            "limitSeconds": limit,
+            "met": elapsed <= limit,
+        })
+    sla_met = sum(item["met"] for item in sla_evaluated)
+    sla_rate = (
+        round(sla_met / len(sla_evaluated), 4)
+        if sla_evaluated and not sla_incomplete else None
+    )
     return {
         "check": "batch40-dependabot-alerts",
         "batch": 40,
@@ -197,6 +244,19 @@ def analyze_snapshot(
         "metrics": {
             "criticalVulnerabilityCount": open_by_severity["critical"],
             "highVulnerabilityCount": open_by_severity["high"],
+            "vulnerabilitySlaCompliance": sla_rate,
+        },
+        "vulnerabilitySla": {
+            "policySeconds": SLA_SECONDS,
+            "population": "fixed Dependabot alerts with created_at and fixed_at",
+            "evaluatedCount": len(sla_evaluated),
+            "metCount": sla_met,
+            "breachCount": len(sla_evaluated) - sla_met,
+            "incompleteAlertNumbers": sorted(sla_incomplete),
+            "breaches": [item for item in sla_evaluated if not item["met"]],
+            "excludedStateCounts": {
+                state: count for state, count in sorted(state_counts.items()) if state != "fixed"
+            },
         },
         "openAlerts": open_alerts,
         "blockers": blockers,
@@ -204,6 +264,7 @@ def analyze_snapshot(
             "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
             "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
             "The snapshot is self-attested evidence until an independently authorized verifier signs it.",
+            "The patch-SLA metric covers fixed Dependabot alerts only; dismissed and auto-dismissed alerts require separate risk-acceptance review and are excluded rather than counted as compliant.",
         ],
         "alerts": normalized,
     }

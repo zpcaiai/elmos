@@ -79,6 +79,31 @@ class SourcePackageGuardTest(unittest.TestCase):
         )
         self.assertIn("skipping source-bundle integrity checks", result.stdout)
 
+    def test_strict_make_guard_groups_the_entire_validation_recipe(self) -> None:
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        strict_macro = next(
+            line
+            for line in makefile.splitlines()
+            if line.startswith("guarded = @$(SOURCE_PACKAGE_GUARD)")
+        )
+        probe = (
+            "SOURCE_PACKAGE_GUARD := false\n"
+            f"{strict_macro}\n"
+            "all:\n"
+            "\t$(call guarded,missing,manifest.json,"
+            "printf 'UNEXPECTED_FIRST\\n'; printf 'UNEXPECTED_TAIL\\n')\n"
+        )
+        result = subprocess.run(
+            ["make", "--no-print-directory", "-f", "-"],
+            cwd=ROOT,
+            input=probe,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertNotIn("UNEXPECTED", result.stdout + result.stderr)
+
     def test_absolute_and_traversal_paths_fail_closed(self) -> None:
         for package, manifest in (
             (str(ROOT), "manifest.json"),

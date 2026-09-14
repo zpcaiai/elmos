@@ -135,6 +135,7 @@ final class DurableRunLeaseStore implements AutoCloseable {
     private final Duration queueTtl;
     private final Duration leaseTtl;
     private final Clock clock;
+    /** Guarded by {@link #processLock}. */
     private boolean closed;
 
     DurableRunLeaseStore(
@@ -336,11 +337,11 @@ final class DurableRunLeaseStore implements AutoCloseable {
                     lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
                  FileLock ignored = channel.lock()) {
                 return operation.get();
-            } catch (LeaseException error) {
-                throw error;
-            } catch (IOException error) {
-                throw new IllegalStateException("durable queue lock unavailable", error);
             }
+        } catch (LeaseException error) {
+            throw error;
+        } catch (IOException error) {
+            throw new IllegalStateException("durable queue lock unavailable", error);
         } finally {
             processLock.unlock();
         }

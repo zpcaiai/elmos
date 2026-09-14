@@ -8,10 +8,10 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Structural guard for the PostgreSQL-executed V87 accounting migration. */
+/** Structural guard for the PostgreSQL-executed V88 accounting migration. */
 class CommercialCreditDoubleEntryMigrationContractTest {
     private static final Path MIGRATION = Path.of(
-            "src/main/resources/db/migration/V87__commercial_credit_double_entry_and_outbox.sql");
+            "src/main/resources/db/migration/V88__commercial_credit_double_entry_and_outbox.sql");
 
     @Test
     void journalIsAppendOnlyTenantScopedAndBalancedAtCommit() throws Exception {

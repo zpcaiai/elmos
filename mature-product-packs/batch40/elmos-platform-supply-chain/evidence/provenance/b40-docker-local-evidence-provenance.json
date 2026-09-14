@@ -1,0 +1,36 @@
+{
+  "recordType": "provenance",
+  "schemaVersion": 1,
+  "id": "b40-docker-local-evidence-provenance",
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "evidenceId": "b40-docker-local-evidence",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "repositoryRevision": "8608d1108f323e915c96f7a22349b2947e18e8bd",
+  "replayCommand": "python3 scripts/batch40_docker_local_evidence.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+  "runReport": {
+    "path": "evidence/execution/b40-docker-local-evidence.json",
+    "sha256": "sha256:8db8629107dd29cd496cfb4c68b6af8480a52d323e93f9e86d436a6edab99fef",
+    "bytes": 6469
+  },
+  "analyzer": {
+    "path": "scripts/batch40_docker_local_evidence.py",
+    "sha256": "sha256:58ac4b3365b7238ad04dc0a2192922f1f42f964dfab3a314f98a239638f23022",
+    "reportedDigest": "sha256:58ac4b3365b7238ad04dc0a2192922f1f42f964dfab3a314f98a239638f23022"
+  },
+  "environment": {
+    "capturedAt": "2026-09-14T05:06:24.521190Z",
+    "pythonVersion": "3.14.6",
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "limitations": [
+    "This run exercises synthetic local fixtures in one Docker daemon; it is self-attested engineering evidence only.",
+    "The Docker daemon did not attest rootless operation; non-root container execution does not prove a rootless daemon or an independently isolated builder.",
+    "The local HMAC key is an ephemeral fixture key, not a production signing key or an external trust anchor.",
+    "The local holdout and representative fixture sets are code-owned negative tests, not independently authored or representative production corpora.",
+    "No production artifact, hosted runner, provider scanner, external environment, independent assessor, approver, or certification authority was exercised."
+  ],
+  "externalOperationExecuted": false,
+  "independentVerification": "NOT_RUN"
+}
