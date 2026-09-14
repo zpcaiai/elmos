@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "qualification_id": "elmos-ai-local-docker-20260914-q1",
+  "generated_at": "2026-09-14T05:28:08Z",
+  "repository_base_revision": "4bf9e59c7b8166a3d6c7953098d5fe9c692df52f",
+  "working_tree_patch_sha256": "146acb1a35629b0a1466722bfd5b0bcebf9b2f5f4252e9f0f4981543203e1f60",
+  "environment": {
+    "kind": "local-docker-orbstack",
+    "os": "linux",
+    "architecture": "aarch64",
+    "rootless": false,
+    "production_runner_eligible": false
+  },
+  "operations": {
+    "elasticsearch": {
+      "status": "EXECUTED_UNVERIFIED",
+      "synthetic": true,
+      "image": "docker.elastic.co/elasticsearch/elasticsearch@sha256:c8ea23da0d01bae67ca3872dde197d261feaebd1c863ac0bb45726330eecd467",
+      "image_id": "sha256:2c8ee1d3190b47530807b7b629decb5d99e7be41239ea012fc2554aa756ef3b9",
+      "version": "8.19.3",
+      "build_flavor": "default",
+      "license_type": "trial",
+      "license_status": "active",
+      "endpoint_scope": "127.0.0.1-only",
+      "tls": true,
+      "private_ca_verified": true,
+      "index": "elmos-project-intelligence-v1",
+      "vector_dimensions": 3,
+      "retrieval": "BM25+kNN+RRF",
+      "visible_hits": 1,
+      "cleanup_deleted": 1,
+      "index_deleted_after_run": true,
+      "api_key_invalidated_after_run": true
+    },
+    "dify": {
+      "status": "EXECUTED_UNVERIFIED",
+      "synthetic": true,
+      "version": "1.17.1",
+      "source_revision": "8387590ace4a094de812b7847fc6a4c3a27cd52b",
+      "api_image": "langgenius/dify-api@sha256:53fb08964da7a19d9b9f230a3b2945b6de55dc7b2ec570418e467defa809d82f",
+      "api_image_id": "sha256:a00aada3ddba3df09aacbe28c84a032bcd842e75355651270cf1e4aa88579b6f",
+      "postgres_image": "postgres@sha256:8f1f9748236a87718c0e2a46ea1bad4f6caa52c7f5612ed57d0cf9d2fc314468",
+      "redis_image": "redis@sha256:718410c8e692a2f08370ff8c59c2fc741392625297c03e10702b7c3c7b2a7daf",
+      "endpoint_scope": "127.0.0.1-only",
+      "tls": false,
+      "application_mode": "workflow",
+      "app_id": "4e52c490-db95-47ea-a0dc-487d7049c8a7",
+      "workflow_id": "17f71940-f2ea-4e6a-8dd8-458eb3b02905",
+      "workflow_inputs": [
+        "question",
+        "_elmos_tenant_id",
+        "_elmos_project_id",
+        "_elmos_purpose"
+      ],
+      "published_route_status": "succeeded",
+      "exact_version_route_status": "succeeded",
+      "trusted_context_round_trip": true,
+      "active_app_api_keys_after_run": 0,
+      "server_version_verification": "DEPLOYMENT_ARTIFACT_BOUND"
+    },
+    "elasticsearch_dify_joint": {
+      "status": "EXECUTED_UNVERIFIED",
+      "synthetic": true,
+      "elasticsearch_visible_hits": 1,
+      "elasticsearch_cleanup_deleted": 1,
+      "dify_workflow_status": "succeeded",
+      "independent_verification": "NOT_RUN"
+    },
+    "otel_collector": {
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "image": "otel/opentelemetry-collector-contrib@sha256:d1dcabdaf927330a58e269140411cb0ad25fe22556e4e530d53509c0a71fe2fe",
+      "image_id": "sha256:704223617b69052abb31544e96e76be5a2462499c49acf626805faa9a5291451",
+      "version": "0.160.0",
+      "endpoint_scope": "127.0.0.1-only",
+      "otlp_http_exported": true,
+      "safe_attributes_observed": true,
+      "sensitive_attribute_rejected_before_export": true
+    },
+    "ocr": {
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "image_id": "sha256:ce8de0615a5c245c65d8dc3f55af822b55a251a1b771b4d9654061854cc9b886",
+      "base_image": "alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
+      "tool": "tesseract",
+      "tool_version": "5.5.2-r0",
+      "parser_status": "PASSED",
+      "text_matched": true,
+      "spatial_anchors": true,
+      "receipt_verified": true,
+      "sandboxed": true,
+      "network_allowed": false
+    },
+    "asr": {
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "image_id": "sha256:7473186b5c5bac78405af4a5986c599cd675cd52a5c7d3fc3e83d7f791c51878",
+      "source_revision": "927cfce34f31707e17f2bff35c349632fb9e2c3a",
+      "tool_version": "whisper.cpp-1.9.4",
+      "model": "ggml-tiny.en",
+      "model_sha256": "921e4cf8686fdd993dcd081a5da5b6c365bfde1162e72b08d75ac75289920b1f",
+      "provider_status": "PASSED",
+      "parser_status": "PASSED",
+      "transcript_matched": true,
+      "timed_anchor": true,
+      "receipt_verified": true,
+      "sandboxed": true,
+      "network_allowed": false,
+      "duration_ms": 1645
+    },
+    "vision": {
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "analyzer": "tesseract-layout-5.5.2+elmos-adapter-v1",
+      "scope": "OCR_LAYOUT_ONLY",
+      "provider_status": "PASSED",
+      "validated_status": "PASSED",
+      "component_count": 5,
+      "source_anchors_bound": true,
+      "facts_and_inferences_separated": true,
+      "receipt_verified": true,
+      "sandboxed": true,
+      "network_allowed": false,
+      "general_vision_model": "NOT_CONFIGURED",
+      "visual_regression": "NOT_RUN"
+    },
+    "control_plane_runner": {
+      "status": "BLOCKED",
+      "control_plane": "NOT_RUN",
+      "runner": "NOT_RUN",
+      "reason": "The local host is Linux aarch64 through OrbStack and its daemon is not rootless; it cannot satisfy the required dedicated Linux x86_64 rootless independently attested production Runner contract.",
+      "missing_environment_count": 11
+    }
+  },
+  "provider_attempts_not_retried": {
+    "openai_generation": "UNKNOWN_HTTP_429",
+    "gemini_inventory_and_generation": "FAIL_HTTP_400"
+  },
+  "independent_verification": "NOT_RUN",
+  "representative_production_workload": "NOT_RUN",
+  "production_deployment": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "eligible_for_production_certification": false
+}

@@ -52,7 +52,9 @@ Copy `deploy/production/env/ai-integrations.env.example` into the deployment's
 secret manager and set:
 
 - the HTTPS endpoint, restricted API key, versioned index name, exact server
-  version, and embedding dimension;
+  version, exact active license type, and embedding dimension; RRF must fail
+  closed unless the configured license supports it (a local trial is bounded
+  qualification only and is not a production entitlement);
 - a mounted CA file only when the deployment uses a private CA;
 - a fresh synthetic request derived from
   `packages/repository-orchestrator/config/ai-external-execution-request.example.json`.
@@ -183,6 +185,22 @@ Run the same `external-certify` command with `--certificate` and
 cannot equal the producer, and a placeholder trust root is rejected.
 
 ## Current external result
+
+On 2026-09-14, a separate local Docker qualification executed exact,
+digest-pinned Elasticsearch 8.19.3, Dify 1.17.1, OpenTelemetry Collector
+0.160.0, Tesseract 5.5.2, whisper.cpp 1.9.4 with a content-digest-pinned
+`ggml-tiny.en` model, and a bounded OCR-layout visual adapter. Elasticsearch
+and Dify also passed one joint ELMOS execution with synthetic data; the test
+index was deleted and both products' temporary API keys were revoked. The
+sanitized self-attested receipt is
+`local-docker-qualification-20260914.json`.
+
+That receipt is local engineering evidence only. The host is ARM64 and its
+Docker daemon is not rootless, Dify uses loopback HTTP, the visual adapter is
+limited to observed OCR layout, and no independent actor or representative
+production corpus participated. It therefore does not convert any production
+operation to `PASS`, does not satisfy the Linux x86_64 Runner contract, and
+does not change `NOT_CERTIFIED`.
 
 The 2026-09-08 bounded live run found no exact Elasticsearch or Dify Vercel
 integration or configured binding. OpenAI model inventory returned HTTP 200,
