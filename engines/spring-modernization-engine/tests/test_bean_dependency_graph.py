@@ -1,8 +1,6 @@
 from elmos_spring_modernization.bean_dependency_graph import (
     BeanDependencyGraphExtractor,
-    DependencyType,
-    BeanNode,
-    BeanEdge
+    DependencyType
 )
 
 def test_extract_graph():

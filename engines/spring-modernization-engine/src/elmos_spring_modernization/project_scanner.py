@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict
 from .models import SpringProjectProfile, SpringVersion
 
 class SpringProjectScanner:

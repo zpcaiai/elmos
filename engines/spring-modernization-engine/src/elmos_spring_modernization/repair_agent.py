@@ -4,8 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Callable, List, Optional, Tuple
 
-from .migration_rules import REAL_WORLD_RULES, RULE_CATALOG
-from .models import MigrationRule
+from .migration_rules import REAL_WORLD_RULES
 
 MAX_REPAIR_ATTEMPTS = 5
 
@@ -112,7 +111,7 @@ class RepairVerificationLoop:
     applies targeted AST/regex patches to source code, and verifies remediation
     against an execution verifier or diagnostic residue check.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.classifier = BuildFailureDiagnosticClassifier()
         self.engine = RepairStrategyEngine()
 
@@ -123,6 +122,8 @@ class RepairVerificationLoop:
         verifier: Optional[Callable[[str], Tuple[bool, str]]] = None,
         max_attempts: int = MAX_REPAIR_ATTEMPTS
     ) -> RepairResult:
+        if max_attempts < 1 or max_attempts > MAX_REPAIR_ATTEMPTS:
+            raise ValueError(f"max_attempts must be between 1 and {MAX_REPAIR_ATTEMPTS}")
         attempts = 0
         current_error = error_log
         current_code = source_code or ""
@@ -165,29 +166,22 @@ class RepairVerificationLoop:
                 current_error = remaining_error
                 continue
 
-            # If no verifier is provided, inspect if the diagnostic signature was resolved in code
+            # A textual transform is only a candidate until a real verifier accepts it.
             if patch_applied:
-                # Check if the specific error symptom still exists in the patched code
-                if not self._diagnostic_remains(current_error, current_code):
-                    return RepairResult(
-                        success=True,
-                        attempts=attempts,
-                        final_strategy=strategy.name,
-                        applied_patches=applied_patches,
-                        repaired_content=current_code
-                    )
-
-            # If no source code was provided, check if strategy is automated and error is recognized
-            if not source_code and strategy in {RepairStrategy.RENAME_SYMBOL, RepairStrategy.ADD_DEPENDENCY, RepairStrategy.UPDATE_CONFIG}:
-                # If error is a recognized resolvable symbol pattern, report success with identified remedy
-                if any(kw in current_error for kw in ("cannot find symbol", "package", "No qualifying bean")):
-                    return RepairResult(
-                        success=True,
-                        attempts=attempts,
-                        final_strategy=strategy.name,
-                        applied_patches=[f"AUTO_RESOLVED_{strategy.name}"],
-                        repaired_content=""
-                    )
+                return RepairResult(
+                    success=False,
+                    attempts=attempts,
+                    final_strategy="VERIFICATION_REQUIRED",
+                    applied_patches=applied_patches,
+                    repaired_content=current_code,
+                )
+            return RepairResult(
+                success=False,
+                attempts=attempts,
+                final_strategy="EVIDENCE_REQUIRED",
+                applied_patches=applied_patches,
+                repaired_content=current_code,
+            )
 
         return RepairResult(
             success=False,

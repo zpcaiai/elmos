@@ -1,6 +1,6 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from dataclasses import dataclass
+from typing import Any
 
 MAX_RULES = 500
 
@@ -20,7 +20,7 @@ class SecurityFilterChainExtractor:
     and custom filter order, producing an actionable security posture evaluation.
     """
 
-    def extract(self, config_sources: list[dict]) -> SecurityConfig:
+    def extract(self, config_sources: list[dict[str, Any]]) -> SecurityConfig:
         if len(config_sources) > MAX_RULES:
             raise ValueError(f"Too many rules. Max allowed is {MAX_RULES}")
 

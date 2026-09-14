@@ -1,9 +1,7 @@
-import pytest
 from elmos_spring_modernization.repair_agent import (
     BuildFailureDiagnosticClassifier,
     FailureCategory,
-    RepairVerificationLoop,
-    RepairStrategy
+    RepairVerificationLoop
 )
 
 def test_classifier():
@@ -19,11 +17,12 @@ def test_repair_loop_single_step_real_transform():
     loop = RepairVerificationLoop()
     code = "User u = userRepository.getOne(userId);"
     res = loop.run("cannot find symbol: method getOne(Long)", source_code=code)
-    assert res.success is True
+    assert res.success is False
     assert res.attempts == 1
     assert "getReferenceById" in res.repaired_content
     assert "getOne" not in res.repaired_content
     assert "RULE_JPA_GET_ONE_TO_REFERENCE" in res.applied_patches
+    assert res.final_strategy == "VERIFICATION_REQUIRED"
 
 def test_repair_loop_multi_step_verification():
     loop = RepairVerificationLoop()
@@ -59,3 +58,10 @@ def test_repair_loop_manual():
     assert res.success is False
     assert res.attempts == 1
     assert res.final_strategy == "MANUAL_REVIEW"
+
+def test_repair_loop_does_not_claim_resolution_without_code_or_verifier():
+    loop = RepairVerificationLoop()
+    res = loop.run("cannot find symbol: class LegacyType")
+    assert res.success is False
+    assert res.final_strategy == "EVIDENCE_REQUIRED"
+    assert res.applied_patches == []

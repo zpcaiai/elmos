@@ -1,17 +1,58 @@
+import socket
+import sys
+
 import pytest
+
 from elmos_spring_modernization.differential_oracle import (
     DifferentialOracle,
-    ResponseComparator,
-    HttpRequestReplayer
+    ResponseComparator
 )
 
-def test_configure():
+
+def _free_port() -> int:
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        return int(listener.getsockname()[1])
+
+
+def test_configure_starts_and_stops_real_runtimes(tmp_path):
+    source_port = _free_port()
+    target_port = _free_port()
+    while target_port == source_port:
+        target_port = _free_port()
+    command = [sys.executable, "-m", "http.server", "{port}", "--bind", "127.0.0.1", "--directory", str(tmp_path)]
     oracle = DifferentialOracle()
-    config = oracle.configure("java -jar legacy.jar", "java -jar modern.jar", source_port=8080, target_port=9090)
-    assert config.source_port == 8080
-    assert config.target_port == 9090
-    assert config.source_base_url == "http://localhost:8080"
-    assert config.target_base_url == "http://localhost:9090"
+    try:
+        config = oracle.configure(
+            [part.format(port=source_port) for part in command],
+            [part.format(port=target_port) for part in command],
+            source_port=source_port,
+            target_port=target_port,
+            startup_timeout_seconds=5,
+        )
+        assert config.source_base_url == f"http://127.0.0.1:{source_port}"
+        assert config.target_base_url == f"http://127.0.0.1:{target_port}"
+        report = oracle.run_tests([{"method": "GET", "path": "/"}])
+        assert report.passed == 1
+        assert report.failed == 0
+    finally:
+        oracle.manager.stop_runtimes()
+
+
+def test_configure_fails_closed_when_runtime_cannot_start():
+    oracle = DifferentialOracle()
+    source_port = _free_port()
+    target_port = _free_port()
+    while target_port == source_port:
+        target_port = _free_port()
+    with pytest.raises(RuntimeError, match="runtime launch failed"):
+        oracle.configure(
+            ["definitely-not-an-elmos-executable"],
+            ["also-not-an-elmos-executable"],
+            source_port=source_port,
+            target_port=target_port,
+            startup_timeout_seconds=0.2,
+        )
 
 def test_response_comparator_deep_json():
     comp = ResponseComparator()

@@ -1,9 +1,10 @@
 from __future__ import annotations
 import os
 import re
-from dataclasses import dataclass, field
+from collections.abc import Iterator
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Optional, Set, Tuple
+from typing import List, Dict
 
 @dataclass
 class BeanDefinition:
@@ -59,7 +60,7 @@ class SpringSemanticExtractor:
         "tmp", "temp", "Library", "System", "private", ".idea", ".vscode"
     }
 
-    def _walk_java_files(self, project_root: str):
+    def _walk_java_files(self, project_root: str) -> Iterator[Path]:
         root = Path(project_root)
         if not root.exists():
             return
@@ -114,7 +115,6 @@ class SpringSemanticExtractor:
                     content
                 )
                 for fdm in field_dep_matches:
-                    dep_type = fdm.group(1)
                     dep_name = fdm.group(2)
                     deps.append(dep_name)
 

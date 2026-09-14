@@ -1,7 +1,7 @@
 from __future__ import annotations
 from enum import Enum, auto
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from dataclasses import dataclass
+from typing import List, Dict, Any
 
 class SpringVersion(Enum):
     BOOT_1_5 = "1.5"

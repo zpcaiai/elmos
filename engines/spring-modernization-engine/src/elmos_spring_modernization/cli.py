@@ -1,16 +1,14 @@
 from __future__ import annotations
 import argparse
 import json
-import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
-from .models import SpringVersion, MigrationPlan, SpringProjectProfile
+from .models import SpringVersion
 from .project_scanner import SpringProjectScanner
 from .plan_generator import MigrationPlanGenerator
 from .rule_engine import RuleEngine
 from .differential_oracle import DifferentialOracle
-from .repair_agent import RepairVerificationLoop
 
 def _parse_target_version(target_str: Optional[str]) -> SpringVersion:
     if not target_str:
@@ -35,13 +33,17 @@ def main(args_list: Optional[list[str]] = None) -> None:
     parser.add_argument("--plan", help="Migration plan file")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--results", help="Results file")
+    parser.add_argument("--requests", help="JSON request corpus for differential verification")
+    parser.add_argument("--source-url", help="Running source application base URL")
+    parser.add_argument("--target-url", help="Running target application base URL")
+    parser.add_argument("--request-timeout", type=float, default=5.0)
     parser.add_argument("--format", default="json", choices=["json", "text"], help="Output format")
 
     args = parser.parse_args(args_list)
     project_dir = str(Path(args.project).resolve())
     target_version = _parse_target_version(args.target)
 
-    output_data = {"command": args.command, "status": "SUCCESS"}
+    output_data: dict[str, Any] = {"command": args.command, "status": "SUCCESS"}
 
     if args.command == "scan":
         scanner = SpringProjectScanner()
@@ -101,11 +103,32 @@ def main(args_list: Optional[list[str]] = None) -> None:
         }
 
     elif args.command == "verify":
+        if not args.requests or not args.source_url or not args.target_url:
+            parser.error("verify requires --requests, --source-url, and --target-url")
+        if args.source_url == args.target_url:
+            parser.error("verify requires distinct source and target URLs")
+        if args.request_timeout <= 0:
+            parser.error("--request-timeout must be positive")
+        try:
+            request_data = json.loads(Path(args.requests).read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            parser.error(f"unable to load request corpus: {exc}")
+        if not isinstance(request_data, list) or not request_data:
+            parser.error("request corpus must be a non-empty JSON array")
+        if not all(isinstance(item, dict) for item in request_data):
+            parser.error("every request corpus entry must be a JSON object")
         oracle = DifferentialOracle()
-        report = oracle.run_tests([])
+        oracle.config.request_timeout_seconds = args.request_timeout
+        report = oracle.run_tests(
+            request_data,
+            source_base_url=args.source_url,
+            target_base_url=args.target_url,
+        )
+        output_data["status"] = "FAILED" if report.failed or report.differed else "SUCCESS"
         output_data["verification_report"] = {
             "total_requests": report.total_requests,
             "passed": report.passed,
+            "failed": report.failed,
             "differed": report.differed,
             "details": report.details
         }
