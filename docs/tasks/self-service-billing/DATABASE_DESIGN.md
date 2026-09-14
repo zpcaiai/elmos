@@ -3,10 +3,11 @@
 ## 权威版本
 
 - 数据库：PostgreSQL 17.5
-- Flyway：V1–V87；基础计费为 `V49__self_service_billing_and_usage.sql`，
+- Flyway：V1–V88；基础计费为 `V49__self_service_billing_and_usage.sql`，
   Credit/一次性订单与用户维度扩展为 `V83__commercial_credit_and_one_time_orders.sql`，
   支付生命周期加固为 V84–V85，订阅目录快照升级为 V86，Credit 双分录、事务性
-  outbox、投影对账和受控重建为 `V87__commercial_credit_double_entry_and_outbox.sql`
+  outbox、投影对账和受控重建为 `V87__commercial_credit_double_entry_and_outbox.sql`；
+  订单创建并发与幂等绑定加固为 `V88__payment_order_creation_concurrency.sql`
 - 目录版本：`2026-09-08.1`
 - 数量：`numeric(30,0)`，只接受非负整数
 - 金额：人民币分，`numeric(19,0)`；提供方成本使用 `numeric(30,6)` 并带显式币种
@@ -53,6 +54,8 @@
     稳定 event ID 的 outbox 事件。迁移 opening transaction 不对外发布，避免把历史余额冒充新事件。
 15. `commercial_credit_accounts` 是可重建投影；对账必须为零漂移且无不平衡事务，漂移只能由
     `elmos_credit_reconciler` 角色通过带 actor、原因和幂等键的函数修复。
+16. 充值订单在钱包账户行锁内检查日限额并插入；过期且未付款的订单不再占用日限额，但不提前改写状态，以保留晚到付款的对账路径；幂等重放必须保持 actor、金额和 provider 一致。
+17. 商业订单相同 tenant/idempotency 的并发创建在事务锁内收敛到同一订单。
 
 ## 数据库函数
 
@@ -96,10 +99,11 @@ WITH CHECK (organization_id = current_setting('app.organization_id', true))
 
 ## 已验证与未验证
 
-- 空数据库 V1–V87 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
+- 空数据库 V1–V88 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
   Credit/一次性权益、双分录守恒、outbox 重试和投影重建：
   由本地 PostgreSQL 17 集成测试验证。
 - `commercial-production` GitHub Environment 已通过 run `34713508064` 在批准的 Neon
   PostgreSQL 17.11 把 schema 从 V86 升到 V87，并执行迁移前后 Flyway 验证和运行角色授权；
-  日志中的精确连接目标已脱敏，应用部署与生产业务读回仍为 `NOT_RUN`。
+  日志中的精确连接目标已脱敏；V88 尚未在受保护生产目标执行，应用部署与生产业务读回仍为
+  `NOT_RUN`。
 - 生产回填：本版本没有旧的权威自助计费事实可安全推断，因此不生成虚构回填。

@@ -3,6 +3,7 @@ package io.elmos.commercialadapter.payment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -12,9 +13,13 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.HexFormat;
 import java.util.Objects;
 import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /** ELMOS checkout adapter for ELMPay's tenant/project-bound hosted checkout API. */
@@ -43,23 +48,28 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
 
     private final PaymentProvider provider;
     private final URI endpoint;
+    private final URI checkoutPublicBaseUri;
     private final UUID projectId;
     private final String returnRouteId;
     private final boolean allowHttpForLocalSandbox;
     private final TokenProvider tokens;
     private final Transport transport;
     private final ObjectMapper mapper;
+    private final Clock clock;
 
-    public ElmPayCheckoutGateway(PaymentProvider provider, URI baseUri, UUID projectId,
+    public ElmPayCheckoutGateway(PaymentProvider provider, URI baseUri, URI checkoutPublicBaseUri,
+            UUID projectId,
             String returnRouteId, boolean allowHttpForLocalSandbox, Path tokenFile,
             HttpClient client, ObjectMapper mapper) {
-        this(provider, baseUri, projectId, returnRouteId, allowHttpForLocalSandbox,
-                () -> readToken(tokenFile), jdkTransport(client), mapper);
+        this(provider, baseUri, checkoutPublicBaseUri, projectId, returnRouteId,
+                allowHttpForLocalSandbox, () -> readToken(tokenFile), jdkTransport(client), mapper,
+                Clock.systemUTC());
     }
 
-    public ElmPayCheckoutGateway(PaymentProvider provider, URI baseUri, UUID projectId,
+    public ElmPayCheckoutGateway(PaymentProvider provider, URI baseUri, URI checkoutPublicBaseUri,
+            UUID projectId,
             String returnRouteId, boolean allowHttpForLocalSandbox, TokenProvider tokens,
-            Transport transport, ObjectMapper mapper) {
+            Transport transport, ObjectMapper mapper, Clock clock) {
         this.provider = Objects.requireNonNull(provider, "provider");
         if (provider != PaymentProvider.ALIPAY_CHECKOUT
                 && provider != PaymentProvider.WECHAT_PAY_NATIVE) {
@@ -77,6 +87,8 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
         String root = normalized.toString();
         if (!root.endsWith("/")) root += "/";
         this.endpoint = URI.create(root).resolve("v1/checkout-sessions");
+        this.checkoutPublicBaseUri = requirePublicBase(
+                checkoutPublicBaseUri, allowHttpForLocalSandbox, "ELMPay checkout public base URI");
         this.projectId = Objects.requireNonNull(projectId, "projectId");
         if (returnRouteId == null || !returnRouteId.matches("[a-z0-9][a-z0-9._-]{0,63}")) {
             throw new IllegalArgumentException("ELMPay return route ID 非法");
@@ -86,6 +98,7 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
         this.tokens = Objects.requireNonNull(tokens, "tokens");
         this.transport = Objects.requireNonNull(transport, "transport");
         this.mapper = Objects.requireNonNull(mapper, "mapper");
+        this.clock = Objects.requireNonNull(clock, "clock");
     }
 
     @Override
@@ -129,19 +142,18 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
                     || !"OPEN".equals(root.path("status").asText())) {
                 throw new IllegalArgumentException("ELMPay 下单响应结构或状态非法");
             }
-            requireText(root, "checkout_session_id", 160);
+            String checkoutSessionId = requireText(root, "checkout_session_id", 160);
             UUID.fromString(requireText(root, "payment_intent_id", 36));
-            java.time.Instant.parse(requireText(root, "expires_at", 64));
-            URI checkoutUrl = URI.create(requireText(root, "checkout_url", 4096));
-            if (checkoutUrl.getHost() == null || checkoutUrl.getUserInfo() != null
-                    || !("https".equalsIgnoreCase(checkoutUrl.getScheme())
-                    || (allowHttpForLocalSandbox
-                    && "http".equalsIgnoreCase(checkoutUrl.getScheme())
-                    && isLoopback(checkoutUrl.getHost())))) {
-                throw new IllegalArgumentException("ELMPay checkout URL 非法");
+            Instant expiresAt = Instant.parse(requireText(root, "expires_at", 64));
+            Instant now = clock.instant();
+            if (!expiresAt.isAfter(now) || expiresAt.isAfter(now.plus(Duration.ofMinutes(30)))) {
+                throw new IllegalArgumentException("ELMPay checkout session 有效期越界");
             }
+            URI checkoutUrl = URI.create(requireText(root, "checkout_url", 4096));
+            validateCheckoutUrl(checkoutUrl, checkoutSessionId);
             return new PaymentProviderRouter.CheckoutHandoff(
-                    provider, checkoutUrl.toString(), null);
+                    provider, checkoutUrl.toString(), null,
+                    PaymentProviderRouter.CheckoutSurface.ELMPAY_HOSTED);
         } catch (RuntimeException failure) {
             throw new IllegalStateException("ELMPay 下单响应校验失败", failure);
         } catch (Exception failure) {
@@ -207,6 +219,60 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
             throw new IllegalArgumentException("ELMPay 响应字段非法: " + field);
         }
         return value;
+    }
+
+    private void validateCheckoutUrl(URI checkoutUrl, String checkoutSessionId) {
+        URI publicPart = requirePublicBase(
+                withoutFragment(checkoutUrl), allowHttpForLocalSandbox, "ELMPay checkout URL");
+        if (!checkoutPublicBaseUri.equals(publicPart)) {
+            throw new IllegalArgumentException("ELMPay checkout URL 不属于已配置托管收银台");
+        }
+        String fragment = checkoutUrl.getRawFragment();
+        if (fragment == null || fragment.isBlank()) {
+            throw new IllegalArgumentException("ELMPay checkout URL 缺少会话片段");
+        }
+        Map<String, String> fields = new LinkedHashMap<>();
+        for (String pair : fragment.split("&", -1)) {
+            String[] parts = pair.split("=", 2);
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("ELMPay checkout URL 片段非法");
+            }
+            String key = decode(parts[0]);
+            String value = decode(parts[1]);
+            if (value.isBlank() || fields.putIfAbsent(key, value) != null) {
+                throw new IllegalArgumentException("ELMPay checkout URL 片段重复或为空");
+            }
+        }
+        if (!fields.keySet().equals(Set.of("session", "token"))
+                || !checkoutSessionId.equals(fields.get("session"))
+                || fields.get("token").length() > 4096) {
+            throw new IllegalArgumentException("ELMPay checkout URL 会话绑定非法");
+        }
+    }
+
+    private static URI requirePublicBase(URI value, boolean allowHttp, String label) {
+        URI normalized = Objects.requireNonNull(value, label).normalize();
+        if (normalized.getHost() == null || normalized.getUserInfo() != null
+                || normalized.getQuery() != null || normalized.getFragment() != null
+                || !("https".equalsIgnoreCase(normalized.getScheme())
+                || (allowHttp && "http".equalsIgnoreCase(normalized.getScheme())
+                && isLoopback(normalized.getHost())))) {
+            throw new IllegalArgumentException(label + " 必须是无查询参数的 HTTPS；本地沙箱只允许 loopback HTTP");
+        }
+        return normalized;
+    }
+
+    private static URI withoutFragment(URI value) {
+        try {
+            return new URI(value.getScheme(), value.getUserInfo(), value.getHost(), value.getPort(),
+                    value.getPath(), value.getQuery(), null).normalize();
+        } catch (java.net.URISyntaxException failure) {
+            throw new IllegalArgumentException("ELMPay checkout URL 非法", failure);
+        }
+    }
+
+    private static String decode(String value) {
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 
     private static String sha256(String value) {

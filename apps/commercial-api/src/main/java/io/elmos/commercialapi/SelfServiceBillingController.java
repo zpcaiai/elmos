@@ -150,7 +150,8 @@ public class SelfServiceBillingController {
             Instant expiresAt,
             String paymentProvider,
             String checkoutUrl,
-            String qrCodeUrl
+            String qrCodeUrl,
+            String checkoutSurface
     ) {}
 
     public record CustomerSubscription(
@@ -482,7 +483,8 @@ public class SelfServiceBillingController {
                 principal.organizationId(), principal.actorId(), exactKey,
                 provider.id(), provider.url(), provider.expiresAt());
         return handoffResponse(completed, PaymentProvider.STRIPE_CHECKOUT,
-                completed.checkoutUrl(), null);
+                completed.checkoutUrl(), null,
+                PaymentProviderRouter.CheckoutSurface.DIRECT_PROVIDER);
     }
 
     /** 支付宝 / 微信路径。 */
@@ -528,7 +530,7 @@ public class SelfServiceBillingController {
                 principal.organizationId(), principal.actorId(), exactKey,
                 outTradeNo, handoffTarget, prepared.expiresAt());
         return handoffResponse(completed, provider,
-                handoff.redirectUrl(), handoff.qrCodeUrl());
+                handoff.redirectUrl(), handoff.qrCodeUrl(), handoff.checkoutSurface());
     }
 
     /**
@@ -553,11 +555,12 @@ public class SelfServiceBillingController {
 
     private static CheckoutHandoffResponse handoffResponse(
             SelfServiceBillingPort.CheckoutRecord record, PaymentProvider provider,
-            String checkoutUrl, String qrCodeUrl) {
+            String checkoutUrl, String qrCodeUrl,
+            PaymentProviderRouter.CheckoutSurface checkoutSurface) {
         return new CheckoutHandoffResponse(
                 record.checkoutSessionId(), record.planId(), record.catalogVersion(),
                 record.currency(), record.amountMinor(), record.status(), record.expiresAt(),
-                provider.name(), checkoutUrl, qrCodeUrl);
+                provider.name(), checkoutUrl, qrCodeUrl, checkoutSurface.name());
     }
 
     @GetMapping("/subscriptions/current")

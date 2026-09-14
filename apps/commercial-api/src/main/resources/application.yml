@@ -30,6 +30,7 @@ elmos:
     elmpay:
       enabled: ${ELMOS_ELMPAY_ENABLED:false}
       base-url: ${ELMOS_ELMPAY_BASE_URL:}
+      checkout-public-base-url: ${ELMOS_ELMPAY_CHECKOUT_PUBLIC_BASE_URL:}
       tenant-id: ${ELMOS_ELMPAY_TENANT_ID:}
       project-id: ${ELMOS_ELMPAY_PROJECT_ID:}
       api-token-file: ${ELMOS_ELMPAY_API_TOKEN_FILE:}

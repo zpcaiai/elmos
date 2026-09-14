@@ -1,5 +1,16 @@
 # 自助计费修改历史
 
+## 2026-09-14 — 订单创建并发与 ELMPay 托管收银台闭环
+
+- 新增 V88：钱包账户行锁串行化充值日限额，过期未付款订单释放日限额但保留晚到付款对账路径；充值幂等重放绑定 actor/金额/provider；
+  商业订单按 tenant/idempotency 事务锁收敛并发创建。
+- ELMOS 后端严格绑定 ELMPay 公共收银台基址、响应 session、fragment token 与有效期；
+  前端/BFF 通过 `checkoutSurface` 区分底层收单通道和 ELMPay 托管页面。
+- Credit/一次性订单和充值订单在本地 TTL 到期后不再调用支付提供方；客户端清理已过期幂等键；已完成/已付款的幂等重放不再要求新的付款入口。
+- ELMPay 公共收银台配置禁止 credentials/query/fragment，避免 token 进入 HTTP 请求和日志。
+- V1→V88 与并发用例仅为本地自证；受保护生产数据库仍停在已有 V87 证据，V88 生产迁移、
+  真实商户付款/退款、银行结算和独立认证保持 `NOT_RUN` / `NOT_CERTIFIED`。
+
 ## 2026-09-13 — Credit 双分录、outbox 与投影恢复
 
 - 新增 V87 不可变 Credit journal transaction/posting 和提交时借贷守恒约束。

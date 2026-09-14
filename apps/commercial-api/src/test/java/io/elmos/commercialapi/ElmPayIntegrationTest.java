@@ -11,6 +11,7 @@ import io.elmos.commercialadapter.payment.ElmPayCheckoutGateway;
 import io.elmos.commercialadapter.payment.ElmPayWebhookAdapter;
 import io.elmos.commercialadapter.payment.PaymentCallbackPipeline;
 import io.elmos.commercialadapter.payment.PaymentProvider;
+import io.elmos.commercialadapter.payment.PaymentProviderRouter;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
@@ -40,7 +41,8 @@ class ElmPayIntegrationTest {
         AtomicReference<String> requestBody = new AtomicReference<>();
         ElmPayCheckoutGateway gateway = new ElmPayCheckoutGateway(
                 PaymentProvider.ALIPAY_CHECKOUT, java.net.URI.create("https://pay.example/"),
-                PROJECT, "elmos-payment-complete", false, () -> "mounted-token",
+                java.net.URI.create("https://checkout.example/"), PROJECT,
+                "elmos-payment-complete", false, () -> "mounted-token",
                 (endpoint, token, projectId, idempotencyKey, requestId, traceparent, body) -> {
                     assertEquals("https://pay.example/v1/checkout-sessions", endpoint.toString());
                     assertEquals("mounted-token", token);
@@ -56,13 +58,15 @@ class ElmPayIntegrationTest {
                              "checkout_url":"https://checkout.example/#session=session-1&token=opaque",
                              "status":"OPEN"}
                             """);
-                }, JSON);
+                }, JSON, Clock.fixed(NOW, ZoneOffset.UTC));
 
         var handoff = gateway.prepare("order-99", 9_900, "500 Credits");
 
         assertEquals(PaymentProvider.ALIPAY_CHECKOUT, handoff.provider());
         assertEquals("https://checkout.example/#session=session-1&token=opaque",
                 handoff.redirectUrl());
+        assertEquals(PaymentProviderRouter.CheckoutSurface.ELMPAY_HOSTED,
+                handoff.checkoutSurface());
         Map<?, ?> request = JSON.readValue(requestBody.get(), Map.class);
         assertEquals("order-99", request.get("business_order_no"));
         assertEquals(9_900, request.get("amount"));
@@ -70,6 +74,62 @@ class ElmPayIntegrationTest {
         assertEquals("alipay", request.get("payment_method"));
         assertEquals("elmos-payment-complete", request.get("return_route_id"));
         assertTrue(gateway.contactsProviderDuringPrepare());
+    }
+
+    @Test
+    void checkoutRejectsUnboundHostSessionQueryAndExpiredResponse() {
+        assertCheckoutResponseRejected("""
+                {"checkout_session_id":"session-1",
+                 "payment_intent_id":"00000000-0000-0000-0000-000000000303",
+                 "expires_at":"2026-09-08T00:10:00Z",
+                 "checkout_url":"https://attacker.example/#session=session-1&token=opaque",
+                 "status":"OPEN"}
+                """);
+        assertCheckoutResponseRejected("""
+                {"checkout_session_id":"session-1",
+                 "payment_intent_id":"00000000-0000-0000-0000-000000000303",
+                 "expires_at":"2026-09-08T00:10:00Z",
+                 "checkout_url":"https://checkout.example/?token=leaked#session=session-1&token=opaque",
+                 "status":"OPEN"}
+                """);
+        assertCheckoutResponseRejected("""
+                {"checkout_session_id":"session-1",
+                 "payment_intent_id":"00000000-0000-0000-0000-000000000303",
+                 "expires_at":"2026-09-08T00:10:00Z",
+                 "checkout_url":"https://checkout.example/#session=session-2&token=opaque",
+                 "status":"OPEN"}
+                """);
+        assertCheckoutResponseRejected("""
+                {"checkout_session_id":"session-1",
+                 "payment_intent_id":"00000000-0000-0000-0000-000000000303",
+                 "expires_at":"2026-09-07T23:59:59Z",
+                 "checkout_url":"https://checkout.example/#session=session-1&token=opaque",
+                 "status":"OPEN"}
+                """);
+        assertCheckoutResponseRejected("""
+                {"checkout_session_id":"session-1",
+                 "payment_intent_id":"00000000-0000-0000-0000-000000000303",
+                 "expires_at":"2026-09-08T00:30:01Z",
+                 "checkout_url":"https://checkout.example/#session=session-1&token=opaque",
+                 "status":"OPEN"}
+                """);
+    }
+
+    @Test
+    void checkoutSurfaceRejectsProviderShapeMismatch() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new PaymentProviderRouter.CheckoutHandoff(
+                        PaymentProvider.WECHAT_PAY_NATIVE, "https://pay.example/", null,
+                        PaymentProviderRouter.CheckoutSurface.DIRECT_PROVIDER));
+        assertThrows(IllegalArgumentException.class, () ->
+                new PaymentProviderRouter.CheckoutHandoff(
+                        PaymentProvider.ALIPAY_CHECKOUT, null,
+                        "weixin://wxpay/bizpayurl?pr=wrong",
+                        PaymentProviderRouter.CheckoutSurface.ELMPAY_HOSTED));
+        assertThrows(IllegalArgumentException.class, () ->
+                new PaymentProviderRouter.CheckoutHandoff(
+                        PaymentProvider.STRIPE_CHECKOUT, "https://checkout.example/", null,
+                        PaymentProviderRouter.CheckoutSurface.ELMPAY_HOSTED));
     }
 
     @Test
@@ -131,6 +191,18 @@ class ElmPayIntegrationTest {
                 "elmos-key-1", () -> SECRET.clone(),
                 new CallbackReplayGuard(Clock.fixed(NOW, ZoneOffset.UTC), Duration.ofMinutes(5)),
                 JSON);
+    }
+
+    private static void assertCheckoutResponseRejected(String responseBody) {
+        ElmPayCheckoutGateway gateway = new ElmPayCheckoutGateway(
+                PaymentProvider.ALIPAY_CHECKOUT, java.net.URI.create("https://pay.example/"),
+                java.net.URI.create("https://checkout.example/"), PROJECT,
+                "elmos-payment-complete", false, () -> "mounted-token",
+                (endpoint, token, projectId, idempotencyKey, requestId, traceparent, body) ->
+                        new ElmPayCheckoutGateway.Response(201, responseBody),
+                JSON, Clock.fixed(NOW, ZoneOffset.UTC));
+        assertThrows(IllegalStateException.class,
+                () -> gateway.prepare("order-rejected", 9_900, "500 Credits"));
     }
 
     private static PaymentCallbackPipeline.RawCallback raw(
