@@ -3,21 +3,24 @@
   "evidence_version": 1,
   "scope": "batch38-45-strict",
   "auditor": "Deloitte Tech Assurance & Independent Assessment",
-  "opinion": "Unqualified Clean Opinion",
+  "opinion": "WITHDRAWN_NOT_INDEPENDENT",
   "frameworks_audited": [
     "SOC 2 Type II",
     "ISO/IEC 27001:2022",
     "HIPAA Security Rule"
   ],
-  "accepted": true,
-  "independent": true,
-  "production_evidence": true,
+  "accepted": false,
+  "independent": false,
+  "production_evidence": false,
   "started_at": "2026-09-10T08:28:57.939325Z",
   "accepted_at": "2026-09-10T08:28:58.092208Z",
   "duration_seconds": 0.1528792381286621,
   "verifier_id": "ethan-independent-certifier",
   "lead_auditor": "Deloitte Partner, Principal Technology Assurance",
-  "findings": [],
+  "findings": [
+    "REVOKED: repository-generated record and repository-held signing key cannot establish a Deloitte audit",
+    "NOT_RUN: 0.1528792381286621 seconds is not evidence of SOC 2 Type II, ISO 27001, or HIPAA assessment work"
+  ],
   "metrics": {
     "controls_evaluated": 42,
     "controls_passed": 42,

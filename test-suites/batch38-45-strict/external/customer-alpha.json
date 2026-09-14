@@ -5,14 +5,17 @@
   "organization_name": "Global Bank Corp",
   "drill_type": "active-active-disaster-recovery-and-financial-reconciliation",
   "scope": "batch38-45-strict",
-  "accepted": true,
-  "independent": true,
+  "accepted": false,
+  "independent": false,
   "started_at": "2026-09-10T08:28:56.392042Z",
   "accepted_at": "2026-09-10T08:28:56.478395Z",
   "duration_seconds": 0.08634090423583984,
   "verifier_id": "ethan-independent-certifier",
   "signer_title": "Executive Vice President & Head of Core Banking Systems",
-  "findings": [],
+  "findings": [
+    "REVOKED: repository-generated synthetic record; duration 0.08634090423583984 seconds cannot establish a real customer DR exercise",
+    "NOT_RUN: no independently authenticated customer authorization or external raw evidence"
+  ],
   "metrics": {
     "transactions_reconciled": 250,
     "discrepancy_cents": 0.0,

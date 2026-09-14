@@ -152,4 +152,36 @@ class SpringDiagnosticAutoRepairerTest {
         assertFalse(updated.contains("extends HandlerInterceptorAdapter"));
         assertTrue(updated.contains("implements HandlerInterceptor") || updated.contains("HandlerInterceptor"));
     }
+
+    @Test
+    void repairPipelineIncludesLegacyOauthDwrAndExplicitRuntimeObligations() throws IOException {
+        Files.writeString(tempDir.resolve("pom.xml"), """
+                <project><dependencies><dependency>
+                  <groupId>org.springframework.security.oauth</groupId>
+                  <artifactId>spring-security-oauth2</artifactId><version>2.5.2.RELEASE</version>
+                </dependency></dependencies></project>
+                """);
+        Path source = tempDir.resolve("LegacyAuthorizationServer.java");
+        Files.writeString(source, """
+                import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+                @EnableAuthorizationServer public class LegacyAuthorizationServer {}
+                """);
+        Path dwr = tempDir.resolve("LegacyRemote.java");
+        Files.writeString(dwr, """
+                import org.directwebremoting.annotations.RemoteProxy;
+                import org.directwebremoting.annotations.RemoteMethod;
+                @RemoteProxy(name = "legacy") public class LegacyRemote {
+                  @RemoteMethod public String read(String id) { return id; }
+                }
+                """);
+
+        var result = SpringDiagnosticAutoRepairer.repair(tempDir, List.of());
+
+        assertTrue(result.repaired());
+        assertTrue(result.rulesApplied().contains("LEGACY_OAUTH2_AUTHORIZATION_SERVER_TO_BOOT_STARTER"));
+        assertTrue(result.rulesApplied().contains("DWR_ANNOTATED_REMOTE_TO_REST_CONTROLLER"));
+        assertFalse(result.blockingObligations().isEmpty());
+        assertTrue(Files.readString(source).contains("AuthorizationServerSettings"));
+        assertTrue(Files.readString(dwr).contains("@PostMapping(\"/read\")"));
+    }
 }

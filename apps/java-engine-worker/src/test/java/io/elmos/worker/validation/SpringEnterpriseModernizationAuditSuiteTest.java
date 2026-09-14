@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,5 +54,15 @@ class SpringEnterpriseModernizationAuditSuiteTest {
         assertEquals(30, report.certifiedProjectsCount());
         assertEquals(100.0, report.certificationRate());
         assertTrue(report.allProjectsCertified());
+    }
+
+    @Test
+    void legacyEnterpriseSurfacePreventsAFalseGreenAudit() throws Exception {
+        Files.writeString(tempDir.resolve("LegacyAuth.java"),
+                "import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer; @EnableAuthorizationServer class LegacyAuth {}");
+        var verdict = suite.auditModernizedProject(tempDir, "legacy", "Legacy");
+        assertTrue(!verdict.ecosystemCompliant());
+        assertTrue(!verdict.fullyCertified());
+        assertTrue(verdict.auditLogs().stream().anyMatch(line -> line.contains("LEGACY-AUTHORIZATION-SERVER")));
     }
 }
