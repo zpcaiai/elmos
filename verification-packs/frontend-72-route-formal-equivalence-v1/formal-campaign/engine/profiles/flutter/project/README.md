@@ -1,6 +1,6 @@
 # ELMOS 有界导航验证
 
-This project was generated from typed UI Interaction IR for the directional route `angular@22.0.8 -> flutter`.
+This project was generated from typed UI Interaction IR for the directional route `angular@22.1.4 -> flutter`.
 
 ## Generated scope
 

@@ -242,7 +242,8 @@ class DependabotGovernanceTest(unittest.TestCase):
             self.assertTrue(
                 all("--slurp" in call.args[0] for call in run.call_args_list)
             )
-            self.assertEqual(b"[]", snapshot.read_bytes())
+            source_bytes = MODULE.canonical(registry["source_alerts"])
+            self.assertEqual(source_bytes, snapshot.read_bytes())
             self.assertEqual(
                 "DISMISSED", json.loads(vex_path.read_text())["metadata"]["githubDisposition"]
             )
@@ -266,7 +267,7 @@ class DependabotGovernanceTest(unittest.TestCase):
             ):
                 self.assertEqual(0, MODULE.main())
             self.assertEqual(2, replay_run.call_count)
-            self.assertEqual(b"[]", snapshot.read_bytes())
+            self.assertEqual(source_bytes, snapshot.read_bytes())
 
     def test_legacy_registry_migration_is_digest_bound(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -11,8 +11,8 @@
     "target_profile": "react-native",
     "target_framework_version": "0.86.0"
   },
-  "source_project_digest": "sha256:2b82798ddb70ad5dce815065c40df41a36a054a19c8213f0c4f68e6f8582d050",
-  "target_project_digest": "sha256:bcea48117319a6498a7c51c5baa859c3b68e98f9cc84a38adccebae13de57796",
+  "source_project_digest": "sha256:8d4e8dadb50fe7bc3b08ae46cb3d1d542cb3f3f4ae0bce2d438d4efa656b0d39",
+  "target_project_digest": "sha256:c3ebc9be7a22698cea86bf9d174613b8c34e8d565f445f67bf6579e75f026b5c",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-navigation-v1",

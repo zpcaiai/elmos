@@ -29,8 +29,12 @@ class SpringBoot4ExternalCertificationTests(TestCase):
 
                 manifest = json.loads((pack_dir / "pack.json").read_text(encoding="utf-8"))
                 evidence = json.loads((pack_dir / "certification" / "evidence.json").read_text(encoding="utf-8"))
-                certification = json.loads((pack_dir / "certification" / "certification.json").read_text(encoding="utf-8"))
-                admission = json.loads((pack_dir / "certification" / "external-admission.json").read_text(encoding="utf-8"))
+                certification = json.loads(
+                    (pack_dir / "certification" / "certification.json").read_text(encoding="utf-8")
+                )
+                admission = json.loads(
+                    (pack_dir / "certification" / "external-admission.json").read_text(encoding="utf-8")
+                )
 
                 self.assertEqual("certified", manifest.get("status"))
                 self.assertEqual("certified", certification.get("status"))

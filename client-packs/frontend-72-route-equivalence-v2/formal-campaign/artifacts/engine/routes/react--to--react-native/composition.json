@@ -4,12 +4,12 @@
   "route_id": "react--to--react-native",
   "source_lifting": {
     "profile_id": "react",
-    "project_digest": "sha256:f9afd91e0068ad1a903377e20cfea85d95bba26147b298399c8d3e9a757354ef",
+    "project_digest": "sha256:2363b65dbe2e7e4c3712a285ec436aab9869ae9ca41f3764729247f8c9e82fed",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "target_lowering_relift": {
     "profile_id": "react-native",
-    "project_digest": "sha256:927aa72f948d73cfdcb9bf5182308003c3d28e65b25448140e627f33c4114a57",
+    "project_digest": "sha256:95de96c2dc8edff3d9d9e1d6cb4956db7fe6615508fa49b16776d604c9759223",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",

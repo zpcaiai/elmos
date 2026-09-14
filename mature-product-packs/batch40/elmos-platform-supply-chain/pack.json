@@ -6,7 +6,7 @@
   "packType": "supply-chain-compliance",
   "version": "0.1.0",
   "owner": "Aria Thorne, Chief Security & Compliance Officer",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:5c8dc0741430da39c17d16a71f6843878fa3d53cdc56bbcf0732e2348ac6938f",
   "environmentDigest": "sha256:d6ef2dfb22f394929eec83ef1694cc8cb247e34746a23221a2fae4f91269d068",
   "requiredBatches": [

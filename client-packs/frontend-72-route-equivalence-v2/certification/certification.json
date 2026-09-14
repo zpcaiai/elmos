@@ -7,7 +7,7 @@
     "source": {
       "stack": "angular",
       "versions": [
-        "22.0.8"
+        "22.1.4"
       ],
       "language": "TypeScript",
       "language_versions": [
@@ -17,10 +17,10 @@
       "runtime_versions": [
         "26.0.0"
       ],
-      "build_tool": "Angular CLI 22.0.8",
+      "build_tool": "Angular CLI 22.1.4",
       "package_manager": "npm 11.12.1",
       "router": [
-        "Angular Router 22.0.8"
+        "Angular Router 22.1.4"
       ],
       "renderer": [
         "CSR"

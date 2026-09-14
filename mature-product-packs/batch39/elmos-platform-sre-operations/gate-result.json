@@ -1,13 +1,11 @@
 {
   "batch": 39,
   "packKey": "elmos-platform-sre-operations",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
-  "evidenceRefs": [
-    "batch39-execution",
-    "batch39-provenance",
-    "batch39-verification"
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "certification withdrawn by ELMOS-CERT-KEY-2026-09-13-01: repository-held certifier key is revoked"
   ],
+  "evidenceRefs": [],
   "externalOperationExecuted": false
 }

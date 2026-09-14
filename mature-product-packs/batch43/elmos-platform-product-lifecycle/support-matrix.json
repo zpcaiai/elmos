@@ -5,7 +5,7 @@
   "capabilities": [
     {
       "capabilityId": "b43-automated-upgrade-tooling",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -15,7 +15,7 @@
     },
     {
       "capabilityId": "b43-compatibility-test-matrix",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -25,7 +25,7 @@
     },
     {
       "capabilityId": "b43-customer-upgrade-readiness",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -35,7 +35,7 @@
     },
     {
       "capabilityId": "b43-database-migration-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -45,7 +45,7 @@
     },
     {
       "capabilityId": "b43-deprecation-removal",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -55,7 +55,7 @@
     },
     {
       "capabilityId": "b43-event-schema-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -65,7 +65,7 @@
     },
     {
       "capabilityId": "b43-feature-flag-progressive-enable",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -75,7 +75,7 @@
     },
     {
       "capabilityId": "b43-product-lifecycle-factory",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -85,7 +85,7 @@
     },
     {
       "capabilityId": "b43-product-lifecycle-gate",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -95,7 +95,7 @@
     },
     {
       "capabilityId": "b43-psp-uir-schema-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -105,7 +105,7 @@
     },
     {
       "capabilityId": "b43-public-api-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -115,7 +115,7 @@
     },
     {
       "capabilityId": "b43-recipe-pack-extension-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -125,7 +125,7 @@
     },
     {
       "capabilityId": "b43-release-channel-governance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -135,7 +135,7 @@
     },
     {
       "capabilityId": "b43-release-documentation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -145,7 +145,7 @@
     },
     {
       "capabilityId": "b43-rolling-mixed-version-upgrade",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -155,7 +155,7 @@
     },
     {
       "capabilityId": "b43-runner-protocol-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -165,7 +165,7 @@
     },
     {
       "capabilityId": "b43-sdk-compatibility",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -175,7 +175,7 @@
     },
     {
       "capabilityId": "b43-security-fix-backport",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -185,7 +185,7 @@
     },
     {
       "capabilityId": "b43-support-eol-policy",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",
@@ -195,7 +195,7 @@
     },
     {
       "capabilityId": "b43-version-specification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch43-execution",

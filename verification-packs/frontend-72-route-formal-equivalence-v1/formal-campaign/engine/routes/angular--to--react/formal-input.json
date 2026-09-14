@@ -7,12 +7,12 @@
   "route_id": "angular--to--react",
   "tuple": {
     "source_profile": "angular",
-    "source_framework_version": "22.0.8",
+    "source_framework_version": "22.1.4",
     "target_profile": "react",
     "target_framework_version": "19.2.8"
   },
-  "source_project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
-  "target_project_digest": "sha256:5e544167ab78553c8020f13df8332706d2c6c27e585afbb508f5b6cd2d1d25fe",
+  "source_project_digest": "sha256:5966d1163d18906a56aac4840009ed7286acb3c51c0de8c149c03b6c95d2750a",
+  "target_project_digest": "sha256:c799bfee348e3dd4dca373e7f94432fe1eea469c86cb1ef7895b30a98c8add6c",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-navigation-v1",

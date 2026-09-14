@@ -2,7 +2,7 @@
   "routeId": "angular--to--vue2",
   "source": "angular",
   "target": "vue2",
-  "sourceProfileVersion": "22.0.8",
+  "sourceProfileVersion": "22.1.4",
   "targetProfileVersion": "2.7.16",
   "supportState": "LEGACY_TARGET_CONDITIONAL",
   "semanticConversionEvidence": "NOT_RUN",

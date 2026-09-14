@@ -129,3 +129,16 @@ survey-engines-mac.sh
 
 # Local benchmark and evaluation fixtures
 fixtures/
+
+# Independent certifier/verifier private keys must never enter the repository.
+# Only public trust anchors and revocation records are repository-owned.
+**/*.private.pem
+**/*-private.pem
+**/certifier-private.pem
+**/*.p12
+**/*.pfx
+**/*.jks
+**/*.keystore
+
+# Generated release-candidate evidence is uploaded by CI, not committed.
+.release-control-artifacts/

@@ -51,7 +51,7 @@ BEGIN
         amount_minor, status)
     VALUES (
         NEW.checkout_session_id,
-        public.encode(public.digest(pg_catalog.convert_to(
+        pg_catalog.encode(public.digest(pg_catalog.convert_to(
             NEW.checkout_session_id, 'UTF8'), 'sha256'), 'hex'),
         NEW.organization_id, NEW.plan_id, NEW.amount_minor, NEW.status)
     ON CONFLICT (checkout_session_id) DO UPDATE
@@ -73,7 +73,7 @@ BEGIN
         amount_minor, status)
     VALUES (
         NEW.out_trade_no,
-        public.encode(public.digest(pg_catalog.convert_to(
+        pg_catalog.encode(public.digest(pg_catalog.convert_to(
             NEW.out_trade_no, 'UTF8'), 'sha256'), 'hex'),
         NEW.topup_order_id, NEW.organization_id, NEW.amount_minor, NEW.status)
     ON CONFLICT (out_trade_no) DO UPDATE
@@ -95,7 +95,7 @@ BEGIN
         amount_minor, status)
     VALUES (
         NEW.out_trade_no,
-        public.encode(public.digest(pg_catalog.convert_to(
+        pg_catalog.encode(public.digest(pg_catalog.convert_to(
             NEW.out_trade_no, 'UTF8'), 'sha256'), 'hex'),
         NEW.order_id, NEW.organization_id, NEW.order_type, NEW.amount_minor, NEW.status)
     ON CONFLICT (out_trade_no) DO UPDATE
