@@ -75,3 +75,34 @@ def test_java_worker_client_fallback_on_fake_repo():
     )
     assert res.status == "FALLBACK_PYTHON_LST"
     assert "Java Worker environment unavailable" in (res.error_message or "")
+
+
+def test_java_worker_client_analyze_real_execution():
+    repo_root = Path(__file__).parents[3]
+    client = JavaWorkerClient(repo_root=repo_root)
+
+    bad_tx_code = """
+package com.example.service;
+
+import org.springframework.transaction.annotation.Transactional;
+
+public class OrderService {
+    public void processOrder() {
+        doInternalUpdate();
+    }
+
+    @Transactional
+    public void doInternalUpdate() {
+        System.out.println("Updating...");
+    }
+}
+"""
+    res = client.analyze_with_java_worker(
+        source_code=bad_tx_code,
+        analysis_type="ALL"
+    )
+    assert res.status == "SUCCESS"
+    assert res.findings_count >= 1
+    rules = [f.rule_id for f in res.findings]
+    assert "SPRING_TX_SELF_INVOCATION" in rules
+

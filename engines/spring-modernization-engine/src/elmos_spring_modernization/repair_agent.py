@@ -199,8 +199,53 @@ class RepairVerificationLoop:
 
     def _apply_remediation(self, error_log: str, code: str, strategy: RepairStrategy) -> Tuple[str, str]:
         """
-        Applies concrete, industrial Spring Boot 2->3 remediation transforms based on diagnostic tokens.
+        Applies concrete, industrial Spring Boot 2->3 remediation transforms.
+        Prioritizes Route A (Java Engine Worker with OpenRewrite LST/JDT compiler),
+        falling back to deterministic syntax patterns when JVM is absent or on code fragments.
         """
+        lower_err = error_log.lower()
+        lower_code = code.lower()
+
+        # Route A: Prioritize OpenRewrite compiler worker for full Java compilation units
+        if any(kw in code for kw in ("class ", "interface ", "enum ", "record ")):
+            from .java_worker_bridge import JavaWorkerClient
+            worker = JavaWorkerClient()
+            if worker.is_worker_available():
+                recipe_family = None
+                if (
+                    "security" in lower_err
+                    or "websecurityconfigureradapter" in lower_err
+                    or "antmatchers" in lower_err
+                    or "websecurityconfigureradapter" in lower_code
+                    or "authorizerequests" in lower_code
+                ):
+                    recipe_family = "SPRING_SECURITY_6"
+                elif (
+                    "criteria" in lower_err
+                    or "hibernate" in lower_err
+                    or "getone" in lower_err
+                    or "javax.persistence" in lower_err
+                    or ".getone(" in lower_code
+                    or "javax.persistence." in code
+                ):
+                    recipe_family = "JPA_HIBERNATE_6"
+                elif (
+                    "junit" in lower_err
+                    or "test" in lower_err
+                    or "@test" in lower_code
+                    or "assertionfailederror" in lower_err
+                ):
+                    recipe_family = "JUNIT_5"
+
+                if recipe_family:
+                    res = worker.rewrite_with_openrewrite(code, recipe_family=recipe_family)
+                    if res.status == "SUCCESS" and res.source_code and res.source_code != code:
+                        applied = f"OPENREWRITE_{recipe_family}"
+                        if res.recipes_applied:
+                            applied = f"OPENREWRITE_{res.recipes_applied[0]}"
+                        return res.source_code, applied
+
+        # Route B / Standalone deterministic fallback for snippets or absent JVM
         # 1. Spring Data JPA getOne -> getReferenceById
         if "getone" in error_log.lower() or "getone" in code:
             if ".getOne(" in code:
@@ -230,6 +275,7 @@ class RepairVerificationLoop:
             return code.replace(".antMatchers(", ".requestMatchers("), "RULE_SECURITY_ANT_MATCHERS"
         if "authorizerequests" in error_log.lower() or ".authorizeRequests()" in code:
             return code.replace(".authorizeRequests()", ".authorizeHttpRequests()"), "RULE_SECURITY_MATCHER"
+
 
         # 4. WebMvc HandlerInterceptorAdapter
         if "handlerinterceptoradapter" in error_log.lower() or "HandlerInterceptorAdapter" in code:

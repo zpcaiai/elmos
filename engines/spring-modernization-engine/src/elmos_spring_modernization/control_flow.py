@@ -358,6 +358,36 @@ class TransactionalSelfInvocationDetector:
         return findings
 
     @classmethod
+    def analyze_source(cls, source_code: str) -> List[Finding]:
+        """
+        Compiler-grade analysis prioritizing Java Engine Worker (Route A).
+        Falls back to standalone Python AST parser if Java Worker is unavailable.
+        """
+        from .java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.analyze_with_java_worker(source_code, "TRANSACTIONAL_SELF_INVOCATION")
+            if res.status == "SUCCESS":
+                return [
+                    Finding(
+                        rule_id=f.rule_id,
+                        severity=f.severity,
+                        message=f.message,
+                        location=f.location,
+                        remediation=f.remediation
+                    )
+                    for f in res.findings
+                ]
+
+        # Standalone Python AST fallback
+        from .java_ast import JavaASTParser, JavaLexer
+        p = JavaASTParser(JavaLexer(source_code).tokenize(), source=source_code).parse()
+        findings: List[Finding] = []
+        for t in p.type_declarations:
+            findings.extend(cls.analyze_type(t))
+        return findings
+
+    @classmethod
     def _create_finding(cls, class_name: str, caller_name: str, target_name: str) -> Finding:
         return Finding(
             rule_id="SPRING_TX_SELF_INVOCATION",
@@ -431,6 +461,38 @@ class SecurityContextTaintAnalyzer:
 
         return findings
 
+    @classmethod
+    def analyze_source(cls, source_code: str) -> List[Finding]:
+        """
+        Compiler-grade analysis prioritizing Java Engine Worker (Route A).
+        Falls back to standalone Python AST parser if Java Worker is unavailable.
+        """
+        from .java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.analyze_with_java_worker(source_code, "SECURITY")
+            if res.status == "SUCCESS":
+                return [
+                    Finding(
+                        rule_id=f.rule_id,
+                        severity=f.severity,
+                        message=f.message,
+                        location=f.location,
+                        remediation=f.remediation
+                    )
+                    for f in res.findings
+                ]
+
+        # Standalone Python AST fallback
+        from .java_ast import JavaASTParser, JavaLexer
+        p = JavaASTParser(JavaLexer(source_code).tokenize(), source=source_code).parse()
+        findings: List[Finding] = []
+        for t in p.type_declarations:
+            for m in getattr(t, "members", []):
+                if isinstance(m, MethodDeclaration):
+                    findings.extend(cls.analyze_method(m, class_name=t.name))
+        return findings
+
 
 class HibernateLazyNPlusOneDetector:
     """
@@ -490,3 +552,36 @@ class HibernateLazyNPlusOneDetector:
                         ))
 
         return findings
+
+    @classmethod
+    def analyze_source(cls, source_code: str) -> List[Finding]:
+        """
+        Compiler-grade analysis prioritizing Java Engine Worker (Route A).
+        Falls back to standalone Python AST parser if Java Worker is unavailable.
+        """
+        from .java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.analyze_with_java_worker(source_code, "HIBERNATE_LAZY_N_PLUS_ONE")
+            if res.status == "SUCCESS":
+                return [
+                    Finding(
+                        rule_id=f.rule_id,
+                        severity=f.severity,
+                        message=f.message,
+                        location=f.location,
+                        remediation=f.remediation
+                    )
+                    for f in res.findings
+                ]
+
+        # Standalone Python AST fallback
+        from .java_ast import JavaASTParser, JavaLexer
+        p = JavaASTParser(JavaLexer(source_code).tokenize(), source=source_code).parse()
+        findings: List[Finding] = []
+        for t in p.type_declarations:
+            for m in getattr(t, "members", []):
+                if isinstance(m, MethodDeclaration):
+                    findings.extend(cls.analyze_method(m, class_name=t.name))
+        return findings
+
