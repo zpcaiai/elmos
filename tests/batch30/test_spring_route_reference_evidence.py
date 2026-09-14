@@ -191,6 +191,7 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertEqual(
             json.loads(self.canonical.read_text(encoding="utf-8")), success
         )
+        self.assertNotIn(b"\r\n", self.canonical.read_bytes())
         self.assertEqual(replace.call_count, 1)
         source, destination = replace.call_args.args
         self.assertEqual(Path(destination).resolve(), self.canonical.resolve())
@@ -420,6 +421,14 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         runtime = {
             "health": {"status": "UP"},
             "responses": {"42": {"id": 42}},
+            "validation": {
+                "invalid_order_status": 400,
+                "valid_order_status": 200,
+                "valid_order_response": {
+                    "customerId": "customer-42",
+                    "status": "CREATED",
+                },
+            },
             "security": {"authenticated_order_status": 200},
             "persistence": {"count_response": {"count": 0}},
             "dependency_injection": {"injected": True},
@@ -443,9 +452,12 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         projected = REFERENCE.pack_local_reference_evidence(evidence, "pack")
 
         self.assertFalse(projected["certification_eligible"])
+        self.assertEqual(projected["source"]["framework"], "spring-boot")
+        self.assertEqual(projected["target"]["framework"], "spring-boot")
         self.assertEqual(projected["external_certification"], "NOT_RUN")
         for capability in (
-            "dependency_injection", "persistence", "messaging", "cache", "scheduler"
+            "validation", "dependency_injection", "persistence", "messaging",
+            "cache", "scheduler"
         ):
             self.assertEqual(projected[capability]["status"], "PASSED_LOCAL")
             self.assertEqual(projected[capability]["production_status"], "NOT_RUN")
@@ -523,6 +535,42 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertEqual(
             environment["PATH"],
             REFERENCE.os.pathsep.join((str(Path("C:/jdk-21/bin")), "existing-path")),
+        )
+
+    def test_java_version_executes_the_launcher_from_the_bound_home(self) -> None:
+        completed = subprocess.CompletedProcess(
+            ["C:/jdk-21/bin/java.exe", "-version"],
+            0,
+            "",
+            'openjdk version "21.0.12" 2026-07-21\n',
+        )
+        with (
+            mock.patch.object(REFERENCE.os, "name", "nt"),
+            mock.patch.object(REFERENCE, "run", return_value=completed) as invoked,
+        ):
+            reported = REFERENCE.java_version(
+                Path("C:/jdk-21"), cwd=Path("C:/fixture")
+            )
+
+        self.assertEqual(reported, 'openjdk version "21.0.12" 2026-07-21')
+        self.assertEqual(
+            invoked.call_args.args[0],
+            [str(Path("C:/jdk-21/bin/java.exe")), "-version"],
+        )
+        self.assertEqual(invoked.call_args.kwargs["home"], Path("C:/jdk-21"))
+
+    def test_java_version_fails_closed_on_empty_output(self) -> None:
+        completed = subprocess.CompletedProcess(["java"], 0, "", "")
+        with mock.patch.object(REFERENCE, "run", return_value=completed):
+            with self.assertRaisesRegex(REFERENCE.RunFailure, "JAVA_VERSION_EMPTY"):
+                REFERENCE.java_version(Path("/jdk-21"), cwd=self.repo)
+
+    def test_success_evidence_uses_portable_path_separators(self) -> None:
+        self.assertEqual(
+            REFERENCE.portable_evidence_text(
+                r"Building C:\fixture\target\application.jar"
+            ),
+            "Building C:/fixture/target/application.jar",
         )
 
 

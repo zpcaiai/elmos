@@ -1083,6 +1083,28 @@ def run(
     return completed
 
 
+def java_version(home: Path, *, cwd: Path) -> str:
+    """Report the JDK version from the exact home bound to an evidence role.
+
+    Passing a modified ``PATH`` to ``subprocess.run`` is not sufficient on
+    Windows: executable lookup can occur before the child environment is
+    applied, so a bare ``java`` may resolve from the parent process and record
+    the wrong JDK.  Builds use ``JAVA_HOME`` and runtime launches already use
+    :func:`java_executable`; evidence collection must use the same absolute
+    executable boundary.
+    """
+    completed = run(
+        [str(java_executable(home)), "-version"],
+        cwd=cwd,
+        home=home,
+        timeout=120,
+    )
+    reported = (completed.stderr or completed.stdout).splitlines()
+    if not reported:
+        raise RunFailure(f"JAVA_VERSION_EMPTY:{java_executable(home)}")
+    return reported[0]
+
+
 def pom(route: Route) -> str:
     starters = "".join(
         f"""
@@ -1340,10 +1362,56 @@ def start_and_probe(
                 )
                 for identifier in PROBE_IDS
             }
+            validation_headers = {
+                "Content-Type": "application/json",
+                **(auth_headers if security_enabled else {}),
+            }
+            invalid_order_status, _ = request_status(
+                port,
+                "POST",
+                "/api/orders",
+                headers=validation_headers,
+                body='{"customerId":""}',
+                timeout=10.0,
+            )
+            valid_order_status, valid_order_body = request_status(
+                port,
+                "POST",
+                "/api/orders",
+                headers=validation_headers,
+                body='{"customerId":"customer-42"}',
+                timeout=10.0,
+            )
+            try:
+                valid_order_response: Any = json.loads(valid_order_body)
+            except json.JSONDecodeError as exc:
+                raise RunFailure(
+                    f"VALIDATION_INVALID_JSON:/api/orders:{exc}"
+                ) from exc
+            expected_valid_order = {
+                "customerId": "customer-42",
+                "status": "CREATED",
+            }
+            if (
+                invalid_order_status != 400
+                or valid_order_status != 200
+                or valid_order_response != expected_valid_order
+            ):
+                raise RunFailure(
+                    "VALIDATION_CONTRACT_FAILED\n"
+                    f"  invalid_status={invalid_order_status}\n"
+                    f"  valid_status={valid_order_status}\n"
+                    f"  valid_response={json.dumps(valid_order_response, sort_keys=True)}"
+                )
             result: dict[str, Any] = {
                 "health": health,
                 "responses": responses,
                 "jar_sha256": hashlib.sha256(jar.read_bytes()).hexdigest(),
+                "validation": {
+                    "invalid_order_status": invalid_order_status,
+                    "valid_order_status": valid_order_status,
+                    "valid_order_response": valid_order_response,
+                },
             }
             if security_enabled:
                 unauthenticated_status, _ = request_status(port, "GET", "/api/orders/42")
@@ -1669,7 +1737,9 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "PERSISTENCE_BEHAVIOR_DIFFERENCE\n"
             f"source={json.dumps(source_runtime.get('persistence'), sort_keys=True)}\n"
             f"target={json.dumps(target_runtime.get('persistence'), sort_keys=True)}")
-    for capability in ("dependency_injection", "messaging", "cache", "scheduler"):
+    for capability in (
+        "validation", "dependency_injection", "messaging", "cache", "scheduler"
+    ):
         if source_runtime.get(capability) != target_runtime.get(capability):
             raise RunFailure(
                 f"{capability.upper()}_BEHAVIOR_DIFFERENCE\n"
@@ -1690,20 +1760,18 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
         "build_tool": route.build_tool,
         "source": {
             "boot": route.source_boot,
-            "java": run(["java", "-version"], cwd=source, home=source_home,
-                        timeout=120).stderr.splitlines()[0],
+            "java": java_version(source_home, cwd=source),
             "health_path": route.health_path,
             "build": "PASSED",
-            "build_tail": source_build.stdout[-2_000:],
+            "build_tail": portable_evidence_text(source_build.stdout[-2_000:]),
             "runtime": source_runtime,
         },
         "target": {
             "boot": route.target_boot,
-            "java": run(["java", "-version"], cwd=target, home=target_home,
-                        timeout=120).stderr.splitlines()[0],
+            "java": java_version(target_home, cwd=target),
             "health_path": "/actuator/health",
             "build": "PASSED",
-            "build_tail": target_build.stdout[-2_000:],
+            "build_tail": portable_evidence_text(target_build.stdout[-2_000:]),
             "runtime": target_runtime,
         },
         "transformation": {
@@ -1723,7 +1791,7 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
                 if recipe_artifact_digest is not None
                 else "NOT_REQUIRED"
             ),
-            "output_tail": transformation.stdout[-2_000:],
+            "output_tail": portable_evidence_text(transformation.stdout[-2_000:]),
             driver_key: driver_version,
         },
         "behavioral_parity": True,
@@ -1761,6 +1829,7 @@ def write_json_atomic(destination: Path, payload: dict[str, Any]) -> None:
         with tempfile.NamedTemporaryFile(
             mode="w",
             encoding="utf-8",
+            newline="\n",
             dir=destination.parent,
             prefix=f".{destination.name}.",
             suffix=".tmp",
@@ -1834,12 +1903,14 @@ def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> di
             "messaging", "cache", "scheduler", "lifecycle",
         ],
         "source": {
+            "framework": "spring-boot",
             "version": source["boot"],
             "java": source["java"],
             "build": source["build"],
             "runtime": source_runtime,
         },
         "target": {
+            "framework": "spring-boot",
             "version": target["boot"],
             "java": target["java"],
             "build": target["build"],
@@ -1862,6 +1933,12 @@ def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> di
             "production_status": "NOT_RUN",
             "source": source_runtime.get("security", "NOT_RUN"),
             "target": target_runtime.get("security", "NOT_RUN"),
+        },
+        "validation": {
+            "status": "PASSED_LOCAL" if "validation" in source_runtime else "NOT_RUN",
+            "production_status": "NOT_RUN",
+            "source": source_runtime.get("validation", "NOT_RUN"),
+            "target": target_runtime.get("validation", "NOT_RUN"),
         },
         "persistence": {
             "status": "PASSED_LOCAL" if "persistence" in source_runtime else "NOT_RUN",
