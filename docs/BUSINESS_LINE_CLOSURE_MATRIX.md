@@ -40,11 +40,11 @@ Merkle 根、仓库内签名、合成客户名称或模拟环境不能提升外�
 
 | 业务线 | 本地工程状态 | 外部/独立状态 | 认证状态 | 上线前主要缺口 |
 | --- | --- | --- | --- | --- |
-| Spring 现代化 M30 | 存在方向化、版本具体的 Profile、Handler 和本地测试；只能按具体路线判定 `LIMITED` 或 `READY_FOR_EXTERNAL_GATE` | 旧 campaign 将验证角色私钥提交在仓库内，相关“独立”证据全部作废；真实外部重放 `NOT_RUN` | `NOT_CERTIFIED` | 修复当前 CI，使用真实源/目标构建与启动、Rootless Runner、安全/性能/回滚证据、客户验收；Ethan 仓外复核重签 |
+| Spring 现代化 M30 | 13 条精确版本路线已有仓库自有源构建、转换、目标构建、启动/行为探针和本地测试；只能按具体路线判定 `LIMITED` 或 `READY_FOR_EXTERNAL_GATE` | 旧 campaign 将验证角色私钥提交在仓库内，相关“独立”证据全部作废；真实外部重放 `NOT_RUN` | `NOT_CERTIFIED` | 生产等价 Rootless Runner、安全/性能/回滚证据、客户验收；Ethan 仓外复核重签 |
 | 全库跨语言 M29 | 210 路线中 90 `limited`、120 `research`、0 `certified` | 210/210 本地、独立、外部执行均 `NOT_RUN` | `NOT_CERTIFIED` | 每条方向路线的真实工具链、代表/holdout 语料、等价性、性能、安全、回滚和独立验证；本业务线不在当前 24×7 首批上线计划内 |
-| SQL/ChinaDB M31 | SQL typed IR 和本地转换测试可用；47 个 ChinaDB Skills 的安装实现仍为 spec/declared 边界 | 13/13 厂商实库 `NOT_RUN`；75 ms 专用 Runner 性能门禁 `NOT_RUN_ENVIRONMENT_INVALID` | `NOT_CERTIFIED` | 先选一个精确 DM8 版本/驱动/字符集/时区/模式，完成双端执行、明细对账、性能、CDC、切换与回滚，再扩展其他厂商 |
+| SQL/ChinaDB M31 | 1,916/1,916 SQL 单元有显式处置；1,394 个自动候选中四目标共同可达 1,215，P0 route cell 为 0；ChinaDB 24,908/24,908 route unit 有处置 | 520 项人工迁移中仍有 85 项开放；13/13 厂商实库 `NOT_RUN`；75 ms 专用 Runner 性能门禁 `NOT_RUN_ENVIRONMENT_INVALID` | `NOT_CERTIFIED` | 先选一个精确 DM8 版本/驱动/字符集/时区/模式，完成双端执行、明细对账、性能、CDC、切换与回滚，再扩展其他厂商 |
 | Frontend/MiniApp M32 | 22 个 Skill 有 allowlisted Handler；可移植状态 `DECLARED` | 官方 MiniApp 构建、浏览器/模拟器/真机旅程、权限隐私、视觉/无障碍、外部 holdout 均 `NOT_RUN` | `NOT_CERTIFIED` | 固定微信/支付宝等确切版本与设备矩阵，跑真实构建、核心旅程和 Batch 32 Gate，再由 Ethan 仓外复核 |
-| 多语言项目生成 B46-B95 | 8 个精确语言 Profile 均为 `limited`；本地生成/构建/启动与 PostgreSQL Profile 证据只覆盖声明子集 | 托管 DB/IdP、生产 Rootless、交付、DR、独立 UAT 均 `NOT_RUN` | `NOT_CERTIFIED` | 修复当前项目生成 CI 失败；完成一个固定云/集群 Profile 的部署、回滚、恢复、可观测性、安全和用户验收 |
+| 多语言项目生成 B46-B95 | 8 个精确语言 Profile 均为 `limited`；本地生成/构建/启动与 PostgreSQL Profile 证据只覆盖声明子集 | 托管 DB/IdP、生产 Rootless、交付、DR、独立 UAT 均 `NOT_RUN`；生产矩阵证据需按当前源码重新生成 | `NOT_CERTIFIED` | 在真实固定云/集群 Profile 中重新生成源码绑定证据，并完成部署、回滚、恢复、可观测性、安全和用户验收 |
 | 成熟平台 B38-B45 | 模拟器、引擎和 gate 逻辑可作为本地工程证据 | 现有银行、医疗、审计记录是仓库生成/合成材料，不能代表客户或第三方；真实 field evidence `NOT_RUN` | `NOT_CERTIFIED` | 真实客户授权、生产等价多区环境、连续 SLO/故障/DR 数据、账单对账、外部审计底稿和独立复放 |
 | 自主 QA / Project Intelligence / Foundry | 存在本地 Handler 和本地保守 Gate；Project Intelligence 仍有 `LOCAL/PARTIAL/PLAN`，源包任务与场景不能由绑定状态替代 | 云端 LLM、SCM Webhook、生产多租户调度、500 项任务、248 个验收场景及独立验收仍为 `NOT_RUN` | `NOT_CERTIFIED` | 执行真实 Provider/SCM/Runner 集成、代表项目与 holdout、权限/成本/回滚/长稳测试并完成外部复核 |
 
