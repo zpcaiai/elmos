@@ -53,7 +53,8 @@ def flatten(parameters, prefix=''):
 
 class AlibabaRpcTransport:
     ACTIONS = {
-        ('alb','2020-06-16'): frozenset({'ListServerGroupServers','UpdateServerGroupServersAttribute'}),
+        ('alb','2020-06-16'): frozenset({'ListServerGroupServers','UpdateServerGroupServersAttribute',
+                                       'GetListenerAttribute','UpdateListenerAttribute'}),
         ('alidns','2015-01-09'): frozenset({'DescribeDomainRecordInfo','UpdateDomainRecord'}),
         ('ecs','2014-05-26'): frozenset({'DescribeInstances','DescribeCloudAssistantStatus','RunCommand',
                                        'DescribeInvocationResults','StopInvocation'}),

@@ -9,7 +9,7 @@ from contextlib import contextmanager
 import json
 import sqlite3
 import time
-from .contracts import Scope, Denied, allowed_transition, canonical, digest, require
+from .contracts import Scope, Denied, Pending, allowed_transition, canonical, digest, require
 
 
 class Journal:
@@ -145,22 +145,45 @@ class Journal:
         with self.transaction() as c:
             row = self._load(c, scope, deployment_id)
             require(row['state'] == before, 'state_conflict')
+            if after != 'FAILED_NEEDS_HUMAN':
+                self._extensions_settled(c, deployment_id)
             c.execute('UPDATE deployments SET state=?,version=version+1 WHERE id=?', (after, deployment_id))
             self._event(c, deployment_id, {'state': after, 'at': now, 'reason': reason})
 
-    def begin_step(self, scope, deployment_id, operation, request, now, mutating):
+    def begin_step(self, scope, deployment_id, operation, request, now, mutating,
+                   expected_version=None, resource_locks=()):
         raw = canonical(request)
         with self.transaction() as c:
-            self._load(c, scope, deployment_id)
+            deployment = self._load(c, scope, deployment_id)
+            if expected_version is not None:
+                require(deployment['active'] == 1 and deployment['version'] == expected_version
+                        and deployment['state'] not in {'FAILED_NEEDS_HUMAN','REJECTED'}, 'extension_generation_conflict')
             old = c.execute('SELECT * FROM steps WHERE deployment=? AND operation=?', (deployment_id, operation)).fetchone()
             if old:
                 require(old['request'] == raw, 'operation_conflict')
                 return dict(old), False
+            outstanding = c.execute("SELECT count(*) FROM steps WHERE deployment=? AND status!='COMPLETE'",
+                                    (deployment_id,)).fetchone()[0]
+            if outstanding:
+                raise Pending('prior_operation_reconciliation_required')
+            for resource in resource_locks:
+                owner = c.execute('SELECT deployment FROM target_locks WHERE resource=?',(resource,)).fetchone()
+                require(owner is None or owner['deployment'] == deployment_id, 'extension_resource_busy')
+                if owner is None:
+                    c.execute('INSERT INTO target_locks VALUES(?,?)',(resource,deployment_id))
             c.execute('INSERT INTO steps(deployment,operation,request,status,started) VALUES(?,?,?,?,?)',
                       (deployment_id, operation, raw, 'DISPATCHING', now))
             if mutating:
                 c.execute('UPDATE deployments SET mutated=1 WHERE id=?', (deployment_id,))
             return {'status': 'DISPATCHING', 'invocation': None}, True
+
+    @staticmethod
+    def _extensions_settled(c, deployment_id):
+        pending = c.execute("""SELECT count(*) FROM steps WHERE deployment=? AND status!='COMPLETE'
+            AND (operation LIKE 'tls.rotate:%' OR operation LIKE 'iac.%' OR operation LIKE 'gitops.%')""",
+            (deployment_id,)).fetchone()[0]
+        if pending:
+            raise Pending('extension_reconciliation_required')
 
     def accepted(self, scope, deployment_id, operation, invocation):
         require(isinstance(invocation, str) and 0 < len(invocation) <= 200, 'invalid_invocation')
@@ -206,6 +229,8 @@ class Journal:
                 return key
             require(row['state'] == before, 'state_conflict')
             require(allowed_transition(before, final_state), 'illegal_transition')
+            if final_state != 'FAILED_NEEDS_HUMAN':
+                self._extensions_settled(c, deployment_id)
             c.execute('INSERT INTO evidence VALUES(?,?,?)', (key, scope.key, raw))
             # Unsafe state keeps resource and account locks until explicit reconciliation.
             active = int(final_state == 'FAILED_NEEDS_HUMAN')

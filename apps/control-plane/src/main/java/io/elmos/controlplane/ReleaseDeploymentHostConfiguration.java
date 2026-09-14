@@ -100,7 +100,7 @@ class ReleaseDeploymentHostConfiguration {
 
         public ReleaseDeploymentController.Binding binding(String environment) { return bindings.get(environment); }
 
-        public byte[] exchange(String method, String path, byte[] body, String actor,
+        public ReleaseDeploymentController.HostResponse exchange(String method, String path, byte[] body, String actor,
                                ReleaseDeploymentController.Binding binding) {
             try {
                 String token = signer.sign(method, path, body, actor, binding.scope(), binding.actorPermissions().get(actor));
@@ -110,7 +110,7 @@ class ReleaseDeploymentHostConfiguration {
                         .method(method, HttpRequest.BodyPublishers.ofByteArray(body)).build();
                 var response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
                 try (var stream = response.body()) {
-                    if (response.statusCode() != 200) {
+                    if (response.statusCode() != 200 && response.statusCode() != 202) {
                         throw new ResponseStatusException(response.statusCode() == 403 ? HttpStatus.FORBIDDEN
                                 : HttpStatus.BAD_GATEWAY, "DEPLOYMENT_WORKER_REJECTED");
                     }
@@ -125,10 +125,17 @@ class ReleaseDeploymentHostConfiguration {
                     byte[] bytes;
                     try { bytes = read.get(30, java.util.concurrent.TimeUnit.SECONDS); }
                     finally { read.cancel(true); }
-                    if (bytes.length > 1048576 || !json.readTree(bytes).isContainerNode()) {
+                    if (bytes.length > 1048576) {
                         throw new IllegalStateException("DEPLOYMENT_RESPONSE_BOUNDS");
                     }
-                    return bytes;
+                    var parsed = json.readTree(bytes);
+                    if (parsed == null || !parsed.isObject() || (response.statusCode() == 202
+                            && (!parsed.path("status").asText().equals("PENDING")
+                                || !parsed.path("reconciliation_required").isBoolean()
+                                || !parsed.path("reconciliation_required").booleanValue()))) {
+                        throw new IllegalStateException("DEPLOYMENT_RESPONSE_CONTRACT");
+                    }
+                    return new ReleaseDeploymentController.HostResponse(response.statusCode(), bytes);
                 }
             } catch (ResponseStatusException error) {
                 throw error;

@@ -9,7 +9,7 @@ from dataclasses import asdict
 import json
 import re
 from .contracts import (Artifact, ReleaseManifest, DeploymentTarget, DeploymentPlan,
-                        MigrationRisk, Denied, Principal, canonical, require)
+                        MigrationRisk, Denied, Pending, Principal, canonical, require)
 
 
 def fields(body, expected):
@@ -17,12 +17,17 @@ def fields(body, expected):
 
 
 class DeploymentAPI:
-    def __init__(self, service, authenticator, discovery=None):
+    def __init__(self, service, authenticator, discovery=None, extensions=None):
         self.service, self.authenticator, self.discovery = service, authenticator, discovery
+        self.extensions = extensions
 
     def dispatch(self, principal, method, path, body):
         require(isinstance(principal, Principal), 'authentication_required')
         service, scope = self.service, principal.scope
+        extension = re.fullmatch(r'/v1/deployments/([A-Za-z0-9_.:-]{1,128})/extensions/([a-z-]{1,32})',path)
+        if method == 'POST' and extension:
+            require(self.extensions is not None,'extension_host_not_configured')
+            return self.extensions.execute(principal,*extension.groups(),body)
         if (method,path) == ('POST','/v1/deployment-health-policies'):
             return {'health_policy_digest':service.register_health_policy(principal,body)}
         if (method,path) == ('POST','/v1/releases/from-certification'):
@@ -113,6 +118,8 @@ class DeploymentAPI:
             body = json.loads(raw,object_pairs_hook=strict_pairs,parse_constant=reject_constant)
             response = self.dispatch(principal,environ['REQUEST_METHOD'],environ['PATH_INFO'],body)
             status = '200 OK'
+        except Pending:
+            response, status = {'status':'PENDING','reconciliation_required':True}, '202 Accepted'
         except Denied as error:
             response, status = {'error':str(error)}, '403 Forbidden'
         except (ValueError,TypeError,KeyError,AttributeError):

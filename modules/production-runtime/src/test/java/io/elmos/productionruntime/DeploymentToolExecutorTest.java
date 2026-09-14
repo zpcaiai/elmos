@@ -81,4 +81,18 @@ class DeploymentToolExecutorTest {
                                                 Map.of("traffic.apply",provider),ledger);
         assertEquals(ToolCallStatus.COMPLETE,verified.tick(request).status());
     }
+
+    @Test void bindsActualWorkflowAndExtensionActionsAndRejectsArbitraryTools() throws Exception {
+        var original=request();
+        var c=original.context();
+        for (String action : java.util.List.of("policy.evaluate","identity.lease_ready","migration.apply",
+                "health.verify","rollback.plan","runtime.restore","tls.rotate","iac.apply","iac.destroy",
+                "gitops.proposal","gitops.reconcile","helm.render")) {
+            var context=new ToolCallRequest(c.tenantId(),c.accountId(),c.projectId(),c.jobId(),c.stageId(),
+                    c.workItemId(),c.attemptId(),"release-deployment:"+action,c.idempotencyKey(),c.requestHash());
+            assertDoesNotThrow(()->new DeploymentToolExecutor.Request(context,action,original.payload()));
+        }
+        assertThrows(IllegalArgumentException.class,()->new DeploymentToolExecutor.Request(
+                c,"arbitrary.shell",original.payload()));
+    }
 }

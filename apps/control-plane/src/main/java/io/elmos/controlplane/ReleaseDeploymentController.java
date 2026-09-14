@@ -19,7 +19,15 @@ import org.springframework.http.HttpStatus;
 final class ReleaseDeploymentController {
     interface Host {
         Binding binding(String environment);
-        byte[] exchange(String method, String path, byte[] body, String actor, Binding binding);
+        HostResponse exchange(String method, String path, byte[] body, String actor, Binding binding);
+    }
+
+    record HostResponse(int status, byte[] body) {
+        HostResponse {
+            if (status != 200 && status != 202) throw new IllegalArgumentException("DEPLOYMENT_HOST_STATUS");
+            body = body.clone();
+        }
+        @Override public byte[] body() { return body.clone(); }
     }
 
     record Binding(Map<String, String> scope, Map<String, Set<String>> actorPermissions) {
@@ -67,9 +75,9 @@ final class ReleaseDeploymentController {
         }
         byte[] body = request.getInputStream().readNBytes(65537);
         if (body.length > 65536) throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE);
-        byte[] result = host.exchange(request.getMethod(), uri.substring(prefix.length()), body,
+        HostResponse result = host.exchange(request.getMethod(), uri.substring(prefix.length()), body,
                                      principal.actorId(), binding);
-        return ResponseEntity.ok().header("Content-Type", "application/json")
-                .header("Cache-Control", "no-store").header("X-Content-Type-Options", "nosniff").body(result);
+        return ResponseEntity.status(result.status()).header("Content-Type", "application/json")
+                .header("Cache-Control", "no-store").header("X-Content-Type-Options", "nosniff").body(result.body());
     }
 }

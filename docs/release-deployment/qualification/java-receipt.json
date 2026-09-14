@@ -1,21 +1,21 @@
 {
   "schema": "rd.java-local-tests.v1",
-  "tests": 5,
+  "tests": 6,
   "status": "LOCAL_TESTS_PASSED",
   "reports": {
-    "docs/release-deployment/qualification/io.elmos.controlplane.DeploymentHostSignerTest.txt": "1083c42865fc528b433e1d777a58dc6e83754fc147347de7a9cde5a315f384d3",
-    "docs/release-deployment/qualification/io.elmos.controlplane.ReleaseDeploymentControllerTest.txt": "cbf657cd1a909d46af787a23d53ea54d8206003509e3c829783a44ededcc25c0",
-    "docs/release-deployment/qualification/io.elmos.productionruntime.DeploymentToolExecutorTest.txt": "37adb2eac445ec6a02ae032a39739afc0f8579dc4d26d68e6136464edf87c399"
+    "docs/release-deployment/qualification/io.elmos.controlplane.DeploymentHostSignerTest.txt": "21d3ffe94cfc6b6398de11aa3d77b479cad0aab6a6392f31b5aa12f59847f215",
+    "docs/release-deployment/qualification/io.elmos.controlplane.ReleaseDeploymentControllerTest.txt": "a00374660942e2b079ded5ef786250e0efc86dea26f647a13d864350362eb681",
+    "docs/release-deployment/qualification/io.elmos.productionruntime.DeploymentToolExecutorTest.txt": "c8188c438dd4968f34cfc3d38663bf399fa48f476fda8313a5e7acbbd9e04133"
   },
   "source_snapshot_at_collection": {
     "apps/control-plane/src/main/java/io/elmos/controlplane/DeploymentHostSigner.java": "0f11acc9cb2f87300c60aa84c529659618fe78a3a8b84f7733201442e04a18b9",
-    "apps/control-plane/src/main/java/io/elmos/controlplane/ReleaseDeploymentController.java": "dfa67f8c913ff826af774dc2990efa9dd3288a209769f75a4eeb62b167b5664b",
-    "apps/control-plane/src/main/java/io/elmos/controlplane/ReleaseDeploymentHostConfiguration.java": "d9f7c9448839b9eb9f5aa66395a83ab8d221f49ebfc15645f4111c52c8e7c791",
+    "apps/control-plane/src/main/java/io/elmos/controlplane/ReleaseDeploymentController.java": "d94136b13c846bbb635356f3a4a8aaddba53130c00c71b7b16806d3b1f4297df",
+    "apps/control-plane/src/main/java/io/elmos/controlplane/ReleaseDeploymentHostConfiguration.java": "eff92ee36fee58d9c8a7278d6036936383eda1042f20ae10f48cf79e4abea586",
     "apps/control-plane/src/test/java/io/elmos/controlplane/DeploymentHostSignerTest.java": "05ae1dde6176dffd1c17d80937f491f2bc8639bb08c99912f71e3f1530aaecaa",
-    "apps/control-plane/src/test/java/io/elmos/controlplane/ReleaseDeploymentControllerTest.java": "26a0f07a58e317ac1286bc77ddf51eac97e7d0f57a6f7b65d33f4d24d73650f9",
-    "modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentToolExecutor.java": "442d7b2222fc8cb8ebaef54d1f7135684dc18b59f0af269ecfccf4e6828846da",
+    "apps/control-plane/src/test/java/io/elmos/controlplane/ReleaseDeploymentControllerTest.java": "591f43e4617ce014050fb6af520cc8d7ba7b7ee7e6ee634f07f7012e2ec31579",
+    "modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentToolExecutor.java": "66f063ee28b31d9f9b7e2a72178e0cd070fa93c0da08addae4e624d61ef91f22",
     "modules/production-runtime/src/main/java/io/elmos/productionruntime/JdbcDeploymentToolReceiptLookup.java": "52e3ac7902e86129c758dbda8311a5d21b6bde4b2448f00b0b671dfc0d04d23e",
-    "modules/production-runtime/src/test/java/io/elmos/productionruntime/DeploymentToolExecutorTest.java": "210a059f707796a3b2f80beb871c143a054891c7d4c13c6e73cf588a7934554f"
+    "modules/production-runtime/src/test/java/io/elmos/productionruntime/DeploymentToolExecutorTest.java": "53138542dd8acc546b7e5f41c2f47443918658edb9832c576632cd5f569f35f6"
   },
   "commands": [
     "mvn -pl apps/control-plane -am -Dtest=DeploymentHostSignerTest,ReleaseDeploymentControllerTest -Dsurefire.failIfNoSpecifiedTests=false test",

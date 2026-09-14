@@ -11,9 +11,11 @@ import java.util.UUID;
 
 /** Deployment-specific bridge through the existing durable tool-call authority. */
 public final class DeploymentToolExecutor {
-    private static final Set<String> ACTIONS = Set.of("target.preflight", "artifact.resolve", "migration.preflight",
-            "runtime.activate", "runtime.health", "smoke.verify", "traffic.promote", "rollback.restore",
-            "rollback.verify", "traffic.apply", "dns.apply", "kubernetes.apply");
+    private static final Set<String> ACTIONS = Set.of("policy.evaluate", "target.preflight", "identity.lease_ready",
+            "artifact.resolve", "migration.preflight", "migration.apply", "runtime.activate", "health.verify",
+            "smoke.verify", "traffic.promote", "rollback.plan", "runtime.restore", "rollback.verify",
+            "traffic.apply", "dns.apply", "kubernetes.apply", "tls.rotate", "iac.apply", "iac.destroy",
+            "gitops.proposal", "gitops.reconcile", "helm.render");
 
     public record Request(ToolCallRequest context, String action, byte[] payload) {
         public Request {

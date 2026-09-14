@@ -199,11 +199,19 @@ class DeploymentWorkflow:
         evidence_steps=[]
         for step in steps:
             result=step['result']
+            observed_status=result['status'] if result else 'UNKNOWN'
+            normalized_status=observed_status if result else 'FAIL'
+            if step['operation'].startswith(('tls.rotate:','iac.','gitops.')) and result:
+                require(observed_status in {'PROVIDER_STATE_OBSERVED','IAC_STATE_RECONCILED','PROPOSED',
+                                             'GITOPS_CONVERGED'},'invalid_extension_result')
+                # PASS means the named operation completed. Keep its original receipt
+                # and runtime/business-smoke limitations; do not invent process logs.
+                normalized_status='PASS'
             evidence_steps.append({**step,'name':step['operation'],
-                'status':result['status'] if result else 'FAIL',
-                'observed_status':result['status'] if result else 'UNKNOWN',
+                'status':normalized_status,
+                'observed_status':observed_status,
                 'started_at':iso(step['started']), 'finished_at':iso(step['finished'] or step['started']),
-                **({key:result[key] for key in ('stdout_hash','stderr_hash','artifact_uri','exit_code')} if result else {}),
+                **({key:result[key] for key in ('stdout_hash','stderr_hash','artifact_uri','exit_code') if key in result} if result else {}),
                 **({'provider_invocation_id':step['invocation']} if step['invocation'] else {})})
         if not evidence_steps:
             evidence_steps=[{'name':'local_admission_validation','status':'FAIL','observed_status':'NO_MUTATION',

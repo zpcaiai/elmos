@@ -43,8 +43,8 @@ Mandatory host bindings:
 | TrustVerifier | Host trusted key registry | Purpose-specific verification and revocation |
 | Deployment journal | Host persistence boundary | Durable transactions, environment/resource mutexes, account quotas |
 
-These are explicit integration ports. **The new WSGI routes and host adapters are
-not wired into the running Java control plane by this package.** The supplied
+The Spring route and signed HTTP bridge are implemented, but **running deployment
+still requires configured authority, provider, content and evidence services**. The supplied
 SQLite journal is a local backend; production PostgreSQL/HA wiring is still needed.
 No in-memory fixture authority or test HMAC key may be installed in production.
 
@@ -132,13 +132,13 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-15 | P0 WSGI API + Spring authenticated host mount, exact-byte Ed25519 bridge, durable replay checks | Operator binding configuration, complete authority/execution/evidence adapters, product UI |
 | RD-20 | Exact bounded rolling batches with batch verification | Live multi-ECS rollout execution |
 | RD-21 | ALB ECS backend weight execution, before-image checks, durable dispatch, asynchronous readback and separately approved compensation | SLB variants, trusted health gate integration and real traffic journeys |
-| RD-22 | Exact Alibaba DNS record update/readback and separately approved compensation; DNS/TLS planning boundaries | TLS certificate/listener execution and external resolver convergence |
-| RD-23 | Exact IaC plan authorization and destroy binding | IaC native plan/apply/destroy executor |
+| RD-22 | DNS update/readback; ALB default-certificate rotation, invariant checks, live TLS probe and separately approved compensation | Certificate issuance/upload, configured host sessions and external resolver/cloud acceptance |
+| RD-23 | Saved Terraform apply/destroy plan controller, sandbox admission, exact state/resource result checks and durable reconciliation | Concrete attested native sandbox adapter, plan generation, production state backend and live provider acceptance |
 | RD-24 | Signed exact scan/signature verdict checks | ACR scanner and signature provider |
 | RD-25 | Immutable TTL, resource reconciliation and retention selection | Provisioning/cleanup scheduler and provider effects |
 | RD-26 | Allowlisted deployment annotations | SLS/CloudMonitor/OTel exporter wiring |
 | RD-30 | Restricted existing Deployment SSA execution and pinned-CA HTTPS transport; UID/version/generation/admission/rollout checks | ACK discovery, namespace provisioning, canonical token broker and real cluster journeys |
-| RD-31 | Restricted Helm-rendered manifest/GitOps proposal validation | Sandboxed Helm render, SCM proposal and GitOps reconciliation |
+| RD-31 | Helm sandbox command/receipt validation; governed SCM proposal and exact-commit GitOps convergence controller | Concrete native Runner, SCM and Argo CD/Flux adapters and live acceptance |
 | RD-32 | Exact-decimal SLO window/error-budget decision | Trusted telemetry collection and progressive workflow integration |
 | RD-33 | Exact provider/version/region/account/action registry | Concrete additional cloud provider adapters |
 
@@ -219,6 +219,50 @@ Protocol references:
 [ALB backend updates](https://www.alibabacloud.com/help/en/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-updateservergroupserversattribute),
 [RPC signing](https://www.alibabacloud.com/help/en/sdk/product-overview/rpc-mechanism),
 [Kubernetes SSA](https://kubernetes.io/docs/reference/using-api/server-side-apply/).
+
+## Extension business API and acceptance preparation
+
+Environment requirements are listed in [LIVE_ACCEPTANCE_REQUIREMENTS.md](LIVE_ACCEPTANCE_REQUIREMENTS.md).
+No cloud resource access or acceptance success is implied by an unfilled entry.
+
+`DeploymentExtensionService` is mounted by passing `extensions=` to `DeploymentAPI`.
+The fixed POST route is `/v1/deployments/{id}/extensions/{kind}`, with kinds
+`tls-rotate`, `iac-apply`, `iac-destroy`, `gitops-proposal`, and `gitops-reconcile`.
+Requests contain exactly `plan` and `approval`. Browser plans cannot contain `scope`
+or a lease. The service derives identity, scope, active deployment, phase, plan hash
+and CAS generation from the host/journal, requests an exact resource lease, and
+loads certificate/manifest bytes from scoped content storage with hash verification.
+The host actor grant must explicitly include `tls.rotate`, `iac.apply`, `iac.destroy`,
+`gitops.proposal` or `gitops.reconcile`, as applicable.
+
+IaC operations are admitted before deployment in REQUESTED/POLICY_CHECKED/PREFLIGHT;
+TLS rotation is admitted in TRAFFIC_PROMOTION; GitOps operations are admitted in
+DEPLOYING. Admission rechecks the journal generation transactionally. Unfinished
+operations block new effects. Pending extensions block workflow advancement and
+safe terminal lock release; FAILED_NEEDS_HUMAN retains locks. The API returns 202
+PENDING for reconciliation, never a synthetic success. Existing operation receipts
+remain in final evidence with their original observed status and runtime limitations.
+
+TLS rotation changes only the default ALB certificate; the remaining listener
+configuration must match its approved digest. It checks certificate bytes, validity,
+SAN hostname, provider readback, and a real trusted TLS handshake against operator-bound
+addresses. SNI multi-certificate configurations are rejected by this exact controller.
+
+IaC apply and destroy each require an independently bound saved-plan approval.
+The native runner must attest fixed runtime/provider/configuration/lock/state bytes
+and isolated execution, then return a signed native result with refreshed state,
+lineage, serial, exact resources and log digests. The controller cannot replace a
+missing runner with local execution of arbitrary Terraform or archive scripts.
+
+GitOps proposal completion is distinct from runtime convergence. Publication requires
+the exact repository, base commit, branch/path grant and rendered manifest digest.
+Reconciliation requires a governed merge and a fresh observation of the exact commit,
+healthy/synced application and resource set; it never merges a proposal itself.
+Concrete Runner/SCM/GitOps host adapters remain necessary for real execution.
+
+Additional references:
+[ALB listener updates](https://www.alibabacloud.com/help/en/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-updatelistenerattribute),
+[Terraform saved plans](https://developer.hashicorp.com/terraform/cli/commands/plan).
 
 ## Evidence and authority
 

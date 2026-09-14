@@ -19,15 +19,17 @@ class ReleaseDeploymentControllerTest {
                 "workspace_id", "workspace", "project_id", "project", "environment_id", "env",
                 "account_id", "account"), Map.of("actor", Set.of("deployment:read")));
         int[] calls = {0};
+        int[] status = {200};
         var host = new ReleaseDeploymentController.Host() {
             public ReleaseDeploymentController.Binding binding(String environment) { return binding; }
-            public byte[] exchange(String method, String path, byte[] body, String actor,
+            public ReleaseDeploymentController.HostResponse exchange(String method, String path, byte[] body, String actor,
                                    ReleaseDeploymentController.Binding actual) {
                 calls[0]++;
                 assertEquals("actor", actor);
                 assertEquals("/v1/deployments/one", path);
                 assertEquals(binding, actual);
-                return "{}".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                return new ReleaseDeploymentController.HostResponse(status[0],
+                        "{}".getBytes(java.nio.charset.StandardCharsets.UTF_8));
             }
         };
         var beans = new DefaultListableBeanFactory();
@@ -46,5 +48,7 @@ class ReleaseDeploymentControllerTest {
                 new ControlPlanePrincipal("tenant", "actor", false, grant.roles(), grant.permissions(), Map.of("tenant", grant)));
         assertEquals(200, controller.call("env", request).getStatusCode().value());
         assertEquals(1, calls[0]);
+        status[0] = 202;
+        assertEquals(202, controller.call("env", request).getStatusCode().value());
     }
 }

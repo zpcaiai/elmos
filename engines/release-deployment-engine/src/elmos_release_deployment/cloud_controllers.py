@@ -28,9 +28,11 @@ class AlibabaCloudControllers:
         require(plan['scope'] == asdict(self.scope), 'cloud_plan_scope')
         return kind + ':' + digest(plan)[7:]
 
-    def _step(self, operation, plan, lease):
+    def _step(self, operation, plan, lease, guarded=False, resource_locks=()):
         row, fresh = self.journal.begin_step(self.scope, lease.deployment_id, operation,
-                                             plan, self.clock(), True)
+                                             plan, self.clock(), True,
+                                             expected_version=lease.generation if guarded else None,
+                                             resource_locks=resource_locks)
         if row['status'] == 'COMPLETE':
             return row, fresh, json.loads(row['result'])
         return row, fresh, None

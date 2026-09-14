@@ -29,6 +29,15 @@ test_authenticates_and_preserves_exact_body (test_host_bridge.HostBridgeTests.te
 test_rejects_expiry_audience_scope_and_route_substitution (test_host_bridge.HostBridgeTests.test_rejects_expiry_audience_scope_and_route_substitution) ... ok
 test_rejects_unsigned_identity_and_transfer_encoding (test_host_bridge.HostBridgeTests.test_rejects_unsigned_identity_and_transfer_encoding) ... ok
 test_replay_is_persistent_across_authenticator_instances (test_host_bridge.HostBridgeTests.test_replay_is_persistent_across_authenticator_instances) ... ok
+test_api_derives_scope_and_lease_from_authenticated_deployment (test_iac_gitops.ControllerTests.test_api_derives_scope_and_lease_from_authenticated_deployment) ... ok
+test_completed_iac_integrates_with_full_workflow_evidence (test_iac_gitops.ControllerTests.test_completed_iac_integrates_with_full_workflow_evidence) ... ok
+test_iac_resource_drift_does_not_complete (test_iac_gitops.ControllerTests.test_iac_resource_drift_does_not_complete) ... ok
+test_iac_unknown_never_resubmits (test_iac_gitops.ControllerTests.test_iac_unknown_never_resubmits) ... ok
+test_manifest_name_cannot_escape_authorized_directory (test_iac_gitops.ControllerTests.test_manifest_name_cannot_escape_authorized_directory) ... ok
+test_proposal_never_claims_runtime_execution (test_iac_gitops.ControllerTests.test_proposal_never_claims_runtime_execution) ... ok
+test_reconcile_requires_governed_merge_and_exact_runtime_commit (test_iac_gitops.ControllerTests.test_reconcile_requires_governed_merge_and_exact_runtime_commit) ... ok
+test_saved_apply_and_destroy_plans_have_separate_approvals (test_iac_gitops.ControllerTests.test_saved_apply_and_destroy_plans_have_separate_approvals) ... ok
+test_unknown_extension_blocks_primary_workflow_and_new_effects (test_iac_gitops.ControllerTests.test_unknown_extension_blocks_primary_workflow_and_new_effects) ... ok
 test_apply_waits_for_exact_generation_and_replay_is_read_only (test_kubernetes_controller.KubernetesControllerTests.test_apply_waits_for_exact_generation_and_replay_is_read_only) ... ok
 test_uid_replacement_rejected_before_mutation (test_kubernetes_controller.KubernetesControllerTests.test_uid_replacement_rejected_before_mutation) ... ok
 test_unknown_never_reapplies (test_kubernetes_controller.KubernetesControllerTests.test_unknown_never_reapplies) ... ok
@@ -65,8 +74,13 @@ test_unknown_remote_mutation_is_not_retried_or_rolled_back (test_runtime.Runtime
 test_wrong_target_batch_and_unverified_snapshot_rejected (test_runtime.RuntimeTest.test_wrong_target_batch_and_unverified_snapshot_rejected) ... ok
 test_logs_redact_raw_encoded_and_bearer_values_before_cas (test_secrets.SecretsTest.test_logs_redact_raw_encoded_and_bearer_values_before_cas) ... ok
 test_scope_bound_immutable_secret_mounts (test_secrets.SecretsTest.test_scope_bound_immutable_secret_mounts) ... ok
+test_actual_tls_handshake_checks_chain_hostname_and_leaf_digest (test_tls_controller.LiveLocalTlsTests.test_actual_tls_handshake_checks_chain_hostname_and_leaf_digest) ... ok
+test_lost_response_does_not_retry (test_tls_controller.TlsControllerTests.test_lost_response_does_not_retry) ... ok
+test_rotation_and_replay (test_tls_controller.TlsControllerTests.test_rotation_and_replay) ... ok
+test_security_policy_drift_blocks_write (test_tls_controller.TlsControllerTests.test_security_policy_drift_blocks_write) ... ok
+test_wrong_certificate_bytes_never_call_provider (test_tls_controller.TlsControllerTests.test_wrong_certificate_bytes_never_call_provider) ... ok
 
 ----------------------------------------------------------------------
-Ran 67 tests in 110.116s
+Ran 81 tests in 102.678s
 
 OK
