@@ -1,0 +1,27 @@
+{
+  "schema": "rd.runtime-host-java.v1",
+  "status": "LOCAL_JAVA_ENGINEERING_PASS",
+  "tests": 5,
+  "files": {
+    "apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentRuntimeConfiguration.java": "03a88d6f1ac7b17548b9ee5de864b411084ca0c49c7f87a56f74adf7db5d99b4",
+    "apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentRuntimeController.java": "94da3538c4b511913c0d509d5b851272e0993062bfa2310ca396ea54cb82cfa9",
+    "apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentRuntimeControllerTest.java": "d7cb6624da0bee8697d82d3612032dec7b23b29145ea54c8abdb58fbf0553a81",
+    "modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentProviderRegistry.java": "24da703b00c70008d30be577b2a17fb1d412b8ce7218f143924947c69d46a513",
+    "modules/secret/src/main/java/io/elmos/secret/DeploymentSecretSession.java": "02b5b95f2bc54efd5d01764c9bcbb2315f7fd86e97c568367e46be5b9d6cb51b",
+    "modules/secret/src/test/java/io/elmos/secret/DeploymentSecretSessionTest.java": "05c491fd91c7d5fad3237ce620981941290da7401746ede31daeafc1c3a42cd2",
+    "modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentToolExecutor.java": "66f063ee28b31d9f9b7e2a72178e0cd070fa93c0da08addae4e624d61ef91f22",
+    "modules/production-runtime/src/main/java/io/elmos/productionruntime/JdbcDeploymentToolReceiptLookup.java": "52e3ac7902e86129c758dbda8311a5d21b6bde4b2448f00b0b671dfc0d04d23e",
+    "modules/production-runtime/src/test/java/io/elmos/productionruntime/DeploymentToolExecutorTest.java": "53138542dd8acc546b7e5f41c2f47443918658edb9832c576632cd5f569f35f6"
+  },
+  "logs": {
+    "docs/release-deployment/qualification/runtime-host-io.elmos.controlplane.DeploymentRuntimeControllerTest.txt": "56b70b1bef35ae9adbfb7ced2d044e91a5813e4b879f513e9cef753e52db93f2",
+    "docs/release-deployment/qualification/runtime-host-io.elmos.productionruntime.DeploymentToolExecutorTest.txt": "c0e980d9878aa059b2b339f9deb5bf65bca64bd6dba01777787f4de2138bdc3a",
+    "docs/release-deployment/qualification/runtime-host-io.elmos.secret.DeploymentSecretSessionTest.txt": "9e1b3ab34b92d6607e4eb4e4c59a722becfb367c923ab1af79e679a8ba678b65"
+  },
+  "command": "mvn -o -pl apps/production-runtime-control-plane,modules/secret -am -Dtest=DeploymentRuntimeControllerTest,DeploymentSecretSessionTest,DeploymentToolExecutorTest -Dsurefire.failIfNoSpecifiedTests=false test -q",
+  "java": "Temurin 21.0.12.1+1",
+  "maven": "3.9.2",
+  "postgresql_rls": "NOT_RUN",
+  "live_host_deployment": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

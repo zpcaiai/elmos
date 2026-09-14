@@ -31,6 +31,11 @@ test_retention_protects_stable_and_referenced (test_extensions_and_api.Extension
 test_rolling_canary_exact_resource_partition (test_extensions_and_api.ExtensionsTest.test_rolling_canary_exact_resource_partition) ... ok
 test_slo_uses_exact_rates_and_requires_complete_windows (test_extensions_and_api.ExtensionsTest.test_slo_uses_exact_rates_and_requires_complete_windows) ... ok
 test_traffic_weights_health_and_compensation (test_extensions_and_api.ExtensionsTest.test_traffic_weights_health_and_compensation) ... ok
+test_exact_flux_revision_and_inventory (test_flux_adapter.FluxTests.test_exact_flux_revision_and_inventory) ... ok
+test_prune_inventory_and_source_drift_rejected (test_flux_adapter.FluxTests.test_prune_inventory_and_source_drift_rejected) ... ok
+test_source_not_at_applied_revision_and_unobserved_generation_pending (test_flux_adapter.FluxTests.test_source_not_at_applied_revision_and_unobserved_generation_pending) ... ok
+test_stale_history_and_racing_observation_pending (test_flux_adapter.FluxTests.test_stale_history_and_racing_observation_pending) ... ok
+test_wrong_scope_before_provider (test_flux_adapter.FluxTests.test_wrong_scope_before_provider) ... ok
 test_content_drift_and_path_escape_rejected (test_github_adapter.GitHubTests.test_content_drift_and_path_escape_rejected) ... ok
 test_cross_tenant_lease_has_no_provider_calls (test_github_adapter.GitHubTests.test_cross_tenant_lease_has_no_provider_calls) ... ok
 test_lost_pr_response_reconciles_without_writes (test_github_adapter.GitHubTests.test_lost_pr_response_reconciles_without_writes) ... ok
@@ -53,6 +58,12 @@ test_unknown_extension_blocks_primary_workflow_and_new_effects (test_iac_gitops.
 test_apply_waits_for_exact_generation_and_replay_is_read_only (test_kubernetes_controller.KubernetesControllerTests.test_apply_waits_for_exact_generation_and_replay_is_read_only) ... ok
 test_uid_replacement_rejected_before_mutation (test_kubernetes_controller.KubernetesControllerTests.test_uid_replacement_rejected_before_mutation) ... ok
 test_unknown_never_reapplies (test_kubernetes_controller.KubernetesControllerTests.test_unknown_never_reapplies) ... ok
+test_canonical_context_cannot_cross_tenant (test_native_runner_host.NativeHostTests.test_canonical_context_cannot_cross_tenant) ... ok
+test_dispatch_completes_only_after_canonical_claim_and_evidence (test_native_runner_host.NativeHostTests.test_dispatch_completes_only_after_canonical_claim_and_evidence) ... ok
+test_invalid_sandbox_proof_denied_before_inspection (test_native_runner_host.NativeHostTests.test_invalid_sandbox_proof_denied_before_inspection) ... ok
+test_lost_claim_never_executes_native_tool (test_native_runner_host.NativeHostTests.test_lost_claim_never_executes_native_tool) ... ok
+test_lost_completion_reconciles_existing_artifact (test_native_runner_host.NativeHostTests.test_lost_completion_reconciles_existing_artifact) ... ok
+test_unknown_native_outcome_is_not_retried (test_native_runner_host.NativeHostTests.test_unknown_native_outcome_is_not_retried) ... ok
 test_acr_verifies_manifest_config_bytes_and_architecture (test_provider_adapters.AdapterTest.test_acr_verifies_manifest_config_bytes_and_architecture) ... ok
 test_cloud_assistant_request_idempotency_and_redaction (test_provider_adapters.AdapterTest.test_cloud_assistant_request_idempotency_and_redaction) ... ok
 test_ecs_discovery_checks_resources_region_tags_and_status (test_provider_adapters.AdapterTest.test_ecs_discovery_checks_resources_region_tags_and_status) ... ok
@@ -93,6 +104,6 @@ test_security_policy_drift_blocks_write (test_tls_controller.TlsControllerTests.
 test_wrong_certificate_bytes_never_call_provider (test_tls_controller.TlsControllerTests.test_wrong_certificate_bytes_never_call_provider) ... ok
 
 ----------------------------------------------------------------------
-Ran 93 tests in 119.895s
+Ran 104 tests in 149.262s
 
 OK

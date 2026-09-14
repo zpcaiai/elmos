@@ -23,3 +23,10 @@ apps/control-plane/src/test/java/io/elmos/controlplane/ReleaseDeploymentControll
 modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentToolExecutor.java -text
 modules/production-runtime/src/main/java/io/elmos/productionruntime/JdbcDeploymentToolReceiptLookup.java -text
 modules/production-runtime/src/test/java/io/elmos/productionruntime/DeploymentToolExecutorTest.java -text
+apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentRuntimeConfiguration.java -text
+apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentRuntimeController.java -text
+apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentRuntimeControllerTest.java -text
+modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentProviderRegistry.java -text
+modules/secret/src/main/java/io/elmos/secret/DeploymentSecretSession.java -text
+modules/secret/src/test/java/io/elmos/secret/DeploymentSecretSessionTest.java -text
+tooling/validate_release_native.py -text

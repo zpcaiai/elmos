@@ -13,6 +13,7 @@ elmos-deployment-agent = "elmos_release_deployment.remote_agent:main"
 
 [project.optional-dependencies]
 temporal = ["temporalio==1.32.0"]
+native = ["pyyaml==6.0.2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

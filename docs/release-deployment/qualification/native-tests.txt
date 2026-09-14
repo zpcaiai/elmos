@@ -1,0 +1,8 @@
+test_binary_digest_mismatch_never_executes (test_native_tools.NativeTests.test_binary_digest_mismatch_never_executes) ... ok
+test_real_helm_render_and_input_drift_rejected (test_native_tools.NativeTests.test_real_helm_render_and_input_drift_rejected) ... ok
+test_real_terraform_saved_apply_refresh_and_destroy (test_native_tools.NativeTests.test_real_terraform_saved_apply_refresh_and_destroy) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 56.040s
+
+OK

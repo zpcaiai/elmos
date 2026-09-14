@@ -1,16 +1,25 @@
 {
-  "schema": "rd.local-qualification.v1",
-  "source_archive_sha256": "e5c4dea07a6897c0b5804de6c992714860a5aca0f8d66377da2fe1241a8ca85a",
-  "status": "LOCAL_ENGINEERING_VALIDATED",
-  "python_tests": 104,
-  "python_status": "PASS",
-  "opa_status": "PASS",
-  "python_log_sha256": "b31410e8d9d5525b26f2a124d74c0759c7f0016659582850ac5ee675efabbe0c",
-  "source_unchanged_during_test": true,
-  "opa_log_sha256": "2e1a6a3aa44b37df0153fcf2d29a5a3447250e9533f34690f5686fd009ac8e6d",
-  "wall_seconds": 165.489,
-  "python": "3.13.3",
+  "schema": "rd.native-local-qualification.v1",
+  "status": "LOCAL_NATIVE_EXECUTED",
   "platform": "Windows-11-10.0.26340-SP0",
+  "toolchains": {
+    "terraform": {
+      "version": "1.13.5",
+      "binary_sha256": "37095373bcf2775655502ac42bcfbcbac2927a351952a2c9c478072782a96e1c",
+      "archive_sha256": "73f97943c93f268ae2c645b2a737d552175aa64d00a5c8b8f5ccc5831c033c8a",
+      "source": "https://releases.hashicorp.com/terraform/1.13.5/"
+    },
+    "helm": {
+      "version": "3.19.0",
+      "binary_sha256": "a18c49a4cd16f8b162031159eff6b4d657e04ec2df0c2be5544ad11ddf8fae79",
+      "archive_sha256": "6488630c2e5d5945ed990fa02fd9e99f9c6792cdbcd79eb264b6cfb90179d2d1",
+      "source": "https://get.helm.sh/helm-v3.19.0-windows-amd64.zip.sha256sum"
+    }
+  },
+  "tests": 3,
+  "native_processes": 21,
+  "wall_seconds": 62.119,
+  "source_unchanged_during_test": true,
   "files": {
     "engines/release-deployment-engine/native-tests/test_native_tools.py": "0a8876d18649f116022557c0e3616e6c67cf99bc04954803105dc36828a95e11",
     "engines/release-deployment-engine/policies/release_deploy_gate.rego": "c1b789c935cf9c147969d987e9120bb7d80d1279bb8e4ed133759abb0effa0af",
@@ -61,42 +70,15 @@
     "engines/release-deployment-engine/tests/test_runtime.py": "3d60233e3776379f8c529d43d2c60c57fd83a82fe9a263c5f463151428cff0c9",
     "engines/release-deployment-engine/tests/test_secrets.py": "a7fb5a32762dec354bf1259b635962ff9387c30eef2bb8a4ceedcae10156c3b3",
     "engines/release-deployment-engine/tests/test_tls_controller.py": "9947b57550e09d8a40ba14b6e284c60c3f68d2b5c62e8063ba5d61efbd85261b",
-    "tooling/integrate_release_deployment_skills.py": "effbd1c8372d7e3d303d3851b0b075cba0185f711fdba8fe8207062960a2801a",
-    "tooling/validate_release_deployment.py": "50dff770727f306774595e19d3b3695e47f32e3dc76df2dc4c88143bfe330963",
-    "tooling/validate_release_native.py": "52b9ea7b98c5724cfa6d6a96de7abe5f8218530c16a88f1aae62d84616f20ddf",
-    "docs/release-deployment/source-manifest.json": "78f8def012a36222fc5c579a084db2c13a47ef5b1f88dde4b8ceadd1950fd309"
+    "tooling/validate_release_native.py": "52b9ea7b98c5724cfa6d6a96de7abe5f8218530c16a88f1aae62d84616f20ddf"
   },
-  "source_acceptance": {
-    "RD-AC-01": "NOT_RUN",
-    "RD-AC-02": "NOT_RUN",
-    "RD-AC-03": "NOT_RUN",
-    "RD-AC-04": "NOT_RUN",
-    "RD-AC-05": "NOT_RUN",
-    "RD-AC-06": "NOT_RUN",
-    "RD-AC-07": "NOT_RUN",
-    "RD-AC-08": "NOT_RUN",
-    "RD-AC-09": "NOT_RUN",
-    "RD-AC-10": "NOT_RUN",
-    "RD-AC-11": "NOT_RUN",
-    "RD-AC-12": "NOT_RUN",
-    "RD-AC-13": "NOT_RUN",
-    "RD-AC-14": "NOT_RUN",
-    "RD-AC-15": "NOT_RUN",
-    "RD-AC-16": "NOT_RUN",
-    "RD-AC-17": "NOT_RUN",
-    "RD-AC-18": "NOT_RUN",
-    "RD-AC-19": "NOT_RUN",
-    "RD-AC-20": "NOT_RUN",
-    "RD-AC-21": "NOT_RUN",
-    "RD-AC-22": "NOT_RUN",
-    "RD-AC-23": "NOT_RUN",
-    "RD-AC-24": "NOT_RUN",
-    "RD-AC-25": "NOT_RUN"
+  "logs": {
+    "docs/release-deployment/qualification/native-commands.jsonl": "4ba7ab804a4b25ec857ed036f8075ae560f6ef23c7bc4eb64d76b94cdb2f3d01",
+    "docs/release-deployment/qualification/native-tests.txt": "286853caec4c11196e639df9934060eccc4e900b09acb78469510cdf5af618ed"
   },
   "cloud_execution": "NOT_RUN",
-  "docker_execution": "NOT_RUN",
-  "temporal_server_execution": "NOT_RUN",
+  "container_isolation": "NOT_RUN",
   "independent_verification": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "package_functionally_complete": false
+  "scope": "Synthetic terraform_data apply/refresh/destroy and dependency-free Helm rendering"
 }

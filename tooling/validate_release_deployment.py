@@ -28,6 +28,7 @@ def main():
         sources={p.relative_to(ROOT).as_posix():sha(p.read_bytes()) for p in sorted(engine.rglob('*'))
                  if p.is_file() and '__pycache__' not in p.parts and p.suffix not in {'.pyc'}}
         for name in ['tooling/integrate_release_deployment_skills.py','tooling/validate_release_deployment.py',
+                     'tooling/validate_release_native.py',
                      'docs/release-deployment/source-manifest.json']:
             sources[name]=sha((ROOT/name).read_bytes())
         return sources

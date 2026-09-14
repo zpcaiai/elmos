@@ -122,7 +122,7 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-05 | OCI manifest/config byte verification by digest | ACR-authenticated blob fetcher |
 | RD-06 | RunCommand/poll/cancel mapping, scoped log redaction + durable host recovery port | SDK transport, signed remote permit delivery, canonical CAS wiring |
 | RD-07 | Canonical Docker/Compose + executable Linux agent | Four real language image deployments; full runtime preflight |
-| RD-08 | Typed config validation, reference-only secrets and scoped owner-only file materialization | Canonical KMS secret fetcher and host tmpfs provisioning |
+| RD-08 | Typed config validation, reference-only secrets, scoped file materialization and canonical Secret service deployment lifecycle with failure cleanup | Cloud-specific secret types/KMS fetcher and host tmpfs provisioning |
 | RD-09 | Five-tool typed migration IR classification and policy gates | Native tool discovery/IR extraction, execution, backup/restore adapters |
 | RD-10 | Bounded retry/deadline probes, exact case sets, loopback HTTP | Representative application/business probes |
 | RD-11 | Automatic and manual immutable rollback workflow | Live provider snapshot/restore/traffic adapters |
@@ -133,12 +133,12 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-20 | Exact bounded rolling batches with batch verification | Live multi-ECS rollout execution |
 | RD-21 | ALB ECS backend weight execution, before-image checks, durable dispatch, asynchronous readback and separately approved compensation | SLB variants, trusted health gate integration and real traffic journeys |
 | RD-22 | DNS update/readback; ALB default-certificate rotation, invariant checks, live TLS probe and separately approved compensation | Certificate issuance/upload, configured host sessions and external resolver/cloud acceptance |
-| RD-23 | Saved Terraform apply/destroy plan controller, sandbox admission, exact state/resource result checks and durable reconciliation | Concrete attested native sandbox adapter, plan generation, production state backend and live provider acceptance |
+| RD-23 | Saved-plan controller; native Terraform show/apply/refresh/state execution; canonical ToolCall HTTP ledger binding and lost-result reconciliation; real local apply/destroy qualification | Installed isolated worker resolver, attestation/authorization/evidence services, production state backend and live provider acceptance |
 | RD-24 | Signed exact scan/signature verdict checks | ACR scanner and signature provider |
 | RD-25 | Immutable TTL, resource reconciliation and retention selection | Provisioning/cleanup scheduler and provider effects |
 | RD-26 | Allowlisted deployment annotations | SLS/CloudMonitor/OTel exporter wiring |
 | RD-30 | Restricted existing Deployment SSA execution and pinned-CA HTTPS transport; UID/version/generation/admission/rollout checks | ACK discovery, namespace provisioning, canonical token broker and real cluster journeys |
-| RD-31 | Helm sandbox command/receipt validation; GitHub Git Data/PR HTTPS adapter; Argo CD HTTPS observation; scoped provider composition and exact-commit GitOps convergence | Concrete native Runner, canonical credential/dispatch broker installation, Flux adapter and live acceptance |
+| RD-31 | Native Helm rendering; GitHub Git Data/PR HTTPS adapter; Argo CD and Flux v1 HTTPS observers; scoped provider composition and exact-commit convergence | Installed worker/credential brokers, real Kubernetes/GitHub/Flux acceptance and independent verification |
 | RD-32 | Exact-decimal SLO window/error-budget decision | Trusted telemetry collection and progressive workflow integration |
 | RD-33 | Exact provider/version/region/account/action registry | Concrete additional cloud provider adapters |
 
@@ -291,10 +291,77 @@ verification as NOT_RUN.
 
 Local tests execute a trusted loopback HTTPS server for the Argo transport,
 including redirect rejection. GitHub API scenarios use explicit provider
-fixtures; they are not remote GitHub acceptance. Concrete Terraform/Helm native
-execution, Flux, canonical broker installation and live provider acceptance
-remain outstanding. The existing generic Runner uses `--network=none`; no
+fixtures; they are not remote GitHub acceptance. Native Terraform/Helm programs
+and Flux observation are implemented below. Canonical broker installation and
+live provider acceptance remain outstanding. The existing generic Runner uses `--network=none`; no
 network policy was broadened to make Terraform cloud apply run.
+
+## Native Runner, runtime service and Flux bindings
+
+`native_worker.py` contains real native programs, with pinned executable bytes,
+fixed command construction, explicit environment, bounded streams/timeouts and
+safe input reads. `NativeTerraformWorker` inspects a saved plan, rejects incomplete
+plans/provisioners/unapproved destructive actions, verifies configuration/lock/state
+digests, applies that plan, runs a refresh-only drift check, and reconciles final
+state lineage/serial and exact resource addresses. The provider/plugin cache and
+state backend must be provisioned by the host; the worker does not download providers
+or bootstrap cloud credentials. Data resources and unsupported plan formats fail closed.
+`NativeHelmWorker` checks chart tree/values/lock bytes, runs native `helm template`,
+rejects YAML aliases, and returns bounded parsed manifests. The configured supervisor
+owns process-tree isolation and lease-loss termination; standalone Windows execution
+here is only for the disposable provider-free qualification.
+
+`NativeRunnerHost` binds those workers to current host authorization, signed sandbox
+attestation, canonical dispatch claims and immutable evidence. The host worker resolver
+must return the exact isolated runtime for the scope/request and configure redacting
+native-output capture into CAS. Missing attestation is rejected before plan inspection.
+The evidence adapter must implement `commit`, `find`, `read` and `require_verified`;
+the latter must use the separate canonical verifier before ledger completion. A producer
+signature is insufficient. Lost claims never execute; lost completion uses existing
+evidence rather than executing Terraform again.
+
+`CanonicalNativeLedger` and `ToolCallHttpClient` use the existing Java billing-owned
+ToolCall endpoints. Trusted context resolution supplies tenant/account/project/job/
+stage/work-item/attempt UUIDs. The adapter derives action, request hash and idempotency
+key and binds every lookup to the exact request. There is no second retry database.
+
+In `apps/production-runtime-control-plane`, enable
+`elmos.release-deployment.runtime-enabled=true` on the billing component to register
+`DeploymentRuntimeConfiguration` and `/internal/v1/production-runtime/deployment/{tick,lookup}`.
+The existing workload authenticator protects both routes; current capability authorization
+is separately mandatory. The configuration requires installed Authorization,
+EvidenceVerifier and DeploymentProviderRegistry beans; missing providers fail startup.
+This is executable Spring composition, but no running installation of those host-owned
+services is asserted. `tick` preserves pending (202) and failed (422) outcomes.
+
+`DeploymentSecretSession` composes the canonical SecretInjectionService. It checks the
+complete deployment scope/capability via the host authority, caps credential leases to
+60 seconds, materializes through the existing service and removes/revokes on success
+or failure. Existing SecretType coverage remains explicit; this does not invent KMS/STS
+providers or grant cloud secret access.
+
+Select `gitops_backend='flux'` in GitOpsProviderHost with FluxBinding records. Flux uses
+read-only Kubernetes API calls for exact v1 Kustomization/GitRepository identities,
+spec digests, observed generations, Ready conditions, applied/source revision and
+inventory. It requires non-pruning, wait-enabled local-cluster Kustomizations and
+reconciliation history within 60 seconds; a second read detects concurrent changes.
+Remote kubeConfig, forced replacement, suspended objects and incomplete evidence
+are rejected. Flux controller/cluster execution remains NOT_RUN.
+
+Real local native qualification:
+
+```powershell
+uv run --offline --no-project --with cryptography==46.0.7 --with pyyaml==6.0.2 python tooling/validate_release_native.py --terraform <approved-terraform.exe> --helm <approved-helm.exe>
+```
+
+This pins Terraform 1.13.5 and Helm 3.19.0 Windows amd64 binaries against verified
+upstream archive checksums and recorded binary digests. The three tests run real
+Terraform `terraform_data` apply/refresh/destroy, real dependency-free Helm rendering
+and binary/input tamper rejection. Raw native process records and source-bound receipts
+are in `qualification/native-*`. They prove bounded local native execution only;
+cloud, container isolation, independent verification and production certification
+remain NOT_RUN/NOT_CERTIFIED. Operator environment requirements remain in
+[LIVE_ACCEPTANCE_REQUIREMENTS.md](LIVE_ACCEPTANCE_REQUIREMENTS.md).
 
 Additional references:
 [ALB listener updates](https://www.alibabacloud.com/help/en/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-updatelistenerattribute),
@@ -304,6 +371,9 @@ Adapter protocol references:
 [GitHub Git trees](https://docs.github.com/en/rest/git/trees),
 [GitHub pull requests](https://docs.github.com/en/rest/pulls/pulls),
 [Argo CD application API](https://argo-cd.readthedocs.io/en/latest/developer-guide/api-docs/).
+
+[Flux Kustomization semantics](https://fluxcd.io/flux/components/kustomize/kustomizations/)
+define the generation, history, source revision and inventory checks used by FluxAdapter.
 
 ## Evidence and authority
 
