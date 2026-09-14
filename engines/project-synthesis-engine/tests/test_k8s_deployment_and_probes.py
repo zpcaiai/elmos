@@ -59,7 +59,7 @@ def test_k8s_manifest_dry_run_validation():
         app_name="payment-service",
         namespace="default",
     )
-    controller = K8sDeploymentController()
+    controller = K8sDeploymentController(kubectl_bin="kubectl-does-not-exist")
     valid, msg = controller.dry_run_validate(manifest_yaml)
 
     assert valid is True

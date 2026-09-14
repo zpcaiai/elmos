@@ -1,8 +1,8 @@
-; formal_input_sha256 sha256:1a5531cec97cdcd81a2235f26df9d9e42ef602b63e448eb69210d8de065cb9b9
-; implementation_fingerprint sha256:900c34bd58b44382531d83290b86c019b7511e71816f798c7964e570697a7081
-; replay_fingerprint sha256:e3f10b833414115186e05f3f22375e9f289405c4dbdd07a995f12543ca7a7136
+; formal_input_sha256 sha256:42718c1b9412e6290dc0b16b2d12c6aa18dd94990aad722d30864890002f1c64
+; implementation_fingerprint sha256:9a54837ed76686be97fcd2c49067afa6c556c7297edd2e808753bf6f00b0f56c
+; replay_fingerprint sha256:096f879c43261d9c26a7edf54420379683e5a62b16293e2d3e72bc7a13ffcb7d
 ; ELMOS bounded-navigation-v1 canonical/source/target/reference equivalence
-; formal-input-bytes-digest: sha256:34600333a8e33257cc97bed1a7074b729dd4f894bc31ec5e51c7177346a4cf57
+; formal-input-bytes-digest: sha256:ef6051984841eb3e3e523481891a65257214cef7a6048968bbd8228c6ab26fde
 ; Framework/compiler/runtime soundness is explicitly outside this bounded formula.
 (set-logic ALL)
 (declare-const event Int)

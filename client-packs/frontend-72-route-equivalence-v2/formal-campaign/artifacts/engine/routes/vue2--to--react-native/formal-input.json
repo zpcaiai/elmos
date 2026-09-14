@@ -11,8 +11,8 @@
     "target_profile": "react-native",
     "target_framework_version": "0.86.0"
   },
-  "source_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
-  "target_project_digest": "sha256:927aa72f948d73cfdcb9bf5182308003c3d28e65b25448140e627f33c4114a57",
+  "source_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
+  "target_project_digest": "sha256:95de96c2dc8edff3d9d9e1d6cb4956db7fe6615508fa49b16776d604c9759223",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:dcda7b13fc1650b31936b4d6b00bec1f7370df48fe865d09780e4eacc3b99aad",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:af276c42da2d1230e031c3ce7e8248ac6b6b3cb1329b01c74a7138c3b0c85d7c",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

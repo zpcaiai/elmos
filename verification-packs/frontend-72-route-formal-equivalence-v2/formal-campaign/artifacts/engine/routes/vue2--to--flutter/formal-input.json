@@ -11,8 +11,8 @@
     "target_profile": "flutter",
     "target_framework_version": "3.44.1"
   },
-  "source_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
-  "target_project_digest": "sha256:68b881d1cb18813e5413f80f2111c35be9b8d7596a2a77217fac410b5594557f",
+  "source_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
+  "target_project_digest": "sha256:36245137d1f5c535380895e61de4b263575c09e7587402ce38e60b5e7557b086",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:2f62f8d1e57d4302dc7e10180acbb4198c074c0f2bbeff80f99c7ac7c43c924c",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:af276c42da2d1230e031c3ce7e8248ac6b6b3cb1329b01c74a7138c3b0c85d7c",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

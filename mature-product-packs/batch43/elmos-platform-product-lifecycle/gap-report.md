@@ -2,9 +2,37 @@
 
 - Pack: `elmos-platform-product-lifecycle`
 - Skills in scope: 20
-- Blocking gaps: 0
-- Open gaps: 0
-- Repository-owned: 0 blocking / 0 open
-- External gate: 0 blocking / 0 open
+- Blocking gaps: 1
+- Open gaps: 21
+- Repository-owned: 0 blocking / 20 open
+- External gate: 1 blocking / 1 open
 
 This inventory is a work list. It grants no status and is not evidence.
+
+## Blocking
+
+- [approval / external-gate] no accountable approver is recorded on the certification
+
+## Open
+
+- [coverage / repository] b43-automated-upgrade-tooling is only experimental in the support matrix
+- [coverage / repository] b43-compatibility-test-matrix is only experimental in the support matrix
+- [coverage / repository] b43-customer-upgrade-readiness is only experimental in the support matrix
+- [coverage / repository] b43-database-migration-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-deprecation-removal is only experimental in the support matrix
+- [coverage / repository] b43-event-schema-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-feature-flag-progressive-enable is only experimental in the support matrix
+- [coverage / repository] b43-product-lifecycle-factory is only experimental in the support matrix
+- [coverage / repository] b43-product-lifecycle-gate is only experimental in the support matrix
+- [coverage / repository] b43-psp-uir-schema-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-public-api-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-recipe-pack-extension-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-release-channel-governance is only experimental in the support matrix
+- [coverage / repository] b43-release-documentation is only experimental in the support matrix
+- [coverage / repository] b43-rolling-mixed-version-upgrade is only experimental in the support matrix
+- [coverage / repository] b43-runner-protocol-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-sdk-compatibility is only experimental in the support matrix
+- [coverage / repository] b43-security-fix-backport is only experimental in the support matrix
+- [coverage / repository] b43-support-eol-policy is only experimental in the support matrix
+- [coverage / repository] b43-version-specification is only experimental in the support matrix
+- [status / external-gate] certification status is NOT_RUN

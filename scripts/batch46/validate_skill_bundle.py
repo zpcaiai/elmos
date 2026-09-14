@@ -8,7 +8,6 @@ import re
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 SKILLS_ROOT = ROOT / ".agents" / "skills"
 
@@ -113,7 +112,9 @@ def validate() -> list[str]:
             if len(declared_name) > 64:
                 failures.append(f"{expected_name}: name exceeds 64 characters")
             if len(description) < 40:
-                failures.append(f"{expected_name}: description is not operationally specific")
+                failures.append(
+                    f"{expected_name}: description is not operationally specific"
+                )
         for heading in REQUIRED_HEADINGS:
             if heading not in text:
                 failures.append(f"{expected_name}: missing heading {heading}")
@@ -126,11 +127,15 @@ def validate() -> list[str]:
                 failures.append(f"{expected_name}: duplicate Skill id {numeric_id}")
             ids.add(numeric_id)
         if "NOT_RUN" not in text or "never" not in text.lower():
-            failures.append(f"{expected_name}: fail-closed evidence boundary is incomplete")
+            failures.append(
+                f"{expected_name}: fail-closed evidence boundary is incomplete"
+            )
 
     expected_ids = set(range(4601, 4617))
     if ids != expected_ids:
-        failures.append(f"Skill ids differ: expected {sorted(expected_ids)}, got {sorted(ids)}")
+        failures.append(
+            f"Skill ids differ: expected {sorted(expected_ids)}, got {sorted(ids)}"
+        )
     for relative in REQUIRED_RUNTIME_FILES:
         if not (ROOT / relative).is_file():
             failures.append(f"runtime dependency missing: {relative}")

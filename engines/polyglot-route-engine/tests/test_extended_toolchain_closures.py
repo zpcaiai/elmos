@@ -359,6 +359,34 @@ def test_rust_sysroot_root_must_remain_read_only(
     assert stat.S_IMODE(identity[2]) == 0o555
 
 
+@pytest.mark.parametrize("expected", toolchains._EXPECTED_RUST_SYSROOT_TREES)
+def test_rust_accepts_only_complete_allowlisted_sysroot_tree(
+    expected: dict[str, object],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    wrappers = _tree_identity(
+        toolchains._EXPECTED_RUST_WRAPPER_ROOT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_SHA256,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_BYTES,
+    )
+    sysroot = copy.deepcopy(expected)
+
+    def manifest(root: Path, *_args: object, **_kwargs: object) -> dict[str, object]:
+        return wrappers if root == toolchains._EXPECTED_RUST_WRAPPER_ROOT else sysroot
+
+    monkeypatch.setattr(toolchains, "_qualified_tree_manifest", manifest)
+    monkeypatch.setattr(
+        toolchains,
+        "_rust_sysroot_root_identity",
+        lambda: (1, 2, stat.S_IFDIR | 0o555, os.getuid(), os.getgid(), 2, 3),
+    )
+
+    assert toolchains._rust_tree_identities() == (wrappers, sysroot)
+
+
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])
 def test_rust_rejects_wrapper_or_sysroot_tree_drift(
     drift: str,

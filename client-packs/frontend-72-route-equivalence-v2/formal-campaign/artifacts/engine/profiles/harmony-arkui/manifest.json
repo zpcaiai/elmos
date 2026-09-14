@@ -11,7 +11,7 @@
     "harmonyos"
   ],
   "project_path": "project",
-  "project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
+  "project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
   "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
   "file_count": 32,
   "files": [
@@ -57,7 +57,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "sha256:17c7e5c439f379634e720a53c9dd8feb444cebf8e5472fa14360f399dfd2f302",
+      "sha256": "sha256:36de2b5add1285d7c1d48d9aa7b85dbca6aced0a3cb727b0afc841e2194a0caf",
       "byte_count": 2034
     },
     {
@@ -67,17 +67,17 @@
     },
     {
       "path": "conversion/obligations.json",
-      "sha256": "sha256:a1d0317c3eb93f44cb13a5dc197f487a4dc2cbb8eb01e01cd6461eab5790ab54",
+      "sha256": "sha256:e786849c8f8d220a6b937626ff0f7b0aeaf97a0095a74952a790a3517cca72c4",
       "byte_count": 1225
     },
     {
       "path": "conversion/route.json",
-      "sha256": "sha256:0bb156300fb0aae93e152f2e6e4a8e083fbee08b72c180bcaae3861cfc347a46",
+      "sha256": "sha256:c9cdffb72936e7145c108904d34113243cc4877f9077284ed8f225889b5bf572",
       "byte_count": 322
     },
     {
       "path": "elmos.ui-migration.json",
-      "sha256": "sha256:6d593bcc4f365c3c77b113d19ac02885b980ee088925eb41e168813112b317d5",
+      "sha256": "sha256:94a6e4a26e45809f201bcfb0256708fc115d8ca88ca49aaff3708799cb7135a0",
       "byte_count": 3524
     },
     {
@@ -2496,5 +2496,5 @@
   },
   "target_build": "NOT_RUN",
   "target_runtime": "NOT_RUN",
-  "manifest_digest": "sha256:00d812d2f5a40d71793f013c851b8a2753d79960090ddd87cbd51dd84a6ed249"
+  "manifest_digest": "sha256:e0aece192d24832f16a5290d0cf7b89cc16426735204b82f0b89f09b0ffe3194"
 }

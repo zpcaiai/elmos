@@ -5,7 +5,7 @@
   "capabilities": [
     {
       "capabilityId": "b45-customer-value-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -15,7 +15,7 @@
     },
     {
       "capabilityId": "b45-deployment-matrix-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -25,7 +25,7 @@
     },
     {
       "capabilityId": "b45-design-partner-reference-validation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -35,7 +35,7 @@
     },
     {
       "capabilityId": "b45-developer-experience-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -45,7 +45,7 @@
     },
     {
       "capabilityId": "b45-economics-profitability-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -55,7 +55,7 @@
     },
     {
       "capabilityId": "b45-ecosystem-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -65,7 +65,7 @@
     },
     {
       "capabilityId": "b45-edition-route-vertical-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -75,7 +75,7 @@
     },
     {
       "capabilityId": "b45-functional-depth-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -85,7 +85,7 @@
     },
     {
       "capabilityId": "b45-independent-expert-validation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -95,7 +95,7 @@
     },
     {
       "capabilityId": "b45-mature-product-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -105,7 +105,7 @@
     },
     {
       "capabilityId": "b45-mature-product-evidence-pack",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -115,7 +115,7 @@
     },
     {
       "capabilityId": "b45-mature-product-final-gate",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -125,7 +125,7 @@
     },
     {
       "capabilityId": "b45-mature-release-readiness",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -135,7 +135,7 @@
     },
     {
       "capabilityId": "b45-maturity-model-editions",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -145,7 +145,7 @@
     },
     {
       "capabilityId": "b45-product-governance-accountability",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -155,7 +155,7 @@
     },
     {
       "capabilityId": "b45-residual-risk-register",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -165,7 +165,7 @@
     },
     {
       "capabilityId": "b45-route-breadth-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -175,7 +175,7 @@
     },
     {
       "capabilityId": "b45-scale-performance-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -185,7 +185,7 @@
     },
     {
       "capabilityId": "b45-security-data-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -195,7 +195,7 @@
     },
     {
       "capabilityId": "b45-semantic-behavior-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -205,7 +205,7 @@
     },
     {
       "capabilityId": "b45-sre-reliability-dr-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",
@@ -215,7 +215,7 @@
     },
     {
       "capabilityId": "b45-target-maintainability-certification",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch45-execution",

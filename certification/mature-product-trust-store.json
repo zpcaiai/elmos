@@ -4,7 +4,7 @@
     {
       "keyId": "ethan-independent-certifier",
       "publicKeyPath": "keys/ethan-independent-certifier.pub.pem",
-      "revoked": false,
+      "revoked": true,
       "authorizedBatches": [
         38,
         39,

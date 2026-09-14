@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "angular--to--flutter",
-  "formal_input_digest": "sha256:078293a68e8c4ae340a2653e94a6f00fda308f2b98d870902b6916ec47769091",
-  "solver_input_digest": "sha256:68bd7cb44d5530cfdbce0a6362f25441d4215bbafa1a35a348846a3cf3a04709",
-  "smt2_digest": "sha256:68bd7cb44d5530cfdbce0a6362f25441d4215bbafa1a35a348846a3cf3a04709",
+  "formal_input_digest": "sha256:3fa431f71a20217e7cd933bf13ca7aac9e049e2fd8d725d01746d36890f5fbba",
+  "solver_input_digest": "sha256:c4002f3bdfeb612a3e2c10f252c60e59c991506f55765da260dafa900292efc7",
+  "smt2_digest": "sha256:c4002f3bdfeb612a3e2c10f252c60e59c991506f55765da260dafa900292efc7",
   "precheck_status": "PASSED"
 }

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "flutter--to--svelte",
-  "formal_input_digest": "sha256:a4ba5636f8bff0bcf5d429962f10b376c04c79a07725a2ce0421824a2f1cf462",
-  "solver_input_digest": "sha256:a9933e77bdb474cd7d43309269e6e44e98238137404f5d500a89c46102fb1d86",
-  "smt2_digest": "sha256:a9933e77bdb474cd7d43309269e6e44e98238137404f5d500a89c46102fb1d86"
+  "formal_input_digest": "sha256:f2264c037927971fb40fe0510f3fa67ae22511a59f9897f3c6f28f7ae7f12a65",
+  "solver_input_digest": "sha256:442d58a362a6b2243a4365f8d3a72baf0707c31e103bb077471b8c0ba4c390bc",
+  "smt2_digest": "sha256:442d58a362a6b2243a4365f8d3a72baf0707c31e103bb077471b8c0ba4c390bc"
 }

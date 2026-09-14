@@ -21,12 +21,157 @@
     "zero-tolerance"
   ],
   "skillCount": 22,
-  "blockingCount": 0,
-  "openCount": 0,
+  "blockingCount": 1,
+  "openCount": 23,
   "repositoryBlockingCount": 0,
-  "repositoryOpenCount": 0,
-  "externalGateBlockingCount": 0,
-  "externalGateOpenCount": 0,
-  "certifiable": null,
-  "gaps": []
+  "repositoryOpenCount": 22,
+  "externalGateBlockingCount": 1,
+  "externalGateOpenCount": 1,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-air-gapped-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-customer-vpc-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-database-expand-contract-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-dedicated-saas-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-deployment-upgrade-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-edge-plant-restricted-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-edition-responsibility-matrix is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-enterprise-deployment-upgrade-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-multiregion-active-active-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-multitenant-saas-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-offline-signed-update-bundle is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-plane-topology-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-platform-version-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-portable-control-plane is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-private-sovereign-cloud-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-recipe-pack-extension-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-runner-version-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-self-hosted-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-tenant-edition-migration is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-upgrade-rollback-disaster-recovery is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-workflow-version-long-run-recovery is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b38-zero-downtime-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "responsibility": "external-gate",
+      "detail": "certification status is NOT_RUN"
+    }
+  ]
 }

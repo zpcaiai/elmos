@@ -11,8 +11,8 @@
     "target_profile": "jquery",
     "target_framework_version": "4.0.0"
   },
-  "source_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
-  "target_project_digest": "sha256:b6f97f365ec00660a6d028964a9c848776c99b4bfa614e159ba57ada1172af1b",
+  "source_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
+  "target_project_digest": "sha256:f05e7d4b131fe3df67626a3b2941b6caa1a5d6c4103edd09b11ecd607c9a9fba",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:0f6b54bc824c3b86c9fdb9d98e68ae513c287dd943616e39b10e0c360281a4f3",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:af276c42da2d1230e031c3ce7e8248ac6b6b3cb1329b01c74a7138c3b0c85d7c",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

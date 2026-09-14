@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "react--to--svelte",
-  "formal_input_digest": "sha256:c04ba298b8fc7de8e67a3dddae6eaeb8b5f6d7e93f7b2de95ccd3e987b36f7fc",
-  "solver_input_digest": "sha256:93f0d944127d013f4eb6b3624cb2369ad3f2e68e8a8241ae49e96271e067351e",
-  "smt2_digest": "sha256:93f0d944127d013f4eb6b3624cb2369ad3f2e68e8a8241ae49e96271e067351e",
+  "formal_input_digest": "sha256:7cfb7fe68904c5734c75e95809430957c6871e7ff34529cf9f80a3282a5fa139",
+  "solver_input_digest": "sha256:a79e55cd8d3335d5348141d2b2b4133a41e6ac0c4d4b7e86ee3efb31ccf1e06b",
+  "smt2_digest": "sha256:a79e55cd8d3335d5348141d2b2b4133a41e6ac0c4d4b7e86ee3efb31ccf1e06b",
   "precheck_status": "PASSED"
 }

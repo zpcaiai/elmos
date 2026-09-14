@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/private/tmp/elmos-pr82-final2-20260913.RyYlhz/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "angular--to--react",
-  "formal_input_digest": "sha256:2c42283f0e7c1c3f489ff0bd8690d7011bbb9712e7ac4b9388df56e1ec258d31",
-  "solver_input_digest": "sha256:eef7b9a3bee3b8591621a8b75af248a30a48d02f031cf4164e35f8bb987ba79c",
-  "smt2_digest": "sha256:eef7b9a3bee3b8591621a8b75af248a30a48d02f031cf4164e35f8bb987ba79c",
+  "formal_input_digest": "sha256:e155f790ca778bb1d4b7df961ef5fea2c591ad04f7b3783a7c0025f252851a56",
+  "solver_input_digest": "sha256:d323f5a69e4adeec22fe92c7c104f473fb69f2bd07c5315039b1161f2b927617",
+  "smt2_digest": "sha256:d323f5a69e4adeec22fe92c7c104f473fb69f2bd07c5315039b1161f2b927617",
   "precheck_status": "PASSED"
 }

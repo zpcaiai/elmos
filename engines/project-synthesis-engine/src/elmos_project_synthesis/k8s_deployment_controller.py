@@ -405,18 +405,16 @@ class K8sDeploymentController:
             proc = subprocess.run(
                 [
                     self.kubectl,
-                    "create",
+                    "apply",
                     "--dry-run=client",
                     "--validate=false",
                     "-f",
                     "-",
-                    "-o",
-                    "yaml",
                 ],
                 input=manifest_yaml,
                 text=True,
                 capture_output=True,
-                timeout=10,
+                timeout=30,
                 check=False,
             )
             return proc.returncode == 0, proc.stdout if proc.returncode == 0 else proc.stderr

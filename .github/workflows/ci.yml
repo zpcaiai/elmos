@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    # 02:17 Asia/Shanghai. A non-round minute reduces shared-runner contention.
+    - cron: "17 18 * * *"
 
 permissions:
   contents: read
@@ -14,6 +17,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  release-control:
+    name: Release control and evidence governance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Verify release candidate and materialize evidence
+        run: >-
+          python3 scripts/release_control/run_release_gate.py
+          --candidate-sha "${GITHUB_SHA}"
+          --output-dir .release-control-artifacts
+      - name: Upload release-control evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-control-${{ github.sha }}
+          path: .release-control-artifacts/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
+
   java:
     name: Java reactor
     runs-on: ubuntu-24.04
@@ -737,6 +764,8 @@ jobs:
           python-version: "3.12"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Build native CDC comparator
         working-directory: engines/sql-dialect-engine/cdc-engine-rust
         run: cargo build --locked --release

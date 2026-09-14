@@ -22,12 +22,157 @@
     "zero-tolerance"
   ],
   "skillCount": 22,
-  "blockingCount": 0,
-  "openCount": 0,
+  "blockingCount": 1,
+  "openCount": 23,
   "repositoryBlockingCount": 0,
-  "repositoryOpenCount": 0,
-  "externalGateBlockingCount": 0,
-  "externalGateOpenCount": 0,
-  "certifiable": null,
-  "gaps": []
+  "repositoryOpenCount": 22,
+  "externalGateBlockingCount": 1,
+  "externalGateOpenCount": 1,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-autonomy-levels is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-budget-resource-limits is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-eval-benchmark is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-factory-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-incident-killswitch-rollback is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-memory-state-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-migration-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-red-team is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-shadow-canary is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-team-topology is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-agent-tool-permissions is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-deterministic-execution-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-human-approval-takeover is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-language-framework-specialist-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-migration-planner-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-minimal-context-evidence is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-model-routing-provider-failover is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-multiagent-consensus-arbitration is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-policy-enforcement-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-recipe-candidate-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-supervisor-coordination-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "b42-verification-agent is only experimental in the support matrix"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "responsibility": "external-gate",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "responsibility": "external-gate",
+      "detail": "certification status is NOT_RUN"
+    }
+  ]
 }
