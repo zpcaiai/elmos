@@ -565,11 +565,11 @@ LOCKED_INTERACTION_ENGINE_NODE_SHA256 = (
 )
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_FILE_COUNT = 54
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_SHA256 = (
-    "sha256:8ba6d7f44234d1a1a1c5e06a7bd56a4247c425c4a2eda3730109341c089ee285"
+    "sha256:64d07de7e08898fbce6e32b906432b72293d43ccff650b950829cde629a8b957"
 )
 LOCKED_INTERACTION_ENGINE_DIST_TREE_FILE_COUNT = 162
 LOCKED_INTERACTION_ENGINE_DIST_TREE_SHA256 = (
-    "sha256:b8d07145a0324393d4ecd6afb7c9675183d8f354251768bb24c718612ed5d225"
+    "sha256:cc9e9f8f66bf858a3a7dca6668bb53d10086bad06eaa9b7fb8ac2fef6c861a3b"
 )
 LOCKED_INTERACTION_ENGINE_FILE_SHA256 = {
     "cli_source": "sha256:695527da9f1470c4cdf17d9bd1e3f74502382a2945400ca82a770d97a6739c60",
@@ -614,7 +614,7 @@ SOLVER_RESULT_KEYS = {
 }
 
 EXPECTED_PROFILES: dict[str, dict[str, Any]] = {
-    "angular": {"framework_version": "22.0.8", "platforms": ["WEB"], "kind": "node"},
+    "angular": {"framework_version": "22.1.4", "platforms": ["WEB"], "kind": "node"},
     "flutter": {
         "framework_version": "3.44.1",
         "platforms": ["ANDROID", "IOS", "WEB"],
@@ -2901,19 +2901,19 @@ EXPECTED_NODE_PACKAGES: dict[str, dict[str, Any]] = {
             "test": "ng build --configuration development",
         },
         "dependencies": {
-            "@angular/common": "22.0.8",
-            "@angular/compiler": "22.0.8",
-            "@angular/core": "22.0.8",
-            "@angular/platform-browser": "22.0.8",
-            "@angular/router": "22.0.8",
+            "@angular/common": "22.1.4",
+            "@angular/compiler": "22.1.4",
+            "@angular/core": "22.1.4",
+            "@angular/platform-browser": "22.1.4",
+            "@angular/router": "22.1.4",
             "rxjs": "7.8.2",
             "tslib": "2.8.1",
             "zone.js": "0.16.2",
         },
         "devDependencies": {
-            "@angular/build": "22.0.8",
-            "@angular/cli": "22.0.8",
-            "@angular/compiler-cli": "22.0.8",
+            "@angular/build": "22.1.4",
+            "@angular/cli": "22.1.4",
+            "@angular/compiler-cli": "22.1.4",
             "typescript": "6.0.3",
         },
         "commands": [("test",), ("build",)],

@@ -777,8 +777,11 @@ def main() -> int:
             + "\n",
             encoding="utf-8",
         )
+    # The snapshot is evidence of the alert set on which the registry decision
+    # was made.  Persisting the post-dismissal open set would erase that source
+    # evidence and break the registry/VEX/provenance binding on replay.
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
-    snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
+    snapshot_path.write_bytes(canonical(registry["source_alerts"]))
     return 0
 
 

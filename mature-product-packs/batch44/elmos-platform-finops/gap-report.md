@@ -2,7 +2,35 @@
 
 - Pack: `elmos-platform-finops`
 - Skills in scope: 20
-- Blocking gaps: 0
-- Open gaps: 0
+- Blocking gaps: 1
+- Open gaps: 21
 
 This inventory is a work list. It grants no status and is not evidence.
+
+## Blocking
+
+- [approval] no accountable approver is recorded on the certification
+
+## Open
+
+- [coverage] b44-artifact-retention-egress-economics is only experimental in the support matrix
+- [coverage] b44-assessment-poc-project-quote is only experimental in the support matrix
+- [coverage] b44-budget-quota-cost-guardrail is only experimental in the support matrix
+- [coverage] b44-cache-incremental-cost-optimization is only experimental in the support matrix
+- [coverage] b44-cost-scenario-forecast is only experimental in the support matrix
+- [coverage] b44-cost-taxonomy-economic-model is only experimental in the support matrix
+- [coverage] b44-customer-roi-tco-value is only experimental in the support matrix
+- [coverage] b44-customer-route-edition-margin is only experimental in the support matrix
+- [coverage] b44-economics-maturity-gate is only experimental in the support matrix
+- [coverage] b44-human-expert-cost is only experimental in the support matrix
+- [coverage] b44-migration-finops-factory is only experimental in the support matrix
+- [coverage] b44-model-agent-economics is only experimental in the support matrix
+- [coverage] b44-packaging-pricing-model is only experimental in the support matrix
+- [coverage] b44-provider-resource-routing is only experimental in the support matrix
+- [coverage] b44-resource-metering is only experimental in the support matrix
+- [coverage] b44-runner-fleet-economics is only experimental in the support matrix
+- [coverage] b44-showback-chargeback is only experimental in the support matrix
+- [coverage] b44-support-hypercare-operations-cost is only experimental in the support matrix
+- [coverage] b44-usage-billing-reconciliation is only experimental in the support matrix
+- [coverage] b44-verified-workload-unit-cost is only experimental in the support matrix
+- [status] certification status is NOT_RUN

@@ -169,7 +169,7 @@ class ToolkitTests(unittest.TestCase):
             (ROOT / 'schemas' / 'batch32' / 'ui-project-generation.schema.json').read_text()
         )
         exact_sources = (
-            ('angular', '22.0.8', 'WEB'),
+            ('angular', '22.1.4', 'WEB'),
             ('flutter', '3.44.1', 'ANDROID'),
             ('harmony-arkui', '6.0.0(20)', 'HARMONYOS'),
             ('jquery', '4.0.0', 'WEB'),

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "2.0",
-  "projectId": "2510efa0f1e5c284e0c85235",
+  "projectId": "21a48923ff3bdf760198ddea",
   "direction": {
     "routeId": "angular--to--flutter",
     "source": "angular",
     "target": "flutter",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "3.44.1",
     "supportState": "ADAPTER_REQUIRED",
     "semanticConversionEvidence": "NOT_RUN",
@@ -44,7 +44,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:db00e94ba271c7fe84a8957a38f6a20c28e8275e4dec3a12fc78039f8241c7cd",
+  "contentDigest": "sha256:2c535d172b0207dcd633ab8c3bca48d677c73730ea2e5ba9776d1ac83aed1652",
   "ownership": {
     "generated": [
       ".editorconfig",
