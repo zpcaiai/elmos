@@ -15,6 +15,8 @@ class ElmpayOrderDigestMigrationContractTest {
     @Test void triggerFunctionsResolveEncodeFromPgCatalog() throws Exception {
         String sql = Files.readString(MIGRATION);
         assertEquals(3, count(sql, "pg_catalog.encode(public.digest("));
+        assertEquals(3, count(sql, "provider, status)"));
+        assertEquals(3, count(sql, "NEW.provider, NEW.status"));
         assertFalse(sql.contains("public.encode("));
     }
 
