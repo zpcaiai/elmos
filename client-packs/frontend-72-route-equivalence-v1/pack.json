@@ -227,11 +227,11 @@
     "holdout": "required"
   },
   "frontend_formal_route_campaign": "formal-campaign/frontend-formal-route-campaign.json",
-  "frontend_formal_campaign_digest": "sha256:ba1d4c809ca2f7de5a9ff155552c6a8540b1da16f395867ac8e63c987d40354d",
+  "frontend_formal_campaign_digest": "sha256:917c1059a26a6b9b0cdc040ddb97385c0a3a91f25b74185657906a61fa2313fb",
   "frontend_formal_scope_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb",
   "frontend_formal_peer": {
     "pack_key": "frontend-72-route-formal-equivalence-v1",
-    "campaign_sha256": "sha256:ba1d4c809ca2f7de5a9ff155552c6a8540b1da16f395867ac8e63c987d40354d",
+    "campaign_sha256": "sha256:917c1059a26a6b9b0cdc040ddb97385c0a3a91f25b74185657906a61fa2313fb",
     "scope_digest": "sha256:31c713c996ae69d94f08f8f4f9a0d0118a2c6b25c95df6d3baad42e461239adb"
   }
 }

@@ -3,8 +3,8 @@
   "id": "elmos-platform-supply-chain-metrics",
   "batch": 40,
   "version": "0.1.0",
-  "owner": "Aria Thorne, Chief Security & Compliance Officer",
-  "status": "PASSED",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
   "metrics": [
     {
       "name": "auditEvidenceFreshnessRate",
@@ -13,46 +13,40 @@
       "measured": true,
       "value": 1.0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "criticalVulnerabilityCount",
       "threshold": 0.0,
       "comparator": "max",
       "measured": true,
-      "value": 0.0,
+      "value": 0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependabot-alerts"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "open critical alerts in the exact GitHub Dependabot snapshot; high and medium counts are recorded separately"
     },
     {
       "name": "evidenceTraceCoverage",
       "threshold": 0.98,
       "comparator": "min",
       "measured": true,
-      "value": 0.98,
+      "value": 1.0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "independentAssessmentClosureRate",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": true,
-      "value": 1.0,
-      "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
-      ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
     },
     {
       "name": "provenanceCoverage",
@@ -61,10 +55,9 @@
       "measured": true,
       "value": 1.0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "sbomCoverage",
@@ -73,10 +66,9 @@
       "measured": true,
       "value": 1.0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependency-inventory"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "direct declared dependencies only; the transitive Maven graph is not expanded"
     },
     {
       "name": "secureSdlcControlCoverage",
@@ -85,46 +77,36 @@
       "measured": true,
       "value": 1.0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "signaturePassRate",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": true,
-      "value": 1.0,
-      "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
-      ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
     },
     {
       "name": "signatureVerificationRate",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": true,
-      "value": 1.0,
-      "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
-      ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
     },
     {
       "name": "supplyChainCoverageRate",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": true,
-      "value": 1.0,
-      "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
-      ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
     },
     {
       "name": "threatModelCoverage",
@@ -133,22 +115,20 @@
       "measured": true,
       "value": 1.0,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-local-assurance"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "vulnerabilitySlaCompliance",
       "threshold": 1.0,
       "comparator": "min",
       "measured": true,
-      "value": 1.0,
+      "value": 0.8916,
       "evidenceRefs": [
-        "batch40-execution",
-        "batch40-verification"
+        "b40-dependabot-alerts"
       ],
-      "note": "measured and verified against independent holdout and representative workloads"
+      "note": "fixed Dependabot alerts only; dismissed and auto-dismissed alerts are excluded pending separate risk-acceptance review"
     }
   ],
   "packKey": "elmos-platform-supply-chain"

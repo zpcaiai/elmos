@@ -45,6 +45,8 @@
     {
       "batch": 40,
       "path": "mature-product-packs/batch40/elmos-platform-supply-chain",
+      "capability_status": "limited",
+      "certification_request_state": "REMOVED_FAIL_CLOSED",
       "prior_certification_sha256": "sha256:011777cdf851bac43f5840708b502823e8ba565a89549a7c164ddec3ba0f70cf",
       "prior_gate_result_sha256": "sha256:292b0668f885b38123aa923920496676085a5caf46bf3793c22e9f1dfde46387"
     },

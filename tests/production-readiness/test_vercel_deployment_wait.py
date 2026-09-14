@@ -46,6 +46,178 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertEqual(url, "https://elmos-commit.example.vercel.app")
         self.assertEqual(sleeps, [5])
 
+    def test_reuses_successful_ancestor_only_for_identical_deployment_surface(
+        self,
+    ) -> None:
+        current_sha = "a" * 40
+        parent_sha = "b" * 40
+        apps_sha = "c" * 40
+        web_console_sha = "d" * 40
+        ignore_sha = "e" * 40
+
+        def root_tree() -> dict[str, Any]:
+            return {
+                "tree": [
+                    {"path": ".vercelignore", "type": "blob", "sha": ignore_sha},
+                    {"path": "apps", "type": "tree", "sha": apps_sha},
+                ]
+            }
+
+        def fetch(path: str) -> Any:
+            if path.endswith(f"deployments?sha={current_sha}&per_page=100"):
+                return [
+                    {
+                        "id": 42,
+                        "task": "deploy",
+                        "environment": "Preview",
+                        "creator": {"login": "vercel[bot]"},
+                        "created_at": "2026-09-13T09:31:35Z",
+                    }
+                ]
+            if path.endswith("/deployments/42/statuses"):
+                return []
+            if path.endswith(f"/commits/{current_sha}/status"):
+                return {
+                    "statuses": [
+                        {
+                            "context": "Vercel",
+                            "state": "success",
+                            "target_url": "https://vercel.com/team/elmos/deployment-id",
+                            "updated_at": "2026-09-13T09:31:35Z",
+                        }
+                    ]
+                }
+            if path.endswith(f"/git/trees/{current_sha}") or path.endswith(
+                f"/git/trees/{parent_sha}"
+            ):
+                return root_tree()
+            if path.endswith(f"/git/trees/{apps_sha}"):
+                return {
+                    "tree": [
+                        {
+                            "path": "web-console",
+                            "type": "tree",
+                            "sha": web_console_sha,
+                        }
+                    ]
+                }
+            if path.endswith(f"/commits/{current_sha}"):
+                return {"parents": [{"sha": parent_sha}]}
+            if path.endswith(f"deployments?sha={parent_sha}&per_page=100"):
+                return [
+                    {
+                        "id": 84,
+                        "task": "deploy",
+                        "environment": "Preview",
+                        "creator": {"login": "vercel[bot]"},
+                        "created_at": "2026-09-13T09:07:50Z",
+                    }
+                ]
+            if path.endswith("/deployments/84/statuses"):
+                return [
+                    {
+                        "state": "success",
+                        "created_at": "2026-09-13T09:07:52Z",
+                        "environment_url": "https://identical-tree.vercel.app",
+                    }
+                ]
+            self.fail(f"unexpected GitHub API path: {path}")
+
+        url = MODULE.wait_for_deployment(
+            "zpcaiai/elmos",
+            current_sha,
+            fetch_json=fetch,
+            timeout_seconds=60,
+            poll_seconds=5,
+            required_environment="Preview",
+        )
+        self.assertEqual(url, "https://identical-tree.vercel.app")
+
+    def test_does_not_reuse_ancestor_with_different_deployment_surface(self) -> None:
+        current_sha = "a" * 40
+        parent_sha = "b" * 40
+        current_apps_sha = "c" * 40
+        parent_apps_sha = "d" * 40
+        ignore_sha = "e" * 40
+
+        def fetch(path: str) -> Any:
+            if path.endswith(f"deployments?sha={current_sha}&per_page=100"):
+                return [
+                    {
+                        "id": 42,
+                        "task": "deploy",
+                        "environment": "Preview",
+                        "creator": {"login": "vercel[bot]"},
+                        "created_at": "2026-09-13T09:31:35Z",
+                    }
+                ]
+            if path.endswith("/deployments/42/statuses"):
+                return []
+            if path.endswith(f"/commits/{current_sha}/status"):
+                return {
+                    "statuses": [
+                        {
+                            "context": "Vercel",
+                            "state": "success",
+                            "target_url": "https://vercel.com/team/elmos/deployment-id",
+                            "updated_at": "2026-09-13T09:31:35Z",
+                        }
+                    ]
+                }
+            if path.endswith(f"/git/trees/{current_sha}"):
+                apps_sha = current_apps_sha
+            elif path.endswith(f"/git/trees/{parent_sha}"):
+                apps_sha = parent_apps_sha
+            elif path.endswith(f"/git/trees/{current_apps_sha}"):
+                return {
+                    "tree": [
+                        {
+                            "path": "web-console",
+                            "type": "tree",
+                            "sha": "f" * 40,
+                        }
+                    ]
+                }
+            elif path.endswith(f"/git/trees/{parent_apps_sha}"):
+                return {
+                    "tree": [
+                        {
+                            "path": "web-console",
+                            "type": "tree",
+                            "sha": "1" * 40,
+                        }
+                    ]
+                }
+            else:
+                apps_sha = None
+            if apps_sha is not None:
+                return {
+                    "tree": [
+                        {"path": ".vercelignore", "type": "blob", "sha": ignore_sha},
+                        {"path": "apps", "type": "tree", "sha": apps_sha},
+                    ]
+                }
+            if path.endswith(f"/commits/{current_sha}"):
+                return {"parents": [{"sha": parent_sha}]}
+            if path.endswith(f"/commits/{parent_sha}"):
+                return {"parents": []}
+            self.fail(f"unexpected GitHub API path: {path}")
+
+        clock = iter((0.0, 1.0))
+        with self.assertRaisesRegex(
+            MODULE.DeploymentResolutionError,
+            "VERCEL_DEPLOYMENT_TIMEOUT",
+        ):
+            MODULE.wait_for_deployment(
+                "zpcaiai/elmos",
+                current_sha,
+                fetch_json=fetch,
+                timeout_seconds=0.5,
+                poll_seconds=5,
+                required_environment="Preview",
+                monotonic=lambda: next(clock),
+            )
+
     def test_failed_deployment_fails_closed_without_using_mutable_alias(self) -> None:
         def fetch(path: str) -> Any:
             if path.endswith("/statuses"):
@@ -190,6 +362,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertLess(resolve, install)
         self.assertLess(install, smoke)
         self.assertIn("deployments: read", workflow)
+        self.assertIn("statuses: read", workflow)
         self.assertIn("github.event.pull_request.head.sha || github.sha", workflow)
         self.assertEqual(1_800, MODULE.DEFAULT_TIMEOUT_SECONDS)
         self.assertIn("timeout-minutes: 45", workflow)

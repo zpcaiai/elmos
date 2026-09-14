@@ -191,17 +191,44 @@ def check_untrusted_reports() -> tuple[bool, list[str]]:
         gate = read_json(pack / "gate-result.json")
         pack_document = read_json(pack / "pack.json")
         support = read_json(pack / "support-matrix.json")
-        request = read_json(pack / "certification-request.json")
         if certification.get("status") != "NOT_RUN" or certification.get("evidenceRefs") != []:
             errors.append(f"{relative}:certification was not withdrawn to NOT_RUN")
         if gate.get("status") != "BLOCKED" or gate.get("eligible") is not False:
             errors.append(f"{relative}:gate result was not withdrawn to BLOCKED")
         if pack_document.get("status") != "experimental":
             errors.append(f"{relative}:pack status is not experimental")
-        if any(item.get("status") != "experimental" for item in support.get("capabilities", [])):
-            errors.append(f"{relative}:support matrix retains promoted capability status")
-        if request.get("keyId") != "ethan-independent-certifier":
-            errors.append(f"{relative}:withdrawn request key identity drifted")
+        capability_status = record.get("capability_status", "experimental")
+        if capability_status not in {"experimental", "limited"}:
+            errors.append(f"{relative}:unknown fail-closed capability status")
+        elif any(
+            item.get("status") != capability_status
+            for item in support.get("capabilities", [])
+        ):
+            errors.append(
+                f"{relative}:support matrix capability status drifted from "
+                f"{capability_status}"
+            )
+        request_path = pack / "certification-request.json"
+        signature_path = pack / "certification-request.sig"
+        request_state = record.get(
+            "certification_request_state", "PRESENT_REVOKED"
+        )
+        if request_state == "REMOVED_FAIL_CLOSED":
+            if request_path.exists() or signature_path.exists():
+                errors.append(
+                    f"{relative}:withdrawn certification request or signature reappeared"
+                )
+        elif request_state == "PRESENT_REVOKED":
+            if not request_path.is_file():
+                errors.append(f"{relative}:withdrawn certification request is missing")
+            else:
+                request = read_json(request_path)
+                if request.get("keyId") != "ethan-independent-certifier":
+                    errors.append(
+                        f"{relative}:withdrawn request key identity drifted"
+                    )
+        else:
+            errors.append(f"{relative}:unknown certification request state")
         if "Status: `BLOCKED`" not in (pack / "gate-report.md").read_text(encoding="utf-8"):
             errors.append(f"{relative}:gate report is not BLOCKED")
         for digest_key in ("prior_certification_sha256", "prior_gate_result_sha256"):

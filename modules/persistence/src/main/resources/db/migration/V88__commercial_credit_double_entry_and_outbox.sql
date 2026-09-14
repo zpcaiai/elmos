@@ -1,4 +1,4 @@
--- ELMOS V87: double-entry Credit journal, transactional outbox and projection rebuild.
+-- ELMOS V88: double-entry Credit journal, transactional outbox and projection rebuild.
 --
 -- V83/V85 keep the customer-facing lot and balance projections. This migration
 -- makes every subsequent mutation of that projection produce an immutable,

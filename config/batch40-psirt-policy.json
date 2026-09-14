@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "policyId": "elmos-psirt-v1",
+  "owner": "elmos-platform-maintainers",
+  "privateReportingChannel": "github-security-advisory://zpcaiai/elmos",
+  "severitySlaHours": {
+    "critical": 24,
+    "high": 168,
+    "medium": 720,
+    "low": 2160
+  },
+  "states": [
+    "RECEIVED",
+    "TRIAGED",
+    "CONTAINED",
+    "REMEDIATED",
+    "VERIFIED",
+    "DISCLOSED",
+    "CLOSED"
+  ],
+  "requiredCaseFields": [
+    "caseId",
+    "receivedAt",
+    "severity",
+    "owner",
+    "affectedArtifacts",
+    "evidenceRefs",
+    "currentState"
+  ],
+  "closureRequirements": [
+    "fix verification evidence",
+    "affected release reconciliation",
+    "advisory reconciliation",
+    "SBOM and VEX reconciliation",
+    "threat-model learning"
+  ],
+  "automaticRiskAcceptance": false,
+  "automaticCaseClosure": false,
+  "externalExerciseStatus": "NOT_RUN",
+  "independentVerification": "NOT_RUN"
+}

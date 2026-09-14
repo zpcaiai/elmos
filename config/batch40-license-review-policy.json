@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "policyId": "elmos-direct-dependency-license-review-v1",
+  "owner": "elmos-platform-maintainers",
+  "status": "DRAFT_NOT_APPROVED",
+  "defaultDecision": "BLOCK_PENDING_REVIEW",
+  "allowedLicenses": [],
+  "prohibitedLicenses": [],
+  "contextDependentLicenses": [],
+  "decisionStatuses": [
+    "PENDING_METADATA",
+    "PENDING_APPROVAL",
+    "APPROVED",
+    "PROHIBITED",
+    "CONTEXT_REVIEW_REQUIRED"
+  ],
+  "approvalRequirements": {
+    "qualifiedLegalApprover": true,
+    "exactComponentAndVersion": true,
+    "scopeAndUseCase": true,
+    "decisionTimestamp": true,
+    "approvalReference": true,
+    "expiryOrReviewTrigger": true
+  },
+  "automaticApproval": false,
+  "independentVerification": "NOT_RUN",
+  "note": "This is an intake contract, not an approved license policy. Empty allow/prohibit lists are intentional; every external component remains blocked pending an accountable legal decision."
+}

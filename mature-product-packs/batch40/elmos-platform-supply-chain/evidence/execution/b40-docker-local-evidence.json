@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "id": "b40-docker-local-evidence",
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "status": "PASS",
+  "evidenceClass": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "startedAt": "2026-09-14T05:06:12.830650Z",
+  "finishedAt": "2026-09-14T05:06:24.440176Z",
+  "repositoryRevision": "8608d1108f323e915c96f7a22349b2947e18e8bd",
+  "replayCommand": "python3 scripts/batch40_docker_local_evidence.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+  "toolDigest": "sha256:58ac4b3365b7238ad04dc0a2192922f1f42f964dfab3a314f98a239638f23022",
+  "build": {
+    "source": {
+      "path": "scripts/batch40/docker_local_probe.go",
+      "sha256": "sha256:9aeffe9268719f0f5b39e60fec9c441c1c16c00952f39ea075652473d5736fa3"
+    },
+    "dockerfile": {
+      "path": "scripts/batch40/Dockerfile.local-evidence",
+      "sha256": "sha256:db84eaad4af80fa5b457c8faa8d50d7b8d2eea5d6a71326cd32218b084f52d7d"
+    },
+    "binarySha256": "sha256:9fcf1d4155419338a5e1f716526b07fb81c347f9d57ecede715b977d56ba187e",
+    "imageId": "sha256:8505e9309d2c9d775ac9489154735338a761919f67a3437a1da206b05306708c",
+    "baseImage": "scratch",
+    "networkMode": "none",
+    "goVersion": "go version go1.25.0 darwin/arm64",
+    "buildxVersion": "github.com/docker/buildx v0.33.0 f7897eba028583e0071642db3c011e860444f8cf",
+    "imageRetained": false
+  },
+  "docker": {
+    "clientVersion": "29.4.0",
+    "serverVersion": "29.4.0",
+    "serverOs": "linux",
+    "serverArch": "arm64",
+    "securityOptions": [
+      "name=seccomp,profile=builtin",
+      "name=cgroupns"
+    ],
+    "daemonRootlessAttested": false
+  },
+  "scope": {
+    "controlCount": 20,
+    "localFixtureCount": 6,
+    "productionArtifactsEvaluated": 0,
+    "externalRunnersEvaluated": 0
+  },
+  "runtime": {
+    "user": "65532:65532",
+    "networkMode": "none",
+    "readOnlyRootFilesystem": true,
+    "capDrop": [
+      "ALL"
+    ],
+    "securityOptions": [
+      "no-new-privileges:true"
+    ],
+    "hostMountCount": 0,
+    "pidsLimit": 64,
+    "memoryBytes": 67108864,
+    "nanoCpus": 500000000,
+    "tmpfs": {
+      "/tmp": "rw,nosuid,nodev,noexec,size=16m"
+    }
+  },
+  "corpora": {
+    "development": [
+      "dev-valid-signature-v1",
+      "dev-valid-attestation-v1"
+    ],
+    "holdout": [
+      "holdout-tampered-artifact-v1",
+      "holdout-unsigned-artifact-v1"
+    ],
+    "representative": [
+      "representative-runner-downgrade-v1",
+      "representative-cross-tenant-v1"
+    ]
+  },
+  "controls": [
+    {
+      "controlId": "B40-DOCKER-NONROOT",
+      "status": "PASS",
+      "details": [
+        "user=65532:65532"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-NETWORK-NONE",
+      "status": "PASS",
+      "details": [
+        "networkMode=none"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-READONLY-ROOTFS",
+      "status": "PASS",
+      "details": [
+        "readOnly=True"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-CAP-DROP",
+      "status": "PASS",
+      "details": [
+        "capDrop=['ALL']"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-NO-NEW-PRIVILEGES",
+      "status": "PASS",
+      "details": [
+        "securityOpt=['no-new-privileges:true']"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-NO-HOST-MOUNTS",
+      "status": "PASS",
+      "details": [
+        "mountCount=0"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-BOUNDED-PIDS",
+      "status": "PASS",
+      "details": [
+        "pidsLimit=64"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-BOUNDED-MEMORY",
+      "status": "PASS",
+      "details": [
+        "memory=67108864"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-BOUNDED-CPU",
+      "status": "PASS",
+      "details": [
+        "nanoCpus=500000000"
+      ]
+    },
+    {
+      "controlId": "B40-DOCKER-EPHEMERAL-TMPFS",
+      "status": "PASS",
+      "details": [
+        "tmpfs={'/tmp': 'rw,nosuid,nodev,noexec,size=16m'}"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-SIGNATURE-VALID",
+      "status": "PASS",
+      "details": [
+        "valid local fixture signature accepted"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-TAMPER-REJECTION",
+      "status": "PASS",
+      "details": [
+        "tampered fixture rejected"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-UNSIGNED-REJECTION",
+      "status": "PASS",
+      "details": [
+        "unsigned fixture rejected"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-PROVENANCE-BINDING",
+      "status": "PASS",
+      "details": [
+        "exact local provenance envelope accepted"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-SUBJECT-MISMATCH",
+      "status": "PASS",
+      "details": [
+        "wrong subject digest rejected"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-RUNNER-DOWNGRADE",
+      "status": "PASS",
+      "details": [
+        "runner-profile downgrade rejected"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-TENANT-ISOLATION",
+      "status": "PASS",
+      "details": [
+        "cross-tenant evidence rejected"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-CORPUS-SEPARATION",
+      "status": "PASS",
+      "details": [
+        "three local fixture corpora are disjoint and overlap is rejected"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-NONROOT",
+      "status": "PASS",
+      "details": [
+        "effective uid=65532 gid=65532"
+      ]
+    },
+    {
+      "controlId": "B40-LOCAL-READONLY-ROOTFS",
+      "status": "PASS",
+      "details": [
+        "write to container root filesystem rejected"
+      ]
+    }
+  ],
+  "failedControls": [],
+  "productionEvidence": "NOT_RUN",
+  "externalOperationExecuted": false,
+  "independentVerification": "NOT_RUN",
+  "certificationStatus": "NOT_CERTIFIED",
+  "limitations": [
+    "This run exercises synthetic local fixtures in one Docker daemon; it is self-attested engineering evidence only.",
+    "The Docker daemon did not attest rootless operation; non-root container execution does not prove a rootless daemon or an independently isolated builder.",
+    "The local HMAC key is an ephemeral fixture key, not a production signing key or an external trust anchor.",
+    "The local holdout and representative fixture sets are code-owned negative tests, not independently authored or representative production corpora.",
+    "No production artifact, hosted runner, provider scanner, external environment, independent assessor, approver, or certification authority was exercised."
+  ],
+  "host": {
+    "system": "Darwin",
+    "machine": "arm64"
+  }
+}

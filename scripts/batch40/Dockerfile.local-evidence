@@ -1,0 +1,4 @@
+FROM scratch
+COPY --chmod=0555 b40-docker-local-probe /b40-docker-local-probe
+USER 65532:65532
+ENTRYPOINT ["/b40-docker-local-probe"]

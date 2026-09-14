@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-supply-chain-threat-model-v1",
+  "owner": "elmos-platform-maintainers",
+  "scope": "ELMOS source, CI workflow, declared dependencies, build runners, release artifacts, and Batch 40 evidence",
+  "expectedThreatIds": [
+    "B40-THREAT-SOURCE-TAMPERING",
+    "B40-THREAT-ACTION-COMPROMISE",
+    "B40-THREAT-TOKEN-ABUSE",
+    "B40-THREAT-DEPENDENCY-COMPROMISE",
+    "B40-THREAT-SECRET-LEAK",
+    "B40-THREAT-RUNNER-DOWNGRADE",
+    "B40-THREAT-ARTIFACT-TAMPERING",
+    "B40-THREAT-MISSING-PROVENANCE",
+    "B40-THREAT-CROSS-TENANT-EVIDENCE",
+    "B40-THREAT-TEST-EVIDENCE-MANIPULATION"
+  ],
+  "threats": [
+    {
+      "threatId": "B40-THREAT-SOURCE-TAMPERING",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["Git source revision", "reviewed pull-request diff"],
+      "trustBoundaries": ["developer workstation to GitHub", "pull request to protected branch"],
+      "controls": ["immutable commit identity", "required CI", "review approval"],
+      "evidenceRequirement": "protected-branch policy and reviewed merge receipt",
+      "residualRisk": "External branch-protection and reviewer evidence is NOT_RUN."
+    },
+    {
+      "threatId": "B40-THREAT-ACTION-COMPROMISE",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["CI execution authority", "build outputs"],
+      "trustBoundaries": ["repository workflow to third-party GitHub Action"],
+      "controls": ["full commit pin for every external Action", "least-privilege workflow token"],
+      "evidenceRequirement": "workflow pin and permission audit",
+      "residualRisk": "Publisher provenance and upstream action compromise are not independently assessed."
+    },
+    {
+      "threatId": "B40-THREAT-TOKEN-ABUSE",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["GitHub workflow token", "repository contents"],
+      "trustBoundaries": ["GitHub token to checked-out repository"],
+      "controls": ["contents read permission", "checkout persist-credentials false"],
+      "evidenceRequirement": "CI workflow least-privilege audit",
+      "residualRisk": "GitHub-hosted token issuance is externally operated and not independently attested here."
+    },
+    {
+      "threatId": "B40-THREAT-DEPENDENCY-COMPROMISE",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["Maven dependencies", "npm dependencies", "runtime integrity"],
+      "trustBoundaries": ["package registry to resolver", "lockfile to build"],
+      "controls": ["declared dependency inventory", "Dependabot alert governance"],
+      "evidenceRequirement": "resolved graph, advisory snapshot, license and integrity decisions",
+      "residualRisk": "Transitive Maven graph, non-GitHub advisories, and complete license decisions remain open."
+    },
+    {
+      "threatId": "B40-THREAT-SECRET-LEAK",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["credentials", "signing material", "tenant data"],
+      "trustBoundaries": ["developer input to repository", "repository to CI logs"],
+      "controls": ["bounded credential scanner", "owned expiring allowlist"],
+      "evidenceRequirement": "working-tree and history scan with provider validation",
+      "residualRisk": "Git history and provider validation remain NOT_RUN."
+    },
+    {
+      "threatId": "B40-THREAT-RUNNER-DOWNGRADE",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["toolchain identity", "build reproducibility"],
+      "trustBoundaries": ["workflow label to GitHub-hosted runner image"],
+      "controls": ["literal non-floating runner labels", "explicit tool versions", "job timeouts"],
+      "evidenceRequirement": "runtime runner-image attestation and downgrade rejection receipt",
+      "residualRisk": "Hosted runner image identity and downgrade behavior remain externally NOT_RUN."
+    },
+    {
+      "threatId": "B40-THREAT-ARTIFACT-TAMPERING",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["release bundle", "container images", "SBOM"],
+      "trustBoundaries": ["builder to registry", "registry to deployment"],
+      "controls": ["digest-bound release manifest", "signature and verification contract"],
+      "evidenceRequirement": "real signed artifact, transparency or trust-root record, and verification receipt",
+      "residualRisk": "No production artifact signature or external verification receipt exists."
+    },
+    {
+      "threatId": "B40-THREAT-MISSING-PROVENANCE",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["build provenance", "SBOM", "certification evidence"],
+      "trustBoundaries": ["build executor to evidence store", "evidence store to verifier"],
+      "controls": ["content-addressed evidence references", "executor and verifier separation contract"],
+      "evidenceRequirement": "SLSA provenance from an isolated builder and independent verification",
+      "residualRisk": "Local provenance is self-attested; isolated-builder and independent evidence are NOT_RUN."
+    },
+    {
+      "threatId": "B40-THREAT-CROSS-TENANT-EVIDENCE",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["tenant evidence", "customer audit export"],
+      "trustBoundaries": ["tenant execution to shared evidence store", "evidence store to export"],
+      "controls": ["tenant-scoped authorization contract", "content-addressed evidence references"],
+      "evidenceRequirement": "multi-tenant negative test and external storage policy receipt",
+      "residualRisk": "Representative multi-tenant evidence execution remains NOT_RUN."
+    },
+    {
+      "threatId": "B40-THREAT-TEST-EVIDENCE-MANIPULATION",
+      "owner": "elmos-platform-maintainers",
+      "assets": ["test definitions", "raw results", "gate decision"],
+      "trustBoundaries": ["repository tests to CI", "CI result to certification authority"],
+      "controls": ["fail-closed gate", "no continue-on-error on required jobs", "content-addressed evidence manifest contract"],
+      "evidenceRequirement": "independent corpus, immutable raw results, and signed certification request",
+      "residualRisk": "Independent corpora, signed request, and independent replay remain NOT_RUN."
+    }
+  ]
+}

@@ -3,16 +3,16 @@
   "batch": 40,
   "status": "PASS",
   "repository": "zpcaiai/elmos",
-  "commit": "b76fe9caf7fa502d721cf6db6d8c5608715a8cf0",
-  "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-  "queriedAt": "2026-09-08T23:09:31Z",
-  "replayCommand": "gh api repos/zpcaiai/elmos/dependabot/alerts --paginate --slurp",
-  "inputSha256": "sha256:bb340e62b85973e35d6e24bf4acbf79ccb0b0de23f188832ec4c7e8156493a6f",
-  "alertCount": 442,
+  "commit": "e0350fb0c9128dbd40eb7046920a96f4260ede28",
+  "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts?per_page=100",
+  "queriedAt": "2026-09-13T20:59:32Z",
+  "replayCommand": "gh api repos/zpcaiai/elmos/dependabot/alerts?per_page=100 --paginate --slurp",
+  "inputSha256": "sha256:426eae081c7233b0b153b37729dfe2c9f9969a76cf10634e349561d9846687a6",
+  "alertCount": 499,
   "stateCounts": {
     "auto_dismissed": 48,
-    "dismissed": 194,
-    "fixed": 200
+    "dismissed": 202,
+    "fixed": 249
   },
   "openCount": 0,
   "openBySeverity": {
@@ -24,97 +24,601 @@
   "maxOpen": 0,
   "metrics": {
     "criticalVulnerabilityCount": 0,
-    "highVulnerabilityCount": 0
+    "highVulnerabilityCount": 0,
+    "vulnerabilitySlaCompliance": 0.8916
+  },
+  "vulnerabilitySla": {
+    "policySeconds": {
+      "critical": 86400,
+      "high": 604800,
+      "medium": 2592000,
+      "low": 7776000
+    },
+    "population": "fixed Dependabot alerts with created_at and fixed_at",
+    "evaluatedCount": 249,
+    "metCount": 222,
+    "breachCount": 27,
+    "incompleteAlertNumbers": [],
+    "breaches": [
+      {
+        "number": 476,
+        "severity": "critical",
+        "elapsedSeconds": 206006,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 475,
+        "severity": "critical",
+        "elapsedSeconds": 206006,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 474,
+        "severity": "critical",
+        "elapsedSeconds": 206006,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 473,
+        "severity": "critical",
+        "elapsedSeconds": 206007,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 472,
+        "severity": "critical",
+        "elapsedSeconds": 206007,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 471,
+        "severity": "critical",
+        "elapsedSeconds": 206007,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 469,
+        "severity": "critical",
+        "elapsedSeconds": 206008,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 456,
+        "severity": "critical",
+        "elapsedSeconds": 206008,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 449,
+        "severity": "critical",
+        "elapsedSeconds": 219039,
+        "limitSeconds": 86400,
+        "met": false
+      },
+      {
+        "number": 41,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 39,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 36,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 35,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 34,
+        "severity": "high",
+        "elapsedSeconds": 609986,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 29,
+        "severity": "high",
+        "elapsedSeconds": 609986,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 23,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 22,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 21,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 20,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 19,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 18,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 12,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 11,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 6,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 5,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 2,
+        "severity": "high",
+        "elapsedSeconds": 839603,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 1,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      }
+    ],
+    "excludedStateCounts": {
+      "auto_dismissed": 48,
+      "dismissed": 202
+    }
   },
   "openAlerts": [],
   "blockers": [],
   "limitations": [
     "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
     "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
-    "The snapshot is self-attested evidence until an independently authorized verifier signs it."
+    "The snapshot is self-attested evidence until an independently authorized verifier signs it.",
+    "The patch-SLA metric covers fixed Dependabot alerts only; dismissed and auto-dismissed alerts require separate risk-acceptance review and are excluded rather than counted as compliant."
   ],
   "alerts": [
     {
-      "number": 427,
+      "number": 502,
       "state": "fixed",
-      "package": "js-yaml",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+      "package": "pytest",
+      "manifestPath": "engines/cross-language-verification-engine/pyproject.toml"
     },
     {
-      "number": 426,
+      "number": 501,
       "state": "fixed",
-      "package": "js-yaml",
+      "package": "org.springframework.cloud:spring-cloud-gateway-server",
+      "manifestPath": "apps/java-engine-worker/pom.xml"
+    },
+    {
+      "number": 500,
+      "state": "fixed",
+      "package": "org.springframework.cloud:spring-cloud-gateway-server",
+      "manifestPath": "apps/java-engine-worker/pom.xml"
+    },
+    {
+      "number": 499,
+      "state": "dismissed",
+      "package": "@angular/common",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 498,
+      "state": "dismissed",
+      "package": "@angular/compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 497,
+      "state": "dismissed",
+      "package": "@angular/core",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 496,
+      "state": "dismissed",
+      "package": "@angular/common",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 495,
+      "state": "dismissed",
+      "package": "@angular/compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 494,
+      "state": "dismissed",
+      "package": "@angular/core",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 493,
+      "state": "dismissed",
+      "package": "@angular/common",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 492,
+      "state": "dismissed",
+      "package": "@angular/compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 491,
+      "state": "dismissed",
+      "package": "@angular/core",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 490,
+      "state": "dismissed",
+      "package": "@angular/common",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 489,
+      "state": "dismissed",
+      "package": "@angular/compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 488,
+      "state": "dismissed",
+      "package": "@angular/core",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json"
+    },
+    {
+      "number": 487,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 486,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 485,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 484,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 483,
+      "state": "dismissed",
+      "package": "pytest",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 482,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 481,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 480,
+      "state": "dismissed",
+      "package": "cryptography",
+      "manifestPath": "skills/subskills/sub/elmos-assurance-skills-v4.0.0/requirements-reference.txt"
+    },
+    {
+      "number": 479,
+      "state": "fixed",
+      "package": "uuid",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/typescript-saas-billing/package.json"
+    },
+    {
+      "number": 478,
+      "state": "fixed",
+      "package": "@nestjs/core",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/typescript-saas-billing/package.json"
+    },
+    {
+      "number": 477,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 476,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 475,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 474,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 473,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 472,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 471,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 470,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 469,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 468,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 467,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 466,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 465,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 464,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 463,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 462,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 461,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 460,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 459,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 458,
+      "state": "fixed",
+      "package": "github.com/redis/go-redis/v9",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 457,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 456,
+      "state": "fixed",
+      "package": "golang.org/x/crypto",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 455,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 454,
+      "state": "fixed",
+      "package": "google.golang.org/protobuf",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 453,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 452,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 451,
+      "state": "fixed",
+      "package": "golang.org/x/net",
+      "manifestPath": "engines/project-synthesis-engine/enterprise_reference_projects/go-banking-ledger/go.mod"
+    },
+    {
+      "number": 450,
+      "state": "fixed",
+      "package": "phin",
       "manifestPath": "engines/component-dialect-engine/package-lock.json"
     },
     {
-      "number": 394,
+      "number": 449,
       "state": "fixed",
-      "package": "sharp",
-      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+      "package": "minimist",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
     },
     {
-      "number": 393,
+      "number": 448,
       "state": "fixed",
-      "package": "next",
-      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+      "package": "jpeg-js",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
     },
     {
-      "number": 392,
+      "number": 447,
       "state": "fixed",
-      "package": "next",
-      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+      "package": "jpeg-js",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
     },
     {
-      "number": 391,
+      "number": 446,
       "state": "fixed",
-      "package": "baseline-browser-mapping",
-      "manifestPath": "apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 390,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "apps/web-console/package.json"
-    },
-    {
-      "number": 389,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "apps/web-console/package.json"
+      "package": "minimist",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
     },
     {
       "number": 445,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "sharp",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 444,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 443,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 442,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "baseline-browser-mapping",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 441,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json"
     },
     {
       "number": 440,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json"
     },
@@ -189,6 +693,18 @@
       "state": "dismissed",
       "package": "vitest",
       "manifestPath": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/examples/project-output-example/project/package.json"
+    },
+    {
+      "number": 427,
+      "state": "fixed",
+      "package": "js-yaml",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 426,
+      "state": "fixed",
+      "package": "js-yaml",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
     },
     {
       "number": 425,
@@ -282,37 +798,37 @@
     },
     {
       "number": 410,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "sharp",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 409,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 408,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 407,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "baseline-browser-mapping",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 406,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json"
     },
     {
       "number": 405,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "next",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json"
     },
@@ -377,9 +893,51 @@
       "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/jquery/project/package.json"
     },
     {
+      "number": 394,
+      "state": "fixed",
+      "package": "sharp",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 393,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 392,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 391,
+      "state": "fixed",
+      "package": "baseline-browser-mapping",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 390,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "apps/web-console/package.json"
+    },
+    {
+      "number": 389,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "apps/web-console/package.json"
+    },
+    {
       "number": 388,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 387,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -389,9 +947,21 @@
       "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 385,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 384,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 383,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -401,9 +971,21 @@
       "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 381,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 380,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 379,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -413,9 +995,21 @@
       "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 377,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 376,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 375,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -425,9 +1019,21 @@
       "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 373,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 372,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 371,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -437,9 +1043,21 @@
       "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 369,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 368,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 367,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -449,9 +1067,21 @@
       "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 365,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 364,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 363,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -461,9 +1091,21 @@
       "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 361,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 360,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 359,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -473,9 +1115,21 @@
       "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 357,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 356,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 355,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -485,9 +1139,21 @@
       "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 353,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 352,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 351,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -497,9 +1163,21 @@
       "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 349,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 348,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 347,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -509,9 +1187,21 @@
       "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 345,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 344,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 343,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -521,9 +1211,21 @@
       "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 341,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 340,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 339,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -533,9 +1235,21 @@
       "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 337,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 336,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 335,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -545,9 +1259,21 @@
       "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 333,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 332,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 331,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -557,9 +1283,21 @@
       "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 329,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 328,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 327,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -569,9 +1307,21 @@
       "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 325,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 324,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 323,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -581,9 +1331,21 @@
       "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 321,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 320,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 319,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -593,9 +1355,21 @@
       "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 317,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 316,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 315,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -605,9 +1379,21 @@
       "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 313,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 312,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 311,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -617,9 +1403,21 @@
       "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 309,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 308,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 307,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -629,9 +1427,21 @@
       "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 305,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 304,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 303,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -641,9 +1451,21 @@
       "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
+      "number": 301,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
       "number": 300,
       "state": "dismissed",
       "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 299,
+      "state": "auto_dismissed",
+      "package": "diff",
       "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
@@ -653,322 +1475,16 @@
       "manifestPath": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
-      "number": 296,
-      "state": "dismissed",
-      "package": "fast-xml-parser",
-      "manifestPath": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 387,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 385,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 383,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 381,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 379,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 377,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 375,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 157,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 373,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 371,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 369,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 367,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 156,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 365,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 363,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 361,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 359,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 357,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 355,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 353,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 351,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 349,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 347,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 145,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 345,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 343,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 341,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 339,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 337,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 335,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 333,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 144,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 331,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 329,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 327,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 325,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 323,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 321,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 319,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 317,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 315,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 313,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 311,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 309,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 307,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 305,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 127,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 303,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 301,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 299,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 126,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
       "number": 297,
       "state": "auto_dismissed",
       "package": "diff",
       "manifestPath": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 296,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
     {
       "number": 295,
@@ -983,10 +1499,76 @@
       "manifestPath": "packages/repository-orchestrator/uv.lock"
     },
     {
+      "number": 293,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/etgb-engine/pyproject.toml"
+    },
+    {
+      "number": 292,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/uv.lock"
+    },
+    {
+      "number": 290,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/uv.lock"
+    },
+    {
+      "number": 289,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/uv.lock"
+    },
+    {
+      "number": 288,
+      "state": "fixed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
       "number": 287,
       "state": "dismissed",
       "package": "@xmldom/xmldom",
       "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 286,
+      "state": "fixed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 285,
+      "state": "fixed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 284,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/pyproject.toml"
+    },
+    {
+      "number": 283,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/functional-assurance-engine/uv.lock"
+    },
+    {
+      "number": 280,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/functional-assurance-engine/uv.lock"
+    },
+    {
+      "number": 279,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/functional-assurance-engine/uv.lock"
     },
     {
       "number": 278,
@@ -995,10 +1577,160 @@
       "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml"
     },
     {
+      "number": 277,
+      "state": "fixed",
+      "package": "setuptools",
+      "manifestPath": "engines/proof-driven-harness-intelligence-engine/pyproject.toml"
+    },
+    {
+      "number": 276,
+      "state": "fixed",
+      "package": "setuptools",
+      "manifestPath": "engines/proof-driven-harness-intelligence-engine/pyproject.toml"
+    },
+    {
+      "number": 275,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 274,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 273,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 272,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 271,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 270,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 269,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 268,
+      "state": "fixed",
+      "package": "com.fasterxml.jackson.core:jackson-databind",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 267,
+      "state": "fixed",
+      "package": "com.fasterxml.jackson.core:jackson-databind",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 266,
+      "state": "fixed",
+      "package": "com.fasterxml.jackson.core:jackson-databind",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 265,
+      "state": "fixed",
+      "package": "com.fasterxml.jackson.core:jackson-databind",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 264,
+      "state": "fixed",
+      "package": "com.fasterxml.jackson.core:jackson-databind",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 263,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 262,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 261,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 260,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 259,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 258,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 257,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 256,
+      "state": "fixed",
+      "package": "org.springframework:spring-webmvc",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
+      "number": 255,
+      "state": "fixed",
+      "package": "com.jayway.jsonpath:json-path",
+      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+    },
+    {
       "number": 254,
       "state": "dismissed",
       "package": "fast-xml-parser",
       "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 253,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 252,
+      "state": "fixed",
+      "package": "setuptools",
+      "manifestPath": "packages/pi-harness/deploy/requirements-production.in"
     },
     {
       "number": 251,
@@ -1163,466 +1895,16 @@
       "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json"
     },
     {
+      "number": 224,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "engines/pricing-billing-engine/uv.lock"
+    },
+    {
       "number": 223,
       "state": "dismissed",
       "package": "vitest",
       "manifestPath": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/examples/project-output-example/project/package.json"
-    },
-    {
-      "number": 183,
-      "state": "dismissed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json"
-    },
-    {
-      "number": 177,
-      "state": "dismissed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json"
-    },
-    {
-      "number": 97,
-      "state": "dismissed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json"
-    },
-    {
-      "number": 91,
-      "state": "dismissed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json"
-    },
-    {
-      "number": 253,
-      "state": "auto_dismissed",
-      "package": "diff",
-      "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
-    },
-    {
-      "number": 138,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 288,
-      "state": "fixed",
-      "package": "@xmldom/xmldom",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 286,
-      "state": "fixed",
-      "package": "@xmldom/xmldom",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 293,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/etgb-engine/pyproject.toml"
-    },
-    {
-      "number": 283,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/functional-assurance-engine/uv.lock"
-    },
-    {
-      "number": 280,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/functional-assurance-engine/uv.lock"
-    },
-    {
-      "number": 279,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/functional-assurance-engine/uv.lock"
-    },
-    {
-      "number": 292,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/formal-assurance-engine/uv.lock"
-    },
-    {
-      "number": 290,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/formal-assurance-engine/uv.lock"
-    },
-    {
-      "number": 289,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/formal-assurance-engine/uv.lock"
-    },
-    {
-      "number": 285,
-      "state": "fixed",
-      "package": "@xmldom/xmldom",
-      "manifestPath": "apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 275,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 274,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 273,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 272,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 271,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 270,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 269,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 268,
-      "state": "fixed",
-      "package": "com.fasterxml.jackson.core:jackson-databind",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 267,
-      "state": "fixed",
-      "package": "com.fasterxml.jackson.core:jackson-databind",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 266,
-      "state": "fixed",
-      "package": "com.fasterxml.jackson.core:jackson-databind",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 265,
-      "state": "fixed",
-      "package": "com.fasterxml.jackson.core:jackson-databind",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 264,
-      "state": "fixed",
-      "package": "com.fasterxml.jackson.core:jackson-databind",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 263,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 262,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 261,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 260,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 259,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 258,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 257,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 256,
-      "state": "fixed",
-      "package": "org.springframework:spring-webmvc",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 255,
-      "state": "fixed",
-      "package": "com.jayway.jsonpath:json-path",
-      "manifestPath": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
-    },
-    {
-      "number": 139,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/java-to-csharp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 284,
-      "state": "fixed",
-      "package": "cryptography",
-      "manifestPath": "engines/formal-assurance-engine/pyproject.toml"
-    },
-    {
-      "number": 191,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 190,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 189,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
-    },
-    {
-      "number": 188,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
-    },
-    {
-      "number": 187,
-      "state": "fixed",
-      "package": "deepmerge-ts",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 185,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/package.json"
-    },
-    {
-      "number": 184,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/package.json"
-    },
-    {
-      "number": 182,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
-    },
-    {
-      "number": 181,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
-    },
-    {
-      "number": 180,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
-    },
-    {
-      "number": 179,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/package.json"
-    },
-    {
-      "number": 178,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/package.json"
-    },
-    {
-      "number": 31,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "engines/project-synthesis-engine/uv.lock"
-    },
-    {
-      "number": 105,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 104,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 103,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
-    },
-    {
-      "number": 102,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
-    },
-    {
-      "number": 101,
-      "state": "fixed",
-      "package": "deepmerge-ts",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 99,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/package.json"
-    },
-    {
-      "number": 98,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/package.json"
-    },
-    {
-      "number": 96,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
-    },
-    {
-      "number": 95,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
-    },
-    {
-      "number": 94,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
-    },
-    {
-      "number": 93,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/package.json"
-    },
-    {
-      "number": 92,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/package.json"
-    },
-    {
-      "number": 252,
-      "state": "fixed",
-      "package": "setuptools",
-      "manifestPath": "packages/pi-harness/deploy/requirements-production.in"
-    },
-    {
-      "number": 277,
-      "state": "fixed",
-      "package": "setuptools",
-      "manifestPath": "engines/proof-driven-harness-intelligence-engine/pyproject.toml"
-    },
-    {
-      "number": 276,
-      "state": "fixed",
-      "package": "setuptools",
-      "manifestPath": "engines/proof-driven-harness-intelligence-engine/pyproject.toml"
-    },
-    {
-      "number": 28,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 27,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 26,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "engines/frontend-client-engine/package.json"
-    },
-    {
-      "number": 25,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "engines/frontend-client-engine/package.json"
-    },
-    {
-      "number": 109,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 108,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 4,
-      "state": "fixed",
-      "package": "vue",
-      "manifestPath": "engines/component-dialect-engine/package-lock.json"
-    },
-    {
-      "number": 3,
-      "state": "fixed",
-      "package": "vue-template-compiler",
-      "manifestPath": "engines/component-dialect-engine/package-lock.json"
-    },
-    {
-      "number": 2,
-      "state": "fixed",
-      "package": "deepmerge-ts",
-      "manifestPath": "apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 222,
@@ -1805,6 +2087,186 @@
       "manifestPath": "verification-packs/polyglot-30-route-formal-equivalence-v1/evidence/routes/csharp-to-go/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
+      "number": 192,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 191,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 190,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 189,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
+    },
+    {
+      "number": 188,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
+    },
+    {
+      "number": 187,
+      "state": "fixed",
+      "package": "deepmerge-ts",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 186,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 185,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/package.json"
+    },
+    {
+      "number": 184,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/package.json"
+    },
+    {
+      "number": 183,
+      "state": "dismissed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json"
+    },
+    {
+      "number": 182,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
+    },
+    {
+      "number": 181,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
+    },
+    {
+      "number": 180,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
+    },
+    {
+      "number": 179,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/package.json"
+    },
+    {
+      "number": 178,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/package.json"
+    },
+    {
+      "number": 177,
+      "state": "dismissed",
+      "package": "vue",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json"
+    },
+    {
+      "number": 176,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 175,
+      "state": "fixed",
+      "package": "postcss",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 174,
+      "state": "fixed",
+      "package": "postcss",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 173,
+      "state": "fixed",
+      "package": "postcss",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 172,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 171,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 170,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 169,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 168,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 167,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 166,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 165,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 164,
+      "state": "fixed",
+      "package": "next",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
+      "number": 163,
+      "state": "fixed",
+      "package": "sharp",
+      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+    },
+    {
       "number": 162,
       "state": "dismissed",
       "package": "pytest",
@@ -1833,6 +2295,18 @@
       "state": "dismissed",
       "package": "pytest",
       "manifestPath": "routes/typescript-to-csharp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 157,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 156,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
       "number": 155,
@@ -1895,6 +2369,18 @@
       "manifestPath": "routes/python-to-csharp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
+      "number": 145,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 144,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
       "number": 143,
       "state": "dismissed",
       "package": "pytest",
@@ -1917,6 +2403,18 @@
       "state": "dismissed",
       "package": "pytest",
       "manifestPath": "routes/java-to-go/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 139,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/java-to-csharp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 138,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
       "number": 137,
@@ -1979,6 +2477,234 @@
       "manifestPath": "routes/csharp-to-go/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
+      "number": 127,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 126,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 125,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
+    },
+    {
+      "number": 124,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 123,
+      "state": "fixed",
+      "package": "@angular/compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 122,
+      "state": "fixed",
+      "package": "@angular/compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 121,
+      "state": "fixed",
+      "package": "@angular/compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 120,
+      "state": "fixed",
+      "package": "serialize-javascript",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 119,
+      "state": "fixed",
+      "package": "svelte",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 118,
+      "state": "fixed",
+      "package": "svelte",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 117,
+      "state": "fixed",
+      "package": "@angular/compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 116,
+      "state": "fixed",
+      "package": "serialize-javascript",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 115,
+      "state": "fixed",
+      "package": "svelte",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 114,
+      "state": "fixed",
+      "package": "svelte",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 113,
+      "state": "fixed",
+      "package": "svelte",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 112,
+      "state": "fixed",
+      "package": "svelte",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 111,
+      "state": "fixed",
+      "package": "@angular/compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 110,
+      "state": "fixed",
+      "package": "@angular/compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 109,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 108,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 107,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "engines/build-cache-engine/uv.lock"
+    },
+    {
+      "number": 106,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 105,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 104,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
+    },
+    {
+      "number": 103,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
+    },
+    {
+      "number": 102,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
+    },
+    {
+      "number": 101,
+      "state": "fixed",
+      "package": "deepmerge-ts",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 100,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 99,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/package.json"
+    },
+    {
+      "number": 98,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/package.json"
+    },
+    {
+      "number": 97,
+      "state": "dismissed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json"
+    },
+    {
+      "number": 96,
+      "state": "fixed",
+      "package": "nanoid",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
+    },
+    {
+      "number": 95,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
+    },
+    {
+      "number": 94,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
+    },
+    {
+      "number": 93,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/package.json"
+    },
+    {
+      "number": 92,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/package.json"
+    },
+    {
+      "number": 91,
+      "state": "dismissed",
+      "package": "vue",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json"
+    },
+    {
+      "number": 90,
+      "state": "fixed",
+      "package": "flask",
+      "manifestPath": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/requirements.txt"
+    },
+    {
       "number": 89,
       "state": "dismissed",
       "package": "pytest",
@@ -1995,42 +2721,6 @@
       "state": "dismissed",
       "package": "pytest",
       "manifestPath": ".matrix223-python-let-candidate.xU9hBY/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 81,
-      "state": "dismissed",
-      "package": "pytest",
-      "manifestPath": ".matrix223-python-let-candidate.xU9hBY/engines/database-data-engine/sql-transpiler/uv.lock"
-    },
-    {
-      "number": 192,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 186,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
-    },
-    {
-      "number": 125,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 106,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 100,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 86,
@@ -2061,6 +2751,12 @@
       "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": ".matrix223-python-let-candidate.xU9hBY/engines/frontend-client-engine/package.json"
+    },
+    {
+      "number": 81,
+      "state": "dismissed",
+      "package": "pytest",
+      "manifestPath": ".matrix223-python-let-candidate.xU9hBY/engines/database-data-engine/sql-transpiler/uv.lock"
     },
     {
       "number": 80,
@@ -2297,126 +2993,6 @@
       "manifestPath": ".matrix223-python-let-candidate.xU9hBY/engines/build-cache-engine/pyproject.toml"
     },
     {
-      "number": 176,
-      "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 175,
-      "state": "fixed",
-      "package": "postcss",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 174,
-      "state": "fixed",
-      "package": "postcss",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 173,
-      "state": "fixed",
-      "package": "postcss",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 172,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 171,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 170,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 169,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 168,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 167,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 166,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 165,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 164,
-      "state": "fixed",
-      "package": "next",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 163,
-      "state": "fixed",
-      "package": "sharp",
-      "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-    },
-    {
-      "number": 32,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "engines/sql-dialect-engine/uv.lock"
-    },
-    {
-      "number": 224,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "engines/pricing-billing-engine/uv.lock"
-    },
-    {
-      "number": 30,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "engines/polyglot-route-engine/uv.lock"
-    },
-    {
-      "number": 24,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "engines/database-data-engine/sql-transpiler/uv.lock"
-    },
-    {
-      "number": 107,
-      "state": "fixed",
-      "package": "pytest",
-      "manifestPath": "engines/build-cache-engine/uv.lock"
-    },
-    {
-      "number": 90,
-      "state": "fixed",
-      "package": "flask",
-      "manifestPath": "apps/web-console/e2e/fixtures/smoke-projects/demo-service/requirements.txt"
-    },
-    {
       "number": 41,
       "state": "fixed",
       "package": "com.fasterxml.jackson.core:jackson-core",
@@ -2471,100 +3047,58 @@
       "manifestPath": "modules/persistence/pom.xml"
     },
     {
+      "number": 32,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "engines/sql-dialect-engine/uv.lock"
+    },
+    {
+      "number": 31,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "engines/project-synthesis-engine/uv.lock"
+    },
+    {
+      "number": 30,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "engines/polyglot-route-engine/uv.lock"
+    },
+    {
       "number": 29,
       "state": "fixed",
       "package": "nanoid",
       "manifestPath": "engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
-      "number": 124,
+      "number": 28,
       "state": "fixed",
-      "package": "nanoid",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+      "package": "vue",
+      "manifestPath": "engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
-      "number": 123,
+      "number": 27,
       "state": "fixed",
-      "package": "@angular/compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+      "package": "vue-template-compiler",
+      "manifestPath": "engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
-      "number": 122,
+      "number": 26,
       "state": "fixed",
-      "package": "@angular/compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+      "package": "vue",
+      "manifestPath": "engines/frontend-client-engine/package.json"
     },
     {
-      "number": 121,
+      "number": 25,
       "state": "fixed",
-      "package": "@angular/compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+      "package": "vue-template-compiler",
+      "manifestPath": "engines/frontend-client-engine/package.json"
     },
     {
-      "number": 120,
+      "number": 24,
       "state": "fixed",
-      "package": "serialize-javascript",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 119,
-      "state": "fixed",
-      "package": "svelte",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 118,
-      "state": "fixed",
-      "package": "svelte",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 117,
-      "state": "fixed",
-      "package": "@angular/compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 116,
-      "state": "fixed",
-      "package": "serialize-javascript",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 115,
-      "state": "fixed",
-      "package": "svelte",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 114,
-      "state": "fixed",
-      "package": "svelte",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 113,
-      "state": "fixed",
-      "package": "svelte",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 112,
-      "state": "fixed",
-      "package": "svelte",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 111,
-      "state": "fixed",
-      "package": "@angular/compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
-    },
-    {
-      "number": 110,
-      "state": "fixed",
-      "package": "@angular/compiler",
-      "manifestPath": "engines/component-dialect-engine/pnpm-lock.yaml"
+      "package": "pytest",
+      "manifestPath": "engines/database-data-engine/sql-transpiler/uv.lock"
     },
     {
       "number": 23,
@@ -2679,6 +3213,24 @@
       "state": "fixed",
       "package": "@angular/compiler",
       "manifestPath": "engines/component-dialect-engine/package-lock.json"
+    },
+    {
+      "number": 4,
+      "state": "fixed",
+      "package": "vue",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
+    },
+    {
+      "number": 3,
+      "state": "fixed",
+      "package": "vue-template-compiler",
+      "manifestPath": "engines/component-dialect-engine/package-lock.json"
+    },
+    {
+      "number": 2,
+      "state": "fixed",
+      "package": "deepmerge-ts",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
     },
     {
       "number": 1,

@@ -178,7 +178,7 @@ class DependabotGovernanceTest(unittest.TestCase):
                     registry, [immutable], now=now, repo_root=root
                 )
 
-    def test_apply_uses_two_paginated_queries_and_closes_mixed_snapshot(self) -> None:
+    def test_apply_rechecks_open_alerts_and_closes_mixed_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             manifest = "client-packs/evidence/package.json"
@@ -215,6 +215,7 @@ class DependabotGovernanceTest(unittest.TestCase):
                     stdout=json.dumps([[immutable]]).encode("utf-8"),
                     stderr=b"",
                 ),
+                mock.Mock(returncode=0, stdout=b"[[]]", stderr=b""),
             ]
             argv = [
                 str(SCRIPT),
@@ -238,12 +239,11 @@ class DependabotGovernanceTest(unittest.TestCase):
             ):
                 self.assertEqual(0, MODULE.main())
 
-            self.assertEqual(2, run.call_count)
+            self.assertEqual(3, run.call_count)
             self.assertTrue(
                 all("--slurp" in call.args[0] for call in run.call_args_list)
             )
-            source_bytes = MODULE.canonical(registry["source_alerts"])
-            self.assertEqual(source_bytes, snapshot.read_bytes())
+            self.assertEqual(b"[]", snapshot.read_bytes())
             self.assertEqual(
                 "DISMISSED", json.loads(vex_path.read_text())["metadata"]["githubDisposition"]
             )
@@ -258,6 +258,7 @@ class DependabotGovernanceTest(unittest.TestCase):
                     stdout=json.dumps([[immutable]]).encode("utf-8"),
                     stderr=b"",
                 ),
+                mock.Mock(returncode=0, stdout=b"[[]]", stderr=b""),
             ]
             with (
                 mock.patch.object(sys, "argv", argv),
@@ -266,8 +267,8 @@ class DependabotGovernanceTest(unittest.TestCase):
                 ) as replay_run,
             ):
                 self.assertEqual(0, MODULE.main())
-            self.assertEqual(2, replay_run.call_count)
-            self.assertEqual(source_bytes, snapshot.read_bytes())
+            self.assertEqual(3, replay_run.call_count)
+            self.assertEqual(b"[]", snapshot.read_bytes())
 
     def test_legacy_registry_migration_is_digest_bound(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -293,6 +294,91 @@ class DependabotGovernanceTest(unittest.TestCase):
             legacy["source_alert_snapshot_digest"] = "sha256:" + "0" * 64
             with self.assertRaisesRegex(ValueError, "cannot reconstruct"):
                 MODULE.migrate_registry(legacy)
+
+    def test_refresh_preserves_legacy_exceptions_from_mixed_snapshot(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            old_manifest = "verification-packs/old/package.json"
+            new_manifest = "verification-packs/new/package.json"
+            for manifest in (old_manifest, new_manifest):
+                path = root / manifest
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("{}\n", encoding="utf-8")
+            runtime = alert(1, "next", "apps/web-console/package.json")
+            retained = alert(2, "vitest", old_manifest)
+            retained["state"] = "dismissed"
+            newly_open = alert(3, "angular", new_manifest)
+            newly_open["state"] = "open"
+            now = datetime(2026, 9, 8, tzinfo=timezone.utc)
+            registry = MODULE.build_registry(
+                "zpcaiai/elmos", [runtime, retained], now=now, repo_root=root
+            )
+            legacy = {key: item for key, item in registry.items() if key != "source_alerts"}
+            legacy["schema_version"] = "2.0"
+
+            refreshed, governed = MODULE.refresh_registry(
+                "zpcaiai/elmos",
+                legacy,
+                [newly_open],
+                [retained, newly_open],
+                now=now,
+                repo_root=root,
+            )
+
+            self.assertEqual(
+                [2, 3],
+                [item["alert_number"] for item in refreshed["exceptions"]],
+            )
+            self.assertEqual(
+                [2, 3],
+                [item["alert_number"] for item in refreshed["source_alerts"]],
+            )
+            self.assertEqual([2, 3], [item["number"] for item in governed])
+            self.assertEqual([], refreshed["fixed_claims"])
+            self.assertEqual("NOT_CERTIFIED", refreshed["certification"])
+
+    def test_refresh_rejects_unclassified_open_alert(self) -> None:
+        runtime = alert(1, "next", "apps/web-console/package.json")
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            self.assertRaisesRegex(ValueError, "not eligible"),
+        ):
+            MODULE.refresh_registry(
+                "zpcaiai/elmos",
+                None,
+                [runtime],
+                [runtime],
+                now=datetime(2026, 9, 8, tzinfo=timezone.utc),
+                repo_root=Path(directory),
+            )
+
+    def test_refresh_retires_exception_after_dependency_fix(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = "verification-packs/old/package.json"
+            path = root / manifest
+            path.parent.mkdir(parents=True)
+            path.write_text("{}\n", encoding="utf-8")
+            value = alert(2, "vitest", manifest)
+            now = datetime(2026, 9, 8, tzinfo=timezone.utc)
+            registry = MODULE.build_registry(
+                "zpcaiai/elmos", [value], now=now, repo_root=root
+            )
+            value["state"] = "fixed"
+
+            refreshed, governed = MODULE.refresh_registry(
+                "zpcaiai/elmos",
+                registry,
+                [],
+                [value],
+                now=now,
+                repo_root=root,
+            )
+
+            self.assertEqual([], governed)
+            self.assertEqual([], refreshed["source_alerts"])
+            self.assertEqual([], refreshed["exceptions"])
+            self.assertEqual([], refreshed["fixed_claims"])
 
     def test_unregistered_runtime_alert_does_not_overwrite_source_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -369,11 +455,13 @@ class DependabotGovernanceTest(unittest.TestCase):
             "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/"
             "examples/project-output-example/project/package.json",
         )
-        with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaisesRegex(ValueError, "manifest is unavailable"):
-                MODULE.build_registry(
-                    "zpcaiai/elmos", [value], repo_root=Path(directory)
-                )
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            self.assertRaisesRegex(ValueError, "manifest is unavailable"),
+        ):
+            MODULE.build_registry(
+                "zpcaiai/elmos", [value], repo_root=Path(directory)
+            )
 
     def test_apply_resume_skips_an_already_closed_alert(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
