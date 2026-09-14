@@ -1,12 +1,12 @@
 {
-  "profile_key": "frontend-to-miniapp-vue3-alipay-v1-acceptance",
+  "profile_key": "frontend-to-miniapp-vue3-douyin-v1-acceptance",
   "version": "0.1.0",
   "owner": "elmos-miniapp-candidate-review",
-  "browser_matrix": ["alipay-devtools-emulator-NOT_RUN"],
-  "device_matrix": ["alipay-physical-device-NOT_RUN"],
+  "browser_matrix": ["douyin-devtools-emulator-NOT_RUN"],
+  "device_matrix": ["douyin-physical-device-NOT_RUN"],
   "locales": ["und-en-fixture-literals"],
   "themes": ["fixture-default"],
-  "rendering": {"modes": ["native-axml-candidate"], "official_runtime_state": "NOT_RUN"},
+  "rendering": {"modes": ["native-ttml-candidate"], "official_runtime_state": "NOT_RUN"},
   "visual": {
     "baseline_policy": "approved-only-no-auto-update",
     "max_unapproved_differences": 0,
@@ -47,7 +47,7 @@
     "critical_accessibility_violations": 0
   },
   "exclusions": [
-    "all non-Alipay targets",
+    "all non-Douyin targets",
     "all fixtures except the pinned Vue 3 todo fixture",
     "reverse routes and production operations"
   ]
