@@ -4,3 +4,12 @@ engines/polyglot-route-engine/native/javascript/vendor/typescript-5.9.2/LICENSE.
 client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/** -diff -text
 client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
 verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
+
+# Preserve byte-bound release/deployment source and qualification inputs.
+skills/elmos-release-deployment-skills-v1.0.0/** -text whitespace=cr-at-eol
+engines/release-deployment-engine/** -text whitespace=cr-at-eol
+docs/release-deployment/** -text whitespace=cr-at-eol
+.agents/skills/elmos-release-deployment/** -text whitespace=cr-at-eol
+agent-skills/runtime/elmos-release-deployment/** -text whitespace=cr-at-eol
+tooling/integrate_release_deployment_skills.py -text whitespace=cr-at-eol
+tooling/validate_release_deployment.py -text whitespace=cr-at-eol

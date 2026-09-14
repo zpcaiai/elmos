@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/deployment-ticket.schema.json",
+  "title": "DeploymentTicket",
+  "type": "object",
+  "required": ["ticket_id","tenant_id","project_id","environment_id","release_id","artifact_digests","target_id","strategy","issued_at","expires_at","status"],
+  "properties": {
+    "ticket_id":{"type":"string"},"tenant_id":{"type":"string"},"project_id":{"type":"string"},"environment_id":{"type":"string"},
+    "release_id":{"type":"string"},
+    "artifact_digests":{"type":"array","minItems":1,"items":{"type":"string","pattern":"^sha256:[a-fA-F0-9]{64}$"}},
+    "target_id":{"type":"string"},
+    "strategy":{"enum":["single_replace","compose_replace","rolling","canary","blue_green"]},
+    "approval":{"type":"object","properties":{"required":{"type":"boolean"},"approved_by":{"type":"array","items":{"type":"string"}}}},
+    "migration_policy":{"enum":["safe_expand_only","approved_conditional","dedicated_migration_ticket"]},
+    "rollback_required":{"type":"boolean"},
+    "issued_at":{"type":"string","format":"date-time"},"expires_at":{"type":"string","format":"date-time"},
+    "status":{"enum":["ISSUED","APPROVED","REVOKED","CONSUMED"]}
+  },
+  "additionalProperties": true
+}

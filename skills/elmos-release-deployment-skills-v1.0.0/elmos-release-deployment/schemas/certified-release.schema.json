@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/certified-release.schema.json",
+  "title": "CertifiedRelease",
+  "type": "object",
+  "required": ["release_id","tenant_id","project_id","source","artifacts","certification","created_at"],
+  "properties": {
+    "release_id": {"type":"string","minLength":1},
+    "tenant_id": {"type":"string","minLength":1},
+    "project_id": {"type":"string","minLength":1},
+    "source": {
+      "type":"object","required":["repo","commit"],
+      "properties":{"repo":{"type":"string"},"commit":{"type":"string","minLength":7}},
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type":"array","minItems":1,
+      "items":{"type":"object","required":["name","type","digest"],"properties":{
+        "name":{"type":"string"},"type":{"const":"oci"},"uri":{"type":"string"},
+        "digest":{"type":"string","pattern":"^sha256:[a-fA-F0-9]{64}$"},"sbom_digest":{"type":"string"}
+      },"additionalProperties":true}
+    },
+    "certification": {
+      "type":"object","required":["level","evidence_digest","deploy_allowed"],
+      "properties":{"level":{"enum":["E0","E1","E2","E3","E4","E5"]},"evidence_digest":{"type":"string"},"deploy_allowed":{"const":true}},
+      "additionalProperties":true
+    },
+    "config_schema_ref":{"type":"string"},
+    "migration_manifest_ref":{"type":"string"},
+    "health_policy_ref":{"type":"string"},
+    "created_at":{"type":"string","format":"date-time"}
+  },
+  "additionalProperties": true
+}

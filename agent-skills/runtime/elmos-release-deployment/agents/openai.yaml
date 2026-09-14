@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release deployment"
+  short_description: "Governed immutable release deployment"
+  default_prompt: "Use $elmos-release-deployment for this scoped deployment implementation."

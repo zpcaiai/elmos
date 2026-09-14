@@ -1,0 +1,13 @@
+{
+  "target_id": "target_ecs_001",
+  "tenant_id": "tenant_demo",
+  "provider": "alibaba_ecs",
+  "account_ref": "cloud-account:aliyun-prod",
+  "role_arn_ref": "secret-ref:aliyun-deploy-role-arn",
+  "region": "cn-shanghai",
+  "resource_group_id": "rg-demo",
+  "compute": {"instance_ids": ["i-demo"], "required_tags": {"elmos-env": "prod"}},
+  "network": {"exposure": "private"},
+  "registry": {"type": "acr", "mode": "digest"},
+  "ingress": {"type": "none"}
+}

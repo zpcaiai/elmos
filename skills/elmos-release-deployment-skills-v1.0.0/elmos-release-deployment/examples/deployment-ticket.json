@@ -1,0 +1,16 @@
+{
+  "ticket_id": "dt_001",
+  "tenant_id": "tenant_demo",
+  "project_id": "warehouse-app",
+  "environment_id": "prod-cn-shanghai",
+  "release_id": "rel_20260914_001",
+  "artifact_digests": ["sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+  "target_id": "target_ecs_001",
+  "strategy": "single_replace",
+  "approval": {"required": true, "approved_by": ["operator:demo"]},
+  "migration_policy": "safe_expand_only",
+  "rollback_required": true,
+  "issued_at": "2026-09-14T07:05:00Z",
+  "expires_at": "2026-09-14T08:05:00Z",
+  "status": "APPROVED"
+}

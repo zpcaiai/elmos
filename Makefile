@@ -780,3 +780,6 @@ router-industrial-skills:
 
 four-subsystem-check: teaching-subsystem-check cross-language-check spring-modernization-check multilang-generation-check uir-java-typescript-check uir-java-csharp-check
 	@echo "All four subsystem engines and UIR routes verified."
+.PHONY: release-deployment-skills
+release-deployment-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --no-project --with cryptography==46.0.7 --with jsonschema==4.25.1 --with temporalio==1.32.0 python tooling/validate_release_deployment.py

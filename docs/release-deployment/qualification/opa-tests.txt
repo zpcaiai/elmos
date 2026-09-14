@@ -1,0 +1,15 @@
+\PythonPro\elmos\engines\release-deployment-engine\policies\release_deploy_gate_test.rego:
+data.elmos.release_deploy_test.test_allowed: PASS (6.4921ms)
+data.elmos.release_deploy_test.test_no_input: PASS (705.9µs)
+data.elmos.release_deploy_test.test_expired: PASS (1.2372ms)
+data.elmos.release_deploy_test.test_cross_tenant: PASS (1.2451ms)
+data.elmos.release_deploy_test.test_unverified_ticket: PASS (1.5479ms)
+data.elmos.release_deploy_test.test_forged_certification: PASS (714.7µs)
+data.elmos.release_deploy_test.test_self_approval: PASS (2.7441ms)
+data.elmos.release_deploy_test.test_destructive_without_permit: PASS (5.1836ms)
+data.elmos.release_deploy_test.test_unknown_migration: PASS (1.0028ms)
+data.elmos.release_deploy_test.test_local_db: PASS (3.4128ms)
+data.elmos.release_deploy_test.test_wrong_plan: PASS (1.999ms)
+data.elmos.release_deploy_test.test_unpinned: PASS (2.7287ms)
+--------------------------------------------------------------------------------
+PASS: 12/12
