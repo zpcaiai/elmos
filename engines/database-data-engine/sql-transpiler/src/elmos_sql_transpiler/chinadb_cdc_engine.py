@@ -124,11 +124,16 @@ class CdcCheckpointStore:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.replace(temporary, self.path)
-            directory_fd = os.open(self.path.parent, os.O_RDONLY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            # POSIX permits opening and fsyncing the containing directory so
+            # the atomic rename is durable. Windows rejects directory handles
+            # opened through os.open; the already-fsynced file plus
+            # os.replace is the strongest portable primitive exposed here.
+            if os.name == "posix":
+                directory_fd = os.open(self.path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
         finally:
             if temporary.exists():
                 temporary.unlink()

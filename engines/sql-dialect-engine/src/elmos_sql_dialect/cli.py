@@ -240,9 +240,13 @@ def _run_scan(args: argparse.Namespace) -> int:
     )
     if args.output is not None:
         args.output.mkdir(parents=True, exist_ok=True)
-        (args.output / "feasibility-report.json").write_text(report_to_json(report), encoding="utf-8")
+        (args.output / "feasibility-report.json").write_text(
+            report_to_json(report), encoding="utf-8", newline="\n"
+        )
         # The migration decision gets made by someone who will not read JSON.
-        (args.output / "feasibility-report.md").write_text(render_markdown(report), encoding="utf-8")
+        (args.output / "feasibility-report.md").write_text(
+            render_markdown(report), encoding="utf-8", newline="\n"
+        )
     print(report_to_json(report))
     if args.require_disposition_complete:
         return (

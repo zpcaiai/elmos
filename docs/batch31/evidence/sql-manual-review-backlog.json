@@ -15053,10 +15053,91 @@
       }
     },
     {
+      "excerpt": "/* V87 repairs the V84 ELMPay order-directory triggers without changing the */ /* already-released V84 migrati...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-208cf714c1627d829016",
+      "fingerprint": "sha256:208cf714c1627d829016ddbee933ce74482f44c0194929920aab3665a5a4340e",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__elmpay_digest_trigger_catalog_hashing.sql",
+      "statement_index": 1,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_wallet_topup_directory() RETURNS trigger LANGUAGE plpgsql SECURITY DEFIN...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-a6c6c9ef77d3cc310796",
+      "fingerprint": "sha256:a6c6c9ef77d3cc31079617da463434b1e71cf873c877626fa22a494ca2197ca8",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__elmpay_digest_trigger_catalog_hashing.sql",
+      "statement_index": 2,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_sync_commercial_order_directory() RETURNS trigger LANGUAGE plpgsql SECURITY D...",
+      "family": "statement-kind",
+      "finding_id": "sql-review-f1c053344dab87a908db",
+      "fingerprint": "sha256:f1c053344dab87a908dbfae9470cd537f8aff61491c81ff0f76008f904024159",
+      "owner": "UNASSIGNED",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "recommended_action": "Implement an exact typed adapter or hand-port, then attach target execution and revalidation evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V87__elmpay_digest_trigger_catalog_hashing.sql",
+      "statement_index": 3,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
       "excerpt": "CREATE TABLE commercial_credit_journal_entries (posting_id VARCHAR(128) PRIMARY KEY, transaction_id VARCHAR(96...",
       "family": "constraints",
-      "finding_id": "sql-review-490689ac8e5e429b1809",
-      "fingerprint": "sha256:490689ac8e5e429b1809f827d8cb3030777166d04aa17c66e356a94c0ce74c1f",
+      "finding_id": "sql-review-963a8b63756dac45c4f2",
+      "fingerprint": "sha256:963a8b63756dac45c4f246aee277e1ac65a38333c8e75ab1908009554c0da834",
       "owner": "UNASSIGNED",
       "reason": "CHECK right-hand side must be a plain literal",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
@@ -15069,7 +15150,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 2,
       "status": "OPEN",
       "waiver": {
@@ -15082,8 +15163,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_credit_journal_immutable() RETURNS trigger LANGUAGE plpgsql AS $$ ...",
       "family": "statement-kind",
-      "finding_id": "sql-review-f8640a358faa510072fc",
-      "fingerprint": "sha256:f8640a358faa510072fce0bb151d380e9a8e1be0e2ec83c684f906d10d71eead",
+      "finding_id": "sql-review-89c180ec022df8963ede",
+      "fingerprint": "sha256:89c180ec022df8963ede8f56ffb14bfbbe5606ae27848f3d77810bd9a4c3cb2a",
       "owner": "UNASSIGNED",
       "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
@@ -15096,7 +15177,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 5,
       "status": "OPEN",
       "waiver": {
@@ -15109,8 +15190,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_assert_commercial_credit_transaction_balanced() RETURNS trigger LANGUAGE plpg...",
       "family": "statement-kind",
-      "finding_id": "sql-review-d5ffea01263fbf53014f",
-      "fingerprint": "sha256:d5ffea01263fbf53014fd4e13b1fd0af5a48198963c30f9f6637b20ebee8f89c",
+      "finding_id": "sql-review-37cf3d317f7dcf450d9f",
+      "fingerprint": "sha256:37cf3d317f7dcf450d9fcb5c3d9ed467d537dde5686bf042e955f8e0e6348bea",
       "owner": "UNASSIGNED",
       "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
@@ -15123,7 +15204,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 8,
       "status": "OPEN",
       "waiver": {
@@ -15136,8 +15217,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_guard_commercial_credit_outbox_event() RETURNS trigger LANGUAGE plpgsql AS $$...",
       "family": "statement-kind",
-      "finding_id": "sql-review-9b933661c3a8691feeaa",
-      "fingerprint": "sha256:9b933661c3a8691feeaa49ec8d405274c62ef0047a12615649bc9f1e24eba007",
+      "finding_id": "sql-review-eb1c8b0264c9c64c415f",
+      "fingerprint": "sha256:eb1c8b0264c9c64c415f5f925cdc9ea3e2217d417853fc4c971c7e944fbe2f94",
       "owner": "UNASSIGNED",
       "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
@@ -15150,7 +15231,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 13,
       "status": "OPEN",
       "waiver": {
@@ -15163,8 +15244,8 @@
     {
       "excerpt": "CREATE TABLE commercial_credit_projection_rebuilds (rebuild_id VARCHAR(96) PRIMARY KEY, organization_id VARCHA...",
       "family": "identifiers",
-      "finding_id": "sql-review-ac6bec50841b3105e560",
-      "fingerprint": "sha256:ac6bec50841b3105e5608cf2043402463b9a4c4f84436d4aa7047a6c85dfc818",
+      "finding_id": "sql-review-540509b37918fff086fd",
+      "fingerprint": "sha256:540509b37918fff086fd30e7422e404dc941e2ea4b911359ab05389b59a1d4b4",
       "owner": "UNASSIGNED",
       "reason": "CHECK left-hand column is not a plain identifier (Length)",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
@@ -15177,7 +15258,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 18,
       "status": "OPEN",
       "waiver": {
@@ -15190,8 +15271,8 @@
     {
       "excerpt": "/* A one-time opening transaction preserves pre-V87 balances without pretending */ /* that this migration can ...",
       "family": "structure",
-      "finding_id": "sql-review-4b2f2866ef788d3e813a",
-      "fingerprint": "sha256:4b2f2866ef788d3e813a2314af593db788c89fe38c2729daf1f34881534a5592",
+      "finding_id": "sql-review-4719948d922202d1aa26",
+      "fingerprint": "sha256:4719948d922202d1aa267d08267b7619b23881412747fc312cd706f4bcc05c12",
       "owner": "UNASSIGNED",
       "reason": "DML expression node DPipe is outside the typed portable route",
       "reason_code": "CERTIFIED_DML_UNSUPPORTED_EXPRESSION",
@@ -15204,7 +15285,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 20,
       "status": "OPEN",
       "waiver": {
@@ -15217,8 +15298,8 @@
     {
       "excerpt": "INSERT INTO commercial_credit_journal_entries (posting_id, transaction_id, organization_id, account_code, side...",
       "family": "statement-kind",
-      "finding_id": "sql-review-01c528c35827a04ada62",
-      "fingerprint": "sha256:01c528c35827a04ada6231fbeddb9156630c1983403cdd0267b42cd785a564de",
+      "finding_id": "sql-review-e2047c39ad98627453ce",
+      "fingerprint": "sha256:e2047c39ad98627453ce1c65b2b02ff69f7734c9eaa41b598b9b498733f35f5a",
       "owner": "UNASSIGNED",
       "reason": "INSERT source must be one SELECT in the bounded route",
       "reason_code": "CERTIFIED_INSERT_UNSUPPORTED_SOURCE",
@@ -15231,7 +15312,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 21,
       "status": "OPEN",
       "waiver": {
@@ -15244,8 +15325,8 @@
     {
       "excerpt": "/* Fire the deferred balance assertions before the migration changes RLS on the */ /* journal tables; PostgreS...",
       "family": "statement-kind",
-      "finding_id": "sql-review-ad740504f3baed840f05",
-      "fingerprint": "sha256:ad740504f3baed840f059cd1dedb4b63be8134fda82025c8a4864c856f9de4ee",
+      "finding_id": "sql-review-fcf2e5781f9feff53946",
+      "fingerprint": "sha256:fcf2e5781f9feff5394699f443671bafcef8e7ce3febe2d1a9d9413db62df119",
       "owner": "UNASSIGNED",
       "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
@@ -15258,7 +15339,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 22,
       "status": "OPEN",
       "waiver": {
@@ -15271,8 +15352,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_post_commercial_credit_account_change() RETURNS trigger LANGUAGE plpgsql SECU...",
       "family": "statement-kind",
-      "finding_id": "sql-review-4af8c23ee8cbc4669d90",
-      "fingerprint": "sha256:4af8c23ee8cbc4669d90397defd57ed290aace7b6b24511adfe263fe82af2e5c",
+      "finding_id": "sql-review-fb4bf36f3ed590612b53",
+      "fingerprint": "sha256:fb4bf36f3ed590612b539f741e46988d17f9ad5efc58660a15dacfad5493bd38",
       "owner": "UNASSIGNED",
       "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
@@ -15285,7 +15366,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 23,
       "status": "OPEN",
       "waiver": {
@@ -15298,8 +15379,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_credit_reconcile() RETURNS TABLE (organization_id VARCHAR, project...",
       "family": "structure",
-      "finding_id": "sql-review-05190873f8eecbd7a4f7",
-      "fingerprint": "sha256:05190873f8eecbd7a4f79c29c2c2a891d85155c949a695568f7af6a0abf77e60",
+      "finding_id": "sql-review-f0b86ad245e6d1c19b73",
+      "fingerprint": "sha256:f0b86ad245e6d1c19b733c33e7bc7220243e1bd2a0c200c9395223a662550f1a",
       "owner": "UNASSIGNED",
       "reason": "table-function volatility/stability has no one exact cross-dialect route",
       "reason_code": "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
@@ -15312,7 +15393,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 25,
       "status": "OPEN",
       "waiver": {
@@ -15325,8 +15406,8 @@
     {
       "excerpt": "DO $$ BEGIN     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_credit_reconciler') THEN         ...",
       "family": null,
-      "finding_id": "sql-review-f8ec4347141a415645e9",
-      "fingerprint": "sha256:f8ec4347141a415645e9d6be651dd06dbc85d1af8100a96160229251c7dc4b58",
+      "finding_id": "sql-review-3ab68b6f973900d61f78",
+      "fingerprint": "sha256:3ab68b6f973900d61f78d61da7456d34ef2e67a20b9083e89f10f771b7ad3b0d",
       "owner": "UNASSIGNED",
       "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
       "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
@@ -15339,7 +15420,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 26,
       "status": "OPEN",
       "waiver": {
@@ -15352,8 +15433,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_rebuild_credit_projection(p_actor_id VARCHAR, p_reason VARCHAR, p_...",
       "family": "structure",
-      "finding_id": "sql-review-3bc675268087fea5ce96",
-      "fingerprint": "sha256:3bc675268087fea5ce962466f4f5e5325c81dba12c147967103338d583ae2cfc",
+      "finding_id": "sql-review-33950d837debaf2f6a0d",
+      "fingerprint": "sha256:33950d837debaf2f6a0dec89e4b258463db23757609aa94b7072d828e8435df0",
       "owner": "UNASSIGNED",
       "reason": "PL/pgSQL routine body must be a dollar-quoted block",
       "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
@@ -15366,7 +15447,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 27,
       "status": "OPEN",
       "waiver": {
@@ -15379,8 +15460,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_claim_commercial_credit_outbox(p_worker_id VARCHAR, p_limit INT, p_lease_seco...",
       "family": "structure",
-      "finding_id": "sql-review-0db3722e66ebda54b1ce",
-      "fingerprint": "sha256:0db3722e66ebda54b1cebe25032242106606c103292cd1793d961e7eee97f908",
+      "finding_id": "sql-review-2e11134a0155b278923a",
+      "fingerprint": "sha256:2e11134a0155b278923a81eba80a5e22be4e725397184f16826613253d6ecded",
       "owner": "UNASSIGNED",
       "reason": "table function body must be a dollar-quoted SQL body",
       "reason_code": "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
@@ -15393,7 +15474,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 28,
       "status": "OPEN",
       "waiver": {
@@ -15406,8 +15487,8 @@
     {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_complete_commercial_credit_outbox(p_event_id VARCHAR, p_worker_id VARCHAR, p_...",
       "family": "structure",
-      "finding_id": "sql-review-90302839449ee5148eee",
-      "fingerprint": "sha256:90302839449ee5148eee3b711bb9dc95367f939ab78a514ede3dbcb3b22d3beb",
+      "finding_id": "sql-review-e9c3a40e290db0759fbd",
+      "fingerprint": "sha256:e9c3a40e290db0759fbd50220f45d1d9685feafb2edbd1144cd53327945839d1",
       "owner": "UNASSIGNED",
       "reason": "PL/pgSQL routine body must be a dollar-quoted block",
       "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
@@ -15420,7 +15501,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 29,
       "status": "OPEN",
       "waiver": {
@@ -15433,8 +15514,8 @@
     {
       "excerpt": "/* Journal/audit data stays tenant scoped. The cross-tenant outbox carries only */ /* accounting identifiers a...",
       "family": null,
-      "finding_id": "sql-review-b74b2f2946b8e987f92b",
-      "fingerprint": "sha256:b74b2f2946b8e987f92bfd90e5c994fb5a7e2add09258c03fae15007f07d9cc5",
+      "finding_id": "sql-review-cc36b7e140b66d00dfe5",
+      "fingerprint": "sha256:cc36b7e140b66d00dfe5f3bc56a997f2e12dfa83cda87c884b7f974058b4bc0d",
       "owner": "UNASSIGNED",
       "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
       "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
@@ -15447,7 +15528,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 30,
       "status": "OPEN",
       "waiver": {
@@ -15460,8 +15541,8 @@
     {
       "excerpt": "REVOKE ALL ON commercial_credit_journal_transactions,     commercial_credit_journal_entries, commercial_credit...",
       "family": "statement-kind",
-      "finding_id": "sql-review-9b65af0a458c9506df82",
-      "fingerprint": "sha256:9b65af0a458c9506df82092d12406903e621c2a6f8459c6a7a33864addbd9123",
+      "finding_id": "sql-review-05ad75cff7d0a0314485",
+      "fingerprint": "sha256:05ad75cff7d0a03144851f74b41a9983b6b20bc5ed426a36dd8680fb1d82e9e4",
       "owner": "UNASSIGNED",
       "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
       "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
@@ -15474,7 +15555,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 31,
       "status": "OPEN",
       "waiver": {
@@ -15487,8 +15568,8 @@
     {
       "excerpt": "DO $$ BEGIN     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN         GRANT ...",
       "family": null,
-      "finding_id": "sql-review-5b913267d81d8fd34686",
-      "fingerprint": "sha256:5b913267d81d8fd3468671db5dcd5c71e836f5ba00fda8cc59447b3ba9ba811a",
+      "finding_id": "sql-review-de402a3b1c08c62a0e96",
+      "fingerprint": "sha256:de402a3b1c08c62a0e9663eb45c7bf7e2bfe0b276d364e3bf4f0c85eebe7b856",
       "owner": "UNASSIGNED",
       "reason": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
       "reason_code": "CERTIFIED_STATIC_DO_DYNAMIC_OR_CONTROL_FLOW",
@@ -15501,7 +15582,7 @@
         "evidence_refs": [],
         "status": "NOT_RUN"
       },
-      "source_path": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "source_path": "V88__commercial_credit_double_entry_and_outbox.sql",
       "statement_index": 39,
       "status": "OPEN",
       "waiver": {
@@ -15575,14 +15656,14 @@
   ],
   "kind": "elmos.batch31.manual-review-backlog",
   "schema_version": 1,
-  "source_report_digest": "sha256:2907235a5caec9afce06d3a59b1619e970ea40607e99639703695382414d2bcc",
+  "source_report_digest": "sha256:e01d32f048338ac78d3454b8832c3dd1e80bdf89d95061ba8cd6171a46d85d08",
   "summary": {
     "blocked": 0,
     "in_review": 0,
-    "open": 80,
+    "open": 83,
     "release_blocked": true,
     "resolved": 362,
-    "total": 515,
+    "total": 518,
     "waived": 73
   }
 }

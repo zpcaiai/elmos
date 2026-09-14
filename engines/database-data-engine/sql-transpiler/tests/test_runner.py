@@ -93,7 +93,9 @@ def test_performance_environment_requires_opt_in_and_dedicated_runner(
     monkeypatch.delenv("ELMOS_PERFORMANCE_RUNNER_ID", raising=False)
     monkeypatch.delenv("ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST", raising=False)
     monkeypatch.setattr(runner_module.os, "cpu_count", lambda: 8)
-    monkeypatch.setattr(runner_module.os, "getloadavg", lambda: (16.0, 8.0, 4.0))
+    monkeypatch.setattr(
+        runner_module.os, "getloadavg", lambda: (16.0, 8.0, 4.0), raising=False
+    )
 
     blocked = runner_module._performance_environment_evidence()
     assert blocked["state"] == "INVALID"
@@ -112,7 +114,9 @@ def test_performance_environment_requires_opt_in_and_dedicated_runner(
         "ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST",
         "sha256:" + "a" * 64,
     )
-    monkeypatch.setattr(runner_module.os, "getloadavg", lambda: (4.0, 4.0, 4.0))
+    monkeypatch.setattr(
+        runner_module.os, "getloadavg", lambda: (4.0, 4.0, 4.0), raising=False
+    )
 
     qualified = runner_module._performance_environment_evidence()
     assert qualified["state"] == "QUALIFIED"
@@ -129,7 +133,9 @@ def test_performance_environment_rejects_invalid_runner_identity(
     monkeypatch.setenv("ELMOS_PERFORMANCE_RUNNER_ID", "not allowed")
     monkeypatch.setenv("ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST", "sha256:bad")
     monkeypatch.setattr(runner_module.os, "cpu_count", lambda: 8)
-    monkeypatch.setattr(runner_module.os, "getloadavg", lambda: (1.0, 1.0, 1.0))
+    monkeypatch.setattr(
+        runner_module.os, "getloadavg", lambda: (1.0, 1.0, 1.0), raising=False
+    )
 
     blocked = runner_module._performance_environment_evidence()
     assert blocked["state"] == "INVALID"
@@ -144,7 +150,16 @@ def test_runner_capabilities_are_exact_and_fail_closed() -> None:
 
     ready = {item["profileId"] for item in capabilities["ready"]}
     blocked = {item["profileId"] for item in capabilities["blocked"]}
-    assert {"sqlite-3.53.3", "duckdb-1.5.4"} <= ready
+    assert ready.isdisjoint(blocked)
+    assert ready | blocked == {
+        "postgresql-17.5",
+        "sqlite-3.53.3",
+        "duckdb-1.5.4",
+        "postgresql-18.4",
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+    }
     assert {
         "postgresql-18.4",
         "mysql-8.4.10-lts",
@@ -165,9 +180,34 @@ def test_runner_capabilities_are_exact_and_fail_closed() -> None:
     assert capabilities["certification"] == "NOT_CERTIFIED"
 
 
+@pytest.mark.parametrize(
+    ("host", "architecture"),
+    (("Windows", "AMD64"), ("Linux", "aarch64"), ("Darwin", "x86_64")),
+)
+def test_capabilities_block_unsupported_hosts(
+    monkeypatch: pytest.MonkeyPatch, host: str, architecture: str
+) -> None:
+    monkeypatch.setattr(runner_module.platform, "system", lambda: host)
+    monkeypatch.setattr(runner_module.platform, "machine", lambda: architecture)
+
+    capabilities = runner_capabilities()
+
+    assert capabilities["ready"] == []
+    assert capabilities["readyDirectedRoutes"] == []
+    assert capabilities["readyDirectedRouteCount"] == 0
+    assert {
+        item["profileId"] for item in capabilities["blocked"]
+    } >= set(runner_module._LOCAL_PROFILE_IDS)
+    for item in capabilities["blocked"]:
+        assert item["runtimeEvidence"] == "NOT_RUN"
+
+
 def test_runner_capabilities_downgrade_missing_postgresql_without_claiming_execution(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(runner_module.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(runner_module.platform, "machine", lambda: "arm64")
+    monkeypatch.setattr(runner_module, "version", lambda _package: "3.3.4")
     monkeypatch.delenv("POSTGRESQL_17_BIN", raising=False)
     monkeypatch.setattr(runner_module, "_POSTGRES_CANDIDATE_DIRS", ())
     monkeypatch.setattr(runner_module.shutil, "which", lambda _name: None)
@@ -183,10 +223,17 @@ def test_runner_capabilities_downgrade_missing_postgresql_without_claiming_execu
     assert capabilities["certification"] == "NOT_CERTIFIED"
 
 
+def _require_route(source: str, target: str) -> None:
+    ready = {item["profileId"] for item in runner_capabilities()["ready"]}
+    if not {source, target}.issubset(ready):
+        pytest.skip("exact host/runtime tuple unavailable; runtime evidence remains NOT_RUN")
+
+
 def test_sqlite_to_duckdb_executes_equivalence_and_writes_digest_bound_evidence(
     tmp_path: Path,
 ) -> None:
     output = tmp_path / "sqlite-to-duckdb"
+    _require_route("sqlite-3.53.3", "duckdb-1.5.4")
     result = verify_route("sqlite-3.53.3", "duckdb-1.5.4", output)
 
     assert result["localDecision"] == "FAILED"

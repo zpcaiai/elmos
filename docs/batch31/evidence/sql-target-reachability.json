@@ -1,27 +1,27 @@
 {
   "kind": "elmos.sql-dialect.target-reachability",
-  "discovered_units": 1904,
-  "admitted_source_side": 1387,
-  "source_candidate_rate": 0.7285,
-  "disposition_units": 1904,
-  "disposition_covered": 1904,
+  "discovered_units": 1910,
+  "admitted_source_side": 1390,
+  "source_candidate_rate": 0.7277,
+  "disposition_units": 1910,
+  "disposition_covered": 1910,
   "disposition_unknown": 0,
   "disposition_coverage": 1.0,
-  "translatable_to_all_four": 1210,
-  "all_four_ratio_of_admitted": 0.8724,
+  "translatable_to_all_four": 1213,
+  "all_four_ratio_of_admitted": 0.8727,
   "reachable_per_target": {
-    "postgres": 1387,
-    "mysql": 1259,
-    "oracle": 1221,
-    "tsql": 1314
+    "postgres": 1390,
+    "mysql": 1262,
+    "oracle": 1224,
+    "tsql": 1317
   },
   "target_route_rate": {
     "postgres": 1.0,
-    "mysql": 0.9077,
-    "oracle": 0.8803,
-    "tsql": 0.9474
+    "mysql": 0.9079,
+    "oracle": 0.8806,
+    "tsql": 0.9475
   },
-  "all_target_intersection_rate": 0.8724,
+  "all_target_intersection_rate": 0.8727,
   "routeStrategy": {
     "mode": "target-specific-portfolio",
     "targetPriority": [
@@ -287,7 +287,7 @@
   "externalExecution": "NOT_RUN",
   "independentVerification": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "sourceCatalogEvidenceUnits": 848,
+  "sourceCatalogEvidenceUnits": 851,
   "routeUnits": [
     {
       "unitId": "persistence:V1__batch_one_baseline.sql#1:7a41b115fb61",
@@ -38510,13 +38510,13 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#1:1fd87c429a06",
+      "unitId": "persistence:V87__elmpay_digest_trigger_catalog_hashing.sql#4:f88d44ffda17",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
-      "parsedStatementIndex": 1,
+      "sourcePath": "V87__elmpay_digest_trigger_catalog_hashing.sql",
+      "parsedStatementIndex": 4,
       "sourceDialect": "postgres",
-      "statementKind": "Create",
-      "statementDigest": "sha256:1fd87c429a060c9ce08b2b36e194291780230dfe7a695d309d1213b961602a40",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:f88d44ffda17a1aec59f97d11803146c7087f08f8d056815f529d08714aaef34",
       "allFourReachable": true,
       "targets": {
         "postgres": {
@@ -38538,9 +38538,93 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#3:8a6db6e1ffe8",
+      "unitId": "persistence:V87__elmpay_digest_trigger_catalog_hashing.sql#5:34fc77b70870",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V87__elmpay_digest_trigger_catalog_hashing.sql",
+      "parsedStatementIndex": 5,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:34fc77b70870a1c24321f2b3821e67dfd821584910a47d347d5b2aa14b255cc2",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V87__elmpay_digest_trigger_catalog_hashing.sql#6:30bf340c83ed",
+      "corpus": "persistence",
+      "sourcePath": "V87__elmpay_digest_trigger_catalog_hashing.sql",
+      "parsedStatementIndex": 6,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:30bf340c83ed67fc48233ce92ba6df34ad400a8341673555ba5572f69d2a440d",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#1:5d63a5916881",
+      "corpus": "persistence",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
+      "parsedStatementIndex": 1,
+      "sourceDialect": "postgres",
+      "statementKind": "Create",
+      "statementDigest": "sha256:5d63a591688159f8cf179fe196b2134fd75f1bbc5e15caa619c9139cd8cf60f9",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#3:8a6db6e1ffe8",
+      "corpus": "persistence",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 3,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38566,9 +38650,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#4:825cdb3f3a3c",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#4:825cdb3f3a3c",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 4,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38594,9 +38678,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#6:14605d03e8a3",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#6:14605d03e8a3",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 6,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38622,9 +38706,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#7:1ff12b93e0c5",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#7:1ff12b93e0c5",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 7,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38650,9 +38734,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#9:85f5c60b086a",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#9:85f5c60b086a",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 9,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38678,9 +38762,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#10:4fefe0dcf911",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#10:4fefe0dcf911",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 10,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38706,9 +38790,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#11:ea0c6ed5f1b0",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#11:ea0c6ed5f1b0",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 11,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38734,9 +38818,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#12:4c93934f5b4c",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#12:4c93934f5b4c",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 12,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38762,9 +38846,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#14:af3cefbd919c",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#14:af3cefbd919c",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 14,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38790,9 +38874,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#15:5daa49970d79",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#15:5daa49970d79",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 15,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38818,9 +38902,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#16:7bdee7ae750b",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#16:7bdee7ae750b",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 16,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38846,9 +38930,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#17:f7c382a18336",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#17:f7c382a18336",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 17,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38874,9 +38958,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#19:576b30206047",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#19:576b30206047",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 19,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38902,9 +38986,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#24:ee61276ca033",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#24:ee61276ca033",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 24,
       "sourceDialect": "postgres",
       "statementKind": "Create",
@@ -38930,9 +39014,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#32:05328589c5a1",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#32:05328589c5a1",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 32,
       "sourceDialect": "postgres",
       "statementKind": "Revoke",
@@ -38958,9 +39042,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#33:4f0ca89f6a25",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#33:4f0ca89f6a25",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 33,
       "sourceDialect": "postgres",
       "statementKind": "Revoke",
@@ -38986,9 +39070,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#34:14fb673d4501",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#34:14fb673d4501",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 34,
       "sourceDialect": "postgres",
       "statementKind": "Revoke",
@@ -39014,9 +39098,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#35:0152553b540b",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#35:0152553b540b",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 35,
       "sourceDialect": "postgres",
       "statementKind": "Revoke",
@@ -39042,9 +39126,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#36:7f4d3cb4305c",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#36:7f4d3cb4305c",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 36,
       "sourceDialect": "postgres",
       "statementKind": "Grant",
@@ -39070,9 +39154,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#37:7b660279a1a2",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#37:7b660279a1a2",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 37,
       "sourceDialect": "postgres",
       "statementKind": "Grant",
@@ -39098,9 +39182,9 @@
       }
     },
     {
-      "unitId": "persistence:V87__commercial_credit_double_entry_and_outbox.sql#38:e515bf1f617b",
+      "unitId": "persistence:V88__commercial_credit_double_entry_and_outbox.sql#38:e515bf1f617b",
       "corpus": "persistence",
-      "sourcePath": "V87__commercial_credit_double_entry_and_outbox.sql",
+      "sourcePath": "V88__commercial_credit_double_entry_and_outbox.sql",
       "parsedStatementIndex": 38,
       "sourceDialect": "postgres",
       "statementKind": "Grant",

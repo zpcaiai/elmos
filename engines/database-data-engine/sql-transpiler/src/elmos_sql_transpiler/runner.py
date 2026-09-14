@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from importlib.resources import files
 from pathlib import Path
 from typing import Any
@@ -389,12 +389,7 @@ class SQLiteRunner(EngineRunner):
         self.database_path: Path | None = None
 
     def start(self) -> None:
-        if platform.system().lower() != "darwin" or platform.machine() != "arm64":
-            raise RunnerBlockedError("SQLite Runner requires the declared darwin-arm64 host")
-        if sys.version_info[:3] != (3, 14, 6):
-            raise RunnerBlockedError("SQLite Runner requires exact Python 3.14.6")
-        if sqlite3.sqlite_version != "3.53.3":
-            raise RunnerBlockedError("SQLite Runner requires exact SQLite 3.53.3")
+        _check_local_runtime(self.profile_id)
         if self.root is None:
             raise RuntimeError("Runner temporary directory is unavailable")
         self.database_path = self.root / "runner.sqlite3"
@@ -486,10 +481,7 @@ class DuckDBRunner(EngineRunner):
         self.database_path: Path | None = None
 
     def start(self) -> None:
-        if platform.system().lower() != "darwin" or platform.machine() != "arm64":
-            raise RunnerBlockedError("DuckDB Runner requires the declared darwin-arm64 host")
-        if version("duckdb") != "1.5.4":
-            raise RunnerBlockedError("DuckDB Runner requires exact duckdb-python 1.5.4")
+        _check_local_runtime(self.profile_id)
         if self.root is None:
             raise RuntimeError("Runner temporary directory is unavailable")
         self.database_path = self.root / "runner.duckdb"
@@ -601,13 +593,7 @@ class PostgreSQLRunner(EngineRunner):
         return completed.stdout.strip()
 
     def start(self) -> None:
-        if platform.system().lower() != "darwin" or platform.machine() != "arm64":
-            raise RunnerBlockedError("PostgreSQL Runner requires the declared darwin-arm64 host")
-        if version("psycopg") != "3.3.4" or version("psycopg-binary") != "3.3.4":
-            raise RunnerBlockedError("PostgreSQL Runner requires exact psycopg-binary 3.3.4")
-        version_output = self._run([str(self._binary("postgres")), "--version"])
-        if "PostgreSQL) 17.5" not in version_output:
-            raise RunnerBlockedError("PostgreSQL Runner requires exact server 17.5")
+        _check_local_runtime(self.profile_id)
         if self.root is None:
             raise RuntimeError("Runner temporary directory is unavailable")
         self.data_directory = self.root / "data"
@@ -1353,6 +1339,33 @@ def verify_route(source_profile: str, target_profile: str, output: Path) -> dict
     return gate
 
 
+def _check_local_runtime(profile_id: str) -> None:
+    """Probe an exact local tuple without provisioning or claiming execution."""
+    if profile_id not in _LOCAL_PROFILE_IDS:
+        raise RunnerBlockedError(f"exact local runtime is unavailable for {profile_id}")
+    if platform.system().lower() != "darwin" or platform.machine().lower() != "arm64":
+        raise RunnerBlockedError("Runner requires the declared darwin-arm64 host")
+    if profile_id == "sqlite-3.53.3":
+        if sys.version_info[:3] != (3, 14, 6):
+            raise RunnerBlockedError("SQLite Runner requires exact Python 3.14.6")
+        if sqlite3.sqlite_version != "3.53.3":
+            raise RunnerBlockedError("SQLite Runner requires exact SQLite 3.53.3")
+        return
+    if profile_id == "duckdb-1.5.4":
+        if version("duckdb") != "1.5.4":
+            raise RunnerBlockedError("DuckDB Runner requires exact duckdb-python 1.5.4")
+        return
+    if version("psycopg") != "3.3.4" or version("psycopg-binary") != "3.3.4":
+        raise RunnerBlockedError("PostgreSQL Runner requires exact psycopg-binary 3.3.4")
+    runner = PostgreSQLRunner()
+    for executable in ("postgres", "initdb", "pg_ctl"):
+        observed = runner._run([str(runner._binary(executable)), "--version"], timeout=5.0)
+        if "PostgreSQL) 17.5" not in observed:
+            raise RunnerBlockedError(
+                f"PostgreSQL Runner requires exact server 17.5: {executable}"
+            )
+
+
 def runner_capabilities() -> dict[str, Any]:
     path = files("elmos_sql_transpiler").joinpath("data/local-runners-v1.json")
     catalog = json.loads(path.read_text(encoding="utf-8"))
@@ -1362,31 +1375,15 @@ def runner_capabilities() -> dict[str, Any]:
         rendered = dict(item)
         rendered["runtimeEvidence"] = "NOT_RUN"
         runtime_blocker: str | None = None
-        if item["profileId"] == "postgresql-17.5":
-            if platform.system().lower() != "darwin" or platform.machine() != "arm64":
-                runtime_blocker = "PostgreSQL 17.5 Runner requires the declared darwin-arm64 host."
-            elif version("psycopg") != "3.3.4" or version("psycopg-binary") != "3.3.4":
-                runtime_blocker = "PostgreSQL 17.5 Runner requires exact psycopg-binary 3.3.4."
+        if item["state"] == "LOCAL_RUNNER_READY":
             try:
-                if runtime_blocker is not None:
-                    raise RunnerBlockedError(runtime_blocker)
-                runner = PostgreSQLRunner()
-                for executable in ("postgres", "initdb", "pg_ctl"):
-                    binary = runner._binary(executable)
-                    completed = subprocess.run(
-                        [str(binary), "--version"],
-                        check=False,
-                        capture_output=True,
-                        text=True,
-                        timeout=10.0,
-                    )
-                    observed = (completed.stdout or completed.stderr).strip()
-                    if completed.returncode != 0 or "PostgreSQL) 17.5" not in observed:
-                        runtime_blocker = (
-                            f"Exact PostgreSQL 17.5 executable is unavailable: {executable}."
-                        )
-                        break
-            except (OSError, RunnerBlockedError, subprocess.SubprocessError) as error:
+                _check_local_runtime(item["profileId"])
+            except (
+                OSError,
+                PackageNotFoundError,
+                RunnerBlockedError,
+                subprocess.SubprocessError,
+            ) as error:
                 runtime_blocker = str(error)
         if item["state"] == "LOCAL_RUNNER_READY" and runtime_blocker is None:
             ready.append(rendered)

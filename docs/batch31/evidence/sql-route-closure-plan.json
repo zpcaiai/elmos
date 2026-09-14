@@ -1,22 +1,22 @@
 {
   "current": {
-    "admittedCandidateUnits": 1387,
+    "admittedCandidateUnits": 1390,
     "blockedRouteCells": 367,
     "certification": "NOT_CERTIFIED",
-    "commonFourTargetEmittableUnits": 1210,
-    "commonFourTargetImplementationRate": 0.8724,
+    "commonFourTargetEmittableUnits": 1213,
+    "commonFourTargetImplementationRate": 0.8727,
     "commonFourTargetOpenUnits": 177,
-    "dispositionAccountedUnits": 1904,
+    "dispositionAccountedUnits": 1910,
     "dispositionCoverage": 1.0,
-    "emittableRouteCells": 5181,
+    "emittableRouteCells": 5193,
     "externalExecution": "NOT_RUN",
-    "frozenSourceUnits": 1904,
+    "frozenSourceUnits": 1910,
     "independentVerification": "NOT_RUN",
-    "manualMigrationItems": 515,
-    "manualMigrationOpen": 80,
+    "manualMigrationItems": 518,
+    "manualMigrationOpen": 83,
     "runtimeVerifiedRouteCells": 0,
     "sourceFormatReviewItems": 2,
-    "targetRouteCells": 5548
+    "targetRouteCells": 5560
   },
   "definitionOf100Percent": {
     "retryPolicy": "at most two bounded measurement attempts; no infinite retry",
@@ -77,9 +77,9 @@
     }
   ],
   "inputs": {
-    "manualBacklogDigest": "sha256:8c968641b894b8597503961e20cf89dfa31695a115ff7081af1c112363b9fea6",
+    "manualBacklogDigest": "sha256:d33bb6fd8cecf8acf36350932e44c831174bcf6acb815d2e7fb1e0a7ee33509f",
     "manualBacklogEvidence": "docs/batch31/evidence/sql-manual-review-backlog.json",
-    "reachabilityDigest": "sha256:50ef076d0cc8dbe133c62ba1c78ab044ab501e89be11f5e7964e201f0f9e19fa",
+    "reachabilityDigest": "sha256:73a7d9bcb5b138abc6dcaadeab09f10da7577a2adb08a273d268503f9b338d55",
     "reachabilityEvidence": "docs/batch31/evidence/sql-target-reachability.json"
   },
   "kind": "elmos.batch31.sql-route-closure-plan",
@@ -88,7 +88,7 @@
     "CERTIFIED_DDL_UNBOUNDED_DECIMAL": 21,
     "CERTIFIED_DDL_UNSUPPORTED_CHECK": 7,
     "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": 3,
-    "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 65,
+    "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 68,
     "CERTIFIED_DDL_UNSUPPORTED_TYPE": 11,
     "CERTIFIED_DML_UNSUPPORTED_EXPRESSION": 6,
     "CERTIFIED_DROP_UNSUPPORTED_STATEMENT": 1,
@@ -119,7 +119,7 @@
         "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER": 1,
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3
       },
-      "emittable": 1259,
+      "emittable": 1262,
       "runtimeVerified": 0
     },
     "oracle": {
@@ -134,13 +134,13 @@
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
         "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET": 28
       },
-      "emittable": 1221,
+      "emittable": 1224,
       "runtimeVerified": 0
     },
     "postgres": {
       "blocked": 0,
       "blockers": {},
-      "emittable": 1387,
+      "emittable": 1390,
       "runtimeVerified": 0
     },
     "tsql": {
@@ -152,7 +152,7 @@
         "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
         "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3
       },
-      "emittable": 1314,
+      "emittable": 1317,
       "runtimeVerified": 0
     }
   },

@@ -194,6 +194,7 @@ def main() -> int:
     args.output.write_text(
         json.dumps(backlog, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     print(
         f"BACKLOG: total={backlog['summary']['total']} open={backlog['summary']['open']} "

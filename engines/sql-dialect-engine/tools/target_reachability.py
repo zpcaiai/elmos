@@ -686,7 +686,9 @@ def main() -> int:
         "sourceCatalogEvidenceUnits": catalog_evidence_units,
         "routeUnits": route_units,
     }
-    args.output.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+    args.output.write_text(
+        json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8", newline="\n"
+    )
     print(f"admitted source-side      {admitted}")
     print(f"translatable to ALL FOUR  {all_four}  ({out['all_four_ratio_of_admitted']:.1%} of admitted)")
     print("\nreachable per target:")

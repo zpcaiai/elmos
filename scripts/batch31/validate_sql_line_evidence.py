@@ -75,6 +75,19 @@ def validate() -> list[str]:
         if not condition:
             failures.append(code)
 
+    scan_report_ref = summary.get("scan_report_path")
+    require(
+        scan_report_ref == "docs/batch31/evidence/sql-corpus-scan-report.json",
+        "SCAN_REPORT_PATH_MISSING",
+    )
+    scan_report_path = ROOT / str(scan_report_ref)
+    require(scan_report_path.is_file(), "SCAN_REPORT_MISSING")
+    if scan_report_path.is_file():
+        require(
+            summary.get("scan_report_digest") == _digest(scan_report_path),
+            "SCAN_REPORT_DIGEST_DRIFT",
+        )
+
     totals = summary.get("totals", {})
     current = closure.get("current", {})
     files, source_tree_digest = _source_tree()

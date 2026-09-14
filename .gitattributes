@@ -17,3 +17,10 @@ framework-packs/spring-*/**/*.pem text eol=lf
 framework-packs/spring-*/**/*.txt text eol=lf
 framework-packs/spring-*/**/*.py text eol=lf
 evidence/spring-routes/**/*.json text eol=lf
+# Digest-bound database contracts and source snapshots must retain identical bytes.
+database-packs/**/*.json text eol=lf
+database-packs/**/*.sql text eol=lf
+database-packs/**/*.md text eol=lf
+# Batch 31 digests are computed from these source and evidence bytes.
+modules/persistence/src/main/resources/db/migration/**/*.sql text eol=lf
+docs/batch31/evidence/**/*.json text eol=lf
