@@ -333,7 +333,7 @@
         "workflow": ".github/workflows/ci.yml",
         "threatModel": "config/batch40-supply-chain-threat-model.json",
         "pack": "mature-product-packs/batch40/elmos-platform-supply-chain",
-        "claimCount": 4,
+        "claimCount": 5,
         "controlCount": 13,
         "freshnessWindowDays": 30
       },
@@ -368,6 +368,26 @@
       ],
       "evidenceRefs": [
         "b40-repository-controls"
+      ]
+    },
+    {
+      "claimId": "b40-docker-local-controls",
+      "statement": "The repository-owned Docker harness executed 20 hardened runtime and synthetic supply-chain controls in content-addressed image sha256:8505e9309d2c9d775ac9489154735338a761919f67a3437a1da206b05306708c; 0 controls failed. Production evidence and independent verification remain NOT_RUN.",
+      "scope": {
+        "controlCount": 20,
+        "localFixtureCount": 6,
+        "productionArtifactsEvaluated": 0,
+        "externalRunnersEvaluated": 0
+      },
+      "limitations": [
+        "This run exercises synthetic local fixtures in one Docker daemon; it is self-attested engineering evidence only.",
+        "The Docker daemon did not attest rootless operation; non-root container execution does not prove a rootless daemon or an independently isolated builder.",
+        "The local HMAC key is an ephemeral fixture key, not a production signing key or an external trust anchor.",
+        "The local holdout and representative fixture sets are code-owned negative tests, not independently authored or representative production corpora.",
+        "No production artifact, hosted runner, provider scanner, external environment, independent assessor, approver, or certification authority was exercised."
+      ],
+      "evidenceRefs": [
+        "b40-docker-local-evidence"
       ]
     }
   ]

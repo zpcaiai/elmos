@@ -2,24 +2,24 @@
   "check": "batch40-local-assurance",
   "batch": 40,
   "status": "PASS",
-  "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
-  "startedAt": "2026-09-07T04:48:45.197286Z",
-  "finishedAt": "2026-09-07T04:48:45.239670Z",
+  "repositoryRevision": "8608d1108f323e915c96f7a22349b2947e18e8bd",
+  "startedAt": "2026-09-14T05:06:24.745636Z",
+  "finishedAt": "2026-09-14T05:06:24.768768Z",
   "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
   "toolDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7",
   "scope": {
     "workflow": ".github/workflows/ci.yml",
     "threatModel": "config/batch40-supply-chain-threat-model.json",
     "pack": "mature-product-packs/batch40/elmos-platform-supply-chain",
-    "claimCount": 4,
+    "claimCount": 5,
     "controlCount": 13,
     "freshnessWindowDays": 30
   },
   "inputs": {
-    "workflowSha256": "sha256:16e9ed595bebab8e09c4461f309ecab9c0d9025094252a722e11e983adaa273d",
+    "workflowSha256": "sha256:dbe0f1b07bb74e976da71d134194d771f98919a6a4b13a141bbaeac31b702a16",
     "threatModelSha256": "sha256:628bb97ab0f87d0f651b09c03a0a351676490eb50fc2c7e662b2036848d2634d",
-    "evidenceClaimSetSha256": "sha256:1a7bc47025b2a68e70b9106dd8517c5af3951ea8eec9bbf4f55ccdc66a502394",
-    "claimNarrativeSetSha256": "sha256:b9ffdd94f0b6ce923542668db115f0c8f02cf0ecd6a29da3bcd11463380ed01c"
+    "evidenceClaimSetSha256": "sha256:54b8d15027c757b27bb17cf53f4766ffbc8828e38e753961a935c9e113afec9e",
+    "claimNarrativeSetSha256": "sha256:4bc4201c09e827da29e574397f67dfc59e9c9b485c0de387edb4de625086a8f2"
   },
   "metrics": {
     "auditEvidenceFreshnessRate": 1.0,
@@ -42,7 +42,7 @@
       "statement": "Every external GitHub Action is pinned to an immutable commit.",
       "status": "PASS",
       "details": [
-        "78 action references are immutable"
+        "85 action references are immutable"
       ]
     },
     {
@@ -50,7 +50,7 @@
       "statement": "Every checkout removes the workflow token from local Git configuration.",
       "status": "PASS",
       "details": [
-        "20 checkout steps disable credential persistence"
+        "24 checkout steps disable credential persistence"
       ]
     },
     {
@@ -58,7 +58,7 @@
       "statement": "Every CI job has an explicit positive timeout.",
       "status": "PASS",
       "details": [
-        "22 jobs have explicit timeouts"
+        "26 jobs have explicit timeouts"
       ]
     },
     {
@@ -66,7 +66,7 @@
       "statement": "Every CI job selects a literal, non-floating runner label.",
       "status": "PASS",
       "details": [
-        "22 jobs use literal runner labels"
+        "26 jobs use literal runner labels"
       ]
     },
     {
@@ -331,7 +331,7 @@
   "freshness": [
     {
       "evidenceRef": "b40-dependabot-alerts",
-      "timestamp": "2026-09-06T18:55:03Z",
+      "timestamp": "2026-09-13T20:59:32Z",
       "fresh": true,
       "problem": null
     },
@@ -342,8 +342,14 @@
       "problem": null
     },
     {
+      "evidenceRef": "b40-docker-local-evidence",
+      "timestamp": "2026-09-14T05:06:24.440176Z",
+      "fresh": true,
+      "problem": null
+    },
+    {
       "evidenceRef": "b40-repository-controls",
-      "timestamp": "2026-09-07T04:48:44.863967Z",
+      "timestamp": "2026-09-07T04:49:27.468662Z",
       "fresh": true,
       "problem": null
     },

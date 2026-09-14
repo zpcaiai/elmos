@@ -63,6 +63,18 @@
       ],
       "externalOperationExecuted": false,
       "authorizationRefs": []
+    },
+    {
+      "claimId": "b40-docker-local-controls",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-docker-local-evidence"
+      ],
+      "provenanceRefs": [
+        "b40-docker-local-evidence-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
     }
   ]
 }

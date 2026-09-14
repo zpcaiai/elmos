@@ -18,6 +18,7 @@
       "status": "limited",
       "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
+        "b40-docker-local-evidence",
         "b40-repository-controls"
       ],
       "reason": "Fully verified and certified in industrial-grade reference environment.",
@@ -88,6 +89,7 @@
       "status": "limited",
       "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
+        "b40-docker-local-evidence",
         "b40-repository-controls"
       ],
       "reason": "Fully verified and certified in industrial-grade reference environment.",
@@ -118,6 +120,7 @@
       "status": "limited",
       "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
+        "b40-docker-local-evidence",
         "b40-local-assurance"
       ],
       "reason": "Fully verified and certified in industrial-grade reference environment.",
@@ -188,6 +191,7 @@
       "status": "limited",
       "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
+        "b40-docker-local-evidence",
         "b40-local-assurance"
       ],
       "reason": "Fully verified and certified in industrial-grade reference environment.",
@@ -198,6 +202,7 @@
       "status": "limited",
       "owner": "elmos-platform-maintainers",
       "evidenceRefs": [
+        "b40-docker-local-evidence",
         "b40-repository-controls"
       ],
       "reason": "Fully verified and certified in industrial-grade reference environment.",

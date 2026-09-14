@@ -24,6 +24,7 @@
     "b40-dependabot-vex",
     "b40-dependabot-vex-provenance",
     "b40-dependency-inventory",
+    "b40-docker-local-evidence",
     "b40-local-assurance",
     "b40-repository-controls",
     "b40-secret-scan"
