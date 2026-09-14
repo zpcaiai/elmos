@@ -138,7 +138,7 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-25 | Immutable TTL, resource reconciliation and retention selection | Provisioning/cleanup scheduler and provider effects |
 | RD-26 | Allowlisted deployment annotations | SLS/CloudMonitor/OTel exporter wiring |
 | RD-30 | Restricted existing Deployment SSA execution and pinned-CA HTTPS transport; UID/version/generation/admission/rollout checks | ACK discovery, namespace provisioning, canonical token broker and real cluster journeys |
-| RD-31 | Helm sandbox command/receipt validation; governed SCM proposal and exact-commit GitOps convergence controller | Concrete native Runner, SCM and Argo CD/Flux adapters and live acceptance |
+| RD-31 | Helm sandbox command/receipt validation; GitHub Git Data/PR HTTPS adapter; Argo CD HTTPS observation; scoped provider composition and exact-commit GitOps convergence | Concrete native Runner, canonical credential/dispatch broker installation, Flux adapter and live acceptance |
 | RD-32 | Exact-decimal SLO window/error-budget decision | Trusted telemetry collection and progressive workflow integration |
 | RD-33 | Exact provider/version/region/account/action registry | Concrete additional cloud provider adapters |
 
@@ -258,11 +258,52 @@ GitOps proposal completion is distinct from runtime convergence. Publication req
 the exact repository, base commit, branch/path grant and rendered manifest digest.
 Reconciliation requires a governed merge and a fresh observation of the exact commit,
 healthy/synced application and resource set; it never merges a proposal itself.
-Concrete Runner/SCM/GitOps host adapters remain necessary for real execution.
+`GitOpsProviderHost` now composes the concrete `GitHubHttpsTransport`,
+`GitHubProposalAdapter`, `ArgoCdHttpsTransport`, `ArgoCdAdapter` and existing
+`GitOpsController`. Pass that host as `gitops=` to `DeploymentExtensionService`.
+Construct it only in operator-owned startup code with the existing journal,
+trust verifier, receipt signer, exact repository/application bindings, and
+canonical SCM/cluster credential and dispatch brokers. It has no permissive
+credential, authorization, signing or storage defaults. Its presence does not
+mean those canonical brokers have been installed in a running host service.
+
+GitHub bindings identify the provider instance plus native repository ID, base
+branch, deployment directory, application and tenant scope. The plan's `branch`
+is the protected base branch. The adapter creates a deterministic
+`elmos/migration/deployment/<digest>` proposal branch through Git Data APIs and
+opens a PR. This namespace is within the existing SCM branch-write policy.
+Reconcile mode locates the same proposal without creating another one. Unknown
+partial publication remains pending; it does not retry writes or force-update
+refs. Readback checks parent commit, exact changed paths, tree modes (rejecting
+symlinks), complete bounded trees, and exact file bytes at the head/merge commit.
+It never merges, deletes branches, or bypasses branch protection.
+
+Argo CD bindings pin application UID, namespace, project, complete spec digest
+and exact resource inventory. Only single-source applications managing existing
+Deployments without pruning are supported. The adapter checks compared source
+and destination, a reconciliation timestamp within 60 seconds, full successful
+sync at an immutable commit, application and resource health, and matching
+operation resources. Stale or running states are pending; partial sync, pruning,
+hooks, identity drift and resource drift fail closed. It performs only GET and
+does not trigger a refresh, sync, prune or application mutation. Its signed
+receipt includes the provider response digest and explicitly retains independent
+verification as NOT_RUN.
+
+Local tests execute a trusted loopback HTTPS server for the Argo transport,
+including redirect rejection. GitHub API scenarios use explicit provider
+fixtures; they are not remote GitHub acceptance. Concrete Terraform/Helm native
+execution, Flux, canonical broker installation and live provider acceptance
+remain outstanding. The existing generic Runner uses `--network=none`; no
+network policy was broadened to make Terraform cloud apply run.
 
 Additional references:
 [ALB listener updates](https://www.alibabacloud.com/help/en/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-updatelistenerattribute),
 [Terraform saved plans](https://developer.hashicorp.com/terraform/cli/commands/plan).
+
+Adapter protocol references:
+[GitHub Git trees](https://docs.github.com/en/rest/git/trees),
+[GitHub pull requests](https://docs.github.com/en/rest/pulls/pulls),
+[Argo CD application API](https://argo-cd.readthedocs.io/en/latest/developer-guide/api-docs/).
 
 ## Evidence and authority
 

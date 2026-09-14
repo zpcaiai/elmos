@@ -1,6 +1,12 @@
 test_nested_backend_list_uses_rpc_indexed_fields (test_alibaba_rpc.RpcTests.test_nested_backend_list_uses_rpc_indexed_fields) ... ok
 test_request_uses_exact_https_endpoint_and_ephemeral_token (test_alibaba_rpc.RpcTests.test_request_uses_exact_https_endpoint_and_ephemeral_token) ... ok
 test_unknown_action_and_region_never_open_connection (test_alibaba_rpc.RpcTests.test_unknown_action_and_region_never_open_connection) ... ok
+test_cross_tenant_and_expired_lease_before_network (test_argocd_adapter.ArgoTests.test_cross_tenant_and_expired_lease_before_network) ... ok
+test_exact_application_observation (test_argocd_adapter.ArgoTests.test_exact_application_observation) ... ok
+test_identity_spec_and_compared_source_drift (test_argocd_adapter.ArgoTests.test_identity_spec_and_compared_source_drift) ... ok
+test_prune_partial_duplicate_and_resource_drift_rejected (test_argocd_adapter.ArgoTests.test_prune_partial_duplicate_and_resource_drift_rejected) ... ok
+test_real_https_transport_and_rejected_redirect (test_argocd_adapter.ArgoTests.test_real_https_transport_and_rejected_redirect) ... ok
+test_stale_and_running_are_pending (test_argocd_adapter.ArgoTests.test_stale_and_running_are_pending) ... ok
 test_alb_readback_and_replay_do_not_repeat_mutation (test_cloud_controllers.CloudControllersTests.test_alb_readback_and_replay_do_not_repeat_mutation) ... ok
 test_cross_scope_expired_and_missing_resource_denied_before_provider (test_cloud_controllers.CloudControllersTests.test_cross_scope_expired_and_missing_resource_denied_before_provider) ... ok
 test_dns_exact_record_readback_and_explicit_compensation (test_cloud_controllers.CloudControllersTests.test_dns_exact_record_readback_and_explicit_compensation) ... ok
@@ -25,6 +31,12 @@ test_retention_protects_stable_and_referenced (test_extensions_and_api.Extension
 test_rolling_canary_exact_resource_partition (test_extensions_and_api.ExtensionsTest.test_rolling_canary_exact_resource_partition) ... ok
 test_slo_uses_exact_rates_and_requires_complete_windows (test_extensions_and_api.ExtensionsTest.test_slo_uses_exact_rates_and_requires_complete_windows) ... ok
 test_traffic_weights_health_and_compensation (test_extensions_and_api.ExtensionsTest.test_traffic_weights_health_and_compensation) ... ok
+test_content_drift_and_path_escape_rejected (test_github_adapter.GitHubTests.test_content_drift_and_path_escape_rejected) ... ok
+test_cross_tenant_lease_has_no_provider_calls (test_github_adapter.GitHubTests.test_cross_tenant_lease_has_no_provider_calls) ... ok
+test_lost_pr_response_reconciles_without_writes (test_github_adapter.GitHubTests.test_lost_pr_response_reconciles_without_writes) ... ok
+test_missing_proposal_stays_pending (test_github_adapter.GitHubTests.test_missing_proposal_stays_pending) ... ok
+test_proposal_creates_only_immutable_objects_branch_and_pr (test_github_adapter.GitHubTests.test_proposal_creates_only_immutable_objects_branch_and_pr) ... ok
+test_reconcile_mode_reuses_same_proposal_and_observes_merged_commit (test_github_adapter.GitHubTests.test_reconcile_mode_reuses_same_proposal_and_observes_merged_commit) ... ok
 test_authenticates_and_preserves_exact_body (test_host_bridge.HostBridgeTests.test_authenticates_and_preserves_exact_body) ... ok
 test_rejects_expiry_audience_scope_and_route_substitution (test_host_bridge.HostBridgeTests.test_rejects_expiry_audience_scope_and_route_substitution) ... ok
 test_rejects_unsigned_identity_and_transfer_encoding (test_host_bridge.HostBridgeTests.test_rejects_unsigned_identity_and_transfer_encoding) ... ok
@@ -81,6 +93,6 @@ test_security_policy_drift_blocks_write (test_tls_controller.TlsControllerTests.
 test_wrong_certificate_bytes_never_call_provider (test_tls_controller.TlsControllerTests.test_wrong_certificate_bytes_never_call_provider) ... ok
 
 ----------------------------------------------------------------------
-Ran 81 tests in 102.678s
+Ran 93 tests in 119.895s
 
 OK
