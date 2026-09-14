@@ -200,3 +200,59 @@ public class ReportGenerator {
     assert len(findings) == 1
     assert findings[0].rule_id == "HIBERNATE_LAZY_N_PLUS_ONE"
     assert "getOrders" in findings[0].message
+
+
+def test_transactional_self_invocation_zero_false_positives():
+    # Calling on external service or having a local variable with the same name
+    # MUST NOT trigger false positive self-invocation findings!
+    non_self_code = """package com.example.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class OrderService {
+
+    private PaymentGateway otherPaymentService;
+
+    public void checkout(Long orderId) {
+        // Calling on another bean/service: NOT a self-invocation
+        otherPaymentService.completeTransaction(orderId);
+        // Local variable matching method name: NOT an invocation
+        String completeTransaction = "SUCCESS";
+    }
+
+    @Transactional
+    public void completeTransaction(Long orderId) {
+        // DB operations
+    }
+}
+"""
+    p = JavaASTParser(JavaLexer(non_self_code).tokenize(), source=non_self_code).parse()
+    findings = TransactionalSelfInvocationDetector.analyze_type(p.type_declarations[0])
+    assert len(findings) == 0, "External bean call or local variable must NOT trigger self-invocation false positive!"
+
+    # Unqualified call: completeTransaction(orderId); -> Implicit this.completeTransaction(orderId);
+    implicit_self_code = """package com.example.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class OrderService {
+
+    public void checkout(Long orderId) {
+        // Implicit this.completeTransaction(...)
+        completeTransaction(orderId);
+    }
+
+    @Transactional
+    public void completeTransaction(Long orderId) {
+        // DB operations
+    }
+}
+"""
+    p2 = JavaASTParser(JavaLexer(implicit_self_code).tokenize(), source=implicit_self_code).parse()
+    findings2 = TransactionalSelfInvocationDetector.analyze_type(p2.type_declarations[0])
+    assert len(findings2) == 1, "Implicit self call without 'this.' MUST be detected!"
+    assert findings2[0].rule_id == "SPRING_TX_SELF_INVOCATION"

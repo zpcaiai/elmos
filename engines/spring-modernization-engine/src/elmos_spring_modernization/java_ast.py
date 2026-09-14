@@ -397,6 +397,108 @@ class MethodParameter(JavaASTNode):
     name: str = ""
 
 
+# ==============================================================================
+# Statement and Expression AST Hierarchy (Compiler-grade LST)
+# ==============================================================================
+
+@dataclass
+class Statement(JavaASTNode):
+    pass
+
+
+@dataclass
+class Expression(JavaASTNode):
+    pass
+
+
+@dataclass
+class Block(Statement):
+    statements: List[Statement] = field(default_factory=list)
+
+
+@dataclass
+class ExpressionStatement(Statement):
+    expression: Expression = field(default_factory=Expression)
+
+
+@dataclass
+class VariableDeclarationStatement(Statement):
+    type_name: str = ""
+    variable_name: str = ""
+    initializer: Optional[Expression] = None
+
+
+@dataclass
+class IfStatement(Statement):
+    condition: Expression = field(default_factory=Expression)
+    then_branch: Statement = field(default_factory=Statement)
+    else_branch: Optional[Statement] = None
+
+
+@dataclass
+class WhileStatement(Statement):
+    condition: Expression = field(default_factory=Expression)
+    body: Statement = field(default_factory=Statement)
+
+
+@dataclass
+class ForStatement(Statement):
+    init: Optional[Statement] = None
+    condition: Optional[Expression] = None
+    update: Optional[Expression] = None
+    body: Statement = field(default_factory=Statement)
+
+
+@dataclass
+class CatchClause(JavaASTNode):
+    param_type: str = ""
+    param_name: str = ""
+    body: Block = field(default_factory=Block)
+
+
+@dataclass
+class TryCatchFinallyStatement(Statement):
+    try_block: Block = field(default_factory=Block)
+    catch_clauses: List[CatchClause] = field(default_factory=list)
+    finally_block: Optional[Block] = None
+
+
+@dataclass
+class ReturnStatement(Statement):
+    expression: Optional[Expression] = None
+
+
+@dataclass
+class IdentifierExpression(Expression):
+    name: str = ""
+
+
+@dataclass
+class LiteralExpression(Expression):
+    value: str = ""
+    literal_type: str = "STRING"
+
+
+@dataclass
+class FieldAccessExpression(Expression):
+    target: Expression = field(default_factory=Expression)
+    field_name: str = ""
+
+
+@dataclass
+class MethodInvocation(Expression):
+    select: Optional[Expression] = None  # None indicates implicit `this`
+    method_name: str = ""
+    arguments: List[Expression] = field(default_factory=list)
+
+
+@dataclass
+class BinaryExpression(Expression):
+    left: Expression = field(default_factory=Expression)
+    operator: str = ""
+    right: Expression = field(default_factory=Expression)
+
+
 @dataclass
 class MethodDeclaration(JavaASTNode):
     annotations: List[AnnotationNode] = field(default_factory=list)
@@ -406,6 +508,8 @@ class MethodDeclaration(JavaASTNode):
     parameters: List[MethodParameter] = field(default_factory=list)
     throws_types: List[str] = field(default_factory=list)
     body: Optional[str] = None
+    body_block: Optional[Block] = None
+    statements: List[Statement] = field(default_factory=list)
 
 
 @dataclass
@@ -893,8 +997,9 @@ class JavaASTParser:
             self.pos += 1
 
         method_end = self.pos
-        # Skip throws or body
+        # Parse body and structured statements
         body_content = None
+        body_tokens: List[Token] = []
         while self.pos < self.length:
             t = self._peek()
             if not t or t.value in (";", "{"):
@@ -914,6 +1019,7 @@ class JavaASTParser:
                                 method_end = bt.end
                                 self.pos += 1
                                 break
+                        body_tokens.append(bt)
                         method_end = bt.end
                         self.pos += 1
                     if self.source:
@@ -924,6 +1030,13 @@ class JavaASTParser:
                 break
             self.pos += 1
 
+        parsed_statements: List[Statement] = []
+        parsed_block: Optional[Block] = None
+        if body_tokens:
+            stmt_parser = JavaStatementParser(body_tokens)
+            parsed_block = stmt_parser.parse_block()
+            parsed_statements = parsed_block.statements
+
         decl = MethodDeclaration(
             annotations=annotations,
             modifiers=modifiers,
@@ -933,9 +1046,15 @@ class JavaASTParser:
             leading_trivia=leading_trivia,
             start_offset=method_start or 0,
             end_offset=method_end,
-            body=body_content
+            body=body_content,
+            body_block=parsed_block,
+            statements=parsed_statements
         )
         decl.prefix_space = Space.build(leading_trivia)
+        if parsed_block:
+            parsed_block.parent = decl
+        for s in parsed_statements:
+            s.parent = decl
         for param in parameters:
             param.parent = decl
         for anno in annotations:
@@ -952,6 +1071,362 @@ class JavaASTParser:
         param.start_offset = tokens[0].start
         param.end_offset = tokens[-1].end
         return param
+
+
+# ==============================================================================
+# 5. Compiler-grade Recursive Descent Statement & Expression Parser
+# ==============================================================================
+
+class JavaStatementParser:
+    """
+    Compiler-grade recursive descent parser for Java method bodies,
+    constructing strongly typed Statement and Expression AST nodes.
+    """
+
+    def __init__(self, tokens: List[Token]):
+        self.tokens = tokens
+        self.length = len(tokens)
+        self.pos = 0
+
+    def _peek(self, offset: int = 0) -> Optional[Token]:
+        idx = self.pos + offset
+        return self.tokens[idx] if idx < self.length else None
+
+    def _consume(self, val: Optional[str] = None) -> Optional[Token]:
+        if self.pos < self.length:
+            t = self.tokens[self.pos]
+            if val is None or t.value == val:
+                self.pos += 1
+                return t
+        return None
+
+    def parse_block(self) -> Block:
+        block = Block()
+        while self.pos < self.length:
+            tok = self._peek()
+            if not tok or tok.value == "}":
+                break
+            stmt = self.parse_statement()
+            if stmt:
+                stmt.parent = block
+                block.statements.append(stmt)
+            else:
+                self.pos += 1
+        return block
+
+    def parse_statement(self) -> Optional[Statement]:
+        tok = self._peek()
+        if not tok:
+            return None
+
+        # 1. Nested Block { ... }
+        if tok.value == "{":
+            self._consume("{")
+            inner_block = self.parse_block()
+            self._consume("}")
+            return inner_block
+
+        # 2. if (...) stmt [else stmt]
+        if tok.value == "if":
+            return self._parse_if()
+
+        # 3. while (...) stmt
+        if tok.value == "while":
+            return self._parse_while()
+
+        # 4. for (...) stmt
+        if tok.value == "for":
+            return self._parse_for()
+
+        # 5. try { ... } catch (...) { ... } finally { ... }
+        if tok.value == "try":
+            return self._parse_try()
+
+        # 6. return [expr];
+        if tok.value == "return":
+            return self._parse_return()
+
+        # 7. Semicolon empty statement
+        if tok.value == ";":
+            self._consume(";")
+            return None
+
+        # 8. Variable declaration or Expression statement
+        return self._parse_var_or_expression_statement()
+
+    def _parse_if(self) -> IfStatement:
+        self._consume("if")
+        self._consume("(")
+        cond_tokens: List[Token] = []
+        paren_depth = 1
+        while self.pos < self.length and paren_depth > 0:
+            t = self._consume()
+            if not t:
+                break
+            if t.value == "(":
+                paren_depth += 1
+                cond_tokens.append(t)
+            elif t.value == ")":
+                paren_depth -= 1
+                if paren_depth > 0:
+                    cond_tokens.append(t)
+            else:
+                cond_tokens.append(t)
+
+        cond_expr = self._parse_expression_from_tokens(cond_tokens)
+        then_stmt = self._parse_sub_statement()
+
+        else_stmt: Optional[Statement] = None
+        if self._peek() and self._peek().value == "else":
+            self._consume("else")
+            else_stmt = self._parse_sub_statement()
+
+        if_node = IfStatement(condition=cond_expr, then_branch=then_stmt, else_branch=else_stmt)
+        cond_expr.parent = if_node
+        if then_stmt:
+            then_stmt.parent = if_node
+        if else_stmt:
+            else_stmt.parent = if_node
+        return if_node
+
+    def _parse_while(self) -> WhileStatement:
+        self._consume("while")
+        self._consume("(")
+        cond_tokens: List[Token] = []
+        paren_depth = 1
+        while self.pos < self.length and paren_depth > 0:
+            t = self._consume()
+            if not t:
+                break
+            if t.value == "(":
+                paren_depth += 1
+                cond_tokens.append(t)
+            elif t.value == ")":
+                paren_depth -= 1
+                if paren_depth > 0:
+                    cond_tokens.append(t)
+            else:
+                cond_tokens.append(t)
+
+        cond_expr = self._parse_expression_from_tokens(cond_tokens)
+        body = self._parse_sub_statement()
+        while_node = WhileStatement(condition=cond_expr, body=body)
+        cond_expr.parent = while_node
+        if body:
+            body.parent = while_node
+        return while_node
+
+    def _parse_for(self) -> ForStatement:
+        self._consume("for")
+        self._consume("(")
+        paren_depth = 1
+        while self.pos < self.length and paren_depth > 0:
+            t = self._consume()
+            if not t:
+                break
+            if t.value == "(":
+                paren_depth += 1
+            elif t.value == ")":
+                paren_depth -= 1
+
+        body = self._parse_sub_statement()
+        for_node = ForStatement(body=body)
+        if body:
+            body.parent = for_node
+        return for_node
+
+    def _parse_try(self) -> TryCatchFinallyStatement:
+        self._consume("try")
+        # Handle optional try-with-resources: try (Resource r = ...) { ... }
+        if self._peek() and self._peek().value == "(":
+            self._consume("(")
+            pdepth = 1
+            while self.pos < self.length and pdepth > 0:
+                t = self._consume()
+                if not t:
+                    break
+                if t.value == "(":
+                    pdepth += 1
+                elif t.value == ")":
+                    pdepth -= 1
+
+        self._consume("{")
+        try_block = self.parse_block()
+        self._consume("}")
+
+        catch_clauses: List[CatchClause] = []
+        while self._peek() and self._peek().value == "catch":
+            self._consume("catch")
+            self._consume("(")
+            c_tokens: List[Token] = []
+            pdepth = 1
+            while self.pos < self.length and pdepth > 0:
+                t = self._consume()
+                if not t:
+                    break
+                if t.value == "(":
+                    pdepth += 1
+                elif t.value == ")":
+                    pdepth -= 1
+                    if pdepth == 0:
+                        break
+                else:
+                    c_tokens.append(t)
+
+            param_type = "".join(t.value for t in c_tokens[:-1]) if len(c_tokens) > 1 else (c_tokens[0].value if c_tokens else "")
+            param_name = c_tokens[-1].value if c_tokens else ""
+
+            self._consume("{")
+            catch_block = self.parse_block()
+            self._consume("}")
+            clause = CatchClause(param_type=param_type, param_name=param_name, body=catch_block)
+            catch_clauses.append(clause)
+
+        finally_block: Optional[Block] = None
+        if self._peek() and self._peek().value == "finally":
+            self._consume("finally")
+            self._consume("{")
+            finally_block = self.parse_block()
+            self._consume("}")
+
+        try_node = TryCatchFinallyStatement(
+            try_block=try_block,
+            catch_clauses=catch_clauses,
+            finally_block=finally_block
+        )
+        try_block.parent = try_node
+        for c in catch_clauses:
+            c.parent = try_node
+        if finally_block:
+            finally_block.parent = try_node
+        return try_node
+
+    def _parse_return(self) -> ReturnStatement:
+        self._consume("return")
+        expr_tokens: List[Token] = []
+        while self.pos < self.length:
+            t = self._peek()
+            if not t or t.value == ";":
+                self._consume(";")
+                break
+            expr_tokens.append(self._consume())
+
+        expr = self._parse_expression_from_tokens(expr_tokens) if expr_tokens else None
+        ret_node = ReturnStatement(expression=expr)
+        if expr:
+            expr.parent = ret_node
+        return ret_node
+
+    def _parse_sub_statement(self) -> Statement:
+        if self._peek() and self._peek().value == "{":
+            self._consume("{")
+            b = self.parse_block()
+            self._consume("}")
+            return b
+        else:
+            s = self.parse_statement()
+            return s or Block()
+
+    def _parse_var_or_expression_statement(self) -> Statement:
+        stmt_tokens: List[Token] = []
+        depth = 0
+        while self.pos < self.length:
+            t = self._peek()
+            if not t:
+                break
+            if t.value in ("{", "(", "["):
+                depth += 1
+            elif t.value in ("}", ")", "]"):
+                depth -= 1
+
+            if t.value == ";" and depth <= 0:
+                self._consume(";")
+                break
+            stmt_tokens.append(self._consume())
+
+        if not stmt_tokens:
+            return ExpressionStatement()
+
+        # Variable declaration: Type varName [= expr];
+        if len(stmt_tokens) >= 2 and stmt_tokens[0].value not in ("this", "super", "return", "throw", "log"):
+            if len(stmt_tokens) == 2 and stmt_tokens[1].type == TokenType.IDENTIFIER:
+                return VariableDeclarationStatement(
+                    type_name=stmt_tokens[0].value,
+                    variable_name=stmt_tokens[1].value
+                )
+            if len(stmt_tokens) >= 3 and stmt_tokens[1].type == TokenType.IDENTIFIER and stmt_tokens[2].value == "=":
+                init_expr = self._parse_expression_from_tokens(stmt_tokens[3:])
+                return VariableDeclarationStatement(
+                    type_name=stmt_tokens[0].value,
+                    variable_name=stmt_tokens[1].value,
+                    initializer=init_expr
+                )
+
+        expr = self._parse_expression_from_tokens(stmt_tokens)
+        return ExpressionStatement(expression=expr)
+
+    def _parse_expression_from_tokens(self, tokens: List[Token]) -> Expression:
+        if not tokens:
+            return LiteralExpression(value="", literal_type="EMPTY")
+
+        # Scan for method invocation: [target .] method_name ( [args] )
+        if tokens[-1].value == ")" and any(t.value == "(" for t in tokens):
+            pdepth = 0
+            open_idx = -1
+            for i in range(len(tokens) - 1, -1, -1):
+                if tokens[i].value == ")":
+                    pdepth += 1
+                elif tokens[i].value == "(":
+                    pdepth -= 1
+                    if pdepth == 0:
+                        open_idx = i
+                        break
+
+            if open_idx > 0:
+                caller_tokens = tokens[:open_idx]
+                arg_tokens = tokens[open_idx + 1:-1]
+
+                args: List[Expression] = []
+                curr_arg: List[Token] = []
+                arg_depth = 0
+                for at in arg_tokens:
+                    if at.value in ("(", "{", "["):
+                        arg_depth += 1
+                    elif at.value in (")", "}", "]"):
+                        arg_depth -= 1
+                    if at.value == "," and arg_depth == 0:
+                        if curr_arg:
+                            args.append(self._parse_expression_from_tokens(curr_arg))
+                        curr_arg = []
+                    else:
+                        curr_arg.append(at)
+                if curr_arg:
+                    args.append(self._parse_expression_from_tokens(curr_arg))
+
+                method_name = caller_tokens[-1].value
+                select_expr: Optional[Expression] = None
+                if len(caller_tokens) >= 3 and caller_tokens[-2].value == ".":
+                    select_expr = self._parse_expression_from_tokens(caller_tokens[:-2])
+
+                return MethodInvocation(
+                    select=select_expr,
+                    method_name=method_name,
+                    arguments=args
+                )
+
+        if len(tokens) == 1:
+            tok = tokens[0]
+            if tok.type == TokenType.IDENTIFIER or tok.value in ("this", "super"):
+                return IdentifierExpression(name=tok.value)
+            return LiteralExpression(value=tok.value, literal_type="LITERAL")
+
+        if len(tokens) >= 3 and tokens[-2].value == ".":
+            return FieldAccessExpression(
+                target=self._parse_expression_from_tokens(tokens[:-2]),
+                field_name=tokens[-1].value
+            )
+
+        return LiteralExpression(value=" ".join(t.value for t in tokens), literal_type="COMPOUND")
 
 
 # ==============================================================================
