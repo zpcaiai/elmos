@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ElmpayOrderDigestMigrationContractTest {
     private static final Path MIGRATION = Path.of(
-            "src/main/resources/db/migration/V84__elmpay_order_digest_lookup.sql");
+            "src/main/resources/db/migration/V89__elmpay_order_digest_function_forward_repair.sql");
 
     @Test void triggerFunctionsResolveEncodeFromPgCatalog() throws Exception {
         String sql = Files.readString(MIGRATION);
