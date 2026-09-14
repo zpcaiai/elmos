@@ -1,0 +1,37 @@
+[
+  {
+    "argv": [
+      "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "-version"
+    ],
+    "code": 0,
+    "stdout": "",
+    "stderr": "openjdk version \"21.0.12\" 2026-07-21\nOpenJDK Runtime Environment (build 21.0.12+8-1-22.04-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.12+8-1-22.04-Ubuntu, mixed mode, sharing)\n"
+  },
+  {
+    "argv": [
+      "/usr/lib/jvm/java-21-openjdk-amd64/bin/javac",
+      "-d",
+      "/tmp/elmos-tmpfs-classes-swvu3io3",
+      "/mnt/f/PythonPro/elmos/modules/secret/src/main/java/io/elmos/secret/SecretValue.java",
+      "/mnt/f/PythonPro/elmos/modules/secret/src/main/java/io/elmos/secret/SecretLease.java",
+      "/mnt/f/PythonPro/elmos/modules/secret/src/main/java/io/elmos/secret/SecretInjectionService.java",
+      "/mnt/f/PythonPro/elmos/modules/secret/src/main/java/io/elmos/secret/TmpfsSecretMaterializer.java",
+      "/mnt/f/PythonPro/elmos/modules/secret/src/test/java/io/elmos/secret/NativeTmpfsAcceptance.java"
+    ],
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "-cp",
+      "/tmp/elmos-tmpfs-classes-swvu3io3",
+      "io.elmos.secret.NativeTmpfsAcceptance"
+    ],
+    "code": 0,
+    "stdout": "PASS: real tmpfs bytes/0400, duplicate, scope, traversal, disk, overlap, symlink, idempotent cleanup\n",
+    "stderr": ""
+  }
+]

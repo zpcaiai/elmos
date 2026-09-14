@@ -10,6 +10,7 @@ dependencies = ["cryptography==46.0.7"]
 
 [project.scripts]
 elmos-deployment-agent = "elmos_release_deployment.remote_agent:main"
+elmos-deployment-worker-check = "elmos_release_deployment.isolated_native_worker:main"
 
 [project.optional-dependencies]
 temporal = ["temporalio==1.32.0"]

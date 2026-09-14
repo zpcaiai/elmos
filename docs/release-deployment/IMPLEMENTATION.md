@@ -23,6 +23,21 @@ These are not ECS/ACR/container/Temporal-server or independent acceptance result
 
 ## Runtime composition
 
+The dedicated offline Linux backend and exact request/scope worker registry now
+live in `isolated_native_worker.py`, with an owner-checked installation probe
+`elmos-deployment-worker-check`. See [WORKER_INSTALLATION.md](WORKER_INSTALLATION.md)
+for prerequisites, host binding and limits. The backend enforces rootless/cgroup
+controls, fixed images, no network, resource limits, container-policy readback and
+daemon-level forced cleanup. Its Docker protocol tests do not prove real isolated
+execution. Networked Terraform, credential mounts, host crash/orphan reconciliation,
+actual installation and external authorization/evidence bindings remain outstanding.
+
+The Java dedicated service also has opt-in canonical secret lifecycle wiring and
+an actual private-tmpfs materializer. Linux synthetic-credential execution evidence
+is recorded in `qualification/tmpfs-receipt.json`; required provider, durable
+lease-store and authorization bindings still fail closed when absent. This does
+not establish cloud STS/KMS support or production service installation.
+
 `ReleaseDeploymentService` owns immutable release/target/config/plan registrations,
 signed tickets, separate production approval, revocation and deployment admission.
 `DeploymentWorkflow.tick` performs one durable reconciliation phase. It composes

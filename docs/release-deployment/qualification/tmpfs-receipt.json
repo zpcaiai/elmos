@@ -1,0 +1,24 @@
+{
+  "status": "LOCAL_NATIVE_EXECUTED",
+  "files": {
+    "modules/secret/src/main/java/io/elmos/secret/SecretValue.java": "ae5d35c865289e04592bdff09a30edf5bfa1a2f4cb37b0f1fb880f65324510ca",
+    "modules/secret/src/main/java/io/elmos/secret/SecretLease.java": "27f9a2ee21efe52e95ce9b0a07c5c566fd74886fad05f308942fd0fdebbcf7b8",
+    "modules/secret/src/main/java/io/elmos/secret/SecretInjectionService.java": "92dacde9b5285ce32f62cfc82ef60df82f16f516d0f21bacfb0d9c358603aa75",
+    "modules/secret/src/main/java/io/elmos/secret/TmpfsSecretMaterializer.java": "8ef0caef89936b2aa29339a3e72c09ef5d2c59f7cfb79b74812be316806f4931",
+    "modules/secret/src/test/java/io/elmos/secret/NativeTmpfsAcceptance.java": "1bae3c86d5701682ad378c277581dbfcf35762b03b01e36fb5a44202e04d6d92",
+    "tooling/validate_release_tmpfs.py": "b81180a5ede7ef52e5cc269d17bfe778bc6c1cbaf829062fbc985720abf30858"
+  },
+  "source_unchanged_during_test": true,
+  "logs": {
+    "docs/release-deployment/qualification/tmpfs-native.json": "3d7234e7578e097400306cc7ac3579dec292320e0974186b5fa7c7f1314b61d7"
+  },
+  "toolchains": {
+    "java": "831a06e155bd62ea0873fafcbeb3db841369d0beae0c77b714411eb3c361278c",
+    "javac": "55e9f17e0f8a959fac7e55a1e4126bc7f15869e3081b1144546bb0779d9a3167"
+  },
+  "scope": "Synthetic credential creation and cleanup on actual Linux tmpfs",
+  "host_service_installation": "NOT_RUN",
+  "cloud_credentials": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

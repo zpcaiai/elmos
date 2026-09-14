@@ -3,6 +3,6 @@ test_real_helm_render_and_input_drift_rejected (test_native_tools.NativeTests.te
 test_real_terraform_saved_apply_refresh_and_destroy (test_native_tools.NativeTests.test_real_terraform_saved_apply_refresh_and_destroy) ... ok
 
 ----------------------------------------------------------------------
-Ran 3 tests in 50.293s
+Ran 3 tests in 77.816s
 
 OK

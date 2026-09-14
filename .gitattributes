@@ -30,3 +30,13 @@ modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentPr
 modules/secret/src/main/java/io/elmos/secret/DeploymentSecretSession.java -text
 modules/secret/src/test/java/io/elmos/secret/DeploymentSecretSessionTest.java -text
 tooling/validate_release_native.py -text
+
+modules/secret/src/main/java/io/elmos/secret/SecretValue.java -text
+modules/secret/src/main/java/io/elmos/secret/SecretLease.java -text
+modules/secret/src/main/java/io/elmos/secret/SecretInjectionService.java -text
+modules/secret/src/main/java/io/elmos/secret/TmpfsSecretMaterializer.java -text
+modules/secret/src/test/java/io/elmos/secret/NativeTmpfsAcceptance.java -text
+apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentSecretConfiguration.java -text
+apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentSecretConfigurationTest.java -text
+apps/production-runtime-control-plane/pom.xml -text
+tooling/validate_release_tmpfs.py -text
