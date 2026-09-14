@@ -328,9 +328,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <small>{account.principal.roles.join(" · ") || "无业务角色"}</small>
                     {hasAdminAccess && <span className="admin-session-badge">管理员会话</span>}
                   </div>
-                  <Link href="/account" onClick={closeSidebar}>
-                    {english ? "Account and organizations" : "账户与组织"}
-                  </Link>
+                  {hasAdminAccess && (
+                    <Link href="/account" onClick={closeSidebar}>
+                      {english ? "Account and organizations" : "账户与组织"}
+                    </Link>
+                  )}
                   {account.principal.memberships.length > 1 && (
                     <label>
                       <span>{english ? "Current tenant" : "当前租户"}</span>
