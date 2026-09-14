@@ -18,6 +18,10 @@ downgrade rejection, tenant binding, and corpus separation. The output is
 content-addressed by `scripts/batch40_record_results.py` and recorded as
 `LOCAL_EXECUTED_SELF_ATTESTED`.
 
+The target deliberately preserves the previously captured dependency artifact
+and environment digests. Refresh those only through `batch40-evidence` in a
+complete checkout; a Docker fixture run is not a dependency-inventory refresh.
+
 This target intentionally does not run as part of `batch40-check`: CI hosts are
 not assumed to expose a Docker daemon. It also does not create an evidence
 manifest, certification request, signature, approval, trust store, production

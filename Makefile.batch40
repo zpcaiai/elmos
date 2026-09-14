@@ -67,9 +67,9 @@ batch40-docker-evidence:
 	python3 scripts/batch40_docker_local_evidence.py \
 		--pack mature-product-packs/batch40/$(PACK) \
 		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-docker-local-evidence.json
-	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
+	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK) --skip-context-refresh
 	$(MAKE) batch40-local-assurance PACK=$(PACK)
-	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
+	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK) --skip-context-refresh
 batch40-secret-scan:
 	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
 	python3 scripts/batch40_secret_scan.py --jobs 32 \
