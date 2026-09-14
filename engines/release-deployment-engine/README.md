@@ -12,7 +12,8 @@ Install this project on an approved Linux deployment host to expose the
 configuration, signed permit, canonical Compose/config bytes and secret mounts
 have been provisioned by the host. No cloud operation or daemon starts on import.
 
-The package currently contains a locally tested deployment core, optional Temporal
-adapter, host-mountable API, provider request adapters, remote agent and P1/P2
-planning/validation components. Host application wiring and live acceptance are
-separate remaining work; local qualification is not full product completion.
+The package includes the deployment core, optional Temporal adapter, Spring/WSGI
+signed host bridge, remote agent, bounded Alibaba RPC and Kubernetes HTTPS
+transports, ALB/DNS/Kubernetes execution controllers and remaining P1/P2 planners.
+Canonical policy/session/evidence wiring and the remaining coverage matrix entries
+still require implementation; local qualification is not full product completion.

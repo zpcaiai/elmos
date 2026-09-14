@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import subprocess
@@ -33,7 +34,9 @@ def main():
     before=source_hashes()
     started=time.time()
     command=[sys.executable,'-m','unittest','discover','-s',str(engine/'tests'),'-v']
-    result=subprocess.run(command,cwd=ROOT,capture_output=True,timeout=600)
+    test_env = dict(os.environ)
+    test_env['PYTHONPATH'] = str(engine/'src')
+    result=subprocess.run(command,cwd=ROOT,env=test_env,capture_output=True,timeout=600)
     raw=result.stdout+result.stderr
     (output/'python-tests.txt').write_bytes(raw)
     print(raw.decode(errors='replace'))

@@ -1,3 +1,11 @@
+test_nested_backend_list_uses_rpc_indexed_fields (test_alibaba_rpc.RpcTests.test_nested_backend_list_uses_rpc_indexed_fields) ... ok
+test_request_uses_exact_https_endpoint_and_ephemeral_token (test_alibaba_rpc.RpcTests.test_request_uses_exact_https_endpoint_and_ephemeral_token) ... ok
+test_unknown_action_and_region_never_open_connection (test_alibaba_rpc.RpcTests.test_unknown_action_and_region_never_open_connection) ... ok
+test_alb_readback_and_replay_do_not_repeat_mutation (test_cloud_controllers.CloudControllersTests.test_alb_readback_and_replay_do_not_repeat_mutation) ... ok
+test_cross_scope_expired_and_missing_resource_denied_before_provider (test_cloud_controllers.CloudControllersTests.test_cross_scope_expired_and_missing_resource_denied_before_provider) ... ok
+test_dns_exact_record_readback_and_explicit_compensation (test_cloud_controllers.CloudControllersTests.test_dns_exact_record_readback_and_explicit_compensation) ... ok
+test_unknown_dispatch_never_resubmits_or_infers_success (test_cloud_controllers.CloudControllersTests.test_unknown_dispatch_never_resubmits_or_infers_success) ... ok
+test_wrong_before_image_prevents_mutation (test_cloud_controllers.CloudControllersTests.test_wrong_before_image_prevents_mutation) ... ok
 test_actual_evidence_validates_original_package_schema (test_contracts.ContractsTest.test_actual_evidence_validates_original_package_schema) ... ok
 test_concurrent_same_request_is_one_deployment (test_contracts.ContractsTest.test_concurrent_same_request_is_one_deployment) ... ok
 test_pinned_archive_dual_root_and_immutable_mirror (test_contracts.ContractsTest.test_pinned_archive_dual_root_and_immutable_mirror) ... ok
@@ -17,6 +25,13 @@ test_retention_protects_stable_and_referenced (test_extensions_and_api.Extension
 test_rolling_canary_exact_resource_partition (test_extensions_and_api.ExtensionsTest.test_rolling_canary_exact_resource_partition) ... ok
 test_slo_uses_exact_rates_and_requires_complete_windows (test_extensions_and_api.ExtensionsTest.test_slo_uses_exact_rates_and_requires_complete_windows) ... ok
 test_traffic_weights_health_and_compensation (test_extensions_and_api.ExtensionsTest.test_traffic_weights_health_and_compensation) ... ok
+test_authenticates_and_preserves_exact_body (test_host_bridge.HostBridgeTests.test_authenticates_and_preserves_exact_body) ... ok
+test_rejects_expiry_audience_scope_and_route_substitution (test_host_bridge.HostBridgeTests.test_rejects_expiry_audience_scope_and_route_substitution) ... ok
+test_rejects_unsigned_identity_and_transfer_encoding (test_host_bridge.HostBridgeTests.test_rejects_unsigned_identity_and_transfer_encoding) ... ok
+test_replay_is_persistent_across_authenticator_instances (test_host_bridge.HostBridgeTests.test_replay_is_persistent_across_authenticator_instances) ... ok
+test_apply_waits_for_exact_generation_and_replay_is_read_only (test_kubernetes_controller.KubernetesControllerTests.test_apply_waits_for_exact_generation_and_replay_is_read_only) ... ok
+test_uid_replacement_rejected_before_mutation (test_kubernetes_controller.KubernetesControllerTests.test_uid_replacement_rejected_before_mutation) ... ok
+test_unknown_never_reapplies (test_kubernetes_controller.KubernetesControllerTests.test_unknown_never_reapplies) ... ok
 test_acr_verifies_manifest_config_bytes_and_architecture (test_provider_adapters.AdapterTest.test_acr_verifies_manifest_config_bytes_and_architecture) ... ok
 test_cloud_assistant_request_idempotency_and_redaction (test_provider_adapters.AdapterTest.test_cloud_assistant_request_idempotency_and_redaction) ... ok
 test_ecs_discovery_checks_resources_region_tags_and_status (test_provider_adapters.AdapterTest.test_ecs_discovery_checks_resources_region_tags_and_status) ... ok
@@ -52,6 +67,6 @@ test_logs_redact_raw_encoded_and_bearer_values_before_cas (test_secrets.SecretsT
 test_scope_bound_immutable_secret_mounts (test_secrets.SecretsTest.test_scope_bound_immutable_secret_mounts) ... ok
 
 ----------------------------------------------------------------------
-Ran 52 tests in 88.621s
+Ran 67 tests in 110.116s
 
 OK

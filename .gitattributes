@@ -13,3 +13,13 @@ docs/release-deployment/** -text whitespace=cr-at-eol
 agent-skills/runtime/elmos-release-deployment/** -text whitespace=cr-at-eol
 tooling/integrate_release_deployment_skills.py -text whitespace=cr-at-eol
 tooling/validate_release_deployment.py -text whitespace=cr-at-eol
+
+# Preserve byte identity of release deployment Java qualification inputs.
+apps/control-plane/src/main/java/io/elmos/controlplane/DeploymentHostSigner.java -text
+apps/control-plane/src/main/java/io/elmos/controlplane/ReleaseDeploymentController.java -text
+apps/control-plane/src/main/java/io/elmos/controlplane/ReleaseDeploymentHostConfiguration.java -text
+apps/control-plane/src/test/java/io/elmos/controlplane/DeploymentHostSignerTest.java -text
+apps/control-plane/src/test/java/io/elmos/controlplane/ReleaseDeploymentControllerTest.java -text
+modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentToolExecutor.java -text
+modules/production-runtime/src/main/java/io/elmos/productionruntime/JdbcDeploymentToolReceiptLookup.java -text
+modules/production-runtime/src/test/java/io/elmos/productionruntime/DeploymentToolExecutorTest.java -text

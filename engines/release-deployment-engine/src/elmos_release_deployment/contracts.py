@@ -61,7 +61,8 @@ class Principal:
     permissions: frozenset[str]
 
     def allow(self, permission):
-        identifier(self.actor_id)
+        require(isinstance(self.actor_id, str) and re.fullmatch(
+            r'[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}', self.actor_id) is not None, 'invalid_actor')
         require(permission in self.permissions, 'permission_denied')
 
 
