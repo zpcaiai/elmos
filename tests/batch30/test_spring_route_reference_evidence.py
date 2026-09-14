@@ -314,7 +314,7 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
                 check=False,
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("BOOT_3_5_LOCAL_EVIDENCE", result.stdout + result.stderr)
+            self.assertIn("BOOT_LOCAL_EVIDENCE", result.stdout + result.stderr)
         finally:
             target_evidence.write_text(original, encoding="utf-8")
 
@@ -347,6 +347,76 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertEqual(
             REFERENCE.gradle_settings(route),
             "rootProject.name = 'spring-reference-2-7-18'\n",
+        )
+
+    def test_all_catalogued_boot_routes_have_exact_local_executor_entries(self) -> None:
+        expected = {
+            "boot-1.5-java-8-maven-to-boot-2.7.18-java-17",
+            "boot-1.5-java-8-maven-to-boot-3.2.12-java-17",
+            "boot-1.5-java-8-maven-to-boot-3.5.3-java-21",
+            "boot-2.0-2.6-maven-to-boot-2.7.18-java-17",
+            "boot-2.0-2.6-maven-to-boot-3.2.12-java-17",
+            "boot-2.0-2.6-maven-to-boot-3.5.3-java-21",
+            "boot-2.7-maven-to-boot-3.2.12-java-17",
+            "boot-2.7-maven-to-boot-3.5.3-java-21",
+            "boot-3.0-3.1-maven-to-boot-3.2.12-java-17",
+            "boot-3.0-3.4-maven-to-boot-3.5.3-java-21",
+            "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
+            "boot-1.5-maven-to-boot-4.1.0-java-21",
+            "boot-2.0-2.6-maven-to-boot-4.1.0-java-21",
+            "boot-2.7-maven-to-boot-4.1.0-java-21",
+            "boot-3.0-3.4-maven-to-boot-4.1.0-java-21",
+            "boot-3.5-maven-to-boot-4.1.0-java-21",
+            "boot-4.0-maven-to-boot-4.1.0-java-21",
+            "boot-2.x-gradle-to-boot-3.5.3-java-21",
+            "boot-1.5-gradle-to-boot-4.1.0-java-21",
+            "boot-2.x-gradle-to-boot-4.1.0-java-21",
+            "boot-3.x-gradle-to-boot-4.1.0-java-21",
+            "boot-4.0-gradle-to-boot-4.1.0-java-21",
+            "boot-1.5-maven-to-boot-4.1.1-java-21",
+            "boot-2.0-2.6-maven-to-boot-4.1.1-java-21",
+            "boot-2.7-maven-to-boot-4.1.1-java-21",
+            "boot-3.0-3.4-maven-to-boot-4.1.1-java-21",
+            "boot-3.5-maven-to-boot-4.1.1-java-21",
+            "boot-4.0-maven-to-boot-4.1.1-java-21",
+            "boot-1.5-gradle-to-boot-4.1.1-java-21",
+            "boot-2.x-gradle-to-boot-4.1.1-java-21",
+            "boot-3.x-gradle-to-boot-4.1.1-java-21",
+            "boot-4.0-gradle-to-boot-4.1.1-java-21",
+        }
+        self.assertEqual(set(REFERENCE.ROUTES), expected)
+
+    def test_target_java_is_route_bound_for_java_17_edges(self) -> None:
+        route = REFERENCE.ROUTES[
+            "boot-1.5-java-8-maven-to-boot-2.7.18-java-17"
+        ]
+        self.assertEqual(route.source_java, "8")
+        self.assertEqual(route.target_java, "17")
+        self.assertEqual(route.target_boot, "2.7.18")
+
+    def test_target_build_forces_post_rewrite_clean_recompile(self) -> None:
+        self.assertEqual(
+            REFERENCE.clean_build_argv(["mvn", "-B", "verify"]),
+            ["mvn", "-B", "clean", "verify"],
+        )
+        self.assertEqual(
+            REFERENCE.clean_build_argv(["gradle", "--no-daemon", "build"]),
+            ["gradle", "--no-daemon", "clean", "build"],
+        )
+
+    def test_boot_4_source_fixture_names_split_webmvc_test_starter(self) -> None:
+        route = REFERENCE.ROUTES["boot-4.0-maven-to-boot-4.1.1-java-21"]
+        self.assertIn("spring-boot-starter-webmvc-test", REFERENCE.pom(route))
+        self.assertIn(
+            "org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc",
+            route.test,
+        )
+        gradle_route = REFERENCE.ROUTES[
+            "boot-4.0-gradle-to-boot-4.1.1-java-21"
+        ]
+        self.assertIn(
+            "testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'",
+            REFERENCE.gradle_build(gradle_route),
         )
 
     def test_gradle_route_recipe_matches_the_catalog_route_id(self) -> None:
@@ -408,6 +478,14 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertIn(
             REFERENCE.ELMOS_RECIPE_COORDINATE,
             REFERENCE.rewrite_recipe_artifact_coordinates(boot_4_recipe),
+        )
+        self.assertIn(
+            REFERENCE.ELMOS_RECIPE_COORDINATE,
+            REFERENCE.gradle_elmos_recipe_dependency(boot_4_recipe),
+        )
+        self.assertIn("mavenLocal()", REFERENCE.GRADLE_REWRITE_INIT_SCRIPT)
+        self.assertEqual(
+            REFERENCE.gradle_elmos_recipe_dependency(boot_3_recipe), ""
         )
 
     def test_recipe_seed_builds_the_leaf_pom_in_sparse_workspaces(self) -> None:

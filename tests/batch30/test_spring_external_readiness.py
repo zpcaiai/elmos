@@ -37,6 +37,9 @@ class SpringExternalReadinessTests(unittest.TestCase):
                 "boot-2.x-gradle-to-boot-4.1.0-java-21",
                 "boot-3.0-3.4-maven-to-boot-4.1.0-java-21",
                 "boot-3.5-maven-to-boot-4.1.0-java-21",
+                "boot-3.x-gradle-to-boot-4.1.0-java-21",
+                "boot-4.0-gradle-to-boot-4.1.0-java-21",
+                "boot-4.0-maven-to-boot-4.1.0-java-21",
                 "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21",
             ],
         )

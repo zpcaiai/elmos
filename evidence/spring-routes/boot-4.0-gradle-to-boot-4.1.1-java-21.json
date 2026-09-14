@@ -1,0 +1,102 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "build_tool": "gradle",
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "4.0.0",
+    "source_java": "21",
+    "target_boot": "4.1.1",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "boot-4.0-gradle-to-boot-4.1.1-java-21",
+  "schema_version": 1,
+  "source": {
+    "boot": "4.0.0",
+    "build": "PASSED",
+    "build_tail": "To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :compileJava\n> Task :processResources\n> Task :classes\n> Task :resolveMainClassName\n> Task :bootJar\n> Task :jar\n> Task :assemble\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n> Task :test\n> Task :check\n> Task :build\n\nBUILD SUCCESSFUL in 11s\n7 actionable tasks: 7 executed\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "49ce01f38e6cfdb98003f1dbaf8b22517e2b31cbf28f09eee2f2cf924c89a6a6",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "target": {
+    "boot": "4.1.1",
+    "build": "PASSED",
+    "build_tail": "To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :clean\n> Task :compileJava\n> Task :processResources\n> Task :classes\n> Task :resolveMainClassName\n> Task :bootJar\n> Task :jar\n> Task :assemble\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n> Task :test\n> Task :check\n> Task :build\n\nBUILD SUCCESSFUL in 6s\n8 actionable tasks: 8 executed\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "92dad4423555b889404de1d3597c88fc6104c53cee2aa89abe9e94c89a2eaf42",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "transformation": {
+    "elmos_recipe_artifact": "NOT_REQUIRED",
+    "engine": "OpenRewrite",
+    "gradle": "Gradle 8.14.3",
+    "output_tail": "ingBoot_3_3\n                    org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2\n                        org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1\n                            org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0\n                                org.openrewrite.gradle.plugins.UpgradePluginVersion\n                                org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0\n                                    org.openrewrite.java.migrate.jakarta.JakartaEE10\n                                        org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta\n                                            org.openrewrite.java.migrate.jakarta.JavaxXmlBindMigrationToJakartaXmlBind\n                                                org.openrewrite.java.migrate.jakarta.RetainJaxbApiForJackson\n                                                    org.openrewrite.java.dependencies.AddDependency\n        org.openrewrite.gradle.plugins.UpgradePluginVersion: {pluginIdPattern=org.springframework.boot, newVersion=4.0.x}\n        org.openrewrite.java.spring.boot4.RenameDeprecatedStartersManagedVersions\n            org.openrewrite.java.dependencies.ChangeDependency\n        org.openrewrite.gradle.plugins.ChangePluginVersion: {pluginIdPattern=org.springframework.boot, newVersion=4.1.1}\nPlease review and commit the results.\nEstimate time saved: 25m\n\n[Incubating] Problems report is available at: file:///private/tmp/elmos-spring-route-gradle-batch/migrated/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n\nBUILD SUCCESSFUL in 5m 15s\n4 actionable tasks: 4 executed\n",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_1Java21",
+    "recipe_path": "apps/java-engine-worker/src/main/resources/rewrite/spring-to-boot-4.1.1.yml",
+    "recipe_sha256": "e8bef9d7debc0d1d1a41bfbec1625ffcf2a001a3566a2c96f05d2105d3eaef3a",
+    "rewrite_plugin": "7.37.0",
+    "rewrite_spring": "6.35.0"
+  }
+}

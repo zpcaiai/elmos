@@ -1,0 +1,98 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "build_tool": "maven",
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "2.3.12.RELEASE",
+    "source_java": "11",
+    "target_boot": "4.1.1",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "boot-2.0-2.6-maven-to-boot-4.1.1-java-21",
+  "schema_version": 1,
+  "source": {
+    "boot": "2.3.12.RELEASE",
+    "build": "PASSED",
+    "build_tail": "ng back to default profiles: default\n2026-09-14 10:11:12.496  INFO 19789 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'\n2026-09-14 10:11:12.727  INFO 19789 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''\n2026-09-14 10:11:12.727  INFO 19789 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''\n2026-09-14 10:11:12.733  INFO 19789 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'\n2026-09-14 10:11:12.747  INFO 19789 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 20 ms\n2026-09-14 10:11:12.766  INFO 19789 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 1.23 seconds (JVM running for 1.697)\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.751 s - in io.elmos.reference.OrderControllerTest\n2026-09-14 10:11:13.100  INFO 19789 --- [extShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.2.0:jar (default-jar) @ spring-reference-2-3-12-release ---\n[INFO] Building jar: /private/tmp/elmos-spring-route-clean-batch/source/target/spring-reference-2-3-12-release-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:2.3.12.RELEASE:repackage (repackage) @ spring-reference-2-3-12-release ---\n[INFO] Replacing main artifact with repackaged archive\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  4.203 s\n[INFO] Finished at: 2026-09-14T10:11:14+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"11.0.26\" 2025-01-21 LTS",
+    "runtime": {
+      "health": {
+        "status": "UP"
+      },
+      "jar_sha256": "118c1a67104a65ddadf1785b2a0f7bc905e408540c27950fe30fae5e1a505f98",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "target": {
+    "boot": "4.1.1",
+    "build": "PASSED",
+    "build_tail": "t profile: \"default\"\n2026-09-14T10:11:35.687+08:00  INFO 20065 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''\n2026-09-14T10:11:35.688+08:00  INFO 20065 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''\n2026-09-14T10:11:35.692+08:00  INFO 20065 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'\n2026-09-14T10:11:35.697+08:00  INFO 20065 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 8 ms\n2026-09-14T10:11:35.728+08:00  INFO 20065 --- [           main] io.elmos.reference.OrderControllerTest   : Started OrderControllerTest in 0.838 seconds (process running for 1.295)\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.495 s -- in io.elmos.reference.OrderControllerTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.5.1:jar (default-jar) @ spring-reference-2-3-12-release ---\n[INFO] Building jar: /private/tmp/elmos-spring-route-clean-batch/migrated/target/spring-reference-2-3-12-release-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:4.1.1:repackage (repackage) @ spring-reference-2-3-12-release ---\n[INFO] Replacing main artifact /private/tmp/elmos-spring-route-clean-batch/migrated/target/spring-reference-2-3-12-release-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/tmp/elmos-spring-route-clean-batch/migrated/target/spring-reference-2-3-12-release-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  3.407 s\n[INFO] Finished at: 2026-09-14T10:11:36+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "b76c40e0292617ff9806ea82b47d76827461504fe03d20c97d3910ceeeb86ba6",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "transformation": {
+    "elmos_recipe_artifact": "NOT_REQUIRED",
+    "engine": "OpenRewrite",
+    "maven": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
+    "output_tail": "nrewrite.java.spring.boot2.SpringBoot2JUnit4to5Migration\n[WARNING]                         org.openrewrite.java.testing.junit5.JUnit4to5Migration\n[WARNING]                             org.openrewrite.java.dependencies.RemoveDependency\n[WARNING]         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5\n[WARNING]             org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4\n[WARNING]                 org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3\n[WARNING]                     org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2\n[WARNING]                         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_1\n[WARNING]                             org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_0\n[WARNING]                                 org.openrewrite.java.migrate.UpgradeToJava17\n[WARNING]                                     org.openrewrite.java.migrate.UpgradeBuildToJava17\n[WARNING]                                         org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING]             org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0\n[WARNING]                 org.openrewrite.java.spring.boot4.MigrateToModularStarters\n[WARNING]                     org.openrewrite.java.spring.boot4.MigrateAutoconfigurePackages\n[WARNING]                         org.openrewrite.java.ChangePackage\n[WARNING]                 org.openrewrite.java.migrate.UpgradeToJava21\n[WARNING]                     org.openrewrite.java.migrate.UpgradeBuildToJava21\n[WARNING]                         org.openrewrite.java.migrate.UpgradeJavaVersion\n[WARNING] Please review and commit the results.\n[WARNING] Estimate time saved: 2h 10m\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  17.555 s\n[INFO] Finished at: 2026-09-14T10:11:32+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_1Java21",
+    "recipe_path": "apps/java-engine-worker/src/main/resources/rewrite/spring-to-boot-4.1.1.yml",
+    "recipe_sha256": "e8bef9d7debc0d1d1a41bfbec1625ffcf2a001a3566a2c96f05d2105d3eaef3a",
+    "rewrite_plugin": "6.44.0",
+    "rewrite_spring": "6.35.0"
+  }
+}
