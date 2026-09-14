@@ -56,6 +56,25 @@ class ReleaseControlGateTest(unittest.TestCase):
             self.assertEqual("NOT_RUN", certification["status"])
             self.assertEqual("BLOCKED", gate["status"])
             self.assertFalse(gate["eligible"])
+            support = json.loads(
+                (pack / "support-matrix.json").read_text(encoding="utf-8")
+            )
+            capability_status = record.get("capability_status", "experimental")
+            self.assertIn(capability_status, {"experimental", "limited"})
+            self.assertTrue(support["capabilities"])
+            self.assertEqual(
+                {capability_status},
+                {capability["status"] for capability in support["capabilities"]},
+            )
+            request_state = record.get(
+                "certification_request_state", "PRESENT_REVOKED"
+            )
+            if request_state == "REMOVED_FAIL_CLOSED":
+                self.assertFalse((pack / "certification-request.json").exists())
+                self.assertFalse((pack / "certification-request.sig").exists())
+            else:
+                self.assertEqual("PRESENT_REVOKED", request_state)
+                self.assertTrue((pack / "certification-request.json").is_file())
 
     def test_dependabot_exceptions_are_digest_bound_and_not_certified(self) -> None:
         passed, errors = MODULE.check_dependabot_governance()
