@@ -4,7 +4,7 @@
   "initialAuthority": "postgresql-17.5",
   "phases": ["preflight", "backfill", "cdc-catchup", "write-fence", "final-reconciliation", "authority-cas", "observation-window"],
   "authoritySwitch": "COMPARE_AND_SET_WITH_GENERATION_FENCE",
-  "targetWindowJournal": {"required": true, "durable": true, "replayOnRollback": true},
+  "targetWindowJournal": {"required": true, "table": "elmos_target_window_journal", "durable": true, "replayOnRollback": true},
   "abortConditions": ["p0-difference", "cdc-lag-slo-breach", "unknown-write-outcome", "runner-attestation-change", "license-or-runtime-digest-change"],
   "rollback": {"authority": "postgresql-17.5", "requiresTargetWindowReplay": true, "requiresPostRollbackFieldReconciliation": true},
   "acceptance": {"targetWindowWriteLossCount": 0, "p0DifferenceCount": 0, "unknownOutcomeCount": 0}

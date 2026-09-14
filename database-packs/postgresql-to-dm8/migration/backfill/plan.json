@@ -2,7 +2,7 @@
   "schemaVersion": "1.0",
   "status": "NOT_RUN",
   "sourceAuthority": "postgresql-17.5",
-  "target": "dm8-8.1.3.140-enterprise",
+  "target": "dm8-8.1.4.6-rev244896-enterprise",
   "dataClass": "SYNTHETIC_DISPOSABLE_ONLY",
   "orderingKey": ["tenant_id", "id"],
   "batchSize": 1000,

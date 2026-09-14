@@ -7,7 +7,7 @@
   "critical_unknowns": 0,
   "destructive_unapproved_changes": 0,
   "evidence_digests": {
-    "certification/local-postgresql-dm8-query-evidence.json": "sha256:a4c44558539ae4497dfdcaf0d09e500f2b97cb427b3d75138ce861755fba1b17"
+    "certification/local-postgresql-dm8-query-evidence.json": "sha256:ae2fa31084a3aff8ac86827f5ab6743d3ad3850b4a0fc882edf6ca73c07ad62e"
   },
   "evidence_refs": [
     "certification/local-postgresql-dm8-query-evidence.json"

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "profileId": "postgresql-17.5-to-dm8-8.1.3.140-phase1",
+  "profileId": "postgresql-17.5-to-dm8-8.1.4.6-rev244896-phase1",
   "protocolVersion": "1.3.0",
   "status": "BLOCKED_EXTERNAL_RESOURCES",
   "certificationAuthority": "BATCH31_GATE_ONLY",
@@ -16,8 +16,9 @@
     },
     "target": {
       "productId": "dm8",
-      "productVersion": "8.1.3.140",
-      "patchVersion": "8.1.3.140",
+      "productVersion": "8.1.4.6",
+      "patchVersion": "rev244896",
+      "buildIdentifier": "03134284294-20241009-244896-20119",
       "edition": "enterprise",
       "driver": "dm-jdbc:8.1.3.140",
       "compatibilityMode": "oracle-compatible-explicit",
@@ -29,10 +30,10 @@
     }
   },
   "externalPins": {
-    "sourceRuntimeArtifactDigest": null,
-    "sourceDriverArtifactDigest": null,
-    "targetRuntimeArtifactDigest": null,
-    "targetDriverArtifactDigest": null,
+    "sourceRuntimeArtifactDigest": "sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa",
+    "sourceDriverArtifactDigest": "sha256:f9464dc50ce2751cb82d12f66d333ca2bd008add87e70cdbd7244f1ad795d36d",
+    "targetRuntimeArtifactDigest": "sha256:f745b299b7623ece3a82fcb072b259d8dad4c131ee4cda4c316a2da91dea79a7",
+    "targetDriverArtifactDigest": "sha256:9af4ff4d6ed15948507f528a18ab9b7196b3600d9169ad7998c19869031a3c6f",
     "targetLicenseRef": null,
     "targetLicenseDigest": null,
     "targetLicenseVerified": "NOT_RUN",

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "postgresql-to-dm8",
-  "source_snapshot_digest": "sha256:f30779e30460689f0b7f26e20f085cbfa678a6fdba454a66300571ee8045c4b1",
+  "source_snapshot_digest": "sha256:4bf010917906e975060780094b6a4257ef6955fee82191382e603c6ec39538c9",
   "objects": [
     {
       "id": "table:orders",
@@ -91,6 +91,14 @@
       "source_ref": "target-profile/ddl/dm8-schema.sql",
       "semantics": {"atomic_with_target_mutation": true, "unique_event_digest": true, "execution": "NOT_RUN"},
       "dependencies": []
+    },
+    {
+      "id": "table:elmos_target_window_journal",
+      "kind": "cutover-journal",
+      "logical_name": "elmos_target_window_journal",
+      "source_ref": "target-profile/ddl/dm8-schema.sql",
+      "semantics": {"target_window_durable": true, "source_replay_required_before_rollback": true, "execution": "NOT_RUN"},
+      "dependencies": ["table:orders"]
     }
   ],
   "queries": [
@@ -119,7 +127,7 @@
       "logical_name": "orders_checkpoint_backfill_cdc",
       "source_ref": "migration/cdc/plan.json",
       "semantics": {"backfill_checkpoint": ["tenant_id", "id"], "cdc_position": "postgresql-lsn", "delivery": "at-least-once-with-idempotent-effects", "execution": "NOT_RUN"},
-      "dependencies": ["table:orders", "table:order_audit", "table:elmos_cdc_event_ledger"]
+      "dependencies": ["table:orders", "table:order_audit", "table:elmos_cdc_event_ledger", "table:elmos_target_window_journal"]
     },
     {
       "id": "pipeline:detail-reconciliation",
