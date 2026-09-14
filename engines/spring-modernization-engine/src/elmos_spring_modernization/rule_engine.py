@@ -230,6 +230,25 @@ class RuleEngine:
 
         # 1. Structural rewrites if Java file
         if is_java:
+            # Route A: Prioritize Java Worker OpenRewrite compiler engine
+            from .java_worker_bridge import JavaWorkerClient
+            worker = JavaWorkerClient()
+            if worker.is_worker_available():
+                recipe_families: List[str] = []
+                if any("security" in str(r.rule_id).lower() or r.category == MigrationCategory.SECURITY for r in rules):
+                    recipe_families.append("SPRING_SECURITY_6")
+                if any("jpa" in str(r.rule_id).lower() or "hibernate" in str(r.rule_id).lower() or r.category == MigrationCategory.DATA_ACCESS for r in rules):
+                    recipe_families.append("JPA_HIBERNATE_6")
+                if any("junit" in str(r.rule_id).lower() or r.category == MigrationCategory.TESTING for r in rules):
+                    recipe_families.append("JUNIT_5")
+
+                for rf in recipe_families:
+                    res = worker.rewrite_with_openrewrite(current_content, recipe_family=rf)
+                    if res.status == "SUCCESS" and res.source_code and res.source_code != current_content:
+                        current_content = res.source_code
+                        total_replacements += max(1, len(res.recipes_applied))
+                        applied_rules_for_file.append(f"OPENREWRITE_{rf}")
+
             current_content, mvc_count = self.rewrite_spring_mvc_annotations(current_content)
             if mvc_count > 0:
                 total_replacements += mvc_count
