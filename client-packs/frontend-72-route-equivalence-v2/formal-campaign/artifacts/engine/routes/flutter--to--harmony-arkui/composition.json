@@ -4,12 +4,12 @@
   "route_id": "flutter--to--harmony-arkui",
   "source_lifting": {
     "profile_id": "flutter",
-    "project_digest": "sha256:68b881d1cb18813e5413f80f2111c35be9b8d7596a2a77217fac410b5594557f",
+    "project_digest": "sha256:36245137d1f5c535380895e61de4b263575c09e7587402ce38e60b5e7557b086",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "target_lowering_relift": {
     "profile_id": "harmony-arkui",
-    "project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
+    "project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",

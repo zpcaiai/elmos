@@ -5,7 +5,7 @@
   "capabilities": [
     {
       "capabilityId": "b41-automation-buildgreen-prediction",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -15,7 +15,7 @@
     },
     {
       "capabilityId": "b41-diagnostic-root-cause-recommendation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -25,7 +25,7 @@
     },
     {
       "capabilityId": "b41-effort-duration-cost-prediction",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -35,7 +35,7 @@
     },
     {
       "capabilityId": "b41-holdout-feedback-calibration",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -45,7 +45,7 @@
     },
     {
       "capabilityId": "b41-human-curation-governance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -55,7 +55,7 @@
     },
     {
       "capabilityId": "b41-knowledge-confidence-provenance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -65,7 +65,7 @@
     },
     {
       "capabilityId": "b41-knowledge-flywheel-gate",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -75,7 +75,7 @@
     },
     {
       "capabilityId": "b41-knowledge-freshness-versioning",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -85,7 +85,7 @@
     },
     {
       "capabilityId": "b41-knowledge-graph-ontology",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -95,7 +95,7 @@
     },
     {
       "capabilityId": "b41-knowledge-isolation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -105,7 +105,7 @@
     },
     {
       "capabilityId": "b41-knowledge-marketplace-sharing",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -115,7 +115,7 @@
     },
     {
       "capabilityId": "b41-migration-entity-relations",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -125,7 +125,7 @@
     },
     {
       "capabilityId": "b41-migration-knowledge-factory",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -135,7 +135,7 @@
     },
     {
       "capabilityId": "b41-migration-risk-prediction",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -145,7 +145,7 @@
     },
     {
       "capabilityId": "b41-migration-run-ingestion",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -155,7 +155,7 @@
     },
     {
       "capabilityId": "b41-pattern-antipattern-extraction",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -165,7 +165,7 @@
     },
     {
       "capabilityId": "b41-privacy-preserving-learning",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -175,7 +175,7 @@
     },
     {
       "capabilityId": "b41-recipe-mapping-recommendation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -185,7 +185,7 @@
     },
     {
       "capabilityId": "b41-similar-project-retrieval",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",
@@ -195,7 +195,7 @@
     },
     {
       "capabilityId": "b41-target-stack-recommendation",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch41-execution",

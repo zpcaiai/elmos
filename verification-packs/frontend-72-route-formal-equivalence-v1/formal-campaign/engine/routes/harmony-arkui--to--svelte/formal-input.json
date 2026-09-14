@@ -11,8 +11,8 @@
     "target_profile": "svelte",
     "target_framework_version": "5.56.8"
   },
-  "source_project_digest": "sha256:632643db8f438a23ca1eab0cbec700d75af4c42470046366be6bfd5fd52feb69",
-  "target_project_digest": "sha256:c7d2adea9f3908e073e2882ea0142741f4945ce3221bb399baf482ca762a501c",
+  "source_project_digest": "sha256:c50745cef818dbd48a14ef3bb925b4031c91d153640e0a1cf49723684e0828fe",
+  "target_project_digest": "sha256:e420a31c407498d8a85bc94bb21e99461ecc96a36a6b1e1c12e99f94c21c1443",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-navigation-v1",

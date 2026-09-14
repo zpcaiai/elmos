@@ -3,7 +3,7 @@
   "source": "flutter",
   "target": "angular",
   "sourceProfileVersion": "3.44.1",
-  "targetProfileVersion": "22.0.8",
+  "targetProfileVersion": "22.1.4",
   "supportState": "ADAPTER_REQUIRED",
   "semanticConversionEvidence": "NOT_RUN",
   "runtimeEvidence": "NOT_RUN",

@@ -41,7 +41,7 @@ def test_hermetic_path_jail_safe_execution():
         test_file = tmp_path / "hello.txt"
         test_file.write_text("secure content", encoding="utf-8")
 
-        runner = LinuxRootlessSandboxRunner()
+        runner = LinuxRootlessSandboxRunner(backend="hermetic_path_jail")
         # Run standard python command reading local file
         cmd = [sys.executable, "-c", "print(open('hello.txt').read().strip())"]
         result: SandboxExecutionResult = runner.run(

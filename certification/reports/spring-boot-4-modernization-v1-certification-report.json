@@ -1,21 +1,17 @@
 {
-  "algorithm": "rsa-sha256",
-  "certifier_id": "ethan-independent-certifier",
-  "decision": "CERTIFIED_INDEPENDENT",
-  "dossier_id": "spring-boot-4-modernization-independent-verification-v1",
-  "dossier_sha256": "sha256:06e19c8c20964763b37dabac3548a8120e7bf3466f5577adbd26b08c82009fde",
-  "notes": "Batch 30 Spring Boot 4.x Modernization all 7 production routes (5 Maven, 1 Gradle, 1 Spring MVC) mathematically verified and certified under zero-tolerance policy.",
-  "organization": "Ethan Enterprise Holdings",
-  "status": "PASSED",
-  "target_count": 7,
-  "target_routes": [
-    "spring-boot-1-5-to-4-1-0",
-    "spring-boot-2-0-2-6-to-4-1-0",
-    "spring-boot-2-7-18-to-4-1-0",
-    "spring-boot-3-0-3-4-to-4-1-0",
-    "spring-boot-3-5-to-4-1-0",
-    "spring-boot-2-x-gradle-to-4-1-0",
-    "spring-framework-5-3-mvc-to-boot-4-1-0"
-  ],
-  "verified_at": "2026-09-10T00:00:00+00:00"
+  "schema_version": 1,
+  "status": "BLOCKED",
+  "decision": "NOT_CERTIFIED",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "scope": "spring-boot-4-modernization-v1-certification-report",
+  "prior_report_sha256": "sha256:63b8a31a5c59a940e4024bd982a1f5f8d9edbc1c83818ef79e35276bfa94f2d7",
+  "prior_claim_status": "REVOKED_UNTRUSTED",
+  "local_evidence": "SELF_ATTESTED_ENGINEERING_ONLY",
+  "external_execution": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "trust_anchor_status": "REVOKED",
+  "release_effect": "NONE",
+  "reason": "the prior positive claim relied on repository-held signing keys or exceeded the authoritative evidence boundary",
+  "required_action": "re-execute exact-SHA evidence in the named real environment and obtain an authenticated repository-external independent signature under a new key"
 }

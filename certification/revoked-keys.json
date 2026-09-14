@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "effective_at": "2026-09-13T00:00:00+08:00",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "status": "REVOKED",
+  "certification_status": "NOT_CERTIFIED",
+  "reason": "private signing keys were committed to the repository and were readable by repository users",
+  "tracked_private_key_count": 183,
+  "revoked_scopes": [
+    {
+      "scope": "ethan-independent-certifier",
+      "public_key_sha256": "sha256:4b1bd04bcc0b63504f56cf35a2402abedcf52c6def9ca330b7f169d9b3071fef",
+      "private_key_count": 1
+    },
+    {
+      "scope": "framework-packs/*/certification/campaign-runs/actor-ethan-certified/keys/*.private.pem",
+      "private_key_count": 182
+    }
+  ],
+  "invalidated_claims": [
+    "external-execution-passed",
+    "customer-acceptance-passed",
+    "independent-verification-passed",
+    "certified",
+    "certified-independent",
+    "e5-certified-production-ready"
+  ],
+  "replacement_key": "NOT_PROVISIONED",
+  "external_reissue": "NOT_RUN"
+}
