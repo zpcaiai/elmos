@@ -46,6 +46,13 @@ untrusted bytes are preserved for review.
   administrator-owned roots, a private exact-schema SQLite state store,
   per-project process/file fencing, crash-explicit publication reconciliation,
   and non-reusable collected output identities.
+- exact digest-bound host continuations for every one of the 34 handlers whose
+  bounded fixture cannot finish without a trusted runtime. The broker binds the
+  tenant, project, actor, environment, workspace, revision, purpose, invocation,
+  capability, short lease, exact route, permit and idempotency key. Its SQLite
+  journal prevents cross-request replay, persists in-flight and terminal state,
+  blocks uncertain retries, and accepts reconciliation only through an injected
+  trusted receipt verifier. No provider is installed by default.
 
 Callers may request only `verified` publication; caller-declared `partial` or
 `failed` status is rejected before materialization. Those non-success states are
@@ -111,6 +118,11 @@ The digest-bound local qualification receipt executes all 40 exact handlers
 with reviewed bounded fixtures. Its current result classes are 6 `SUCCEEDED`,
 24 `PARTIAL`, and 10 `BLOCKED`; blocked results prove the fail-closed trusted
 binder boundary ran, not that the corresponding external operation completed.
+All 40 have exact repository-owned native programs, and the 34 non-terminal
+programs have distinct `HOST_ROUTE_BOUND` continuations. Code binding coverage
+is therefore 100% with `PREPARE_ONLY=0`; whole-Skill completion remains 0 because
+the qualification run injects no real runner, SCM, database, browser, publisher,
+signer, customer acceptance source, or independent verifier.
 
 Package integrity, local implementation, external runtime evidence, and
 certification are independent states:

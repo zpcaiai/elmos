@@ -75,6 +75,7 @@ RUNTIME_AUTHORITY_MODULES = (
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/domain.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/gates.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/generators.py",
+    "engines/autonomous-qa-engine/src/elmos_autonomous_qa/host_runtime.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/project.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/trusted_services.py",
@@ -1627,7 +1628,7 @@ def _load_local_qualification(
         raise IntegrationError("local qualification receipt must be an object")
     if (
         document.get("schema_version")
-        != "elmos.autonomous-qa.local-qualification.v1"
+        != "elmos.autonomous-qa.local-qualification.v2"
         or document.get("runtime_evidence_status") != RUNTIME_EVIDENCE_STATUS
         or document.get("skill_count") != EXPECTED_SKILL_COUNT
         or document.get("runtime_module_sha256") != runtime.module_sha256
@@ -1640,7 +1641,19 @@ def _load_local_qualification(
     results = document.get("results")
     if not isinstance(results, list) or len(results) != EXPECTED_SKILL_COUNT:
         raise IntegrationError("local qualification receipt must contain forty results")
+    implementation = document.get("implementation_summary")
+    if not isinstance(implementation, Mapping) or implementation.get(
+        "exact_native_programs"
+    ) != EXPECTED_SKILL_COUNT or implementation.get("local_terminal_programs") != 6 or implementation.get(
+        "host_route_bound"
+    ) != 34 or implementation.get("prepare_only") != 0 or implementation.get(
+        "code_binding_coverage_percent"
+    ) != 100 or implementation.get("whole_skills_complete") != 0 or re.fullmatch(
+        r"sha256:[0-9a-f]{64}", str(implementation.get("host_routes_digest"))
+    ) is None:
+        raise IntegrationError("local qualification implementation coverage drifted")
     observed = []
+    observed_host_routes = 0
     for index, result in enumerate(results):
         if not isinstance(result, Mapping):
             raise IntegrationError("local qualification result must be an object")
@@ -1653,6 +1666,18 @@ def _load_local_qualification(
             is None
         ):
             raise IntegrationError("local qualification result boundary drifted")
+        binding_state = result.get("code_binding_state")
+        continuation = result.get("host_continuation")
+        if binding_state == "HOST_ROUTE_BOUND":
+            if not isinstance(continuation, Mapping) or continuation.get(
+                "source_id"
+            ) != result.get("source_id") or re.fullmatch(
+                r"sha256:[0-9a-f]{64}", str(continuation.get("route_digest"))
+            ) is None:
+                raise IntegrationError("local qualification host route drifted")
+            observed_host_routes += 1
+        elif binding_state != "LOCAL_TERMINAL" or continuation is not None:
+            raise IntegrationError("local qualification code binding state drifted")
         observed.append(
             (
                 result.get("source_id"),
@@ -1666,11 +1691,14 @@ def _load_local_qualification(
     ]
     if observed != expected:
         raise IntegrationError("local qualification result identity drifted")
+    if observed_host_routes != 34:
+        raise IntegrationError("local qualification must bind exactly 34 host continuations")
     return {
         "path": QUALIFICATION_RECEIPT_RELATIVE.as_posix(),
         "sha256": "sha256:" + _sha256(content),
         "qualification_digest": document.get("qualification_digest"),
         "state_counts": document.get("state_counts"),
+        "implementation_summary": implementation,
     }
 
 

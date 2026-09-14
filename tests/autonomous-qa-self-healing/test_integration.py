@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import importlib.util
+import json
 import os
 import shutil
 import stat
@@ -92,6 +93,37 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
         )
         self.assertTrue(
             all(finding["immutable_source_rewritten"] is False for finding in snapshot.policy_findings)
+        )
+
+    def test_qualification_binds_all_nonterminal_handlers_to_exact_host_routes(self) -> None:
+        receipt = json.loads(
+            (REPOSITORY_ROOT / integration.QUALIFICATION_RECEIPT_RELATIVE).read_text()
+        )
+        self.assertEqual(
+            receipt["implementation_summary"],
+            {
+                "code_binding_coverage_percent": 100,
+                "exact_native_programs": 40,
+                "host_route_bound": 34,
+                "host_routes_digest": receipt["implementation_summary"][
+                    "host_routes_digest"
+                ],
+                "local_terminal_programs": 6,
+                "prepare_only": 0,
+                "whole_skills_complete": 0,
+            },
+        )
+        host_results = [
+            result
+            for result in receipt["results"]
+            if result["code_binding_state"] == "HOST_ROUTE_BOUND"
+        ]
+        self.assertEqual(len(host_results), 34)
+        self.assertTrue(
+            all(
+                result["host_continuation"]["source_id"] == result["source_id"]
+                for result in host_results
+            )
         )
 
     def test_yaml_loader_is_dependency_injected_and_cannot_hide_null_policy_defects(self) -> None:

@@ -207,6 +207,12 @@ def validate_capability_evidence(blockers: list[str]) -> dict[str, Any]:
         "qa": {
             "skill_count": 40,
             "state_counts": {"SUCCEEDED": 6, "PARTIAL": 24, "BLOCKED": 10},
+            "exact_native_programs": 40,
+            "local_terminal_programs": 6,
+            "host_route_bound": 34,
+            "prepare_only": 0,
+            "code_binding_coverage_percent": 100,
+            "whole_skills_complete": 0,
             "runtime_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
             "external_evidence_status": "NOT_RUN",
             "independent_evidence_status": "NOT_RUN",
@@ -236,10 +242,27 @@ def validate_capability_evidence(blockers: list[str]) -> dict[str, Any]:
 
     actual = {
         "qa": {
-            key: qa.get(key)
+            key: (
+                qa.get("implementation_summary", {}).get(key)
+                if key in {
+                    "exact_native_programs",
+                    "local_terminal_programs",
+                    "host_route_bound",
+                    "prepare_only",
+                    "code_binding_coverage_percent",
+                    "whole_skills_complete",
+                }
+                else qa.get(key)
+            )
             for key in (
                 "skill_count",
                 "state_counts",
+                "exact_native_programs",
+                "local_terminal_programs",
+                "host_route_bound",
+                "prepare_only",
+                "code_binding_coverage_percent",
+                "whole_skills_complete",
                 "runtime_evidence_status",
                 "external_evidence_status",
                 "independent_evidence_status",
@@ -347,6 +370,12 @@ def main() -> int:
         (
             "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
             ["python3", "-m", "unittest", "tests/autonomous-qa-self-healing/test_autonomous_qa_subsystems.py"],
+            None,
+            {"PYTHONPATH": "engines/autonomous-qa-engine/src"},
+        ),
+        (
+            "Pillar 1: Autonomous QA Exact Host Continuation Runtime",
+            ["python3", "-m", "unittest", "engines/autonomous-qa-engine/tests/test_host_runtime.py"],
             None,
             {"PYTHONPATH": "engines/autonomous-qa-engine/src"},
         ),

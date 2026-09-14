@@ -35,6 +35,10 @@ from elmos_autonomous_qa.skill_runtime import (  # noqa: E402
     dispatch_skill,
     validate_skill_registry,
 )
+from elmos_autonomous_qa.host_runtime import (  # noqa: E402
+    build_host_route_registry,
+    host_runtime_coverage,
+)
 
 
 class QualificationError(RuntimeError):
@@ -94,6 +98,8 @@ def _runtime_authority() -> tuple[str, str]:
 
 def build_receipt() -> dict[str, Any]:
     validate_skill_registry()
+    host_routes = build_host_route_registry(SKILL_REGISTRY)
+    implementation = host_runtime_coverage(SKILL_REGISTRY)
     fixture_module = _load_fixtures()
     cases = fixture_module.fixtures()
     expected = {binding.source_id for binding in SKILL_REGISTRY.values()}
@@ -132,6 +138,16 @@ def build_receipt() -> dict[str, Any]:
                 "state": result["state"],
                 "code": result["code"],
                 "result_digest": result["result_digest"],
+                "code_binding_state": (
+                    "HOST_ROUTE_BOUND"
+                    if binding.source_id in host_routes
+                    else "LOCAL_TERMINAL"
+                ),
+                "host_continuation": (
+                    host_routes[binding.source_id].as_dict()
+                    if binding.source_id in host_routes
+                    else None
+                ),
                 "external_evidence_status": "NOT_RUN",
                 "certification_status": "NOT_CERTIFIED",
             }
@@ -140,11 +156,12 @@ def build_receipt() -> dict[str, Any]:
     module_digest, authority_digest = _runtime_authority()
     counts = Counter(item["state"] for item in results)
     document: dict[str, Any] = {
-        "schema_version": "elmos.autonomous-qa.local-qualification.v1",
+        "schema_version": "elmos.autonomous-qa.local-qualification.v2",
         "scope": "BOUNDED_LOCAL_HANDLER_FIXTURES",
         "runtime_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
         "skill_count": len(results),
         "state_counts": {key: counts.get(key, 0) for key in ("SUCCEEDED", "PARTIAL", "BLOCKED")},
+        "implementation_summary": implementation,
         "runtime_module_sha256": module_digest,
         "runtime_authority_sha256": authority_digest,
         "fixture_sha256": _sha256_file(FIXTURE),
@@ -168,12 +185,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.write:
         RECEIPT.parent.mkdir(parents=True, exist_ok=True)
         RECEIPT.write_bytes(expected)
-        print(json.dumps({"decision": "LOCAL_QUALIFICATION_RECORDED", "skills": 40}))
+        print(json.dumps({
+            "decision": "LOCAL_QUALIFICATION_RECORDED",
+            "skills": 40,
+            "code_binding_coverage_percent": 100,
+            "host_route_bound": 34,
+        }))
         return 0
     if not RECEIPT.is_file() or RECEIPT.read_bytes() != expected:
         print(json.dumps({"decision": "BLOCKED", "reason": "local qualification receipt drifted"}))
         return 1
-    print(json.dumps({"decision": "LOCAL_QUALIFICATION_VERIFIED", "skills": 40}))
+    print(json.dumps({
+        "decision": "LOCAL_QUALIFICATION_VERIFIED",
+        "skills": 40,
+        "code_binding_coverage_percent": 100,
+        "host_route_bound": 34,
+    }))
     return 0
 
 

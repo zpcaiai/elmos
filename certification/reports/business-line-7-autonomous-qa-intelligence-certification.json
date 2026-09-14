@@ -6,9 +6,9 @@
   "local_execution_status": "BOUNDED_LOCAL_EXECUTION",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "verified_at": "2026-09-13T21:46:54.448844+00:00",
+  "verified_at": "2026-09-14T02:02:51.234662+00:00",
   "metrics": {
-    "total_bl7_loc": 117359,
+    "total_bl7_loc": 118064,
     "total_new_subsystems_loc": 15460,
     "new_subsystems_breakdown": {
       "go_daemon": 1139,
@@ -22,9 +22,9 @@
       "pi_task_execution": 904,
       "TOTAL_NEW_SUBSYSTEMS_LOC": 15460
     },
-    "suites_executed": 11,
-    "suites_passed": 11,
-    "tests_passed": 131,
+    "suites_executed": 12,
+    "suites_passed": 12,
+    "tests_passed": 135,
     "zero_tolerance_violations": 0
   },
   "capability_evidence": {
@@ -35,6 +35,12 @@
         "PARTIAL": 24,
         "SUCCEEDED": 6
       },
+      "exact_native_programs": 40,
+      "local_terminal_programs": 6,
+      "host_route_bound": 34,
+      "prepare_only": 0,
+      "code_binding_coverage_percent": 100,
+      "whole_skills_complete": 0,
       "runtime_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
       "external_evidence_status": "NOT_RUN",
       "independent_evidence_status": "NOT_RUN",
@@ -66,81 +72,87 @@
     }
   },
   "loc_by_component": {
-    "engines/autonomous-qa-engine": 50318,
+    "engines/autonomous-qa-engine": 50991,
     "engines/project-intelligence-engine": 24056,
     "engines/knowledge-skill-model-foundry-engine": 33469,
     "apps/inference-gateway": 3725,
-    "tests/autonomous-qa-self-healing": 2240,
+    "tests/autonomous-qa-self-healing": 2272,
     "tests/project-intelligence-skills": 2322,
     "tests/knowledge-skill-model-foundry-skills": 1229,
-    "TOTAL_BL7_LOC": 117359
+    "TOTAL_BL7_LOC": 118064
   },
   "suites": [
     {
       "name": "Pillar 1: PR Self-Healing Closed Loop (GitHub/GitLab/AST/Sandbox)",
       "passed": true,
       "test_count": 19,
-      "duration_seconds": 0.23
+      "duration_seconds": 0.3
     },
     {
       "name": "Pillar 1: Autonomous QA Industrial Subsystems (17 Subsystem Engines)",
       "passed": true,
       "test_count": 20,
-      "duration_seconds": 0.2
+      "duration_seconds": 0.22
+    },
+    {
+      "name": "Pillar 1: Autonomous QA Exact Host Continuation Runtime",
+      "passed": true,
+      "test_count": 4,
+      "duration_seconds": 0.25
     },
     {
       "name": "Pillar 1: Go Daemon Webhook & Sandboxed Runner Verification (go vet)",
       "passed": true,
       "test_count": 1,
-      "duration_seconds": 0.4
+      "duration_seconds": 0.57
     },
     {
       "name": "Pillar 2: Project Intelligence Deep Analysis (Callgraph/Taint/Architecture/Threats)",
       "passed": true,
       "test_count": 4,
-      "duration_seconds": 0.08
+      "duration_seconds": 0.23
     },
     {
       "name": "Pillar 2: Project Intelligence Subsystems (14 Subsystem Engines)",
       "passed": true,
       "test_count": 15,
-      "duration_seconds": 0.1
+      "duration_seconds": 0.23
     },
     {
       "name": "Pillar 3: Foundry Engine Service & Bounded Local Handlers",
       "passed": true,
       "test_count": 3,
-      "duration_seconds": 2.42
+      "duration_seconds": 8.79
     },
     {
       "name": "Pillar 3: Knowledge-Skill-Model Foundry Subsystems (9 Subsystem Engines)",
       "passed": true,
       "test_count": 9,
-      "duration_seconds": 0.09
+      "duration_seconds": 0.4
     },
     {
       "name": "Pillar 3: LLM API Gateway & Multi-Provider Router (Go Unit & E2E Tests)",
       "passed": true,
       "test_count": 22,
-      "duration_seconds": 0.14
+      "duration_seconds": 0.57
     },
     {
       "name": "Pillar 3: Distributed Task Scheduler & Fencing Worker Pool",
       "passed": true,
       "test_count": 12,
-      "duration_seconds": 0.5
+      "duration_seconds": 0.83
     },
     {
       "name": "Pillar 3: 1,244 Host-Route-Bound Skill Contracts & Broker Controls",
       "passed": true,
       "test_count": 13,
-      "duration_seconds": 3.07
+      "duration_seconds": 12.49
     },
     {
       "name": "Pillar 2: 500-Task Inventory, 248-Scenario Evidence Gate & Recovery",
       "passed": true,
       "test_count": 13,
-      "duration_seconds": 0.12
+      "duration_seconds": 0.63
     }
   ],
   "anti_cheating": {
@@ -185,5 +197,5 @@
     "certification_authority": "NOT_CERTIFIED"
   },
   "blockers": [],
-  "local_report_digest": "sha256:69722fb44bddcd3a4a8219f6e90e8a30e78523c6f0e0e77d66597c1f6e1f0205"
+  "local_report_digest": "sha256:ff5e4bfa92125922cd30d04ec7cde146e21b5d92b816a901e982908147c7fb7b"
 }
