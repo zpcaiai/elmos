@@ -18,6 +18,13 @@ SPEC.loader.exec_module(MODULE)
 
 
 class Batch40LocalAssuranceTest(unittest.TestCase):
+    def test_repository_ci_workflow_satisfies_static_supply_chain_controls(self) -> None:
+        controls = MODULE.workflow_controls(ROOT / ".github/workflows/ci.yml")
+        failures = [
+            item["controlId"] for item in controls if item["status"] != "PASS"
+        ]
+        self.assertEqual([], failures)
+
     def fixture(self) -> tuple[Path, Path, Path, Path]:
         root = Path(tempfile.mkdtemp())
         repo = root / "repo"
