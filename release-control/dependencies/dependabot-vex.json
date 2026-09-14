@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-supply-chain-vex-record",
+  "batch": 40,
+  "version": "0.2.0",
+  "owner": "elmos-security-owner",
+  "status": "review",
+  "evidenceRefs": [
+    "b40-dependabot-vex"
+  ],
+  "records": [
+    {
+      "id": "dependabot-488-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 488,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/core",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:8fba2fca0a65a8ab3c2c905d1abcf1f6da426f9e8c92627fac1ec5215cb4d0ef",
+          "bytes": 711
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-489-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 489,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/compiler",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:8fba2fca0a65a8ab3c2c905d1abcf1f6da426f9e8c92627fac1ec5215cb4d0ef",
+          "bytes": 711
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-490-ghsa-p297-fm68-3q8c",
+      "vulnerabilityId": "GHSA-p297-fm68-3q8c",
+      "alertNumber": 490,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/common",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:8fba2fca0a65a8ab3c2c905d1abcf1f6da426f9e8c92627fac1ec5215cb4d0ef",
+          "bytes": 711
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-491-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 491,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/core",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:9487341b1779bcefb9386b200dcd46aa3e8cd9cd66178a3bcdcc1a0057dde8f9",
+          "bytes": 716
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-492-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 492,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/compiler",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:9487341b1779bcefb9386b200dcd46aa3e8cd9cd66178a3bcdcc1a0057dde8f9",
+          "bytes": 716
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-493-ghsa-p297-fm68-3q8c",
+      "vulnerabilityId": "GHSA-p297-fm68-3q8c",
+      "alertNumber": 493,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/common",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:9487341b1779bcefb9386b200dcd46aa3e8cd9cd66178a3bcdcc1a0057dde8f9",
+          "bytes": 716
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-497-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 497,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/core",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:9487341b1779bcefb9386b200dcd46aa3e8cd9cd66178a3bcdcc1a0057dde8f9",
+          "bytes": 716
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-498-ghsa-hh8m-fm6v-7cvg",
+      "vulnerabilityId": "GHSA-hh8m-fm6v-7cvg",
+      "alertNumber": 498,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/compiler",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:9487341b1779bcefb9386b200dcd46aa3e8cd9cd66178a3bcdcc1a0057dde8f9",
+          "bytes": 716
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    },
+    {
+      "id": "dependabot-499-ghsa-p297-fm68-3q8c",
+      "vulnerabilityId": "GHSA-p297-fm68-3q8c",
+      "alertNumber": 499,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@angular/common",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/angular/project/package.json",
+          "sha256": "sha256:9487341b1779bcefb9386b200dcd46aa3e8cd9cd66178a3bcdcc1a0057dde8f9",
+          "bytes": 716
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-12T10:39:57Z"
+    }
+  ],
+  "metadata": {
+    "repository": "zpcaiai/elmos",
+    "generatedAt": "2026-09-13T10:39:57.561047Z",
+    "sourceAlertSnapshotDigest": "sha256:566d34711ddc7b1f8c0ce2d421300ee2e686cbd5e141a78a01a4f52449aa42de",
+    "exceptionCount": 9,
+    "fixedClaims": [],
+    "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "githubDisposition": "DISMISSED",
+    "dismissedCount": 9,
+    "independentVerification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "packKey": "elmos-platform-supply-chain"
+}

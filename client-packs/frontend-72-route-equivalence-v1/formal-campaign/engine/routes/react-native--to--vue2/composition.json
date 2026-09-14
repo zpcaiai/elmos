@@ -3,12 +3,12 @@
   "route_id": "react-native--to--vue2",
   "source_lifting": {
     "profile_id": "react-native",
-    "project_digest": "sha256:bcea48117319a6498a7c51c5baa859c3b68e98f9cc84a38adccebae13de57796",
+    "project_digest": "sha256:c3ebc9be7a22698cea86bf9d174613b8c34e8d565f445f67bf6579e75f026b5c",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {
     "profile_id": "vue2",
-    "project_digest": "sha256:2b38cdd4f571ef100efcf3fd9da227576cd8f6286cc0e8dd95559f8bf6f675df",
+    "project_digest": "sha256:d125b4f851d71f3ac255f02f6ff48e57c38cb0454a08ccb315b9fefc1f7245b2",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",

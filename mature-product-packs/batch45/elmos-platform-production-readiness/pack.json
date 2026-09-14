@@ -6,7 +6,7 @@
   "packType": "mature-product-certification",
   "version": "0.1.0",
   "owner": "Dr. Stephen Chen, Principal System Architect",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:5a6ad897d9682eab30a889f2747e1672b93ad5e090fc570b5827caa1d9aca316",
   "environmentDigest": "sha256:d41c54d53cb07f2219f36aa8ec4002357da37afb47087eee774f26d0623bb26e",
   "requiredBatches": [

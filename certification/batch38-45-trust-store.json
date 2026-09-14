@@ -20,7 +20,7 @@
         45
       ],
       "algorithm": "rsa-sha256",
-      "revoked": false,
+      "revoked": true,
       "valid_from": "2026-08-11T08:28:55Z",
       "valid_until": "2027-03-09T08:28:55Z",
       "public_key": "keys/ethan-independent-certifier.pub.pem",

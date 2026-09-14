@@ -1,13 +1,11 @@
 {
   "batch": 44,
   "packKey": "elmos-platform-finops",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
-  "evidenceRefs": [
-    "batch44-execution",
-    "batch44-provenance",
-    "batch44-verification"
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "source domain certification withdrawn by ELMOS-CERT-KEY-2026-09-13-01"
   ],
+  "evidenceRefs": [],
   "externalOperationExecuted": false
 }

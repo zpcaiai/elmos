@@ -12,7 +12,7 @@
       "public_key_path": "keys/batch30-customer-authorizer.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-source-build-verifier",
@@ -24,7 +24,7 @@
       "public_key_path": "keys/batch30-source-build-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-target-build-verifier",
@@ -36,7 +36,7 @@
       "public_key_path": "keys/batch30-target-build-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-source-runtime-verifier",
@@ -48,7 +48,7 @@
       "public_key_path": "keys/batch30-source-runtime-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-target-runtime-verifier",
@@ -60,7 +60,7 @@
       "public_key_path": "keys/batch30-target-runtime-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-behavior-verifier",
@@ -72,7 +72,7 @@
       "public_key_path": "keys/batch30-behavior-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-security-verifier",
@@ -84,7 +84,7 @@
       "public_key_path": "keys/batch30-security-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-performance-verifier",
@@ -96,7 +96,7 @@
       "public_key_path": "keys/batch30-performance-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-operability-verifier",
@@ -108,7 +108,7 @@
       "public_key_path": "keys/batch30-operability-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-sbom-verifier",
@@ -120,7 +120,7 @@
       "public_key_path": "keys/batch30-sbom-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-rollback-verifier",
@@ -132,7 +132,7 @@
       "public_key_path": "keys/batch30-rollback-verifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-independent-reviewer",
@@ -144,7 +144,7 @@
       "public_key_path": "keys/batch30-independent-reviewer.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-customer-acceptance-approver",
@@ -156,7 +156,7 @@
       "public_key_path": "keys/batch30-customer-acceptance-approver.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     },
     {
       "key_id": "key-batch30-external-certifier",
@@ -168,8 +168,8 @@
       "public_key_path": "keys/batch30-external-certifier.pem",
       "not_before": "2020-01-01T00:00:00Z",
       "not_after": "2030-01-01T00:00:00Z",
-      "revoked": false
+      "revoked": true
     }
   ],
-  "revoked_record_ids": []
+  "revoked_record_ids": ["ELMOS-CERT-KEY-2026-09-13-01"]
 }

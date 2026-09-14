@@ -13,7 +13,7 @@ ELMOS has a framework-neutral, typed UI project generator for nine exact core ta
 | jQuery | 4.0.0 | ready, legacy conditional | `NOT_RUN` | `NOT_CERTIFIED` |
 | Flutter | 3.44.1 / Dart 3.12.1 | ready | `NOT_RUN` | `NOT_CERTIFIED` |
 | HarmonyOS ArkUI | 6.0.0 API 20 | ready | `NOT_RUN` | `NOT_CERTIFIED` |
-| Angular | 22.0.8 | ready | `NOT_RUN` | `NOT_CERTIFIED` |
+| Angular | 22.1.4 | ready | `NOT_RUN` | `NOT_CERTIFIED` |
 | Svelte | 5.56.8 | ready | `NOT_RUN` | `NOT_CERTIFIED` |
 
 The generator derives 72 directed routes (`9 * 8`). Direction matters. Vue 2 to React and React to Vue 2 are different routes with different source evidence, transformations, risks, and certification.

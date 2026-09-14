@@ -1,13 +1,11 @@
 {
   "batch": 38,
   "packKey": "elmos-platform-deployment-matrix",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
-  "evidenceRefs": [
-    "batch38-execution",
-    "batch38-provenance",
-    "batch38-verification"
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "source domain certification withdrawn by ELMOS-CERT-KEY-2026-09-13-01"
   ],
+  "evidenceRefs": [],
   "externalOperationExecuted": false
 }

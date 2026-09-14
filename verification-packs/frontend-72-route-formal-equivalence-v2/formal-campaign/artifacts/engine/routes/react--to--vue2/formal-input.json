@@ -11,8 +11,8 @@
     "target_profile": "vue2",
     "target_framework_version": "2.7.16"
   },
-  "source_project_digest": "sha256:f9afd91e0068ad1a903377e20cfea85d95bba26147b298399c8d3e9a757354ef",
-  "target_project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
+  "source_project_digest": "sha256:2363b65dbe2e7e4c3712a285ec436aab9869ae9ca41f3764729247f8c9e82fed",
+  "target_project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:c46b37b887ab234b44aba2e7dce0bdfcfb58cec72854a38bb8135dbfe433ada8",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:6044652ab834eec0651dcf73b1f254849b4ec6d6409fbc547ce80cc33d52a41a",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

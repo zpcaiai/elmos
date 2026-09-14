@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0",
-  "projectId": "b54c7c9e1c72c40a1c4fd35f",
+  "projectId": "a34fdfb68f3b62bca4820acd",
   "direction": {
     "routeId": "angular--to--react-native",
     "source": "angular",
     "target": "react-native",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "0.86.0",
     "supportState": "ADAPTER_REQUIRED",
     "semanticConversionEvidence": "NOT_RUN",
@@ -45,7 +45,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:97e70b9a284bfdef2ad0c25a095780d77582fee0980a469d516055c52857699f",
+  "contentDigest": "sha256:131ea17a5aa02a5cea70634705a154fe894efe648168e9a18a6d8d91de460c35",
   "ownership": {
     "generated": [
       ".editorconfig",

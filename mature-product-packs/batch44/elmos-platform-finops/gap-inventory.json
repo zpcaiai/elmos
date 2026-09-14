@@ -23,8 +23,119 @@
     "zero-tolerance"
   ],
   "skillCount": 20,
-  "blockingCount": 0,
-  "openCount": 0,
-  "certifiable": null,
-  "gaps": []
+  "blockingCount": 1,
+  "openCount": 21,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-artifact-retention-egress-economics is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-assessment-poc-project-quote is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-budget-quota-cost-guardrail is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-cache-incremental-cost-optimization is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-cost-scenario-forecast is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-cost-taxonomy-economic-model is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-customer-roi-tco-value is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-customer-route-edition-margin is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-economics-maturity-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-human-expert-cost is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-migration-finops-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-model-agent-economics is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-packaging-pricing-model is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-provider-resource-routing is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-resource-metering is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-runner-fleet-economics is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-showback-chargeback is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-support-hypercare-operations-cost is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-usage-billing-reconciliation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b44-verified-workload-unit-cost is only experimental in the support matrix"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "detail": "certification status is NOT_RUN"
+    }
+  ]
 }

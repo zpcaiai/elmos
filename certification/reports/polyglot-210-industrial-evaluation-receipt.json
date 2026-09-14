@@ -1,9 +1,17 @@
 {
-  "campaign": {
-    "pairs_passed": 1050,
-    "pairs_total": 1050
-  },
-  "decision": "CERTIFIED_L5_AUTONOMOUS",
-  "industrial_quality_percent": 100.0,
-  "merkle_root": "fcafb05ad6dc5daa04a27822c1d9c5faed48b2a6c121d613ae99583c8464df58"
+  "schema_version": 1,
+  "status": "BLOCKED",
+  "decision": "NOT_CERTIFIED",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "scope": "polyglot-210-industrial-evaluation-receipt",
+  "prior_report_sha256": "sha256:f61db2d7da823e7570eac1b80117abda1a5a5c0272af07331cc85db1979fd229",
+  "prior_claim_status": "REVOKED_UNTRUSTED",
+  "local_evidence": "SELF_ATTESTED_ENGINEERING_ONLY",
+  "external_execution": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "trust_anchor_status": "REVOKED",
+  "release_effect": "NONE",
+  "reason": "the prior positive claim relied on repository-held signing keys or exceeded the authoritative evidence boundary",
+  "required_action": "re-execute exact-SHA evidence in the named real environment and obtain an authenticated repository-external independent signature under a new key"
 }
