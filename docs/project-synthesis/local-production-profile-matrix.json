@@ -24,7 +24,7 @@
       "startup_probes": [
         {
           "integration_status": "PASSED",
-          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-java-jwt\"}",
+          "response": "{\"service\":\"enterprise-orders-java-jwt\",\"status\":\"UP\"}",
           "status": "PASSED"
         }
       ],
@@ -265,7 +265,7 @@
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 58,
-      "generation_manifest_sha256": "84b3f74540d2e315f745d86e3e69ba8dc84d2cb394fd29ee6a3f2b8a689f3ad2",
+      "generation_manifest_sha256": "10e36b4078d2eee9ca77d401fb67343711e07af7492134eff7f61537fb1723d7",
       "generation_profile": "relational-v2",
       "language": "kotlin",
       "production_delivery_status": "NOT_RUN",
@@ -290,7 +290,7 @@
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 58,
-      "generation_manifest_sha256": "cbb7ada672227f8e477b335abbd8bc7ee3142baa7b43286d71d8fca91a66862b",
+      "generation_manifest_sha256": "2c382cc3edb69b660e261996c1bdec8ffc196c74e31ac7309d3b8aa17cd4e69a",
       "generation_profile": "relational-v2",
       "language": "kotlin",
       "production_delivery_status": "NOT_RUN",
@@ -416,12 +416,12 @@
     "engine_source": {
       "algorithm": "sha256-length-prefixed-path-and-content-v1",
       "file_count": 99,
-      "sha256": "9993b193a4531ddf8483ca9be3bcc35aacd0b85b9662e2b7fc316df30abb6c81"
+      "sha256": "ff53716963e840e3a9cc65b350cc3439526e3d838358ba234b7f7c6ebeead4aa"
     },
     "repository": {
       "branch": "codex/project-synthesis-closure-20260913",
-      "head_sha": "e0350fb0c9128dbd40eb7046920a96f4260ede28",
-      "tracked_worktree": "DIRTY"
+      "head_sha": "ec7362ebfc33ce498be53a41f3ef07d34c644a39",
+      "tracked_worktree": "CLEAN"
     }
   },
   "external_certification_status": "NOT_RUN",
@@ -438,7 +438,7 @@
     "php",
     "rust"
   ],
-  "observed_at": "2026-09-13T21:19:42+00:00",
+  "observed_at": "2026-09-14T03:07:15+00:00",
   "passed_count": 16,
   "production_delivery_status": "NOT_RUN",
   "replay": "uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py",
