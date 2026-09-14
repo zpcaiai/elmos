@@ -80,6 +80,7 @@ def main() -> int:
     suites_to_run = [
         ("Phase 1: Polyglot Multi-Entity Relations", "tests/test_production_relations.py"),
         ("Phase 2: MySQL 8.x Persistence Profiles", "tests/test_mysql_generation.py"),
+        ("Phase 1-2: Polyglot Multi-Entity & MySQL Generation", "tests/test_polyglot_multi_entity_and_mysql.py"),
         ("Phase 3: Enterprise Distributed Middleware", "tests/test_enterprise_middleware_generation.py"),
         ("Phase 4: Hosted Runner Fleet & Sandbox", "tests/test_hosted_runner_fleet_e2e_scheduler.py"),
         ("Phase 5: Production SRE & RISK-SYNTHESIS-001", "tests/test_backup_restore_and_sre_resilience.py"),

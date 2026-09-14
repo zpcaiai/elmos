@@ -15,7 +15,7 @@ from .enterprise_production_contract import (
     HEALTH_READY_PATH,
     NULL_SENTINEL,
 )
-from .models import EntitySpec, SynthesisRequest
+from .models import EntitySpec, SynthesisRequest, pascal
 
 
 def _java_type(field_type: str) -> str:
@@ -33,10 +33,26 @@ def generate_enterprise_java_files(request: SynthesisRequest) -> dict[str, str]:
     files: dict[str, str] = {}
     pkg = request.namespace or "com.elmos.enterprise"
     pkg_path = pkg.replace(".", "/")
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
-    entity_cap = entity.singular.capitalize()
+    entities = request.entities or (EntitySpec(singular="order", plural="orders", fields=()),)
+    entity = entities[0]
+    entity_cap = pascal(entity.singular)
+    relations = request.canonical_relations
 
     # 1. Maven pom.xml
+    db_dependency = (
+        """        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>"""
+        if request.is_mysql
+        else """        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>"""
+    )
+
     files["pom.xml"] = f"""<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -90,11 +106,7 @@ def generate_enterprise_java_files(request: SynthesisRequest) -> dict[str, str]:
         </dependency>
 
         <!-- Database Drivers -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+{db_dependency}
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -121,6 +133,15 @@ def generate_enterprise_java_files(request: SynthesisRequest) -> dict[str, str]:
 """
 
     # 2. Application Config
+    ds_url = (
+        "jdbc:mysql://localhost:3306/enterprise_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+        if request.is_mysql
+        else "jdbc:postgresql://localhost:5432/app"
+    )
+    driver_class = "com.mysql.cj.jdbc.Driver" if request.is_mysql else "org.postgresql.Driver"
+    db_user = "root" if request.is_mysql else "postgres"
+    db_pass = "root" if request.is_mysql else "postgres"
+
     files["src/main/resources/application.yml"] = f"""server:
   port: 8080
   shutdown: graceful
@@ -129,10 +150,10 @@ spring:
   application:
     name: {request.project_name}
   datasource:
-    url: ${{SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/app}}
-    username: ${{SPRING_DATASOURCE_USERNAME:postgres}}
-    password: ${{SPRING_DATASOURCE_PASSWORD:postgres}}
-    driver-class-name: org.postgresql.Driver
+    url: ${{SPRING_DATASOURCE_URL:{ds_url}}}
+    username: ${{SPRING_DATASOURCE_USERNAME:{db_user}}}
+    password: ${{SPRING_DATASOURCE_PASSWORD:{db_pass}}}
+    driver-class-name: {driver_class}
   jpa:
     hibernate:
       ddl-auto: update
@@ -163,29 +184,47 @@ management:
       show-details: always
 """
 
-    # 3. Domain Model Entity with Audit and Optimistic Locking
-    field_declarations = []
-    for f in entity.fields:
-        jtype = _java_type(f.type)
-        field_declarations.append(f'    @Column(name = "{f.name}")\n    private {jtype} {f.name};')
+    # 3. Domain Model Entities (Multi-Entity with JPA Relations)
+    for ent in entities:
+        ent_cap = pascal(ent.singular)
+        field_declarations = []
+        existing_field_names = {f.name for f in ent.fields}
+        for f in ent.fields:
+            jtype = _java_type(f.type)
+            field_declarations.append(f'    @Column(name = "{f.name}")\n    private {jtype} {f.name};')
 
-    fields_str = (
-        "\n\n".join(field_declarations)
-        if field_declarations
-        else '    @Column(name = "reference")\n    private String reference;\n\n    @Column(name = "total")\n    private java.math.BigDecimal total;'
-    )
+        for rel in relations:
+            if rel.source == ent.singular and rel.source_field:
+                target_cap = pascal(rel.target)
+                if rel.source_field not in existing_field_names:
+                    field_declarations.append(f'    @Column(name = "{rel.source_field}", nullable = false)\n    private String {rel.source_field};')
+                    existing_field_names.add(rel.source_field)
+                field_declarations.append(f'    @ManyToOne(fetch = FetchType.LAZY)\n    @JoinColumn(name = "{rel.source_field}", insertable = false, updatable = false)\n    private {target_cap}Entity {rel.target};')
 
-    files[f"src/main/java/{pkg_path}/model/{entity_cap}Entity.java"] = f"""package {pkg}.model;
+        for rel in relations:
+            if rel.target == ent.singular and rel.source_field:
+                source_cap = pascal(rel.source)
+                source_ent = next((e for e in entities if e.singular == rel.source), None)
+                source_plural_name = source_ent.plural if source_ent else f"{source_cap.lower()}List"
+                field_declarations.append(f'    @OneToMany(mappedBy = "{rel.target}", cascade = CascadeType.ALL, orphanRemoval = true)\n    private java.util.List<{source_cap}Entity> {source_plural_name} = new java.util.ArrayList<>();')
+
+        fields_str = (
+            "\n\n".join(field_declarations)
+            if field_declarations
+            else '    @Column(name = "reference")\n    private String reference;\n\n    @Column(name = "total")\n    private java.math.BigDecimal total;'
+        )
+
+        files[f"src/main/java/{pkg_path}/model/{ent_cap}Entity.java"] = f"""package {pkg}.model;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "{entity.plural}", indexes = {{
-    @Index(name = "idx_{entity.singular}_tenant", columnList = "tenant_id, is_deleted")
+@Table(name = "{ent.plural}", indexes = {{
+    @Index(name = "idx_{ent.singular}_tenant", columnList = "tenant_id, is_deleted")
 }})
-public class {entity_cap}Entity {{
+public class {ent_cap}Entity {{
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
@@ -212,7 +251,7 @@ public class {entity_cap}Entity {{
 
 {fields_str}
 
-    public {entity_cap}Entity() {{}}
+    public {ent_cap}Entity() {{}}
 
     public UUID getId() {{ return id; }}
     public void setId(UUID id) {{ this.id = id; }}

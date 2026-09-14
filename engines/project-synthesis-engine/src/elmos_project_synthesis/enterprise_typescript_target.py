@@ -32,11 +32,13 @@ def _ts_type(field_type: str) -> str:
 def generate_enterprise_typescript_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise NestJS microservice."""
     files: dict[str, str] = {}
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
+    entities = request.entities or (EntitySpec(singular="order", plural="orders", fields=()),)
+    entity = entities[0]
     entity_cap = pascal(entity.singular)
     relations = request.canonical_relations
 
     # 1. package.json
+    db_driver_pkg = '"mysql2": "^3.9.8"' if request.is_mysql else '"pg": "^8.12.0"'
     files["package.json"] = f"""{{
   "name": "{request.project_name}",
   "version": "1.0.0",
@@ -55,7 +57,7 @@ def generate_enterprise_typescript_files(request: SynthesisRequest) -> dict[str,
     "@nestjs/typeorm": "^10.0.2",
     "@nestjs/terminus": "^10.2.3",
     "typeorm": "^0.3.20",
-    "pg": "^8.12.0",
+    {db_driver_pkg},
     "ioredis": "^5.4.1",
     "kafkajs": "^2.2.4",
     "prom-client": "^15.1.2",
@@ -102,24 +104,46 @@ def generate_enterprise_typescript_files(request: SynthesisRequest) -> dict[str,
 }
 """
 
-    # 3. src/entities/entity.entity.ts
-    field_lines = []
-    for f in entity.fields:
-        t = _ts_type(f.type)
-        field_lines.append(f"  @Column()\n  {f.name}!: {t};")
-    fields_code = (
-        "\n".join(field_lines)
-        if field_lines
-        else "  @Column()\n  reference!: string;\n\n  @Column('decimal', { precision: 12, scale: 2 })\n  total!: number;"
-    )
+    # 3. src/entities/ (Multi-Entity with TypeORM Relations)
+    for ent in entities:
+        ent_cap = pascal(ent.singular)
+        field_lines = []
+        existing_field_names = {f.name for f in ent.fields}
+        for f in ent.fields:
+            t = _ts_type(f.type)
+            field_lines.append(f"  @Column()\n  {f.name}!: {t};")
 
-    rel_lines = []
-    for rel in relations:
-        if rel.target.lower() == entity.singular.lower() and rel.target_field:
-            rel_lines.append(f"  @Column({{ nullable: false }})\n  {rel.target_field}!: string;")
-    rel_code = "\n" + "\n".join(rel_lines) if rel_lines else ""
+        rel_imports = set()
+        for rel in relations:
+            if rel.source == ent.singular and rel.source_field:
+                target_cap = pascal(rel.target)
+                rel_imports.add(target_cap)
+                if rel.source_field not in existing_field_names:
+                    field_lines.append(f"  @Column({{ length: 64, nullable: false }})\n  {rel.source_field}!: string;")
+                    existing_field_names.add(rel.source_field)
+                field_lines.append(f"  @ManyToOne(() => {target_cap}Entity, {{ onDelete: 'CASCADE' }})\n  @JoinColumn({{ name: '{rel.source_field}' }})\n  {rel.target}?: {target_cap}Entity;")
 
-    files[f"src/entities/{entity.singular}.entity.ts"] = f"""import {{
+        for rel in relations:
+            if rel.target == ent.singular and rel.source_field:
+                source_cap = pascal(rel.source)
+                rel_imports.add(source_cap)
+                source_ent = next((e for e in entities if e.singular == rel.source), None)
+                source_prop = source_ent.plural if source_ent else f"{source_cap.lower()}List"
+                field_lines.append(f"  @OneToMany(() => {source_cap}Entity, (item) => item.{rel.target})\n  {source_prop}?: {source_cap}Entity[];")
+
+        fields_code = (
+            "\n".join(field_lines)
+            if field_lines
+            else "  @Column()\n  reference!: string;\n\n  @Column('decimal', { precision: 12, scale: 2 })\n  total!: number;"
+        )
+
+        relation_import_stmts = "\n".join(
+            f"import {{ {tc}Entity }} from './{tc.lower()}.entity';"
+            for tc in rel_imports
+            if tc != ent_cap
+        )
+
+        files[f"src/entities/{ent.singular}.entity.ts"] = f"""import {{
   Entity,
   PrimaryGeneratedColumn,
   Column,
@@ -128,18 +152,22 @@ def generate_enterprise_typescript_files(request: SynthesisRequest) -> dict[str,
   VersionColumn,
   DeleteDateColumn,
   Index,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
 }} from 'typeorm';
+{relation_import_stmts}
 
-@Entity('{entity.plural}')
+@Entity('{ent.plural}')
 @Index(['tenantId', 'id'])
-export class {entity_cap}Entity {{
+export class {ent_cap}Entity {{
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({{ length: 64, default: 'tenant-default' }})
   tenantId!: string;
 
-{fields_code}{rel_code}
+{fields_code}
 
   @Column({{ length: 64, default: 'system' }})
   createdBy!: string;
@@ -545,9 +573,20 @@ export class HealthController {{
 """
 
     # 9. src/app.module.ts
+    all_entity_imports = "\n".join(
+        f"import {{ {pascal(e.singular)}Entity }} from './entities/{e.singular}.entity';"
+        for e in entities
+    )
+    all_entity_names = ", ".join(f"{pascal(e.singular)}Entity" for e in entities)
+    db_type_val = 'mysql' if request.is_mysql else 'postgres'
+    db_port_val = "parseInt(process.env.DB_PORT || '3306', 10)" if request.is_mysql else "parseInt(process.env.POSTGRES_PORT || '5432', 10)"
+    db_user_val = "process.env.DB_USER || 'root'" if request.is_mysql else "process.env.POSTGRES_USER || 'postgres'"
+    db_pass_val = "process.env.DB_PASSWORD || 'root'" if request.is_mysql else "process.env.POSTGRES_PASSWORD || 'postgres'"
+    db_name_val = "process.env.DB_NAME || 'enterprise_db'" if request.is_mysql else "process.env.POSTGRES_DB || 'enterprise_db'"
+
     files["src/app.module.ts"] = f"""import {{ Module }} from '@nestjs/common';
 import {{ TypeOrmModule }} from '@nestjs/typeorm';
-import {{ {entity_cap}Entity }} from './entities/{entity.singular}.entity';
+{all_entity_imports}
 import {{ OutboxEventEntity }} from './entities/outbox-event.entity';
 import {{ CacheService }} from './cache/cache.service';
 import {{ OutboxService }} from './outbox/outbox.service';
@@ -557,16 +596,16 @@ import {{ HealthController }} from './controllers/health.controller';
 @Module({{
   imports: [
     TypeOrmModule.forRoot({{
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST || 'localhost',
-      port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-      username: process.env.POSTGRES_USER || 'postgres',
-      password: process.env.POSTGRES_PASSWORD || 'postgres',
-      database: process.env.POSTGRES_DB || 'enterprise_db',
-      entities: [{entity_cap}Entity, OutboxEventEntity],
+      type: '{db_type_val}',
+      host: process.env.DB_HOST || 'localhost',
+      port: {db_port_val},
+      username: {db_user_val},
+      password: {db_pass_val},
+      database: {db_name_val},
+      entities: [{all_entity_names}, OutboxEventEntity],
       synchronize: false,
     }}),
-    TypeOrmModule.forFeature([{entity_cap}Entity, OutboxEventEntity]),
+    TypeOrmModule.forFeature([{all_entity_names}, OutboxEventEntity]),
   ],
   controllers: [{entity_cap}Controller, HealthController],
   providers: [CacheService, OutboxService],
