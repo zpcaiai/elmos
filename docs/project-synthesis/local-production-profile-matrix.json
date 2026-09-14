@@ -6,43 +6,45 @@
   "case_count": 16,
   "cases": [
     {
-      "approved_payload_sha256": "a7789b2fb0b3fba7dbcabb02c2ce1da810bb73ab0b6a32957bb507d3760727a2",
+      "approved_payload_sha256": "c6fc9c190ed633ef7710c25be742a10288e3011a89e7739ac488794ac95b7cfd",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 67,
-      "generation_manifest_sha256": "c56b132ecd51c651bd762237569835823a4b7dfb1878282de15c99d2c6ecaa9d",
+      "generated_file_count": 71,
+      "generation_manifest_sha256": "a328bba38334de66bbdfca896e843878af3148f31444e83e3c4f0c6f09204463",
+      "generation_profile": "relational-v2",
       "language": "java",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "310189f4432d3a355b4cbe73bdb406af70f568775479a245250cc4e7258de4a4",
+      "request_sha256": "08d2bc89b50f67bd0152204fd51e0e7adfe7baf9393a7afaed56288a881d79b0",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
           "integration_status": "PASSED",
-          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-java-jwt\"}",
+          "response": "{\"service\":\"enterprise-orders-java-jwt\",\"status\":\"UP\"}",
           "status": "PASSED"
         }
       ],
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "ea187bc4435615f0b3a82b3bd2d0f449070c3489b92814c28b0b6e839917d51d",
+      "approved_payload_sha256": "ffb2681f85ef06069c56b4e249b90011939dfad9fbe9c21abbbd5bde074fcc9e",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 67,
-      "generation_manifest_sha256": "5f3981fc2b2ba89622984a927609f5cfdea3c8b8b3371ca61363a4345f808ef0",
+      "generated_file_count": 71,
+      "generation_manifest_sha256": "f7c4c543cc94487bb507ffbc0f5291116206f803cbbc84312cc2520b1b99a877",
+      "generation_profile": "relational-v2",
       "language": "java",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "27d3592d2d291ee7b87ccb28c3246ae42fa22bde5f01b39c462850cdbd0f071e",
+      "request_sha256": "a6cd337333bcac74df0ccd2d5752bb167c73a2d298584337e2be75eeb6125362",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -54,19 +56,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "698291cb6396ca1b9a7d46e2fa870435c1f0e1c7cd27702b02b1b917ba8fba87",
+      "approved_payload_sha256": "91370f6851781e8281ac83f3668a27eea6d4ee68be122b02bb9cf963a646c73c",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 59,
-      "generation_manifest_sha256": "d099a239f36b3aa38f3a41d54e109ca729e1bbbda0f090ca3af2b6cf9c8da9b8",
+      "generation_manifest_sha256": "8a25b8fdb8ea2cc6c04fc9786b543f840e5e380ea0cb42ab23becaf3229e3eb4",
+      "generation_profile": "relational-v2",
       "language": "python",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "167838c728d29135de0e7c618cf1eb83758404c399a105ec627471e245b9c959",
+      "request_sha256": "529591b3e16066ce22efe79db3010f02751ef6e77a88ca085e3228345bbdc383",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -78,19 +81,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "7181dcb379ec432efa6a3d4c718dbddfce9d76fc9cd9bbcb2af64c2ff0139647",
+      "approved_payload_sha256": "1f7bc233c10d2d50041d6f7385b249476d38c77c96114eab7b471b805db3b4fe",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 59,
-      "generation_manifest_sha256": "4c33a3faa4fe8e8462cf54e4b7fe635c3cf23162b6c630434cdd4e8c8e51acd6",
+      "generation_manifest_sha256": "5b804fc952aeb8f582c08cd9f06f3ac8ccb918489a08c7ffb0fc67cf14966c8f",
+      "generation_profile": "relational-v2",
       "language": "python",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "13d714bfd140291de8d5e6f1863534bda6ce4b0a1852443684dbcaf6598fcc8b",
+      "request_sha256": "cde2cd5c9cbbf83300c48a70a284b48d7745b6710a51e019d92fdcffd26262ef",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -102,19 +106,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "5ce44e5682da06c0cc3a468557b8bba5c3ef6de428bf1ad956f60070f945de2c",
+      "approved_payload_sha256": "738f48d61194e743064629a64791a3608a1642900c186404bfb9d08d5a90b351",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 62,
-      "generation_manifest_sha256": "bd67e0c0fdcefca5488800696fd464863fae81f7efaf67a244e73c6834d2bdd2",
+      "generation_manifest_sha256": "60a3f621ead3c0a624e1350db666341e220fd12443c5de5b22a251bb4f25187d",
+      "generation_profile": "relational-v2",
       "language": "csharp",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "69f15bf68764d4d48eeca17bb51651eefc2af9ff990d66a6ca03a48e7a5fc0c9",
+      "request_sha256": "5534e6d0546b05d5dae90388b600d042ffbb8b5138a5439e084e292df9c582e8",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -126,19 +131,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "e908078985961eba19c4769a7b1fd78a8c077803a0aff1b18bb61d5e4c2e92c0",
+      "approved_payload_sha256": "e15b640b1aa000755f04c1e47050e001d31dc2fc136446af38b160887e2cbc1c",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 62,
-      "generation_manifest_sha256": "d91dce0ab88534840066c3d6b293bc4ff8fc30ee18cd0ef4f583fd0aa2857715",
+      "generation_manifest_sha256": "f500dabbdd8965901a8c0bc5f9df75dd054c2c931a1b9e70c07e6f474fbdfdbf",
+      "generation_profile": "relational-v2",
       "language": "csharp",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "ed6936dd7ffde5d53e62842cfdb55d8bdfb7518557ace75c63f771a274aba7dc",
+      "request_sha256": "f4f8486a5c56f42fa8ec6d44d61139b1c7d05e7f113c0f1fc4a484f0c97fbc8d",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -150,19 +156,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "6d1a9b962becd9304003b99f27316c2152919b951e7351dccaec2930c0d2544c",
+      "approved_payload_sha256": "fd2e7e1a7acdc25fa5f03db23c9f05554ca58dc2650bae97f65b10424a178bef",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 57,
-      "generation_manifest_sha256": "2a3f1ccad6072c123704edfe37a84c461c754ff5b6a0d8b0ff7964c3d08b975e",
+      "generation_manifest_sha256": "7b37172ef45bb280c49d1103d78a6ec482be1b6975b67df31910d3081214a808",
+      "generation_profile": "relational-v2",
       "language": "typescript",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "76086986b721441c5d3485669a79ab7b12e6c3d97c3e970a9d3b56fcce89a1a4",
+      "request_sha256": "10aae224a804cf9ff8c62c7858b71576536c4ed2882976d550d7473db6083a09",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -174,19 +181,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "06781c9f160e55133e44d7e1fea7c2f8cc07e98c4f80f0511bc6b9d474d6664d",
+      "approved_payload_sha256": "a37396965cf79db8c35d51b9d41a86ef62879e1327aac12c5d974164e528ae0b",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 57,
-      "generation_manifest_sha256": "7ab1b932af08069025f20a55712e72e5fef42ba06363059ddc163c92580ffa13",
+      "generation_manifest_sha256": "3f5578d0f66bb6bd5fae8b9a40e326ed4061e232c159a1ff9b768b7674195ad6",
+      "generation_profile": "relational-v2",
       "language": "typescript",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "983b4c6d339a1c67fe1c99e411086b118380ef588e7609a4c200b9c12b14ec3c",
+      "request_sha256": "c2ce474a17ce3d3627e1779e342b813cd78f2faf2668894c75d5289da8cc780e",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -198,19 +206,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "f949158aab9839720a7395aee2c629b9a1cacd217341c94e212dfe7a2f9a968c",
+      "approved_payload_sha256": "b7f6bc824beb91d141e8814d68984512c4d1373725628ad120ffb16064648a83",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 55,
-      "generation_manifest_sha256": "b4c7cad68ad53868c6acd7a65e3084f6a20fad63842e993aa0e843f58a3cc45b",
+      "generation_manifest_sha256": "3facf5e08e9846ec1a869b801f8344f04c949ebab1220502f9dd4df6f97e0e5a",
+      "generation_profile": "relational-v2",
       "language": "go",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "7bd273f5f4981bda622088ba18014f475cebd8549ddd9e21eff75df0e0ec0b85",
+      "request_sha256": "f504855f493a66ceb8f9233d25c4db25291516a6eae73c5efafc97637cce755a",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -222,19 +231,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "871269de4886e591ae08d983f10fe9fc406d9dce71b14b7bc1455eda02267a95",
+      "approved_payload_sha256": "7746255095cad2cfea7198dc06ed72c13e8bced82be4e2ef630a6960222b6cb4",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 55,
-      "generation_manifest_sha256": "36c7c34dbf29bf2593f76c67f12bc835fabe0fab41fa0b8cb2aefdd4b7558b8e",
+      "generation_manifest_sha256": "a9324f37fc6a5ab9134815224736b36a5c6e5b3c357628070c4edb44914a375e",
+      "generation_profile": "relational-v2",
       "language": "go",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "b82b1a703a3af0f7dce246f764a7f9e57a9dde52828fc8550b052760d0d88e2b",
+      "request_sha256": "9932ebe9eac36b10d48e9fd2bf3267775de893faadb84b01e5d2adcea235bff2",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -246,19 +256,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "136d0cbcb4eab0da3e196f1e678462770c9102af8dbe77d185cbf3bf22c1e062",
+      "approved_payload_sha256": "463568af7c930f4d919619856df3b160ad5974045ae284b3d203c623936fe363",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 58,
-      "generation_manifest_sha256": "26e88d2abf41ef62172c496ef265b97a70605123e9d0bf6738d223de58b85c9a",
+      "generation_manifest_sha256": "10e36b4078d2eee9ca77d401fb67343711e07af7492134eff7f61537fb1723d7",
+      "generation_profile": "relational-v2",
       "language": "kotlin",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "c2c279ac94c0b5df5fafc76a7f13fa3cdb60d95347c8148396979e8858693408",
+      "request_sha256": "661000ccdf89f080bb3aaa8c9ba1632c3cb588ed2f6219ac972a569288e1e34e",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -270,19 +281,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "617c6ffdf7de2386c0dfb6e55c8c0aa5fdd8c19a1cc8fa4906f388b8829733c0",
+      "approved_payload_sha256": "b30009970a12c8c21fa6420c35ea7b66e456db7d5b5011c86a34c598a8f436db",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 58,
-      "generation_manifest_sha256": "147d4c3ebb75f018073146bac00e00f30cc930fcda73258d41a4aeff592f79c6",
+      "generation_manifest_sha256": "2c382cc3edb69b660e261996c1bdec8ffc196c74e31ac7309d3b8aa17cd4e69a",
+      "generation_profile": "relational-v2",
       "language": "kotlin",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "385b32bf8941f5cde39bfa761b8bf07cd304a4293fd82473ca59b950e64ccc2e",
+      "request_sha256": "866a47ac02c35485fc124e2e348f8bf3358cf5a0f71de74b31a62ce46bbef518",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -294,19 +306,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "a0a812062a5cd1fc4fe1fa241fa1c6c4076a1ef42ef47fb643adf2146e8b2e67",
+      "approved_payload_sha256": "4abdf918895c7407a250ae98d58217402b8ebca0f4abbaa335629b4857ade358",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 56,
-      "generation_manifest_sha256": "5e6e044dc5498be339db50b49379878ddb63ece3f633a2ccb86871b963e56557",
+      "generated_file_count": 57,
+      "generation_manifest_sha256": "6d10cd0df3e247fde8d4d4d7b568f5e4c18c43daf0dd20023054efd4d1f3d456",
+      "generation_profile": "relational-v2",
       "language": "php",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "3597a3ebf114c505f947eff416c8d3d5aeed8aa018041e55b4b38f99d53ac303",
+      "request_sha256": "57c41a522fbb56af85edcf52b20edbb95f9345246e0011ea92279ed5bc18307e",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -318,19 +331,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "62d4266a21a0113ceddd4d37e661a3913e7e4b8b32bb9a416c7ba22abb7ccf74",
+      "approved_payload_sha256": "ece18e7c5f65c671687dfac748ada9e434d9b88713ccc9c990bace4cdc489cbd",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 56,
-      "generation_manifest_sha256": "ddb28fd7864f56c87321b30ef3c182a7e4ecb7991af4e4f59b68121d15ee4a1b",
+      "generated_file_count": 57,
+      "generation_manifest_sha256": "e9be38c968c161d1e7341f9df7a104b1c2917f85b8a2a4290dca342d77ef8e87",
+      "generation_profile": "relational-v2",
       "language": "php",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "c5211ab2085d2f8412c8e23c22861a2dad78517463ba10cc4992ba844d448e24",
+      "request_sha256": "047b7cd4183e3b18b6f30356212d96f84799efdd2daee18f49ae56bc93e267d4",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -342,19 +356,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "25392958d8b30d9a9c91a6939b24575a37702278cadca499f0b290ff2bc6f8d6",
+      "approved_payload_sha256": "b4b113cd594652c62b381b94ceb981c3f529ffa3d3d3d6d64c80fd539784cc17",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 59,
-      "generation_manifest_sha256": "4d1f0f5c243988c7a3cc3cc24b699f5878ae0ac67078d8d29ecd25b3a574967b",
+      "generation_manifest_sha256": "fb19367493d8b1aa43e676c57f51f46927dc119a85d6b808917ec2b3ac0d9c63",
+      "generation_profile": "relational-v2",
       "language": "rust",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "69e0fa7db27634af884269b16c8bf16bec5951fe633ff75fa2f517937f5ef9c6",
+      "request_sha256": "e79d773b241cc9251c00da9cd70a772369702794a8a8db07bc7ff6d16e81ec16",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -366,19 +381,20 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "69ae5f57a4a075e910333b1c92f4c9c0f1ed4379bce1d2c9cfe1ef8beaa48aea",
+      "approved_payload_sha256": "46818f101495a60a1234ba92e0a5cd26b9fe9bd28aad59d75a607fc39d618238",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "multi-entity",
+      "entity_shape": "multi-entity-relational-v2",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
       "generated_file_count": 59,
-      "generation_manifest_sha256": "1b8c5a241c0c5bba70d32a5767cee9f47cfcc64c739dddbe9288f2a5af43c2a9",
+      "generation_manifest_sha256": "4b96eb86f055ebdb5c83e8a16829e17db935a3fea7661c0e92ba517e7cc3d6c6",
+      "generation_profile": "relational-v2",
       "language": "rust",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "4765cf130c423c4a5567b0f3fde4115c93a7010e3ed29e586f707130bd5913e5",
+      "request_sha256": "fd7655af713a2a545acb9704a144dc74efc8d67adc1a01e6ba2acb4a7429aa95",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -396,6 +412,18 @@
     "python": "3.12.12"
   },
   "evidence_class": "LOCAL_ENGINEERING",
+  "evidence_subject": {
+    "engine_source": {
+      "algorithm": "sha256-length-prefixed-path-and-content-v1",
+      "file_count": 99,
+      "sha256": "ff53716963e840e3a9cc65b350cc3439526e3d838358ba234b7f7c6ebeead4aa"
+    },
+    "repository": {
+      "branch": "codex/project-synthesis-closure-20260913",
+      "head_sha": "ec7362ebfc33ce498be53a41f3ef07d34c644a39",
+      "tracked_worktree": "CLEAN"
+    }
+  },
   "external_certification_status": "NOT_RUN",
   "failures": [],
   "independent_verification_status": "NOT_RUN",
@@ -410,7 +438,7 @@
     "php",
     "rust"
   ],
-  "observed_at": "2026-09-09T16:52:54+00:00",
+  "observed_at": "2026-09-14T03:07:15+00:00",
   "passed_count": 16,
   "production_delivery_status": "NOT_RUN",
   "replay": "uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py",

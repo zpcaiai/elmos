@@ -25,6 +25,7 @@ ENGINE_SOURCE = ROOT / "engines" / "project-synthesis-engine" / "src"
 sys.path.insert(0, str(ENGINE_SOURCE))
 
 from elmos_project_synthesis import container_images  # noqa: E402
+from elmos_project_synthesis.evidence_identity import source_identity  # noqa: E402
 from elmos_project_synthesis.models import (  # noqa: E402
     SUPPORTED_LANGUAGES,
     SUPPORTED_PROFILE_TARGETS,
@@ -166,6 +167,67 @@ def main() -> int:
     require(production_matrix.get("independent_verification_status") == "NOT_RUN", "INDEPENDENT_EVIDENCE_OVERCLAIM")
     require(production_matrix.get("external_certification_status") == "NOT_RUN", "EXTERNAL_EVIDENCE_OVERCLAIM")
     require(production_matrix.get("certification_status") == "NOT_CERTIFIED", "CERTIFICATION_EVIDENCE_OVERCLAIM")
+    evidence_subject = production_matrix.get("evidence_subject")
+    require(isinstance(evidence_subject, dict), "LOCAL_EVIDENCE_SUBJECT_MISSING")
+    repository_subject = evidence_subject.get("repository")
+    require(isinstance(repository_subject, dict), "LOCAL_EVIDENCE_REPOSITORY_SUBJECT_INVALID")
+    require(
+        isinstance(repository_subject.get("head_sha"), str)
+        and re.fullmatch(r"[0-9a-f]{40}", repository_subject["head_sha"]) is not None,
+        "LOCAL_EVIDENCE_HEAD_SHA_INVALID",
+    )
+    engine_subject = evidence_subject.get("engine_source")
+    require(isinstance(engine_subject, dict), "LOCAL_EVIDENCE_ENGINE_SUBJECT_INVALID")
+    current_engine_subject = source_identity(ROOT / "engines" / "project-synthesis-engine")
+    require(engine_subject == current_engine_subject, "LOCAL_EVIDENCE_ENGINE_SOURCE_DRIFT")
+
+    database_support = json.loads(
+        (ROOT / "docs" / "project-synthesis" / "database-profile-support.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    require(
+        database_support.get("kind") == "elmos.project-synthesis.database-profile-support",
+        "DATABASE_SUPPORT_KIND_INVALID",
+    )
+    database_profiles = database_support.get("profiles")
+    require(isinstance(database_profiles, list), "DATABASE_SUPPORT_PROFILES_INVALID")
+    database_by_engine = {
+        str(profile.get("engine")): profile
+        for profile in database_profiles
+        if isinstance(profile, dict)
+    }
+    require(
+        set(database_by_engine)
+        == {"postgresql", "mysql", "sqlite", "mariadb", "sqlserver", "oracle", "tidb", "oceanbase", "dm8"},
+        "DATABASE_SUPPORT_ENGINE_SET_DRIFT",
+    )
+    postgres_profile = database_by_engine["postgresql"]
+    require(postgres_profile.get("exact_version") == "17.5", "POSTGRES_VERSION_DRIFT")
+    require(
+        tuple(postgres_profile.get("languages", [])) == expected_languages,
+        "POSTGRES_LANGUAGE_MATRIX_DRIFT",
+    )
+    require(postgres_profile.get("real_engine_status") == "PASSED_LOCAL", "POSTGRES_LOCAL_STATUS_DRIFT")
+    require(postgres_profile.get("external_provider_status") == "NOT_RUN", "POSTGRES_EXTERNAL_OVERCLAIM")
+    mysql_profile = database_by_engine["mysql"]
+    require(mysql_profile.get("exact_version") == "8.0.41", "MYSQL_VERSION_DRIFT")
+    require(mysql_profile.get("languages") == ["python"], "MYSQL_LANGUAGE_MATRIX_DRIFT")
+    require(mysql_profile.get("real_engine_status") == "NOT_RUN", "MYSQL_RUNTIME_OVERCLAIM")
+    require(container_images.MYSQL_IMAGE.startswith("mysql:8.0.41@sha256:"), "MYSQL_IMAGE_VERSION_DRIFT")
+    for engine in ("mariadb", "sqlserver", "oracle", "tidb", "oceanbase", "dm8"):
+        planned = database_by_engine[engine]
+        require(planned.get("exact_version") is None, f"{engine.upper()}_UNVERIFIED_VERSION_SELECTED")
+        require(planned.get("languages") == [], f"{engine.upper()}_UNIMPLEMENTED_LANGUAGE_CLAIM")
+        require(planned.get("emitter_status") == "NOT_IMPLEMENTED", f"{engine.upper()}_IMPLEMENTATION_OVERCLAIM")
+        require(planned.get("real_engine_status") == "NOT_RUN", f"{engine.upper()}_RUNTIME_OVERCLAIM")
+        require(isinstance(planned.get("blocker"), str), f"{engine.upper()}_BLOCKER_MISSING")
+    managed = database_support.get("managed_provider_profiles")
+    require(isinstance(managed, list) and len(managed) == 3, "MANAGED_DATABASE_PROFILE_SET_INVALID")
+    require(
+        all(isinstance(profile, dict) and profile.get("runtime_status") == "NOT_RUN" for profile in managed),
+        "MANAGED_DATABASE_RUNTIME_OVERCLAIM",
+    )
 
     evidence_cases = production_matrix.get("cases")
     require(isinstance(evidence_cases, list) and len(evidence_cases) == 16, "LOCAL_EVIDENCE_CASES_INVALID")
@@ -185,6 +247,11 @@ def main() -> int:
         observed_pairs.add(pair)
         require(case.get("status") == "PASSED", f"LOCAL_EVIDENCE_CASE_NOT_PASSED:{language}:{auth_mode}")
         require(case.get("cleanup_status") == "PASSED", f"LOCAL_EVIDENCE_CLEANUP_FAILED:{language}:{auth_mode}")
+        require(
+            case.get("entity_shape") == "multi-entity-relational-v2"
+            and case.get("generation_profile") == "relational-v2",
+            f"LOCAL_EVIDENCE_RELATIONAL_V2_MISSING:{language}:{auth_mode}",
+        )
         require(case.get("exact_toolchain_match") is True, f"LOCAL_EVIDENCE_TOOLCHAIN_MISMATCH:{language}:{auth_mode}")
         for digest_field in (
             "request_sha256",
@@ -277,6 +344,8 @@ def main() -> int:
                 "experimental": sorted(set(expected_languages) - limited),
                 "external_evidence_status": support["external_evidence_status"],
                 "certification_status": support["certification_status"],
+                "database_profiles": len(database_profiles),
+                "managed_database_profiles": len(managed),
             },
             sort_keys=True,
         )

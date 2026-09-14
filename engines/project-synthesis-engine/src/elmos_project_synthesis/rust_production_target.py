@@ -1059,8 +1059,9 @@ def _entity_type(request: SynthesisRequest) -> str:
 def _application_source(request: SynthesisRequest) -> str:
     from .models import pascal
 
-    imports = ", ".join(
-        f"{pascal(entity.singular)}Store, {pascal(entity.singular)}Upsert" for entity in request.entities
+    imports = "\n".join(
+        f"use crate::store::{{{pascal(entity.singular)}Store, {pascal(entity.singular)}Upsert}};"
+        for entity in sorted(request.entities, key=lambda item: f"{pascal(item.singular)}Store")
     )
     state_fields = "\n    ".join(
         f"pub {entity.singular}_store: {pascal(entity.singular)}Store," for entity in request.entities
@@ -1082,7 +1083,7 @@ def _application_source(request: SynthesisRequest) -> str:
         path_consts.append(_string_const(f"{prefix.upper()}_COLLECTION_PATH", json.dumps(collection)))
         path_consts.append(_string_const(f"{prefix.upper()}_ITEM_PATH", json.dumps(item)))
         checks = (
-            "\n    ".join(
+            "\n".join(
                 f"    reject_blank(&payload.{field.name})?;"
                 for field in entity.fields
                 if field.required and field.type == "string"
@@ -1175,7 +1176,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::security::{{TenantAuthenticator, required_environment}};
-use crate::store::{{{imports}}};
+{imports}
 
 {chr(10).join(path_consts)}
 

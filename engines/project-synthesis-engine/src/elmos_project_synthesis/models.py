@@ -192,6 +192,49 @@ def strict_identifier(value: Any, *, reason: str) -> str:
     return result
 
 
+def association_entity_name(source: str, target: str) -> str:
+    """Return the deterministic entity name used to lower an M:N relation.
+
+    The hash suffix keeps the generated identifier within the shared 63-byte
+    database boundary without allowing two long names to truncate to the same
+    association resource.
+    """
+
+    base = f"{source}_{target}_link"
+    if len(base) <= 63:
+        return base
+    suffix = hashlib.sha256(base.encode("utf-8")).hexdigest()[:8]
+    return f"{base[:54]}_{suffix}"
+
+
+def association_field_name(entity: str) -> str:
+    base = f"{entity}_id"
+    if len(base) <= 63:
+        return base
+    suffix = hashlib.sha256(base.encode("utf-8")).hexdigest()[:8]
+    return f"{base[:54]}_{suffix}"
+
+
+def association_entity_mapping(source: str, target: str) -> dict[str, Any]:
+    singular = association_entity_name(source, target)
+    if singular.endswith("_link"):
+        plural = singular[:-5] + "_links"
+    elif len(singular) < 63:
+        plural = f"{singular}s"
+    else:
+        plural_seed = f"{singular}:plural"
+        suffix = hashlib.sha256(plural_seed.encode("utf-8")).hexdigest()[:8]
+        plural = f"{singular[:54]}_{suffix}"
+    return {
+        "singular": singular,
+        "plural": plural,
+        "fields": [
+            {"name": association_field_name(source), "type": "string", "required": True},
+            {"name": association_field_name(target), "type": "string", "required": True},
+        ],
+    }
+
+
 def _validate_requirement_sources(
     mapping: dict[str, Any],
     *,
@@ -374,6 +417,8 @@ class RelationSpec:
             raise RequestValidationError("RELATION_FIELD_MAPPING_INCOMPLETE")
         if kind not in SUPPORTED_RELATION_KINDS:
             raise RequestValidationError(f"RELATION_KIND_INVALID:{kind}")
+        if kind == "many-to-many" and (source_field is not None or target_field is not None):
+            raise RequestValidationError("MANY_TO_MANY_FIELDS_MUST_BE_DERIVED")
         if not isinstance(required, bool):
             raise RequestValidationError("RELATION_REQUIRED_MUST_BE_BOOLEAN")
         return cls(
@@ -410,6 +455,33 @@ class RelationSpec:
         """A one-to-one is a foreign key that may not repeat."""
 
         return self.kind == "one-to-one"
+
+    @property
+    def association_entity(self) -> EntitySpec:
+        if self.kind != "many-to-many":
+            raise RequestValidationError("RELATION_IS_NOT_MANY_TO_MANY")
+        return EntitySpec.from_mapping(association_entity_mapping(self.source, self.target))
+
+    def association_foreign_keys(self) -> tuple[RelationSpec, RelationSpec]:
+        association = self.association_entity.singular
+        return (
+            RelationSpec(
+                source=association,
+                target=self.source,
+                kind="many-to-one",
+                required=True,
+                source_field=association_field_name(self.source),
+                target_field="id",
+            ),
+            RelationSpec(
+                source=association,
+                target=self.target,
+                kind="many-to-one",
+                required=True,
+                source_field=association_field_name(self.target),
+                target_field="id",
+            ),
+        )
 
     def to_mapping(self) -> dict[str, Any]:
         result: dict[str, Any] = {
@@ -497,7 +569,7 @@ def _validate_criteria(value: Any, *, requirement_ids: set[str]) -> None:
         seen.add(identifier_value)
 
 
-def _validate_business_rules(value: Any) -> None:
+def _validate_business_rules(value: Any, *, entity_fields: dict[str, dict[str, FieldSpec]]) -> None:
     if not isinstance(value, list):
         raise RequestValidationError("BUSINESS_RULES_MUST_BE_ARRAY")
     for rule in value:
@@ -517,15 +589,51 @@ def _validate_business_rules(value: Any) -> None:
         predicate_type = predicate.get("type")
         if predicate_type == "record-exists-on-mutation":
             continue
-        if predicate_type != "field-comparison":
+        if predicate_type not in {"field-comparison", "field-reference-comparison"}:
             raise RequestValidationError("BUSINESS_RULE_PREDICATE_TYPE_INVALID")
-        strict_identifier(predicate.get("entity", ""), reason="BUSINESS_RULE_ENTITY_INVALID")
-        strict_identifier(predicate.get("field", ""), reason="BUSINESS_RULE_FIELD_INVALID")
+        entity = strict_identifier(predicate.get("entity", ""), reason="BUSINESS_RULE_ENTITY_INVALID")
+        fields = entity_fields.get(entity)
+        if fields is None:
+            raise RequestValidationError(f"BUSINESS_RULE_ENTITY_UNKNOWN:{entity}")
         if predicate.get("operator") not in {"gte", "gt", "lte", "lt", "eq", "neq"}:
             raise RequestValidationError("BUSINESS_RULE_OPERATOR_INVALID")
+        if predicate_type == "field-reference-comparison":
+            left = strict_identifier(
+                predicate.get("left_field", ""), reason="BUSINESS_RULE_LEFT_FIELD_INVALID"
+            )
+            right = strict_identifier(
+                predicate.get("right_field", ""), reason="BUSINESS_RULE_RIGHT_FIELD_INVALID"
+            )
+            if left not in fields or right not in fields:
+                raise RequestValidationError(f"BUSINESS_RULE_FIELD_UNKNOWN:{entity}:{left}:{right}")
+            if fields[left].type != fields[right].type:
+                raise RequestValidationError(f"BUSINESS_RULE_FIELD_TYPE_MISMATCH:{entity}:{left}:{right}")
+            if (
+                fields[left].type in {"string", "boolean"}
+                and predicate.get("operator") not in {"eq", "neq"}
+            ):
+                raise RequestValidationError("BUSINESS_RULE_OPERATOR_TYPE_INVALID")
+            continue
+        field = strict_identifier(predicate.get("field", ""), reason="BUSINESS_RULE_FIELD_INVALID")
+        if field not in fields:
+            raise RequestValidationError(f"BUSINESS_RULE_FIELD_UNKNOWN:{entity}:{field}")
         scalar = predicate.get("value")
         if scalar is None or isinstance(scalar, dict | list) or not isinstance(scalar, str | int | float | bool):
             raise RequestValidationError("BUSINESS_RULE_VALUE_INVALID")
+        field_type = fields[field].type
+        if field_type in {"integer", "number"}:
+            compatible = isinstance(scalar, int | float) and not isinstance(scalar, bool)
+        elif field_type == "boolean":
+            compatible = isinstance(scalar, bool)
+        else:
+            compatible = isinstance(scalar, str)
+        if not compatible:
+            raise RequestValidationError(f"BUSINESS_RULE_VALUE_TYPE_MISMATCH:{entity}:{field}")
+        if field_type in {"string", "boolean", "datetime"} and predicate.get("operator") not in {
+            "eq",
+            "neq",
+        }:
+            raise RequestValidationError("BUSINESS_RULE_OPERATOR_TYPE_INVALID")
 
 
 def _validate_permissions(value: Any, *, entity_names: set[str]) -> None:
@@ -609,7 +717,27 @@ class SynthesisRequest:
         if not isinstance(relations_raw, list):
             raise RequestValidationError("RELATIONS_MUST_BE_ARRAY")
         relations = tuple(RelationSpec.from_mapping(item, entity_fields=entity_fields) for item in relations_raw)
-        if persistence in {"postgresql", "sqlite"} and require_approval:
+        many_to_many_pairs: set[frozenset[str]] = set()
+        for relation in relations:
+            if relation.kind != "many-to-many":
+                continue
+            pair = frozenset((relation.source, relation.target))
+            if pair in many_to_many_pairs:
+                raise RequestValidationError("MANY_TO_MANY_RELATION_DUPLICATED")
+            many_to_many_pairs.add(pair)
+            association = relation.association_entity
+            existing = next((entity for entity in entities if entity.singular == association.singular), None)
+            if existing is not None and existing != association:
+                raise RequestValidationError(
+                    f"RELATION_ASSOCIATION_ENTITY_CONFLICT:{association.singular}"
+                )
+            if existing is None:
+                entities += (association,)
+                entity_names.add(association.singular)
+                entity_fields[association.singular] = {field.name for field in association.fields}
+        if len(entities) > MAX_ENTITIES:
+            raise RequestValidationError("ENTITY_LIMIT_EXCEEDED_AFTER_RELATION_LOWERING")
+        if persistence in {"postgresql", "sqlite", "mysql"} and require_approval:
             for relation in relations:
                 canonical = relation.canonical()
                 if relation.kind == "many-to-many":
@@ -688,7 +816,13 @@ class SynthesisRequest:
         assert isinstance(requirements, list)
         requirement_ids = {str(item["id"]) for item in requirements}
         _validate_criteria(mapping.get("acceptance_criteria"), requirement_ids=requirement_ids)
-        _validate_business_rules(mapping.get("business_rules"))
+        _validate_business_rules(
+            mapping.get("business_rules"),
+            entity_fields={
+                entity.singular: {field.name: field for field in entity.fields}
+                for entity in entities
+            },
+        )
         _validate_permissions(mapping.get("permissions"), entity_names=entity_names)
 
         questions = mapping.get("open_questions")
@@ -731,7 +865,13 @@ class SynthesisRequest:
         show what was written.
         """
 
-        return tuple(relation.canonical() for relation in self.relations)
+        lowered: list[RelationSpec] = []
+        for relation in self.relations:
+            if relation.kind == "many-to-many":
+                lowered.extend(relation.association_foreign_keys())
+            else:
+                lowered.append(relation.canonical())
+        return tuple(lowered)
 
     @property
     def entity(self) -> EntitySpec:

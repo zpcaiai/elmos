@@ -80,7 +80,7 @@ def _integration_fixture_lines(request: SynthesisRequest, entity: EntitySpec) ->
         if entity_name in visiting:
             raise ValueError("PRODUCTION_RELATION_CYCLE")
         visiting.add(entity_name)
-        for relation in request.relations:
+        for relation in request.canonical_relations:
             if relation.source != entity_name or relation.source_field is None:
                 continue
             if relation.target in fixture_ids:
@@ -89,7 +89,7 @@ def _integration_fixture_lines(request: SynthesisRequest, entity: EntitySpec) ->
             target = next(item for item in request.entities if item.singular == relation.target)
             payload_name = f"{target.singular}_fixture_payload"
             lines.append(f"{payload_name} = {sample_payload(request, target)!r}")
-            for target_relation in request.relations:
+            for target_relation in request.canonical_relations:
                 if target_relation.source == target.singular and target_relation.source_field is not None:
                     lines.append(
                         f'{payload_name}["{target_relation.source_field}"] = {target_relation.target}_fixture_id'
@@ -109,7 +109,7 @@ def _integration_fixture_lines(request: SynthesisRequest, entity: EntitySpec) ->
         visiting.remove(entity_name)
 
     add_dependencies(entity.singular)
-    for relation in request.relations:
+    for relation in request.canonical_relations:
         if relation.source == entity.singular and relation.source_field is not None:
             lines.append(f'payload["{relation.source_field}"] = {relation.target}_fixture_id')
     return lines

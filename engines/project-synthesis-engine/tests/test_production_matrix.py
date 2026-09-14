@@ -59,6 +59,10 @@ def test_matrix_requires_native_integration_and_cleanup() -> None:
     assert result["case_count"] == 2
     assert result["passed_count"] == 1
     assert len(result["failures"]) == 1
+    subject = result["evidence_subject"]
+    assert len(subject["repository"]["head_sha"]) == 40
+    assert len(subject["engine_source"]["sha256"]) == 64
+    assert subject["engine_source"]["file_count"] > 50
 
 
 def test_matrix_rejects_missing_or_extra_startup_probes() -> None:

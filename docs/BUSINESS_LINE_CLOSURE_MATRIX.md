@@ -15,6 +15,14 @@ GA、生产就绪和外部认证仍为 `EXTERNAL_GATE_REQUIRED`。** 后一类�
 ChinaDB Provider、编排网关、账户/计费/Proof 控制面、遥测上游、独立认证。该
 轮不提供任何 `PASSED`/`CERTIFIED` 的替代证据。
 
+> **业务线 5 口径撤销通知（2026-09-14）**：本文件后文关于“多语言项目生成已达成
+> 100% / L5 / CERTIFIED”的旧段落及表格行均为已撤销的历史陈述，不得再用于销售、
+> 交付或认证。业务线 5 的现行权威状态见
+> `docs/project-synthesis/ENTERPRISE_CLOSURE_MATRIX.md`、
+> `bundled-emitter-support.json` 与源码摘要绑定的本地矩阵：当前上限为
+> `LOCAL_ENGINEERING / limited`，外部运行、客户 UAT、独立验证与认证均为
+> `NOT_RUN / NOT_CERTIFIED`。
+
 SQL 方言与 ChinaDB 迁移（业务线 3）当前处于保守预发布状态：
 
 1. 仓库内 P0 高优先级语义 workstream 已无阻断回归；P1/P2 仍保留 365 个显式阻断 route cells。

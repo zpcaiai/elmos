@@ -1,0 +1,12 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "hosted_postgres_binding": "CODE_READY",
+  "hosted_postgres_external_provider": "NOT_RUN",
+  "hosted_fleet_deployment": "NOT_RUN",
+  "hosted_runner_job_tokens": "PASSED_LOCAL",
+  "independent_verification_status": "NOT_RUN",
+  "multi_node_attestation_campaign": "NOT_RUN",
+  "organization_self_service": "BOUNDED_IN_MEMORY_LOCAL_TEST",
+  "real_idp_public_issuer": "NOT_RUN",
+  "restore_drill": "PENDING_OPERATOR_POSTGRES"
+}
