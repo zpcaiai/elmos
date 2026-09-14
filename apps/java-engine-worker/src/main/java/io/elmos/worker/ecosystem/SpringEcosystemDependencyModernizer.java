@@ -308,6 +308,38 @@ public final class SpringEcosystemDependencyModernizer {
             rules.add("RULE-ANNOTATION-APIOPERATION-TO-OPERATION");
         }
 
+        // Replace @ApiParam(value = "...", required = true) -> @Parameter(description = "...", required = true)
+        if (result.contains("@ApiParam")) {
+            result = result.replaceAll("import\\s+io\\.springfox\\.annotations\\.ApiParam;", "import io.swagger.v3.oas.annotations.Parameter;");
+            result = result.replaceAll("import\\s+io\\.swagger\\.annotations\\.ApiParam;", "import io.swagger.v3.oas.annotations.Parameter;");
+            result = result.replaceAll("@ApiParam\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")", "@Parameter(description = $1");
+            result = result.replaceAll("@ApiParam\\s*\\(\\s*(\"[^\"]+\")", "@Parameter(description = $1");
+            result = result.replaceAll("@ApiParam\\b", "@Parameter");
+            rules.add("RULE-ANNOTATION-APIPARAM-TO-PARAMETER");
+        }
+
+        // Replace @ApiModel(...) -> @Schema(...)
+        if (result.contains("@ApiModel")) {
+            result = result.replaceAll("import\\s+io\\.springfox\\.annotations\\.ApiModel;", "import io.swagger.v3.oas.annotations.media.Schema;");
+            result = result.replaceAll("import\\s+io\\.swagger\\.annotations\\.ApiModel;", "import io.swagger.v3.oas.annotations.media.Schema;");
+            result = result.replaceAll("@ApiModel\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")", "@Schema(name = $1");
+            result = result.replaceAll("@ApiModel\\s*\\(\\s*description\\s*=\\s*(\"[^\"]+\")", "@Schema(description = $1");
+            result = result.replaceAll("@ApiModel\\s*\\(\\s*(\"[^\"]+\")", "@Schema(description = $1");
+            result = result.replaceAll("@ApiModel\\b", "@Schema");
+            rules.add("RULE-ANNOTATION-APIMODEL-TO-SCHEMA");
+        }
+
+        // Replace @ApiModelProperty(...) -> @Schema(...)
+        if (result.contains("@ApiModelProperty")) {
+            result = result.replaceAll("import\\s+io\\.springfox\\.annotations\\.ApiModelProperty;", "import io.swagger.v3.oas.annotations.media.Schema;");
+            result = result.replaceAll("import\\s+io\\.swagger\\.annotations\\.ApiModelProperty;", "import io.swagger.v3.oas.annotations.media.Schema;");
+            result = result.replaceAll("@ApiModelProperty\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")", "@Schema(description = $1");
+            result = result.replaceAll("@ApiModelProperty\\s*\\(\\s*notes\\s*=\\s*(\"[^\"]+\")", "@Schema(description = $1");
+            result = result.replaceAll("@ApiModelProperty\\s*\\(\\s*(\"[^\"]+\")", "@Schema(description = $1");
+            result = result.replaceAll("@ApiModelProperty\\b", "@Schema");
+            rules.add("RULE-ANNOTATION-APIMODELPROPERTY-TO-SCHEMA");
+        }
+
         // Clean up remaining Swagger 2 imports
         result = result.replaceAll("import\\s+io\\.swagger\\.annotations\\.[^;]+;\n?", "");
         result = result.replaceAll("import\\s+io\\.springfox\\.[^;]+;\n?", "");

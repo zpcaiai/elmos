@@ -15,7 +15,7 @@ from .enterprise_production_contract import (
     HEALTH_READY_PATH,
     NULL_SENTINEL,
 )
-from .models import EntitySpec, SynthesisRequest
+from .models import EntitySpec, SynthesisRequest, pascal
 
 
 def _go_type(field_type: str) -> str:
@@ -32,10 +32,13 @@ def generate_enterprise_go_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise Go microservice."""
     files: dict[str, str] = {}
     mod_name = request.project_name.lower().replace("_", "-")
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
-    entity_cap = entity.singular.capitalize()
+    entities = request.entities or (EntitySpec(singular="order", plural="orders", fields=()),)
+    entity = entities[0]
+    entity_cap = pascal(entity.singular)
+    canonical_relations = request.canonical_relations
 
     # 1. go.mod
+    mysql_driver_dep = "\n\tgorm.io/driver/mysql v1.5.6" if request.is_mysql else ""
     files["go.mod"] = f"""module {mod_name}
 
 go 1.22
@@ -46,23 +49,60 @@ require (
 \tgithub.com/prometheus/client_golang v1.19.1
 \tgithub.com/redis/go-redis/v9 v9.5.3
 \tgithub.com/segmentio/kafka-go v0.4.47
-\tgorm.io/driver/postgres v1.5.7
+\tgorm.io/driver/postgres v1.5.7{mysql_driver_dep}
 \tgorm.io/driver/sqlite v1.5.5
 \tgorm.io/gorm v1.25.10
 )
 """
 
-    # 2. Domain Models
-    model_fields = []
-    for f in entity.fields:
-        gtype = _go_type(f.type)
-        model_fields.append(f'\t{f.name.capitalize()} {gtype} `gorm:"column:{f.name}" json:"{f.name}"`')
-    fields_str = (
-        "\n".join(model_fields)
-        if model_fields
-        else '\tReference string `gorm:"column:reference" json:"reference"`\n\tTotal float64 `gorm:"column:total" json:"total"`'
-    )
+    # 2. Domain Models (Multi-Entity with canonical relations)
+    entity_structs = []
+    for ent in entities:
+        ent_cap = pascal(ent.singular)
+        model_fields = []
+        existing_field_names = {f.name for f in ent.fields}
+        for f in ent.fields:
+            gtype = _go_type(f.type)
+            model_fields.append(f'\t{pascal(f.name)} {gtype} `gorm:"column:{f.name}" json:"{f.name}"`')
 
+        # Outgoing foreign keys (N:1, 1:1)
+        for rel in canonical_relations:
+            if rel.source == ent.singular and rel.source_field:
+                sf_cap = pascal(rel.source_field)
+                if rel.source_field not in existing_field_names:
+                    model_fields.append(f'\t{sf_cap} uuid.UUID `gorm:"column:{rel.source_field};index" json:"{rel.source_field}"`')
+                    existing_field_names.add(rel.source_field)
+                target_cap = pascal(rel.target)
+                model_fields.append(f'\t{target_cap} *{target_cap} `gorm:"foreignKey:{sf_cap};references:ID" json:"{rel.target},omitempty"`')
+
+        # Incoming relations (1:N)
+        for rel in canonical_relations:
+            if rel.target == ent.singular and rel.source_field:
+                source_cap = pascal(rel.source)
+                source_ent = next((e for e in entities if e.singular == rel.source), None)
+                source_plural_cap = pascal(source_ent.plural) if source_ent else f"{source_cap}s"
+                sf_cap = pascal(rel.source_field)
+                model_fields.append(f'\t{source_plural_cap} []{source_cap} `gorm:"foreignKey:{sf_cap};references:ID" json:"{source_ent.plural if source_ent else source_plural_cap.lower()},omitempty"`')
+
+        fields_str = (
+            "\n".join(model_fields)
+            if model_fields
+            else '\tReference string `gorm:"column:reference" json:"reference"`\n\tTotal float64 `gorm:"column:total" json:"total"`'
+        )
+
+        struct_code = f"""type {ent_cap} struct {{
+\tID       uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+\tTenantID string    `gorm:"column:tenant_id;index;not null" json:"tenant_id"`
+{fields_str}
+\tAuditMetadata
+}}
+
+func (e *{ent_cap}) TableName() string {{
+\treturn "{ent.plural}"
+}}"""
+        entity_structs.append(struct_code)
+
+    all_models_code = "\n\n".join(entity_structs)
     files["models/models.go"] = f"""package models
 
 import (
@@ -72,24 +112,15 @@ import (
 )
 
 type AuditMetadata struct {{
-\tCreatedAt time.Time      `gorm:\"column:created_at;autoCreateTime\" json:\"created_at\"`
-\tUpdatedAt time.Time      `gorm:\"column:updated_at;autoUpdateTime\" json:\"updated_at\"`
-\tCreatedBy string         `gorm:\"column:created_by;default:'system'\" json:\"created_by\"`
-\tVersion   int64          `gorm:\"column:version;default:1\" json:\"version\"`
-\tIsDeleted bool           `gorm:\"column:is_deleted;default:false\" json:\"is_deleted\"`
-\tDeletedAt gorm.DeletedAt `gorm:\"index\" json:\"-\"`
+\tCreatedAt time.Time      `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+\tUpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+\tCreatedBy string         `gorm:"column:created_by;default:'system'" json:"created_by"`
+\tVersion   int64          `gorm:"column:version;default:1" json:"version"`
+\tIsDeleted bool           `gorm:"column:is_deleted;default:false" json:"is_deleted"`
+\tDeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }}
 
-type {entity_cap} struct {{
-\tID       uuid.UUID `gorm:\"type:uuid;primaryKey\" json:\"id\"`
-\tTenantID string    `gorm:\"column:tenant_id;index;not null\" json:\"tenant_id\"`
-{fields_str}
-\tAuditMetadata
-}}
-
-func (e *{entity_cap}) TableName() string {{
-\treturn "{entity.plural}"
-}}
+{all_models_code}
 """
 
     # 3. Transactional Outbox
@@ -497,17 +528,24 @@ import (
 \t"{mod_name}/repository"
 \t"github.com/gin-gonic/gin"
 \t"github.com/redis/go-redis/v9"
+\t{"gorm.io/driver/mysql" if request.is_mysql else "gorm.io/driver/postgres"}
 \t"gorm.io/driver/sqlite"
 \t"gorm.io/gorm"
 )
 
 func main() {{
-\tdb, err := gorm.Open(sqlite.Open("enterprise.db"), &gorm.Config{{}})
+\tvar db *gorm.DB
+\tvar err error
+\tif dbUrl := os.Getenv("DATABASE_URL"); dbUrl != "" {{
+\t\t{"db, err = gorm.Open(mysql.Open(dbUrl), &gorm.Config{})" if request.is_mysql else "db, err = gorm.Open(postgres.Open(dbUrl), &gorm.Config{})"}
+\t}} else {{
+\t\tdb, err = gorm.Open(sqlite.Open("enterprise.db"), &gorm.Config{{}})
+\t}}
 \tif err != nil {{
 \t\tlog.Fatalf("Failed to connect database: %v", err)
 \t}}
 
-\t_ = db.AutoMigrate(&models.{entity_cap}{{}}, &outbox.OutboxEvent{{}})
+\t_ = db.AutoMigrate(&outbox.OutboxEvent{{}}{"".join(f", &models.{pascal(e.singular)}{{}}" for e in entities)})
 
 \trdb := redis.NewClient(&redis.Options{{
 \t\tAddr: "localhost:6379",

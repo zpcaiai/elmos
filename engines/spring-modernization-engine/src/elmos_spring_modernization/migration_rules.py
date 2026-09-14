@@ -150,6 +150,60 @@ REAL_WORLD_RULES = [
         category=MigrationCategory.SECURITY,
         risk_level=RiskLevel.MEDIUM
     ),
+    MigrationRule(
+        rule_id="RULE_JPA_GET_ONE_TO_REFERENCE",
+        name="Spring Data JPA getOne to getReferenceById",
+        description="Migrate deprecated getOne(id) to getReferenceById(id) in Spring Data JPA 3.x",
+        source_pattern=".getOne(",
+        target_pattern=".getReferenceById(",
+        category=MigrationCategory.DATA_ACCESS,
+        risk_level=RiskLevel.LOW
+    ),
+    MigrationRule(
+        rule_id="RULE_SWAGGER_API_TO_TAG",
+        name="Swagger @Api to OpenAPI @Tag",
+        description="Migrate springfox @Api to springdoc @Tag",
+        source_pattern="@Api(",
+        target_pattern="@Tag(",
+        category=MigrationCategory.WEB,
+        risk_level=RiskLevel.LOW
+    ),
+    MigrationRule(
+        rule_id="RULE_SWAGGER_API_OPERATION",
+        name="Swagger @ApiOperation to OpenAPI @Operation",
+        description="Migrate springfox @ApiOperation to springdoc @Operation",
+        source_pattern="@ApiOperation(",
+        target_pattern="@Operation(",
+        category=MigrationCategory.WEB,
+        risk_level=RiskLevel.LOW
+    ),
+    MigrationRule(
+        rule_id="RULE_SWAGGER_API_PARAM",
+        name="Swagger @ApiParam to OpenAPI @Parameter",
+        description="Migrate springfox @ApiParam to springdoc @Parameter",
+        source_pattern="@ApiParam(",
+        target_pattern="@Parameter(",
+        category=MigrationCategory.WEB,
+        risk_level=RiskLevel.LOW
+    ),
+    MigrationRule(
+        rule_id="RULE_SWAGGER_API_MODEL_PROPERTY",
+        name="Swagger @ApiModelProperty to OpenAPI @Schema",
+        description="Migrate springfox @ApiModelProperty to springdoc @Schema",
+        source_pattern="@ApiModelProperty(",
+        target_pattern="@Schema(",
+        category=MigrationCategory.WEB,
+        risk_level=RiskLevel.LOW
+    ),
+    MigrationRule(
+        rule_id="RULE_WEB_INTERCEPTOR_ADAPTER",
+        name="HandlerInterceptorAdapter to HandlerInterceptor",
+        description="Migrate deprecated HandlerInterceptorAdapter to HandlerInterceptor interface",
+        source_pattern="extends HandlerInterceptorAdapter",
+        target_pattern="implements HandlerInterceptor",
+        category=MigrationCategory.WEB,
+        risk_level=RiskLevel.LOW
+    ),
 ]
 
 for r in REAL_WORLD_RULES:

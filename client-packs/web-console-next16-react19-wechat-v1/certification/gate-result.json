@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "status": "passed",
+  "status": "blocked",
   "structural_status": "PASSED",
   "local_equivalence_status": "NOT_EVALUATED",
   "bounded_proof_profile_ready": false,
@@ -15,7 +15,10 @@
   "independent_ready": false,
   "certification_ready": false,
   "certification_requested": true,
-  "certification_decision": "CERTIFIED",
-  "pack_status": "certified",
-  "failures": []
+  "certification_decision": "NOT_CERTIFIED",
+  "pack_status": "declared",
+  "failures": [
+    "official target build, emulator, physical device, differential, accessibility, privacy, performance, customer and independent evidence are NOT_RUN",
+    "prior repository-held certification key is revoked"
+  ]
 }

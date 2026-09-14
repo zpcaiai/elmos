@@ -418,6 +418,11 @@ def _java_identifier(value: str) -> str:
     return result
 
 
+def _binding_variable(value: Any) -> str:
+    result = re.sub(r"[^A-Za-z0-9_]", "_", str(value)) or "requestValue"
+    return "value_" + result if result[0].isdigit() else result
+
+
 def _java_string(value: Any) -> str:
     return str(value).replace("\\", "\\\\").replace('"', '\\"').replace("\r", "\\r").replace("\n", "\\n")
 
@@ -438,9 +443,7 @@ def _generate_controllers(model: ForensicModel, reason: str, snapshot: Repositor
             if binding is None:
                 continue
             source_name = str(binding["sourceName"])
-            variable = re.sub(r"[^A-Za-z0-9_]", "_", source_name) or "requestValue"
-            if variable[0].isdigit():
-                variable = "value_" + variable
+            variable = _binding_variable(source_name)
             params.append(f'@RequestParam(name = "{_java_string(source_name)}", required = {str(bool(binding.get("required"))).lower()}) String {variable}')
         navigation = endpoint.get("navigation", [])
         target = next((item.get("target") for item in navigation if item.get("target")), "/WEB-INF/jsp/legacy-preserved.jsp")
@@ -449,7 +452,7 @@ def _generate_controllers(model: ForensicModel, reason: str, snapshot: Repositor
         action_semantics = _recover_action_semantics(snapshot, endpoint)
         port_name = class_name.removesuffix("Controller") + "UseCase"
         constructor = [f"    private final {port_name} useCase;", "", f"    public {class_name}({port_name} useCase) {{", "        this.useCase = useCase;", "    }", ""]
-        input_values = ", ".join(variable for variable in [re.sub(r"[^A-Za-z0-9_]", "_", str(bindings[item]["sourceName"])) for item in endpoint.get("bindingIds", []) if item in bindings])
+        input_values = ", ".join(_binding_variable(bindings[item]["sourceName"]) for item in endpoint.get("bindingIds", []) if item in bindings)
         invocation = [f"        {port_name}.Outcome outcome = useCase.execute(new {port_name}.Input({input_values}));", "        return switch (outcome.result()) {"]
         navigation_cases = []
         for item in navigation:
@@ -461,20 +464,42 @@ def _generate_controllers(model: ForensicModel, reason: str, snapshot: Repositor
         invocation.extend(["            default -> throw new IllegalStateException(\"Unmapped legacy action result: \" + outcome.result());", "        };", "    }"])
         body = ["package org.elmos.legacyweb.generated;", "", "import org.springframework.stereotype.Controller;", "import org.springframework.web.bind.annotation.RequestMapping;", "import org.springframework.web.bind.annotation.RequestMethod;", "import org.springframework.web.bind.annotation.RequestParam;", "", *annotations, f"public final class {class_name} {{", f"    // Generated from {_java_string(endpoint['owner']['symbol'])} using {_java_string(reason)}.", *constructor, method_annotation, f"    public String handle({', '.join(params)}) {{", *invocation, "}", ""]
         files[_controller_path(endpoint)] = "\n".join(body)
-        input_components = ", ".join(f"String {re.sub(r'[^A-Za-z0-9_]', '_', str(bindings[item]['sourceName']))}" for item in endpoint.get("bindingIds", []) if item in bindings)
+        input_components = ", ".join(f"String {_binding_variable(bindings[item]['sourceName'])}" for item in endpoint.get("bindingIds", []) if item in bindings)
         port_body = ["package org.elmos.legacyweb.generated;", "", f"public interface {port_name} {{", f"    record Input({input_components}) {{}}", "    record Outcome(String result) {", "        public Outcome {", "            if (result == null || result.isBlank()) throw new IllegalArgumentException(\"legacy result is required\");", "        }", "    }", "", "    Outcome execute(Input input);", "}", ""]
         port_path = _controller_path(endpoint).replace("Controller.java", "UseCase.java")
         files[port_path] = "\n".join(port_body)
-        if action_semantics["method"] is None:
+        translated_body, translation_blockers = _translate_action_body(
+            action_semantics,
+            [_binding_variable(bindings[item]["sourceName"]) for item in endpoint.get("bindingIds", []) if item in bindings],
+            port_name,
+        )
+        if translated_body is not None:
+            adapter_path = port_path.replace("UseCase.java", "UseCaseAdapter.java")
+            files[adapter_path] = "\n".join([
+                "package org.elmos.legacyweb.generated;",
+                "",
+                "import org.springframework.stereotype.Component;",
+                "",
+                "@Component",
+                f"public final class {port_name}Adapter implements {port_name} {{",
+                "    @Override",
+                "    public Outcome execute(Input input) {",
+                *["        " + line for line in translated_body],
+                "    }",
+                "}",
+                "",
+            ])
+            obligations.append({"endpointId": endpoint["id"], "severity": "medium", "reason": "replay generated use-case adapter against the legacy action before cutover", "sourceMethod": action_semantics["method"], "sourceBodyDigest": action_semantics["bodyDigest"], "translation": "deterministic-supported-subset", "blocks": ["behavior-equivalence"]})
+        elif action_semantics["method"] is None:
             obligations.append({"endpointId": endpoint["id"], "severity": "critical", "reason": "action entry method was not structurally recovered", "blocks": ["target-build", "behavior-equivalence"]})
         else:
-            obligations.append({"endpointId": endpoint["id"], "severity": "high", "reason": "implement use-case port from recovered action body before cutover", "sourceMethod": action_semantics["method"], "sourceBodyDigest": action_semantics["bodyDigest"], "returnExpressions": action_semantics["returnExpressions"], "blocks": ["behavior-equivalence"]})
+            obligations.append({"endpointId": endpoint["id"], "severity": "high", "reason": "implement use-case port from recovered action body before cutover", "sourceMethod": action_semantics["method"], "sourceBodyDigest": action_semantics["bodyDigest"], "returnExpressions": action_semantics["returnExpressions"], "unsupportedStatements": translation_blockers, "blocks": ["behavior-equivalence"]})
     return files, obligations
 
 
 def _recover_action_semantics(snapshot: RepositorySnapshot | None, endpoint: Mapping[str, Any]) -> dict[str, Any]:
     if snapshot is None:
-        return {"method": None, "bodyDigest": None, "returnExpressions": []}
+        return {"method": None, "bodyDigest": None, "returnExpressions": [], "body": None, "sourcePath": None}
     symbol = str(endpoint["owner"]["symbol"])
     class_name = symbol.split(".")[-1]
     candidates = [item for item in snapshot.files if item.kind == "file" and item.text is not None and item.path.endswith("/" + class_name + ".java")]
@@ -511,8 +536,69 @@ def _recover_action_semantics(snapshot: RepositorySnapshot | None, endpoint: Map
                 close_brace = tokens[cursor - 1]
                 body = source[open_brace.end_pos:close_brace.start_pos]
                 returns = [match.group(1).strip() for match in re.finditer(r"\breturn\s+([^;]+);", body)]
-                return {"method": f"{symbol}#{method_name}", "bodyDigest": canonical_digest(body), "returnExpressions": returns}
-    return {"method": None, "bodyDigest": None, "returnExpressions": []}
+                return {"method": f"{symbol}#{method_name}", "bodyDigest": canonical_digest(body), "returnExpressions": returns, "body": body, "sourcePath": candidate.path}
+    return {"method": None, "bodyDigest": None, "returnExpressions": [], "body": None, "sourcePath": None}
+
+
+def _translate_action_body(action: Mapping[str, Any], bindings: list[str], port_name: str) -> tuple[list[str] | None, list[str]]:
+    """Translate only a small, structurally explicit Struts action subset.
+
+    Anything involving control flow, session/request writes, OGNL/ValueStack,
+    service calls or exception handling is rejected rather than emitted as
+    uncompilable or behavior-changing code.
+    """
+    body = action.get("body")
+    if not isinstance(body, str):
+        return None, ["action body unavailable"]
+    scrubbed = re.sub(r"/\*[\s\S]*?\*/|//[^\n]*", "", body).strip()
+    if not scrubbed:
+        return None, ["empty action body"]
+    if any(token in scrubbed for token in ("{", "}", "try ", "catch ", "finally", "ValueStack", "ActionContext", "getSession(", "setAttribute(")):
+        return None, ["control-flow, state, exception or OGNL semantics require manual extraction"]
+
+    statements = [item.strip() for item in scrubbed.split(";") if item.strip()]
+    translated: list[str] = []
+    blockers: list[str] = []
+    returned = False
+    binding_set = set(bindings)
+    for statement in statements:
+        request_parameter = re.fullmatch(
+            r"(?:final\s+)?String\s+([A-Za-z_$][\w$]*)\s*=\s*request\.getParameter\(\s*\"([^\"]+)\"\s*\)",
+            statement,
+        )
+        if request_parameter:
+            variable = request_parameter.group(1)
+            binding = _binding_variable(request_parameter.group(2))
+            if binding not in binding_set:
+                blockers.append(f"request parameter {request_parameter.group(2)} is absent from recovered bindings")
+            else:
+                translated.append(f"String {variable} = input.{binding}();")
+            continue
+        form_getter = re.fullmatch(
+            r"(?:final\s+)?String\s+([A-Za-z_$][\w$]*)\s*=\s*(?:\(\([^)]+\)\s*form\)|form)\.get([A-Z][A-Za-z0-9_$]*)\(\)",
+            statement,
+        )
+        if form_getter:
+            binding = _binding_variable(form_getter.group(2)[0].lower() + form_getter.group(2)[1:])
+            if binding not in binding_set:
+                blockers.append(f"form property {binding} is absent from recovered bindings")
+            else:
+                translated.append(f"String {form_getter.group(1)} = input.{binding}();")
+            continue
+        forward = re.fullmatch(r"return\s+mapping\.findForward\(\s*\"([^\"]+)\"\s*\)", statement)
+        literal = re.fullmatch(r"return\s+\"([^\"]+)\"", statement)
+        constant = re.fullmatch(r"return\s+(SUCCESS|ERROR|INPUT|LOGIN|NONE)", statement)
+        result = forward.group(1) if forward else literal.group(1) if literal else constant.group(1).lower() if constant else None
+        if result is not None:
+            translated.append(f'return new {port_name}.Outcome("{_java_string(result)}");')
+            returned = True
+            continue
+        blockers.append("unsupported statement digest " + canonical_digest(statement))
+    if blockers or not returned:
+        if not returned:
+            blockers.append("no deterministic Struts navigation return was recovered")
+        return None, blockers
+    return translated, []
 
 
 def _translate_jsp_views(snapshot: RepositorySnapshot) -> tuple[dict[str, str], list[dict[str, Any]], list[dict[str, Any]]]:

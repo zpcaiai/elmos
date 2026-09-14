@@ -37,7 +37,10 @@ from .production_contract import (
     TENANT_CLAIM,
     TENANT_SETTING,
     all_entity_sql,
+    fixture_chain,
     production_contract,
+    relation_parents,
+    uuid_relation_fields,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (
@@ -103,8 +106,10 @@ def _rust_type(field: FieldSpec) -> str:
     }[field.type]
 
 
-def _row_read(field: FieldSpec, index: int) -> str:
+def _row_read(field: FieldSpec, index: int, is_uuid: bool = False) -> str:
     """Read column ``index`` with the type PostgreSQL actually stores."""
+    if is_uuid:
+        return f"row.get::<_, Uuid>({index}).to_string()"
     if field.type == "number":
         return f"decimal_to_f64(row.get::<_, Decimal>({index}))?"
     if field.type == "datetime":
@@ -623,16 +628,17 @@ fn signing(valid: bool) -> (Header, EncodingKey) {
 _TEST_SOURCE = """
 use jsonwebtoken::{Algorithm, EncodingKey, Header, encode};
 use serde::Serialize;
+use serde_json::json;
 use std::env;
 use std::fs;
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::time::{SystemTime, UNIX_EPOCH};
+use uuid::Uuid;
 
 /// Hoisted so the assertion below stays one short line regardless of how many
 /// fields the entity declares.
 const WRONG_SECRET: &str = "an-entirely-different-secret-value-of-length";
-__TEST_CONSTS__
 
 #[derive(Serialize)]
 struct Claims {
@@ -704,44 +710,26 @@ fn runs_the_shared_production_scenario() {
     let tenant_a = token(Some("tenant-a"), &issuer, &audience, true);
     let tenant_b = token(Some("tenant-b"), &issuer, &audience, true);
 
+    let first_collection = "/__FIRST_PLURAL__";
+
     // health-unauthenticated
     assert_eq!(send("GET", "/health", None, None).0, 200);
     // missing-token-rejected
-    assert_eq!(send("GET", COLLECTION_PATH, None, None).0, 401);
+    assert_eq!(send("GET", first_collection, None, None).0, 401);
     // bad-signature-rejected
     let forged = token(Some("tenant-a"), &issuer, &audience, false);
-    assert_eq!(send("GET", COLLECTION_PATH, Some(&forged), None).0, 401);
+    assert_eq!(send("GET", first_collection, Some(&forged), None).0, 401);
     // wrong-audience-rejected
     let other_audience = token(Some("tenant-a"), &issuer, "another-service", true);
-    assert_eq!(send("GET", COLLECTION_PATH, Some(&other_audience), None).0, 401);
+    assert_eq!(send("GET", first_collection, Some(&other_audience), None).0, 401);
     // wrong-issuer-rejected
     let other_issuer = token(Some("tenant-a"), "https://attacker.invalid/", &audience, true);
-    assert_eq!(send("GET", COLLECTION_PATH, Some(&other_issuer), None).0, 401);
+    assert_eq!(send("GET", first_collection, Some(&other_issuer), None).0, 401);
     // missing-tenant-claim-rejected
     let no_tenant = token(None, &issuer, &audience, true);
-    assert_eq!(send("GET", COLLECTION_PATH, Some(&no_tenant), None).0, 401);
+    assert_eq!(send("GET", first_collection, Some(&no_tenant), None).0, 401);
 
-    // upsert-and-read
-    let path = format!("{COLLECTION_PATH}/{RECORD_ID}");
-    let created = send("PUT", &path, Some(&tenant_a), Some(SAMPLE_BODY));
-    assert_eq!(created.0, 200, "{}", created.1);
-    let read = send("GET", &path, Some(&tenant_a), None);
-    assert_eq!(read.0, 200);
-    assert!(read.1.contains(RECORD_ID));
-
-    // list-scoped-to-tenant
-    let listed = send("GET", COLLECTION_PATH, Some(&tenant_a), None);
-    assert_eq!(listed.0, 200);
-    assert!(listed.1.contains(RECORD_ID));
-
-    // cross-tenant-read-blocked
-    assert_eq!(send("GET", &path, Some(&tenant_b), None).0, 404);
-    let other = send("GET", COLLECTION_PATH, Some(&tenant_b), None);
-    assert!(!other.1.contains(RECORD_ID));
-
-    // delete-removes-record
-    assert_eq!(send("DELETE", &path, Some(&tenant_a), None).0, 204);
-    assert_eq!(send("GET", &path, Some(&tenant_a), None).0, 404);
+__ENTITY_SCENARIOS__
 }
 """
 
@@ -860,6 +848,7 @@ def _security_source(request: SynthesisRequest) -> str:
 def _store_source(request: SynthesisRequest) -> str:
     from .models import pascal
 
+    uuids = uuid_relation_fields(request)
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
     shared = f"""
 use rust_decimal::Decimal;
@@ -909,9 +898,25 @@ fn f64_to_decimal(value: f64) -> Result<Decimal, StoreError> {{
         upsert_fields = "\n".join(f"    pub {field.name}: {_rust_type(field)}," for field in entity.fields)
         record_fields = upsert_fields
         row_assignments = ["id: row.get(0)"] + [
-            f"{field.name}: {_row_read(field, index + 1)}" for index, field in enumerate(entity.fields)
+            f"{field.name}: {_row_read(field, index + 1, (entity.singular, field.name) in uuids)}"
+            for index, field in enumerate(entity.fields)
         ]
-        bind_values = [_bind_expression(field) for field in entity.fields]
+        preparations: list[str] = []
+        bind_values: list[str] = []
+        for field in entity.fields:
+            if (entity.singular, field.name) in uuids:
+                preparations.append(
+                    f'        let payload_{field.name} = Uuid::parse_str(&payload.{field.name}).map_err(|_| StoreError::Conversion("INVALID_UUID"))?;'
+                )
+                bind_values.append(f"&payload_{field.name}")
+            elif field.type == "number":
+                preparations.append(
+                    f"        let payload_{field.name} = f64_to_decimal(payload.{field.name})?;"
+                )
+                bind_values.append(f"&payload_{field.name}")
+            else:
+                bind_values.append(f"&payload.{field.name}")
+        preparations_str = ("\n".join(preparations) + "\n") if preparations else ""
         sql_consts = "\n".join(
             _string_const(name, json.dumps(statement))
             for name, statement in (
@@ -1018,7 +1023,7 @@ impl {entity_type}Store {{
         let mut client = self.connect().await?;
         let transaction = client.transaction().await?;
         bind_tenant(&transaction, tenant).await?;
-{upsert_query}
+{preparations_str}{upsert_query}
         let row = rows.first().ok_or(StoreError::Conversion("UPSERT_RETURNED_NO_ROW"))?;
         let record = {entity_type}::from_row(row)?;
         transaction.commit().await?;
@@ -1251,12 +1256,93 @@ pub fn build_state() -> Result<AppState, Box<dyn std::error::Error>> {{
 """
 
 
-def _test_source(request: SynthesisRequest, port: int) -> str:
-    entity = request.entities[0]
-    body = json.dumps(
-        {field.name: _sample_json(field) for field in entity.fields},
-        ensure_ascii=False,
+def _rust_json_body(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    parent_vars: dict[str, str],
+) -> str:
+    parents = dict(relation_parents(request, entity.singular))
+    fields_tokens: list[str] = []
+    for field in entity.fields:
+        if field.name in parents:
+            parent_var = parent_vars[parents[field.name]]
+            fields_tokens.append(f'"{field.name}": {parent_var}')
+        elif field.type == "string":
+            fields_tokens.append(f'"{field.name}": "sample-{field.name}"')
+        elif field.type == "integer":
+            fields_tokens.append(f'"{field.name}": 1')
+        elif field.type == "number":
+            fields_tokens.append(f'"{field.name}": 1.5')
+        elif field.type == "boolean":
+            fields_tokens.append(f'"{field.name}": true')
+        elif field.type == "datetime":
+            fields_tokens.append(f'"{field.name}": "2026-01-01T00:00:00Z"')
+    return "json!({\n" + ",\n".join(f"        {tok}" for tok in fields_tokens) + "\n    }).to_string()"
+
+
+def _rust_entity_scenario(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    declared_vars: set[str] | None = None,
+) -> str:
+    if declared_vars is None:
+        declared_vars = set()
+    by_name = {item.singular: item for item in request.entities}
+    parent_vars: dict[str, str] = {}
+    lines: list[str] = []
+    for parent in fixture_chain(request, entity.singular):
+        var_name = f"{parent}_id"
+        parent_vars[parent] = var_name
+        parent_entity = by_name[parent]
+        if var_name not in declared_vars:
+            declared_vars.add(var_name)
+            parent_body = _rust_json_body(request, parent_entity, parent_vars)
+            lines.extend(
+                [
+                    f"    let {var_name} = Uuid::new_v4().to_string();",
+                    f"    let {parent}_body = {parent_body};",
+                    f'    let created = send("PUT", &format!("/{parent_entity.plural}/{{{var_name}}}"), Some(&tenant_a), Some(&{parent}_body));',
+                    f'    assert_eq!(created.0, 200, "fixture {parent}: {{}}", created.1);',
+                ]
+            )
+    record_var = f"{entity.singular}_id"
+    if record_var not in declared_vars:
+        declared_vars.add(record_var)
+        lines.append(f"    let {record_var} = Uuid::new_v4().to_string();")
+    else:
+        lines.append(f"    let {record_var} = Uuid::new_v4().to_string();")
+    body_expr = _rust_json_body(request, entity, parent_vars)
+    lines.extend(
+        [
+            f'    let {entity.singular}_path = format!("/{entity.plural}/{{{record_var}}}");',
+            f"    let {entity.singular}_body = {body_expr};",
+            f'    let created = send("PUT", &{entity.singular}_path, Some(&tenant_a), Some(&{entity.singular}_body));',
+            f'    assert_eq!(created.0, 200, "upsert-and-read {entity.singular}: {{}}", created.1);',
+            f'    let read = send("GET", &{entity.singular}_path, Some(&tenant_a), None);',
+            f'    assert_eq!(read.0, 200, "read {entity.singular}: {{}}", read.1);',
+            f"    assert!(read.1.contains(&{record_var}));",
+            f'    let listed = send("GET", "/{entity.plural}", Some(&tenant_a), None);',
+            f'    assert_eq!(listed.0, 200, "list {entity.singular}: {{}}", listed.1);',
+            f"    assert!(listed.1.contains(&{record_var}));",
+            f'    assert_eq!(send("GET", &{entity.singular}_path, Some(&tenant_b), None).0, 404);',
+            f'    let other = send("GET", "/{entity.plural}", Some(&tenant_b), None);',
+            f'    assert_eq!(other.0, 200, "other tenant list {entity.singular}: {{}}", other.1);',
+            f"    assert!(!other.1.contains(&{record_var}));",
+            f'    assert_eq!(send("DELETE", &{entity.singular}_path, Some(&tenant_a), None).0, 204);',
+            f'    assert_eq!(send("GET", &{entity.singular}_path, Some(&tenant_a), None).0, 404);',
+        ]
     )
+    return "\n".join(lines)
+
+
+def _test_source(request: SynthesisRequest, port: int) -> str:
+    declared_vars: set[str] = set()
+    scenario_blocks = [
+        _rust_entity_scenario(request, entity, declared_vars)
+        for entity in request.entities
+    ]
+    entity_scenarios = "\n\n".join(scenario_blocks)
+    first_entity = request.entities[0]
     if request.auth_mode == "jwt":
         signer = _substitute(_TEST_JWT_SIGNER, {"__ENV_JWT_SECRET_FILE__": ENV_JWT_SECRET_FILE})
     else:
@@ -1269,13 +1355,8 @@ def _test_source(request: SynthesisRequest, port: int) -> str:
         {
             "__SIGNER__": signer.strip() + "\n",
             "__TENANT_CLAIM__": TENANT_CLAIM,
-            "__TEST_CONSTS__": "\n".join(
-                (
-                    _string_const("SAMPLE_BODY", json.dumps(body)),
-                    _string_const("RECORD_ID", '"6f1d9c52-4f0a-4c2e-9a58-6f4b2c8d1e70"'),
-                    _string_const("COLLECTION_PATH", json.dumps(f"/{entity.plural}")),
-                )
-            ),
+            "__FIRST_PLURAL__": first_entity.plural,
+            "__ENTITY_SCENARIOS__": entity_scenarios,
             "__PORT__": str(port),
             "__ENV_AUTH_ISSUER__": ENV_AUTH_ISSUER,
             "__ENV_AUTH_AUDIENCE__": ENV_AUTH_AUDIENCE,

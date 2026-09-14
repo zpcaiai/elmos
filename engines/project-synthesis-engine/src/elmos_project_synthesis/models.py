@@ -97,12 +97,13 @@ SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # Unauthenticated sqlite/mysql is also closed: production runtimes always
 # emit JWT or OIDC material.
 _PYTHON_RELATIONAL_TARGETS = frozenset({"python"})
+_MYSQL_RELATIONAL_TARGETS = frozenset({"python", "java", "go", "typescript", "csharp"})
 SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("in-memory", "none"): frozenset(SUPPORTED_LANGUAGES),
     ("sqlite", "jwt"): _PYTHON_RELATIONAL_TARGETS,
     ("sqlite", "oidc"): _PYTHON_RELATIONAL_TARGETS,
-    ("mysql", "jwt"): _PYTHON_RELATIONAL_TARGETS,
-    ("mysql", "oidc"): _PYTHON_RELATIONAL_TARGETS,
+    ("mysql", "jwt"): _MYSQL_RELATIONAL_TARGETS,
+    ("mysql", "oidc"): _MYSQL_RELATIONAL_TARGETS,
     ("postgresql", "jwt"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
     ("postgresql", "oidc"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
 }

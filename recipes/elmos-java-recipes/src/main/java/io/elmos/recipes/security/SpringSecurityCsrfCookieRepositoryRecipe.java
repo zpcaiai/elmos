@@ -28,10 +28,15 @@ public final class SpringSecurityCsrfCookieRepositoryRecipe extends Recipe {
             @Override
             public J.VariableDeclarations visitVariableDeclarations(J.VariableDeclarations multiVariable, ExecutionContext ctx) {
                 J.VariableDeclarations mv = super.visitVariableDeclarations(multiVariable, ctx);
-                return (J.VariableDeclarations) JavaTemplate.builder("CookieCsrfTokenRepository #{} = CookieCsrfTokenRepository.withHttpOnlyFalse()")
-                        .contextSensitive()
-                        .build()
-                        .apply(getCursor(), mv.getCoordinates().replace(), mv.getVariables().get(0).getSimpleName());
+                if (mv.getTypeExpression() != null && mv.getTypeExpression().printTrimmed().contains("CookieCsrfTokenRepository")) {
+                    if (mv.getVariables().stream().anyMatch(v -> v.getInitializer() != null && v.getInitializer().printTrimmed().contains("new CookieCsrfTokenRepository()"))) {
+                        return (J.VariableDeclarations) JavaTemplate.builder("CookieCsrfTokenRepository #{} = CookieCsrfTokenRepository.withHttpOnlyFalse()")
+                                .contextSensitive()
+                                .build()
+                                .apply(getCursor(), mv.getCoordinates().replace(), mv.getVariables().get(0).getSimpleName());
+                    }
+                }
+                return mv;
             }
         };
     }
