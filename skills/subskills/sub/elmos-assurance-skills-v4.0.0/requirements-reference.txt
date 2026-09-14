@@ -1,5 +1,5 @@
 # Exact versions observed in the reference test environment; not a hash-locked production dependency approval.
-pytest==9.0.2
+pytest==9.0.3
 jsonschema==4.26.0
 PyYAML==6.0.3
 cryptography==46.0.4
