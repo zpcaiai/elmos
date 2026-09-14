@@ -30,6 +30,7 @@ class FakeIndices:
 class FakeElastic:
     def __init__(self) -> None:
         self.indices = FakeIndices()
+        self.license = FakeLicense()
         self.sources = []
 
     def info(self):
@@ -47,6 +48,11 @@ class FakeElastic:
         deleted = len(self.sources)
         self.sources = []
         return {"deleted": deleted, "timed_out": False, "failures": []}
+
+
+class FakeLicense:
+    def get(self):
+        return {"license": {"type": "enterprise", "status": "active"}}
 
 
 class FakeResponse:
@@ -83,6 +89,7 @@ def environment(authorization_id: str) -> dict[str, str]:
         "ELMOS_ELASTICSEARCH_INDEX": "elmos-qualification-v1",
         "ELMOS_ELASTICSEARCH_VECTOR_DIMENSIONS": "3",
         "ELMOS_ELASTICSEARCH_EXPECTED_VERSION": "8.19.3",
+        "ELMOS_ELASTICSEARCH_EXPECTED_LICENSE_TYPE": "enterprise",
         "ELMOS_DIFY_URL": "https://dify.example",
         "ELMOS_DIFY_API_KEY": "dify-secret-value",
         "ELMOS_DIFY_WORKFLOW_ID": "workflow-1",
