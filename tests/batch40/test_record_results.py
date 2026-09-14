@@ -88,6 +88,45 @@ class Batch40RecordResultsTest(unittest.TestCase):
             )
             self.assertEqual("experimental", refreshed_pack["status"])
 
+    def test_docker_local_report_is_bounded_and_content_addressed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            pack = Path(directory) / "pack"
+            shutil.copytree(SOURCE_PACK, pack)
+            report_path = pack / "evidence/execution/b40-docker-local-evidence.json"
+            report_path.write_text(json.dumps({
+                "id": "b40-docker-local-evidence",
+                "status": "PASS",
+                "repositoryRevision": "a" * 40,
+                "replayCommand": "make batch40-docker-evidence",
+                "toolDigest": "sha256:" + "b" * 64,
+                "scope": {"controlCount": 20},
+                "build": {"imageId": "sha256:" + "c" * 64},
+                "failedControls": [],
+                "limitations": ["local only"],
+                "productionEvidence": "NOT_RUN",
+                "independentVerification": "NOT_RUN",
+                "certificationStatus": "NOT_CERTIFIED",
+            }), encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(pack), "--skip-context-refresh"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            evidence = json.loads((pack / "evidence.json").read_text())
+            claim = next(item for item in evidence["claims"] if item["claimId"] == "b40-docker-local-controls")
+            self.assertFalse(claim["externalOperationExecuted"])
+            provenance = json.loads(
+                (pack / "evidence/provenance/b40-docker-local-evidence-provenance.json").read_text()
+            )
+            self.assertEqual("LOCAL_EXECUTED_SELF_ATTESTED", provenance["status"])
+            self.assertEqual("NOT_RUN", provenance["independentVerification"])
+            certification = json.loads((pack / "certification.json").read_text())
+            self.assertEqual("NOT_RUN", certification["status"])
+
 
 if __name__ == "__main__":
     unittest.main()

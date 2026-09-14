@@ -8,6 +8,10 @@ not a certification request, approval, signature, or evidence manifest.
 - Certification: `NOT_RUN`; production certification: `NOT_CERTIFIED`.
 - Local assurance: 13/13 exact CI, threat-model, and evidence-graph controls passed with
   self-attested evidence.
+- The opt-in Docker harness adds hardened local execution for synthetic signature,
+  tamper, unsigned-artifact, provenance, runner-downgrade, tenant-binding, and
+  corpus-separation fixtures. It remains `LOCAL_EXECUTED_SELF_ATTESTED`; the
+  same-host Docker daemon is not an independent verifier or production runner.
 - Repository controls: 11 formerly experimental capability rows now have 11
   executable, fail-closed local controls and bounded `limited` evidence. This
   includes review ownership, PSIRT policy, model-artifact registration, safe

@@ -36,6 +36,8 @@ repository_controls = (
     json.loads(repository_controls_path.read_text())
     if repository_controls_path.is_file() else None
 )
+docker_local_path = P / 'evidence/execution/b40-docker-local-evidence.json'
+docker_local = json.loads(docker_local_path.read_text()) if docker_local_path.is_file() else None
 actionable = scan['totals']['actionableFindingCount']
 external_components = [
     component for component in inv['components'] if not component.get('internal')
@@ -215,6 +217,15 @@ if repository_controls is not None:
         'externalOperationExecuted': False,
         'authorizationRefs': [],
     })
+if docker_local is not None:
+    evidence['claims'].append({
+        'claimId': 'b40-docker-local-controls',
+        'status': 'PASS' if docker_local.get('status') == 'PASS' else 'FAIL',
+        'evidenceRefs': ['b40-docker-local-evidence'],
+        'provenanceRefs': ['b40-docker-local-evidence-provenance'],
+        'externalOperationExecuted': False,
+        'authorizationRefs': [],
+    })
 (P / 'evidence.json').write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + '\n')
 
 claims = json.loads((P / 'claims.json').read_text())
@@ -302,6 +313,19 @@ if repository_controls is not None:
         'scope': repository_controls['scope'],
         'limitations': repository_controls['limitations'],
         'evidenceRefs': ['b40-repository-controls'],
+    })
+if docker_local is not None:
+    claims['claims'].append({
+        'claimId': 'b40-docker-local-controls',
+        'statement': (
+            f"The repository-owned Docker harness executed {docker_local['scope']['controlCount']} "
+            f"hardened runtime and synthetic supply-chain controls in content-addressed image "
+            f"{docker_local['build']['imageId']}; {len(docker_local.get('failedControls', []))} "
+            "controls failed. Production evidence and independent verification remain NOT_RUN."
+        ),
+        'scope': docker_local['scope'],
+        'limitations': docker_local['limitations'],
+        'evidenceRefs': ['b40-docker-local-evidence'],
     })
 (P / 'claims.json').write_text(json.dumps(claims, indent=2, ensure_ascii=False) + '\n')
 
@@ -460,6 +484,17 @@ if repository_controls is not None:
     (provenance_dir / 'b40-repository-controls-provenance.json').write_text(
         json.dumps(repository_controls_provenance, indent=2, ensure_ascii=False) + '\n'
     )
+docker_local_provenance = None
+if docker_local is not None:
+    docker_local_provenance = preserve_or_create_local_provenance(
+        docker_local,
+        evidence_id='b40-docker-local-evidence',
+        analyzer='scripts/batch40_docker_local_evidence.py',
+        filename='b40-docker-local-evidence-provenance.json',
+    )
+    (provenance_dir / 'b40-docker-local-evidence-provenance.json').write_text(
+        json.dumps(docker_local_provenance, indent=2, ensure_ascii=False) + '\n'
+    )
 
 artifact_path = P / 'artifact/schema-surface.json'
 environment_path = P / 'environment/toolchain.json'
@@ -528,6 +563,7 @@ pack['evidenceRefs'] = sorted({
     *(['b40-dependabot-vex-provenance'] if (P / 'evidence/provenance/b40-dependabot-vex-provenance.json').is_file() else []),
     *(['b40-local-assurance'] if assurance is not None else []),
     *(['b40-repository-controls'] if repository_controls is not None else []),
+    *(['b40-docker-local-evidence'] if docker_local is not None else []),
 })
 (P / 'pack.json').write_text(json.dumps(pack, indent=2, ensure_ascii=False) + '\n')
 
@@ -559,6 +595,17 @@ if repository_controls is not None and repository_controls.get('status') == 'PAS
         ):
             continue
         limited[capability_id] = ['b40-repository-controls']
+if docker_local is not None and docker_local.get('status') == 'PASS':
+    for capability_id in (
+        'b40-artifact-container-signing',
+        'b40-isolated-trusted-builder',
+        'b40-runner-update-supply-chain',
+        'b40-security-supply-chain-gate',
+        'b40-slsa-provenance',
+    ):
+        limited[capability_id] = sorted(set(
+            limited.get(capability_id, []) + ['b40-docker-local-evidence']
+        ))
 for capability in matrix['capabilities']:
     capability['owner'] = 'elmos-platform-maintainers'
     refs = limited.get(capability['capabilityId'])
@@ -598,6 +645,9 @@ if assurance_provenance is not None:
 if repository_controls_provenance is not None:
     all_provenance.append(repository_controls_provenance)
     all_provenance_refs.append('b40-repository-controls')
+if docker_local_provenance is not None:
+    all_provenance.append(docker_local_provenance)
+    all_provenance_refs.append('b40-docker-local-evidence')
 provenance_record.update({
     'status': 'draft',
     'evidenceRefs': all_provenance_refs,
