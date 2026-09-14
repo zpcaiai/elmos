@@ -1,0 +1,105 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "build_tool": "gradle",
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "1.5.22.RELEASE",
+    "source_java": "8",
+    "target_boot": "4.1.0",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "boot-1.5-gradle-to-boot-4.1.0-java-21",
+  "schema_version": 1,
+  "source": {
+    "boot": "1.5.22.RELEASE",
+    "build": "PASSED",
+    "build_tail": "> Task :compileJava\n> Task :processResources\n> Task :classes\n> Task :findMainClass\n> Task :jar\n> Task :bootRepackage\n> Task :assemble\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n\n> Task :test\n2026-09-14 04:37:53.034  INFO 79 --- [       Thread-6] o.s.w.c.s.GenericWebApplicationContext   : Closing org.springframework.web.context.support.GenericWebApplicationContext@321f2dc3: startup date [Mon Sep 14 04:37:50 UTC 2026]; root of context hierarchy\n\n> Task :check\n> Task :build\n\nBUILD SUCCESSFUL in 8s\n7 actionable tasks: 7 executed\n",
+    "health_path": "/health",
+    "java": "openjdk version \"1.8.0_432\"",
+    "runtime": {
+      "health": {
+        "status": "UP"
+      },
+      "jar_sha256": "a2c4ecc3a964054b53bc7cdd664267859fc1e5b733870e366047b4f224e10227",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "target": {
+    "boot": "4.1.0",
+    "build": "PASSED",
+    "build_tail": "To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n> Task :clean\n> Task :compileJava\n> Task :processResources\n> Task :classes\n> Task :resolveMainClassName\n> Task :bootJar\n> Task :jar\n> Task :assemble\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n> Task :test\n> Task :check\n> Task :build\n\nBUILD SUCCESSFUL in 14s\n8 actionable tasks: 8 executed\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "a8a02f6fa1ddafcdb9f8ed684a670e95b9ef381b1da7ea834a4231bc9c0f57ab",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "transformation": {
+    "build_descriptor_bootstrap": "bootstrap_legacy_gradle_descriptor",
+    "docker_execution_boundary": "PASSED_LOCAL_NON_ROOTLESS",
+    "elmos_recipe_artifact": {
+      "coordinate": "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
+      "sha256": "280144c836299990f3b213cb6586fe6bd2064074a0918ae19933324f8ab93e0c"
+    },
+    "engine": "OpenRewrite",
+    "gradle": "Gradle 8.14.3",
+    "output_tail": "onToJakartaValidation\n                                                org.openrewrite.java.dependencies.ChangeDependency\n                                            org.openrewrite.java.migrate.jakarta.JavaxXmlBindMigrationToJakartaXmlBind\n                                                org.openrewrite.java.migrate.jakarta.RetainJaxbApiForJackson\n                                                    org.openrewrite.java.dependencies.AddDependency\n                            org.openrewrite.java.dependencies.UpgradeDependencyVersion\n                        org.openrewrite.java.dependencies.UpgradeDependencyVersion\n                    org.openrewrite.java.dependencies.UpgradeDependencyVersion\n                org.openrewrite.java.dependencies.UpgradeDependencyVersion\n            org.openrewrite.java.dependencies.UpgradeDependencyVersion: {groupId=org.springframework.boot, artifactId=*, newVersion=3.5.x, overrideManagedVersion=false}\n            org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0\n                org.openrewrite.java.dependencies.UpgradeDependencyVersion: {groupId=org.springframework.boot, artifactId=*, newVersion=4.0.x, overrideManagedVersion=false}\n                org.openrewrite.java.spring.boot4.RenameDeprecatedStartersManagedVersions\n                    org.openrewrite.java.dependencies.ChangeDependency\nPlease review and commit the results.\nEstimate time saved: 2h 10m\n\n[Incubating] Problems report is available at: file:///private/tmp/elmos-route-boot15-410/migrated/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n\nBUILD SUCCESSFUL in 42s\n2 actionable tasks: 2 executed\n",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_0Java21",
+    "recipe_path": "apps/java-engine-worker/src/main/resources/rewrite/spring-to-boot-4.1.0.yml",
+    "recipe_sha256": "5df003b433073e66afd0e5184b02a9cceb1ebdce6d8e2f073da67a8ea510e610",
+    "rewrite_plugin": "7.37.0",
+    "rewrite_spring": "6.35.0",
+    "source_gradle": "Gradle 4.10.3",
+    "source_gradle_container_image": "gradle@sha256:665a76a6302b5724f305a99608229bdeeb0dc9d5e015e2ca565dbb1fa1be64d9"
+  }
+}

@@ -7,7 +7,7 @@
       "id": "spring-framework-component-feature-mapping",
       "status": "experimental",
       "strategy": "typed-feature-catalog-fcm-bound",
-      "reason": "Spring Core, Context, AOP, validation, lifecycle and resource features are discovered with source-language provenance and mapped to explicit FCM obligations; real target execution is NOT_RUN."
+      "reason": "Spring Core, Context, AOP, validation, lifecycle and resource features are discovered with source-language provenance and mapped to explicit FCM obligations. One exact synthetic Core/Context tuple has local source/target execution; arbitrary application graphs and formal component tracks remain NOT_RUN."
     },
     {
       "id": "spring-mvc-component-feature-mapping",
@@ -19,7 +19,7 @@
       "id": "spring-boot-4.1.1-upgrade",
       "status": "experimental",
       "strategy": "ordered-openrewrite-chain-plus-4-1-1-profile",
-      "reason": "Nine of twelve exact Maven and Gradle routes pin Boot 4.1.1 / Java 21 and have bounded PASSED_LOCAL source/target build, startup and HTTP behavior receipts; the Boot 1.5 Gradle route and two non-Boot Spring routes remain NOT_RUN, as do provider, customer, holdout and independent verification."
+      "reason": "All twelve exact Maven and Gradle routes pin Boot 4.1.1 / Java 21 and have bounded PASSED_LOCAL source/target build, startup and observable behavior receipts; provider, customer, holdout, formal track and independent verification remain NOT_RUN."
     },
     {
       "id": "security",

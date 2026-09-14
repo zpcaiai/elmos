@@ -497,11 +497,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Direct Gradle edge with ordered Boot 2.0, 2.7, 3.5 and 4.0 transformations. "
-                            + "The declared Gradle 8.14.3 source toolchain cannot configure the "
-                            + "Boot 1.5 plugin (missing legacy runtime configuration); a governed "
-                            + "dual-toolchain Gradle conversion stage is required before promotion.",
+                    EvidenceStatus.PASSED_LOCAL, "1.5.22.RELEASE", "8",
+                    "The exact Boot 1.5.22 / Java 8 source passed in a digest-pinned Gradle 4.10.3 "
+                            + "Docker toolchain, followed by the governed Gradle 8.14.3 descriptor "
+                            + "conversion, target build, startup and behavior probes. External, "
+                            + "rootless and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-2.x-gradle-to-boot-4.1.0-java-21",
@@ -556,10 +556,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-framework-3.2-5.2-mvc-to-spring-boot-3.5.3.yml",
                     "io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Applies the same Java 21, Jakarta and Spring Framework 6.2 transformations as "
-                            + "the exact 5.3.39 MVC edge, then binds Boot 3.5.3 starter-web. No "
-                            + "3.2–5.2 fixture has been executed, so the route stays NOT_RUN.",
+                    EvidenceStatus.PASSED_LOCAL, "5.2.25.RELEASE", "11",
+                    "The exact Spring MVC 5.2.25.RELEASE / Java 11 WAR passed Maven build and "
+                            + "digest-pinned Tomcat Docker startup. The extracted servlet, bean and "
+                            + "property FCM generated a Boot 3.5.3 / Java 21 target with matching HTTP "
+                            + "behavior; external and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_MVC),
             new SpringRoute(
                     "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
@@ -601,11 +602,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-framework-mvc-to-boot-4.1.0.yml",
                     "io.elmos.openrewrite.SpringFrameworkCoreToSpringBoot4_1_0Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Direct non-MVC Spring Framework edge. It prepares the exact Boot 4.1.0 "
-                            + "dependency and Java target, but source context ownership, bean graph, "
-                            + "resource lifecycle, transactions and provider behavior require FCM. "
-                            + "A generic source runtime/target emitter is not inferred.",
+                    EvidenceStatus.PASSED_LOCAL, "5.3.39", "11",
+                    "The exact Spring Framework 5.3.39 / Java 11 XML context passed Maven build and "
+                            + "network-isolated Docker startup. Its typed bean/property/lifecycle FCM "
+                            + "generated a Boot 4.1.0 / Java 21 non-web target with matching behavior; "
+                            + "provider and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_FRAMEWORK),
             new SpringRoute(
                     "boot-1.5-maven-to-boot-4.1.1-java-21",
@@ -705,11 +706,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-to-boot-4.1.1.yml",
                     "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_1Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Ordered Gradle modernization to exact Boot 4.1.1 / Java 21. The declared "
-                            + "Gradle 8.14.3 source toolchain cannot configure the Boot 1.5 plugin "
-                            + "(missing legacy runtime configuration); a governed dual-toolchain "
-                            + "Gradle conversion stage is required before promotion.",
+                    EvidenceStatus.PASSED_LOCAL, "1.5.22.RELEASE", "8",
+                    "The exact Boot 1.5.22 / Java 8 source passed in a digest-pinned Gradle 4.10.3 "
+                            + "Docker toolchain, followed by the governed Gradle 8.14.3 descriptor "
+                            + "conversion, Boot 4.1.1 target build, startup and behavior probes. "
+                            + "External, rootless and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-2.x-gradle-to-boot-4.1.1-java-21",
@@ -762,9 +763,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-framework-mvc-to-boot-4.1.1.yml",
                     "io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_1Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Deterministic Jakarta/Framework 7 preparation and Boot 4.1.1 dependency pin; "
-                            + "XML, servlet, view, security, data and transaction contracts require FCM emitters.",
+                    EvidenceStatus.PASSED_LOCAL, "5.3.39", "11",
+                    "The exact Spring MVC 5.3.39 / Java 11 WAR passed Maven build and digest-pinned "
+                            + "Tomcat Docker startup. Its servlet, bean and property FCM generated a "
+                            + "Boot 4.1.1 / Java 21 target with matching HTTP behavior; external and "
+                            + "independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_MVC),
             new SpringRoute(
                     "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21",
@@ -775,9 +778,11 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-framework-mvc-to-boot-4.1.1.yml",
                     "io.elmos.openrewrite.SpringFrameworkCoreToSpringBoot4_1_1Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Deterministic Core/Context preparation and Boot 4.1.1 pin; bean graph, "
-                            + "context ownership, lifecycle and provider semantics require FCM evidence.",
+                    EvidenceStatus.PASSED_LOCAL, "5.3.39", "11",
+                    "The exact Spring Framework 5.3.39 / Java 11 XML context passed Maven build and "
+                            + "network-isolated Docker startup. Its typed bean/property/lifecycle FCM "
+                            + "generated a Boot 4.1.1 / Java 21 non-web target with matching behavior; "
+                            + "provider and independent evidence remain NOT_RUN.",
                     SourceFamily.SPRING_FRAMEWORK),
             new SpringRoute(
                     "servlet-2.5-jsp-maven-to-boot-3.5.3-java-21",

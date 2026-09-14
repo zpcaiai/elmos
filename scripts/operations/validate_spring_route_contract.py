@@ -43,7 +43,7 @@ SPRING_4_1_1_VERSION_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-1" 
 MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
 MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
 MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
-MVC_UNVERIFIED_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
+MVC_FCM_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
 BOOT_3_5_16_ROUTE_COMPOSITIONS = {
     "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": (
         "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
@@ -52,8 +52,8 @@ BOOT_3_5_16_ROUTE_COMPOSITIONS = {
         "org.openrewrite.java.migrate.UpgradeToJava21",
     ),
 }
-MVC_UNVERIFIED_ROUTE_COMPOSITIONS = {
-    MVC_UNVERIFIED_ROUTE_ID: (
+MVC_FCM_ROUTE_COMPOSITIONS = {
+    MVC_FCM_ROUTE_ID: (
         "org.openrewrite.java.migrate.UpgradeToJava21",
         "org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta",
         "org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2",
@@ -178,6 +178,14 @@ BOOT_4_1_LOCAL_EVIDENCE = {
         "evidence_path": "evidence/spring-routes/boot-2.x-gradle-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "evidence/spring-routes/boot-2.x-gradle-to-boot-4.1.0-java-21.json",
     },
+    "boot-1.5-gradle-to-boot-4.1.0-java-21": {
+        "source_boot": "1.5.22.RELEASE",
+        "source_java": "8",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-1.5-gradle-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/boot-1.5-gradle-to-boot-4.1.0-java-21.json",
+    },
     "boot-4.0-maven-to-boot-4.1.0-java-21": {
         "source_boot": "4.0.0", "source_java": "21",
         "target_boot": "4.1.0", "target_java": "21",
@@ -204,6 +212,14 @@ BOOT_4_1_LOCAL_EVIDENCE = {
         "evidence_path": "evidence/spring-routes/spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "evidence/spring-routes/spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
     },
+    "spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21": {
+        "source_boot": "5.3.39",
+        "source_java": "11",
+        "target_boot": "4.1.0",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
+        "matrix_evidence_path": "evidence/spring-routes/spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21.json",
+    },
 }
 BOOT_4_1_1_LOCAL_EVIDENCE = {
     route_id: {
@@ -224,7 +240,19 @@ BOOT_4_1_1_LOCAL_EVIDENCE = {
         "boot-2.x-gradle-to-boot-4.1.1-java-21": ("2.7.18", "17"),
         "boot-3.x-gradle-to-boot-4.1.1-java-21": ("3.4.1", "17"),
         "boot-4.0-gradle-to-boot-4.1.1-java-21": ("4.0.0", "21"),
+        "boot-1.5-gradle-to-boot-4.1.1-java-21": ("1.5.22.RELEASE", "8"),
+        "spring-mvc-3.2-7.0-maven-to-boot-4.1.1-java-21": ("5.3.39", "11"),
+        "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21": ("5.3.39", "11"),
     }.items()
+}
+MVC_FCM_LOCAL_EVIDENCE = {
+    MVC_FCM_ROUTE_ID: {
+        "source_boot": "5.2.25.RELEASE",
+        "source_java": "11",
+        "target_boot": "3.5.3",
+        "target_java": "21",
+        "evidence_path": f"evidence/spring-routes/{MVC_FCM_ROUTE_ID}.json",
+    }
 }
 BOOT_3_5_LOCAL_EVIDENCE = {
     "boot-1.5-java-8-maven-to-boot-3.5.3-java-21": {
@@ -346,11 +374,34 @@ def check_local_evidence_payload(
         f"{prefix}_BOUNDARY_DRIFT:{route_id}",
     )
     family = prefix.removesuffix("_EVIDENCE")
+    transformation = evidence.get("transformation")
+    fcm_execution = (
+        isinstance(transformation, dict)
+        and transformation.get("engine") == "ELMOS_FCM_TARGET_GENERATOR"
+    )
     for side in ("source", "target"):
         execution = evidence.get(side)
         expected_boot = (
             expectation["source_boot"] if side == "source" else expectation["target_boot"]
         )
+        if fcm_execution:
+            expected_version_field = "spring_framework" if side == "source" else "boot"
+            runtime = execution.get("runtime", {}) if isinstance(execution, dict) else {}
+            require(
+                isinstance(execution, dict)
+                and execution.get(expected_version_field) == expected_boot
+                and execution.get("build") == "PASSED"
+                and (
+                    side == "target"
+                    or runtime.get("docker_boundary") == "PASSED_LOCAL_NON_ROOTLESS"
+                )
+                and bool(
+                    runtime.get("responses")
+                    or runtime.get("results")
+                ),
+                f"{family}_{side.upper()}_EVIDENCE_INCOMPLETE:{route_id}",
+            )
+            continue
         require(
             isinstance(execution, dict)
             and execution.get("boot") == expected_boot
@@ -691,43 +742,51 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
         )
         require("newVersion: 3.5.16" in recipe_block, f"BOOT_3_5_16_MAVEN_PIN_MISSING:{route_id}")
 
-    for route_id, ordered_steps in MVC_UNVERIFIED_ROUTE_COMPOSITIONS.items():
+    for route_id, ordered_steps in MVC_FCM_ROUTE_COMPOSITIONS.items():
         edge = next((route for route in routes if route["route_id"] == route_id), None)
-        require(edge is not None, f"REQUIRED_MVC_UNVERIFIED_EDGE_MISSING:{route_id}")
+        require(edge is not None, f"REQUIRED_MVC_FCM_EDGE_MISSING:{route_id}")
         assert edge is not None
         require(
             edge["pack_key"] == "spring-framework-3-2-5-2-mvc-to-spring-boot-3-5-3"
             and edge["source_family"] == "SPRING_MVC"
             and edge["target_boot"] == "3.5.3"
             and edge["target_java"] == "21",
-            f"MVC_UNVERIFIED_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
+            f"MVC_FCM_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
         )
         require(
             edge["recipe_resource"] != "" and edge["recipe_id"] != "",
-            f"MVC_UNVERIFIED_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
+            f"MVC_FCM_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
         )
-        require(edge["evidence"] == "NOT_RUN", f"MVC_UNVERIFIED_EDGE_EVIDENCE_DRIFT:{route_id}")
+        expectation = MVC_FCM_LOCAL_EVIDENCE[route_id]
         require(
-            edge["verified_boot"] == "" and edge["verified_java"] == "",
-            f"MVC_UNVERIFIED_EDGE_DECLARES_EVIDENCE:{route_id}",
+            edge["evidence"] == "PASSED_LOCAL"
+            and edge["verified_boot"] == expectation["source_boot"]
+            and edge["verified_java"] == expectation["source_java"],
+            f"MVC_FCM_EDGE_EVIDENCE_DRIFT:{route_id}",
+        )
+        evidence = load_local_evidence(
+            route_id, ROOT / expectation["evidence_path"], "MVC_FCM_LOCAL_EVIDENCE"
+        )
+        check_local_evidence_payload(
+            route_id, evidence, expectation, "MVC_FCM_LOCAL_EVIDENCE"
         )
         recipe = (
             WORKER / "resources" / str(edge["recipe_resource"]).lstrip("/")
         ).read_text(encoding="utf-8")
         recipe_start = recipe.find(f"name: {edge['recipe_id']}")
-        require(recipe_start >= 0, f"MVC_UNVERIFIED_RECIPE_NAME_MISSING:{route_id}")
+        require(recipe_start >= 0, f"MVC_FCM_RECIPE_NAME_MISSING:{route_id}")
         recipe_end = recipe.find("\n---", recipe_start)
         recipe_block = recipe[recipe_start:] if recipe_end < 0 else recipe[recipe_start:recipe_end]
         positions = []
         for step in ordered_steps:
             position = recipe_block.find(f"  - {step}")
-            require(position >= 0, f"MVC_UNVERIFIED_COMPOSITION_STEP_MISSING:{route_id}:{step}")
+            require(position >= 0, f"MVC_FCM_COMPOSITION_STEP_MISSING:{route_id}:{step}")
             positions.append(position)
         require(
             positions == sorted(positions),
-            f"MVC_UNVERIFIED_COMPOSITION_ORDER_DRIFT:{route_id}",
+            f"MVC_FCM_COMPOSITION_ORDER_DRIFT:{route_id}",
         )
-        require("newVersion: 3.5.3" in recipe_block, f"MVC_UNVERIFIED_MAVEN_PIN_MISSING:{route_id}")
+        require("newVersion: 3.5.3" in recipe_block, f"MVC_FCM_MAVEN_PIN_MISSING:{route_id}")
 
     for route_id, ordered_steps in BOOT_4_1_ROUTE_COMPOSITIONS.items():
         edge = next((route for route in routes if route["route_id"] == route_id), None)
