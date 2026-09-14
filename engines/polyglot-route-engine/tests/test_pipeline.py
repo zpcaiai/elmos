@@ -436,6 +436,41 @@ def test_repository_pipeline_refuses_to_package_without_behavior_evidence(tmp_pa
         )
 
 
+def test_repository_pipeline_preserves_uniform_batch_failure_code(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = _repository(tmp_path)
+    cases = _cases(tmp_path)
+
+    def failed_batch(*_args: object, **_kwargs: object) -> dict[str, object]:
+        return {
+            "status_counts": {"FAILED": 1},
+            "units": [
+                {
+                    "id": "WU-00001",
+                    "status": "FAILED",
+                    "reason": "RUST_ANALYZER_EXECUTION_FAILED:/private/tmp/provider-detail",
+                }
+            ],
+        }
+
+    monkeypatch.setattr(pipeline_module, "run_batch", failed_batch)
+
+    with pytest.raises(
+        RouteError,
+        match="^PIPELINE_NO_VERIFIED_UNITS:RUST_ANALYZER_EXECUTION_FAILED$",
+    ):
+        run_repository_pipeline(
+            repository,
+            "local:uniform-batch-failure",
+            "python",
+            "rust",
+            cases,
+            tmp_path / "pipeline",
+        )
+
+
 def test_repository_pipeline_preserves_uniform_module_analyzer_not_run_reason(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

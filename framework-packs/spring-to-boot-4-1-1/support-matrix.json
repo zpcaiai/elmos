@@ -19,19 +19,19 @@
       "id": "spring-boot-4.1.1-upgrade",
       "status": "experimental",
       "strategy": "ordered-openrewrite-chain-plus-4-1-1-profile",
-      "reason": "Maven and Gradle routes are executable and pin Boot 4.1.1 / Java 21, but exact source/target builds, startup, holdout and independent verification are NOT_RUN."
+      "reason": "The exact Spring Boot 3.5.3 / Java 21 / Maven 3.9.11 route passed bounded local build, startup and component parity against Boot 4.1.1 / Java 21. All other routes, external execution, holdout and independent verification are NOT_RUN."
     },
     {
       "id": "security",
-      "status": "blocked",
+      "status": "experimental",
       "strategy": "exact-security-profile-required",
-      "reason": "Security filter, method authorization, OAuth2/OIDC and provider parity cannot be inferred from source markers."
+      "reason": "A bounded local HTTP Basic filter-chain fixture passed unauthenticated/authenticated parity on the exact 3.5.3 to 4.1.1 route. Method authorization, OAuth2/OIDC and real provider parity remain NOT_RUN."
     },
     {
       "id": "persistence-and-transactions",
-      "status": "blocked",
+      "status": "experimental",
       "strategy": "exact-provider-profile-required",
-      "reason": "JPA/JDBC/R2DBC/document/Redis providers, database behavior and transaction semantics require real provider execution."
+      "reason": "A bounded local JPA/H2 rollback fixture passed count and rollback parity on the exact 3.5.3 to 4.1.1 route. JDBC/R2DBC/document/Redis, production databases, isolation and broader transaction semantics remain NOT_RUN."
     },
     {
       "id": "messaging-cache-scheduler",

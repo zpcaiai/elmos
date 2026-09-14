@@ -712,6 +712,21 @@ ROUTES: dict[str, Route] = {
         security=_SECURITY_BOOT3,
         persistence=_PERSISTENCE_ENTITY,
     ),
+    "boot-3.5-maven-to-boot-4.1.1-java-21": Route(
+        route_id="boot-3.5-maven-to-boot-4.1.1-java-21",
+        recipe_file="spring-to-boot-4.1.1.yml",
+        recipe_id="io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21",
+        source_boot="3.5.3",
+        source_java="21",
+        controller=_CONTROLLER_JAKARTA,
+        test=_TEST_SECURITY_PERSISTENCE_JUNIT5,
+        properties=_PROPERTIES_PERSISTENCE,
+        health_path="/actuator/health",
+        target_boot="4.1.1",
+        extra_starters=("validation", "security", "data-jpa"),
+        security=_SECURITY_BOOT3,
+        persistence=_PERSISTENCE_ENTITY,
+    ),
     "boot-2.7-maven-to-boot-4.1.0-java-21": Route(
         route_id="boot-2.7-maven-to-boot-4.1.0-java-21",
         recipe_file="spring-to-boot-4.1.0.yml",
@@ -1670,6 +1685,11 @@ def run_selected_route(
         pack_evidence = pack_dir / "certification/local-reference-evidence.json"
         write_json_atomic(pack_evidence, pack_local_reference_evidence(evidence, pack_key))
         print(f"pack local evidence: {pack_evidence}")
+
+    # A successful canonical run supersedes the stable ``latest-attempt``
+    # failure marker. Keeping it would make consumers report a stale failure
+    # even though the canonical receipt now records a later successful run.
+    failure_attempt_destination(repo, route).unlink(missing_ok=True)
 
     print(f"PASS: {route.route_id}")
     print(f"evidence: {destination}")

@@ -2,9 +2,10 @@
 """Validate the evidence-preparation contract for the Spring Boot 4.1.1 Pack.
 
 The plan is deliberately not an execution receipt. It binds every required
-runtime/holdout/provider track to the exact target tuple while requiring all
-execution, authorization, and independent-verifier states to remain NOT_RUN
-until real evidence is supplied through the appropriate workflow.
+runtime/holdout/provider track to the exact target tuple while keeping those
+campaign, authorization, and independent-verifier states NOT_RUN. A separately
+bound exact local-reference receipt may advance one version-matrix row without
+advancing any pack-level certification track.
 """
 from __future__ import annotations
 
@@ -24,7 +25,15 @@ PROFILE_RELATIVE = Path("target-profile/profile.json")
 VERSION_MATRIX_RELATIVE = Path("version-matrix.json")
 EVIDENCE_RELATIVE = Path("certification/evidence.json")
 CERTIFICATION_RELATIVE = Path("certification/certification.json")
+LOCAL_REFERENCE_EVIDENCE_RELATIVE = Path("certification/local-reference-evidence.json")
 ROUTE_CATALOG = ROOT / "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java"
+LOCAL_REFERENCE_ROUTE_ID = "boot-3.5-maven-to-boot-4.1.1-java-21"
+LOCAL_REFERENCE_TUPLE = {
+    "source_spring_boot": "3.5.3",
+    "source_java": "21",
+    "target_spring_boot": "4.1.1",
+    "target_java": "21",
+}
 
 TRACK_IDS = (
     "source-build",
@@ -471,8 +480,84 @@ def validate(pack: Path) -> list[str]:
                 errors.append(f"version matrix target drift: {row.get('id')}")
             if row.get("target_java", "21") != "21":
                 errors.append(f"version matrix Java target drift: {row.get('id')}")
-            if row.get("execution_status") != "NOT_RUN":
-                errors.append(f"version matrix execution must remain NOT_RUN: {row.get('id')}")
+            route_id = row.get("id")
+            if route_id == LOCAL_REFERENCE_ROUTE_ID:
+                if row.get("execution_status") != "PASSED_LOCAL":
+                    errors.append("local reference route must be PASSED_LOCAL")
+                if row.get("verified_tuple") != LOCAL_REFERENCE_TUPLE:
+                    errors.append("local reference route verified tuple drift")
+                if row.get("evidence") != LOCAL_REFERENCE_EVIDENCE_RELATIVE.as_posix():
+                    errors.append("local reference route evidence binding drift")
+            else:
+                if row.get("execution_status") != "NOT_RUN":
+                    errors.append(f"unexecuted version matrix route must remain NOT_RUN: {route_id}")
+                if "verified_tuple" in row or "evidence" in row:
+                    errors.append(f"unexecuted version matrix route overclaims evidence: {route_id}")
+
+    local_reference = load_object(
+        pack / LOCAL_REFERENCE_EVIDENCE_RELATIVE,
+        errors,
+        "local reference evidence",
+    )
+    if local_reference is not None:
+        if local_reference.get("schema_version") != 2:
+            errors.append("local reference evidence schema drift")
+        if local_reference.get("route_id") != LOCAL_REFERENCE_ROUTE_ID:
+            errors.append("local reference evidence route drift")
+        if local_reference.get("execution_status") != "PASSED_LOCAL":
+            errors.append("local reference evidence execution must be PASSED_LOCAL")
+        if local_reference.get("behavioral_parity") is not True:
+            errors.append("local reference evidence behavioral parity must pass")
+        if local_reference.get("evidence_class") != "LOCAL_REFERENCE_ROUTE_ENGINEERING":
+            errors.append("local reference evidence class drift")
+        if local_reference.get("scope") != [
+            "web",
+            "configuration",
+            "lifecycle",
+            "security",
+            "persistence",
+            "transactions",
+        ]:
+            errors.append("local reference evidence scope drift")
+        source = local_reference.get("source")
+        target_reference = local_reference.get("target")
+        if not isinstance(source, dict) or source.get("version") != "3.5.3" or source.get("build") != "PASSED":
+            errors.append("local reference source tuple or build drift")
+        if not isinstance(target_reference, dict) or target_reference.get("version") != "4.1.1" or target_reference.get("build") != "PASSED":
+            errors.append("local reference target tuple or build drift")
+        for domain in ("security", "persistence"):
+            domain_evidence = local_reference.get(domain)
+            if (
+                not isinstance(domain_evidence, dict)
+                or domain_evidence.get("status") != "PASSED_LOCAL"
+                or domain_evidence.get("production_status") != "NOT_RUN"
+                or domain_evidence.get("source") != domain_evidence.get("target")
+            ):
+                errors.append(f"local reference {domain} parity or boundary drift")
+        migration = local_reference.get("migration")
+        if (
+            not isinstance(migration, dict)
+            or migration.get("status") != "PASSED_LOCAL"
+            or migration.get("production_status") != "NOT_RUN"
+            or migration.get("recipe_id")
+            != "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21"
+            or not re.fullmatch(r"[0-9a-f]{64}", str(migration.get("recipe_sha256", "")))
+        ):
+            errors.append("local reference migration binding drift")
+        if (
+            local_reference.get("certification_eligible") is not False
+            or local_reference.get("external_execution_status") != "NOT_RUN"
+            or local_reference.get("external_certification") != "NOT_RUN"
+            or local_reference.get("independent_verification") != "NOT_RUN"
+            or local_reference.get("independent_review") != "NOT_RUN"
+            or local_reference.get("authorized_customer_repository") != "NOT_RUN"
+            or local_reference.get("customer_holdout") != "NOT_RUN"
+            or local_reference.get("customer_acceptance") != "NOT_RUN"
+            or local_reference.get("rootless_runner") != "NOT_RUN"
+            or local_reference.get("rootless_transformer") != "NOT_RUN"
+            or local_reference.get("rootless_verifier") != "NOT_RUN"
+        ):
+            errors.append("local reference evidence boundary drift")
     if ROUTE_CATALOG.is_file():
         catalog_text = ROUTE_CATALOG.read_text(encoding="utf-8")
         for route_id in route_ids if isinstance(route_ids, list) else []:

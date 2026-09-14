@@ -24,9 +24,14 @@ Security, database, transaction, messaging and other provider behavior are
 separate domains; unresolved provider profiles remain explicit and all runtime
 execution, authorization and independent-verifier states remain `NOT_RUN`.
 
-Spring Boot 4.1.1 is the latest stable target represented by this pack. The
-pack is intentionally experimental and its execution/certification evidence
-is NOT_RUN.
+Spring Boot 4.1.1 is the latest stable target represented by this pack. One
+exact local reference route, Spring Boot 3.5.3 / Java 21 / Maven 3.9.11 to
+Spring Boot 4.1.1 / Java 21, has passed source and target builds, startup, HTTP,
+validation, security, JPA, and transaction rollback parity. This is bounded
+`PASSED_LOCAL` engineering evidence only. The other exact routes, the full
+provider matrix, holdout and representative repositories, external execution,
+independent verification, and certification remain `NOT_RUN` /
+`NOT_CERTIFIED`; the pack therefore remains experimental.
 
 Validate the structure with:
 

@@ -165,6 +165,9 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             "external_evidence_status": "NOT_RUN",
             "certification_status": "NOT_CERTIFIED",
         }
+        stale_attempt = REFERENCE.failure_attempt_destination(self.repo, self.route)
+        stale_attempt.parent.mkdir(parents=True)
+        stale_attempt.write_text('{"execution_status":"FAILED"}\n', encoding="utf-8")
         real_replace = os.replace
         with (
             mock.patch.object(REFERENCE, "execute", return_value=success),
@@ -405,6 +408,91 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             REFERENCE.ELMOS_RECIPE_COORDINATE,
             REFERENCE.rewrite_recipe_artifact_coordinates(boot_4_recipe),
         )
+
+    def test_boot_4_1_1_vertical_slice_is_exact_and_enterprise_shaped(self) -> None:
+        route = REFERENCE.ROUTES["boot-3.5-maven-to-boot-4.1.1-java-21"]
+
+        self.assertEqual(route.source_boot, "3.5.3")
+        self.assertEqual(route.source_java, "21")
+        self.assertEqual(route.target_boot, "4.1.1")
+        self.assertEqual(route.build_tool, "maven")
+        self.assertEqual(
+            route.recipe_id,
+            "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21",
+        )
+        self.assertEqual(
+            set(route.extra_starters),
+            {"validation", "security", "data-jpa"},
+        )
+        self.assertIn("SecurityFilterChain", route.security)
+        self.assertIn("jakarta.persistence.Entity", route.persistence)
+        self.assertIn("rollsBackTransactionalWrites", route.test)
+
+        recipe = (
+            ROOT
+            / "apps/java-engine-worker/src/main/resources/rewrite"
+            / route.recipe_file
+        ).read_text(encoding="utf-8")
+        self.assertIn(f"name: {route.recipe_id}", recipe)
+        self.assertIn("newVersion: 4.1.1", recipe)
+
+    def test_boot_4_1_1_local_record_is_exact_and_does_not_overclaim(self) -> None:
+        route_id = "boot-3.5-maven-to-boot-4.1.1-java-21"
+        record = json.loads(
+            (ROOT / "evidence/spring-routes" / f"{route_id}.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(record["execution_status"], "PASSED_LOCAL")
+        self.assertTrue(record["behavioral_parity"])
+        self.assertEqual(
+            record["recorded_tuple"],
+            {
+                "source_boot": "3.5.3",
+                "source_java": "21",
+                "target_boot": "4.1.1",
+                "target_java": "21",
+            },
+        )
+        self.assertEqual(record["source"]["build"], "PASSED")
+        self.assertEqual(record["target"]["build"], "PASSED")
+        self.assertEqual(record["source"]["runtime"]["health"]["status"], "UP")
+        self.assertEqual(record["target"]["runtime"]["health"]["status"], "UP")
+        self.assertEqual(record["external_evidence_status"], "NOT_RUN")
+        self.assertEqual(record["independent_verification"], "NOT_RUN")
+        self.assertEqual(record["certification_status"], "NOT_CERTIFIED")
+
+        matrix = json.loads(
+            (
+                ROOT
+                / "framework-packs/spring-to-boot-4-1-1/version-matrix.json"
+            ).read_text(encoding="utf-8")
+        )
+        rows = {row["id"]: row for row in matrix["tuples"]}
+        self.assertEqual(rows[route_id]["execution_status"], "PASSED_LOCAL")
+        self.assertEqual(
+            rows[route_id]["evidence"],
+            "certification/local-reference-evidence.json",
+        )
+        self.assertTrue(
+            all(
+                row["execution_status"] == "NOT_RUN"
+                for candidate, row in rows.items()
+                if candidate != route_id
+            )
+        )
+
+        local_reference = json.loads(
+            (
+                ROOT
+                / "framework-packs/spring-to-boot-4-1-1/certification/local-reference-evidence.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(local_reference["route_id"], route_id)
+        self.assertEqual(local_reference["execution_status"], "PASSED_LOCAL")
+        self.assertFalse(local_reference["certification_eligible"])
+        self.assertEqual(local_reference["external_certification"], "NOT_RUN")
+        self.assertEqual(local_reference["independent_verification"], "NOT_RUN")
 
     def test_built_boot_jar_rejects_missing_and_plain_jars(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

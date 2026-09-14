@@ -574,6 +574,39 @@ def _uniform_discovery_not_run_diagnostic(discovery: dict[str, Any]) -> str | No
     return next(iter(diagnostics)) if len(diagnostics) == 1 else None
 
 
+def _uniform_batch_failure_code(batch: dict[str, Any]) -> str | None:
+    """Return the common safe error code when every attempted unit failed.
+
+    ``run_batch`` deliberately records per-unit failures so one broken unit does
+    not stop the remaining queue.  When every unit fails, however, replacing
+    those records with only ``PIPELINE_NO_VERIFIED_UNITS`` hides the actionable
+    analyzer, emitter, compiler, or runtime boundary from CI.  Preserve only a
+    uniform uppercase code: free-form details can contain temporary paths or
+    unstable provider output and must stay in the batch report.
+    """
+
+    counts = batch.get("status_counts")
+    units = batch.get("units")
+    if not isinstance(counts, dict) or not isinstance(units, list) or not units:
+        return None
+    failed_count = counts.get("FAILED")
+    if not isinstance(failed_count, int) or failed_count != len(units):
+        return None
+
+    codes: set[str] = set()
+    for unit in units:
+        if not isinstance(unit, dict) or unit.get("status") != "FAILED":
+            return None
+        reason = unit.get("reason")
+        if not isinstance(reason, str) or not reason:
+            return None
+        code = reason.split(":", 1)[0].splitlines()[0]
+        if re.fullmatch(r"[A-Z][A-Z0-9_]{2,119}", code) is None:
+            return None
+        codes.add(code)
+    return next(iter(codes)) if len(codes) == 1 else None
+
+
 def _commit_owned_directory(output: Path, staging_name: str, final_name: str) -> Path:
     staging = _owned_directory(output, staging_name)
     final = _owned_directory(output, final_name)
@@ -1054,6 +1087,9 @@ def _run_repository_pipeline_attempt(
         not_run_diagnostic = _uniform_discovery_not_run_diagnostic(discovery)
         if not_run_diagnostic is not None:
             raise RouteError(not_run_diagnostic)
+        failure_code = _uniform_batch_failure_code(batch)
+        if failure_code is not None:
+            raise RouteError(f"PIPELINE_NO_VERIFIED_UNITS:{failure_code}")
         raise RouteError("PIPELINE_NO_VERIFIED_UNITS")
     assembly: dict[str, Any] | None = None
     assembly_failure: str | None = discovery_incident

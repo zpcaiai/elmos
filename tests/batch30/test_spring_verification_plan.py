@@ -38,6 +38,61 @@ class SpringVerificationPlanTests(unittest.TestCase):
     def test_current_plan_is_complete_and_not_run(self) -> None:
         self.assertEqual(VALIDATOR.validate(self.SOURCE_PACK), [])
 
+    def test_only_exact_local_reference_route_is_promoted(self) -> None:
+        matrix = self._load(self.SOURCE_PACK, "version-matrix.json")
+        rows = {row["id"]: row for row in matrix["tuples"]}
+        local = rows[VALIDATOR.LOCAL_REFERENCE_ROUTE_ID]
+        self.assertEqual(local["execution_status"], "PASSED_LOCAL")
+        self.assertEqual(local["verified_tuple"], VALIDATOR.LOCAL_REFERENCE_TUPLE)
+        self.assertEqual(
+            local["evidence"], "certification/local-reference-evidence.json"
+        )
+        self.assertTrue(
+            all(
+                row["execution_status"] == "NOT_RUN"
+                for route_id, row in rows.items()
+                if route_id != VALIDATOR.LOCAL_REFERENCE_ROUTE_ID
+            )
+        )
+
+    def test_unexecuted_matrix_route_cannot_claim_local_evidence(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            matrix = self._load(pack, "version-matrix.json")
+            row = next(
+                candidate
+                for candidate in matrix["tuples"]
+                if candidate["id"] != VALIDATOR.LOCAL_REFERENCE_ROUTE_ID
+            )
+            row["execution_status"] = "PASSED_LOCAL"
+            row["verified_tuple"] = dict(VALIDATOR.LOCAL_REFERENCE_TUPLE)
+            row["evidence"] = "certification/local-reference-evidence.json"
+            self._write(pack, "version-matrix.json", matrix)
+            errors = VALIDATOR.validate(pack)
+            self.assertTrue(
+                any("unexecuted version matrix route" in error for error in errors),
+                errors,
+            )
+        finally:
+            temporary.cleanup()
+
+    def test_local_reference_cannot_claim_external_or_provider_completion(self) -> None:
+        temporary, pack = self._copy_pack()
+        try:
+            evidence = self._load(
+                pack, "certification/local-reference-evidence.json"
+            )
+            evidence["external_execution_status"] = "PASSED"
+            evidence["security"]["production_status"] = "PASSED"
+            self._write(
+                pack, "certification/local-reference-evidence.json", evidence
+            )
+            errors = VALIDATOR.validate(pack)
+            self.assertIn("local reference security parity or boundary drift", errors)
+            self.assertIn("local reference evidence boundary drift", errors)
+        finally:
+            temporary.cleanup()
+
     def test_track_contract_is_complete_and_not_run(self) -> None:
         contract = self._load(self.SOURCE_PACK, "verification/track-contract.json")
         self.assertEqual(contract["status"], "PREPARED_NOT_RUN")
