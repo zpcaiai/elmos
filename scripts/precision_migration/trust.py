@@ -23,6 +23,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import unquote, urlparse
+from urllib.request import url2pathname
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -322,7 +323,7 @@ def resolve_uri(uri: Any, roots: tuple[Path, ...]) -> Path:
     elif parsed.scheme == "file":
         if parsed.netloc not in {"", "localhost"}:
             raise ValueError("remote file URI is not supported")
-        candidate = Path(unquote(parsed.path)).resolve(strict=True)
+        candidate = Path(url2pathname(parsed.path)).resolve(strict=True)
     elif parsed.scheme == "cas":
         match = re.fullmatch(
             r"sha256/([0-9a-f]{64})", f"{parsed.netloc}{parsed.path}".lstrip("/")
@@ -361,7 +362,12 @@ def verify_content_reference(reference: Any, roots: tuple[Path, ...]) -> dict[st
     ):
         raise ValueError("content reference size_bytes must be a non-negative integer")
     path = resolve_uri(reference.get("uri") or reference.get("artifact_uri"), roots)
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     descriptor = os.open(path, flags)
     try:
         observed_stat = os.fstat(descriptor)

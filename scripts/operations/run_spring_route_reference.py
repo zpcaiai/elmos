@@ -1423,7 +1423,7 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
         "transformation": {
             "engine": "OpenRewrite",
             "recipe_id": route.recipe_id,
-            "recipe_path": str(recipe.relative_to(repo)),
+            "recipe_path": recipe.relative_to(repo).as_posix(),
             "recipe_sha256": hashlib.sha256(recipe.read_bytes()).hexdigest(),
             "rewrite_plugin": (
                 GRADLE_REWRITE_PLUGIN if route.build_tool == "gradle" else REWRITE_PLUGIN
@@ -1596,9 +1596,9 @@ def record_failure_attempt(
     """Audit a failed rerun without modifying canonical route evidence."""
     attempt_destination = failure_attempt_destination(repo, route)
     try:
-        canonical_path = str(canonical_destination.relative_to(repo))
+        canonical_path = canonical_destination.relative_to(repo).as_posix()
     except ValueError:
-        canonical_path = str(canonical_destination)
+        canonical_path = canonical_destination.as_posix()
     write_json_atomic(
         attempt_destination,
         {

@@ -19,7 +19,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import unquote, urlparse
+from urllib.parse import urlparse
+from urllib.request import url2pathname
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -232,7 +233,9 @@ def _lexical_file_path(reference: dict[str, Any], roots: tuple[Path, ...], label
         or parsed.fragment
     ):
         raise ExternalIntakeError(f"{label}.uri must be a local file URI")
-    raw = Path(unquote(parsed.path))
+    # ``file:///C:/...`` is a valid Windows URI.  Treating the parsed path as a
+    # native Path directly produces ``\C:\...`` and a false root-escape result.
+    raw = Path(url2pathname(parsed.path))
     lexical = Path(os.path.abspath(raw))
     containing_root: Path | None = None
     for root in roots:

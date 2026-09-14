@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import getpass
 import hashlib
 import json
 import os
@@ -21,12 +22,6 @@ import tempfile
 from pathlib import Path
 from typing import Any, Iterable
 
-try:
-    import fcntl
-except ModuleNotFoundError:  # Windows: the read-only gate remains available.
-    fcntl = None  # type: ignore[assignment]
-
-
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -36,6 +31,7 @@ from scripts.batch30.certification_campaign import (  # noqa: E402
     CampaignError,
     evaluate_certification_campaign,
 )
+from scripts.batch30.file_lock import lock_exclusive, unlock  # noqa: E402
 from scripts.precision_migration.trust import read_regular_file_once  # noqa: E402
 
 
@@ -103,11 +99,7 @@ def _atomic_write(path: Path, raw: bytes) -> None:
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temporary, path)
-        directory = os.open(path.parent, os.O_RDONLY)
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
+        _fsync_directory(path.parent)
     finally:
         temporary.unlink(missing_ok=True)
 
@@ -116,7 +108,15 @@ def _atomic_remove(path: Path) -> None:
     if path.is_symlink():
         raise PromotionError(f"refusing to remove a symlink during rollback: {path}")
     path.unlink(missing_ok=True)
-    directory = os.open(path.parent, os.O_RDONLY)
+    _fsync_directory(path.parent)
+
+
+def _fsync_directory(path: Path) -> None:
+    """Flush directory metadata where the host exposes that primitive."""
+
+    if os.name == "nt":
+        return
+    directory = os.open(path, os.O_RDONLY)
     try:
         os.fsync(directory)
     finally:
@@ -126,18 +126,15 @@ def _atomic_remove(path: Path) -> None:
 def _promotion_lock(pack: Path) -> int:
     """Open a persistent per-pack lock without the classic unlink race."""
 
-    if fcntl is None or not hasattr(os, "getuid"):
-        raise PromotionError(
-            "certification promotion requires POSIX ownership checks and flock"
-        )
-
-    lock_root = Path(tempfile.gettempdir()) / f"elmos-batch30-promotion-locks-{os.getuid()}"
+    identity = str(os.getuid()) if hasattr(os, "getuid") else getpass.getuser()
+    identity_token = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
+    lock_root = Path(tempfile.gettempdir()) / f"elmos-batch30-promotion-locks-{identity_token}"
     lock_root.mkdir(mode=0o700, exist_ok=True)
     root_stat = lock_root.lstat()
-    if (
-        not stat.S_ISDIR(root_stat.st_mode)
-        or root_stat.st_uid != os.getuid()
-        or stat.S_IMODE(root_stat.st_mode) & 0o077
+    if not stat.S_ISDIR(root_stat.st_mode) or lock_root.is_symlink():
+        raise PromotionError(f"promotion lock directory is not private: {lock_root}")
+    if os.name != "nt" and (
+        root_stat.st_uid != os.getuid() or stat.S_IMODE(root_stat.st_mode) & 0o077
     ):
         raise PromotionError(f"promotion lock directory is not private: {lock_root}")
     lock_name = hashlib.sha256(os.fsencode(pack)).hexdigest() + ".lock"
@@ -146,10 +143,13 @@ def _promotion_lock(pack: Path) -> int:
         flags |= os.O_NOFOLLOW
     descriptor = os.open(lock_root / lock_name, flags, 0o600)
     lock_stat = os.fstat(descriptor)
-    if not stat.S_ISREG(lock_stat.st_mode) or lock_stat.st_uid != os.getuid():
+    if not stat.S_ISREG(lock_stat.st_mode) or (
+        os.name != "nt" and lock_stat.st_uid != os.getuid()
+    ):
         os.close(descriptor)
         raise PromotionError("promotion lock is not an owned regular file")
-    os.fchmod(descriptor, 0o600)
+    if hasattr(os, "fchmod"):
+        os.fchmod(descriptor, 0o600)
     return descriptor
 
 
@@ -330,8 +330,7 @@ def promote(
 
     lock_descriptor = _promotion_lock(pack)
     try:
-        assert fcntl is not None
-        fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
+        lock_exclusive(lock_descriptor)
         campaign_result, documents = evaluate_and_build()
         before: dict[str, bytes | None] = {}
         for relative in documents:
@@ -380,8 +379,7 @@ def promote(
             raise
     finally:
         try:
-            assert fcntl is not None
-            fcntl.flock(lock_descriptor, fcntl.LOCK_UN)
+            unlock(lock_descriptor)
         finally:
             os.close(lock_descriptor)
     return {

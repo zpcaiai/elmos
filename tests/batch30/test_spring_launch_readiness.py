@@ -221,6 +221,10 @@ def launch_environment_arguments(spring_file: Path, compose_file: Path) -> list[
     ]
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "production launch evidence requires POSIX ownership, mode, mount, and rootless-runtime semantics",
+)
 class SpringLaunchReadinessTests(unittest.TestCase):
     @staticmethod
     def load_validator(name: str):

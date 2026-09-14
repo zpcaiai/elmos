@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from unittest import TestCase, main, mock
+from unittest import TestCase, main, mock, skipIf
 
 ROOT = Path(__file__).resolve().parents[2]
 VALIDATOR_PATH = (
@@ -22,6 +22,10 @@ sys.modules[SPEC.name] = TOPOLOGY
 SPEC.loader.exec_module(TOPOLOGY)
 
 
+@skipIf(
+    os.name == "nt",
+    "the representative rootless production topology is a POSIX/Linux contract",
+)
 class SpringRunnerProductionTopologyTests(TestCase):
     def test_repository_static_contract_is_ready_only_for_external_gate(self) -> None:
         self.assertEqual([], TOPOLOGY.validate_static())
