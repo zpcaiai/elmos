@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "transformation_key": "vue3-todo-ir-to-alipay-native-candidate-v1",
+  "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+  "input_contract": "ui-ir/model.json",
+  "target_profile": "target-profile/profile.json",
+  "semantic_core": "typed-ui-interaction-ir",
+  "regex_or_template_replacement_core": false,
+  "mappings": [
+    {"source_node": "route.home", "target_contract": "app.json pages[0] equals pages/index/index and pages/index/index.json exists"},
+    {"source_node": "component.app-shell", "target_contract": "pages/index/index.axml contains the source-traced application shell"},
+    {"source_node": "component.todo-input", "target_contract": "pages/index/index.axml input value binds text and onInput targets handleInput0"},
+    {"source_node": "component.add-button", "target_contract": "pages/index/index.axml button disabled binds !canSubmit0 and onTap targets handleSubmit0"},
+    {"source_node": "component.todo-list", "target_contract": "pages/index/index.axml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"},
+    {"source_node": "effect.add-todo", "target_contract": "pages/index/index.js trims text appends one value persists application items and clears text"},
+    {"source_node": "token.app-shell", "target_contract": "pages/index/index.acss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"},
+    {"source_node": "permission.local-only", "target_contract": "adapters/platform.js exposes no network identity payment upload review or release capability"}
+  ],
+  "fallbacks": {"webview": "DENIED", "full_page_canvas": "DENIED", "silent_drop": "DENIED"},
+  "ownership": {"generated_files": "generated-candidate", "manual_regions": [], "protected_regions": []},
+  "local_contract_state": "LOCAL_REPLAY_VERIFIED_DIRECTIONAL_MAPPING_ONLY_NOT_CERTIFIED",
+  "execution_binding": {
+    "state": "PASSED_LOCAL_SELF_ATTESTED_MAPPING_ONLY",
+    "scope": "one-way review UI IR to source-derived runtime subjects and content-addressed generated artifacts",
+    "evidence": "certification/local-runtime-candidate-evidence.json",
+    "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "runtime_input_digest": "sha256:8f71c25a5024702526403c3311840c57e6c0a53e8cb09a10de2ef99eddd82701",
+    "runtime_semantic_ir_digest": "sha256:a7bdbe5044f3611b6bcacc7faba5744b4929b9af7d33fcc0ec3c3f81bcf48b21",
+    "runtime_plan_digest": "sha256:17b06dbd5bb4ae323a1f379b27e5de7e9968c475ed361946396b16734c97ed29",
+    "generated_project_digest": "sha256:6fa16c8dfe50546f4ed506753a39ad37d0e0acafb5d16d9a722c20d4d36a4042",
+    "runtime_mapping_coverage": {
+      "declared_mappings": 8,
+      "verified_mappings": 8,
+      "review_nodes": 20,
+      "review_node_source_ref_coverage": 1
+    },
+    "full_runtime_ir_reverse_equivalence": "NOT_EVALUATED",
+    "independent_verification": "NOT_RUN",
+    "official_runtime_verification": "NOT_RUN"
+  },
+  "local_runtime_evidence": "certification/local-runtime-candidate-evidence.json",
+  "official_build_state": "NOT_RUN",
+  "runtime_equivalence_state": "LOCAL_DIRECTIONAL_MAPPING_ONLY_FULL_REVERSE_NOT_EVALUATED",
+  "certification": "NOT_CERTIFIED"
+}
