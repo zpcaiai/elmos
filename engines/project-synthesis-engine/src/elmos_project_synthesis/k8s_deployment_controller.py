@@ -27,7 +27,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
-import yaml  # type: ignore[import-untyped]
+import yaml
 
 logger = logging.getLogger(__name__)
 
