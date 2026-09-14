@@ -19,7 +19,7 @@
       "id": "spring-boot-4.1.1-upgrade",
       "status": "experimental",
       "strategy": "ordered-openrewrite-chain-plus-4-1-1-profile",
-      "reason": "Maven and Gradle routes are executable and pin Boot 4.1.1 / Java 21, but exact source/target builds, startup, holdout and independent verification are NOT_RUN."
+      "reason": "Nine of twelve exact Maven and Gradle routes pin Boot 4.1.1 / Java 21 and have bounded PASSED_LOCAL source/target build, startup and HTTP behavior receipts; the Boot 1.5 Gradle route and two non-Boot Spring routes remain NOT_RUN, as do provider, customer, holdout and independent verification."
     },
     {
       "id": "security",

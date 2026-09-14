@@ -118,7 +118,7 @@ class LocalSpringUpgradeExecutionPortTest {
 
         assertEquals("boot-2.7-maven-to-boot-3.2.12-java-17", selection.route().routeId());
         assertEquals("17", selection.route().targetJava());
-        assertEquals(SpringRouteCatalog.EvidenceStatus.NOT_RUN, selection.evidence());
+        assertEquals(SpringRouteCatalog.EvidenceStatus.PASSED_LOCAL, selection.evidence());
     }
 
     @Test void springMvcNeedsProductionTracesAndUsesRecordedExactLocalEvidence() {
