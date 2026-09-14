@@ -51,6 +51,7 @@ class FakeIndices:
 class FakeElastic:
     def __init__(self) -> None:
         self.indices = FakeIndices()
+        self.license = FakeLicense()
         self.bulk_request = None
         self.search_request = None
         self.delete_request = None
@@ -70,6 +71,14 @@ class FakeElastic:
 
     def info(self):
         return {"version": {"number": "8.19.3", "distribution": "elasticsearch", "build_flavor": "default"}}
+
+
+class FakeLicense:
+    def __init__(self, license_type: str = "enterprise") -> None:
+        self.license_type = license_type
+
+    def get(self):
+        return {"license": {"type": self.license_type, "status": "active"}}
 
 
 class FakeResponse:
@@ -148,10 +157,11 @@ class ElasticsearchProjectionTests(unittest.TestCase):
         hits = self.projection.search(query())
         self.assertEqual(len(hits), 1)
         request = self.client.search_request
-        self.assertEqual(request["rank"], {"rrf": {}})
-        lexical_filters = request["query"]["bool"]["filter"]
+        rrf = request["retriever"]["rrf"]
+        self.assertEqual(rrf["rank_window_size"], 10)
+        lexical_filters = rrf["retrievers"][0]["standard"]["query"]["bool"]["filter"]
         self.assertIn({"term": {"tenant_id": "tenant-a"}}, lexical_filters)
-        self.assertEqual(request["knn"]["filter"], lexical_filters)
+        self.assertEqual(rrf["retrievers"][1]["knn"]["filter"], lexical_filters)
 
         deleted = self.projection.delete_revision(tenant_id="tenant-a", project_id="project-a", revision_id="rev-1")
         self.assertEqual(deleted["deleted"], 1)
@@ -193,6 +203,7 @@ class ElasticsearchProjectionTests(unittest.TestCase):
             "ELMOS_ELASTICSEARCH_INDEX": "elmos-v1",
             "ELMOS_ELASTICSEARCH_VECTOR_DIMENSIONS": "3",
             "ELMOS_ELASTICSEARCH_EXPECTED_VERSION": "8.19.3",
+            "ELMOS_ELASTICSEARCH_EXPECTED_LICENSE_TYPE": "enterprise",
         })
         self.assertEqual(settings.vector_dimensions, 3)
         self.projection.ensure_index()
@@ -207,6 +218,13 @@ class ElasticsearchProjectionTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ContractError, "vector mapping"):
             self.projection.ensure_index()
+
+    def test_rrf_incompatible_or_mismatched_license_fails_before_projection(self) -> None:
+        with self.assertRaisesRegex(ContractError, "trial, platinum, or enterprise"):
+            ElasticsearchSettings("https://elastic.example", "idx", 3, "key", expected_license_type="basic")
+        self.client.license = FakeLicense("trial")
+        with self.assertRaisesRegex(ContractError, "does not match"):
+            self.projection.server_profile()
 
 
 class DifyAndTelemetryTests(unittest.TestCase):
@@ -225,7 +243,7 @@ class DifyAndTelemetryTests(unittest.TestCase):
             {"question": "where is the queue?"}, actor_id="alice", idempotency_key="req-1"
         )
         path, request = client.request
-        self.assertEqual(path, "/v1/workflows/run")
+        self.assertEqual(path, "/v1/workflows/workflow-123/run")
         self.assertEqual(request["headers"]["Idempotency-Key"], "req-1")
         self.assertEqual(request["json"]["inputs"]["_elmos_tenant_id"], "tenant-a")
         self.assertFalse(receipt["policy_authority"])
@@ -256,6 +274,17 @@ class DifyAndTelemetryTests(unittest.TestCase):
             },
         )
         self.assertEqual(from_environment.workflow_id, "workflow-123")
+
+        with self.assertRaisesRegex(ContractError, "URL-safe path segment"):
+            DifySettings(
+                "https://dify.example",
+                "secret-api-key",
+                "../another-workflow",
+                "1.10.1",
+                "tenant-a",
+                "project-a",
+                "rag-experiment",
+            )
 
     def test_otel_records_safe_attributes_and_rejects_content(self) -> None:
         from opentelemetry.sdk.trace import TracerProvider

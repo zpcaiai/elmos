@@ -15,7 +15,9 @@ from .retrieval import RetrievalQuery, SearchDocument
 
 _INDEX_NAME = re.compile(r"^[a-z0-9][a-z0-9._-]{0,254}$")
 _EXACT_VERSION = re.compile(r"^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$")
+_DIFY_WORKFLOW_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 _SENSITIVE_ATTRIBUTE = re.compile(r"(api.?key|authorization|credential|secret|password|prompt|content|source)", re.I)
+_ELASTIC_LICENSE_TYPES = frozenset({"trial", "platinum", "enterprise"})
 
 
 def _required_environment(environment: Mapping[str, str], name: str) -> str:
@@ -44,6 +46,7 @@ class ElasticsearchSettings:
     vector_dimensions: int
     api_key: str
     expected_version: str = "8.19.3"
+    expected_license_type: str = "enterprise"
     ca_certs: str | None = None
     request_timeout_seconds: float = 30.0
 
@@ -59,6 +62,13 @@ class ElasticsearchSettings:
         version = require_string(self.expected_version, "elasticsearch.expected_version")
         if not _EXACT_VERSION.fullmatch(version):
             raise ContractError("invalid_elasticsearch_version", "Elasticsearch expected_version must be exact")
+        license_type = require_string(self.expected_license_type, "elasticsearch.expected_license_type").lower()
+        object.__setattr__(self, "expected_license_type", license_type)
+        if license_type not in _ELASTIC_LICENSE_TYPES:
+            raise ContractError(
+                "elasticsearch_license_not_rrf_capable",
+                "Elasticsearch license type must be trial, platinum, or enterprise for RRF",
+            )
         if self.ca_certs is not None and not self.ca_certs.strip():
             raise ContractError("invalid_ca_bundle", "Elasticsearch CA bundle path cannot be empty")
         if not 1 <= self.request_timeout_seconds <= 300:
@@ -85,6 +95,7 @@ class ElasticsearchSettings:
             vector_dimensions=dimensions,
             api_key=_required_environment(values, "ELMOS_ELASTICSEARCH_API_KEY"),
             expected_version=_required_environment(values, "ELMOS_ELASTICSEARCH_EXPECTED_VERSION"),
+            expected_license_type=_required_environment(values, "ELMOS_ELASTICSEARCH_EXPECTED_LICENSE_TYPE"),
             ca_certs=values.get("ELMOS_ELASTICSEARCH_CA_CERTS") or None,
             request_timeout_seconds=timeout,
         )
@@ -191,10 +202,27 @@ class ElasticsearchProjection:
                 "elasticsearch_version_mismatch",
                 "Elasticsearch server version does not match the configured exact version",
             )
+        license_response = self.client.license.get()
+        license_body = license_response.body if hasattr(license_response, "body") else license_response
+        license_value = require_mapping(
+            require_mapping(license_body, "elasticsearch.license").get("license"),
+            "elasticsearch.license.value",
+        )
+        license_type = require_string(license_value.get("type"), "elasticsearch.license.type").lower()
+        license_status = require_string(license_value.get("status"), "elasticsearch.license.status").lower()
+        if license_status != "active":
+            raise ContractError("elasticsearch_license_inactive", "Elasticsearch license is not active")
+        if license_type != self.settings.expected_license_type:
+            raise ContractError(
+                "elasticsearch_license_mismatch",
+                "Elasticsearch license type does not match the configured exact type",
+            )
         return {
             "version": number,
             "distribution": version.get("distribution", "elasticsearch"),
             "build_flavor": version.get("build_flavor"),
+            "license_type": license_type,
+            "license_status": license_status,
         }
 
     @staticmethod
@@ -269,14 +297,24 @@ class ElasticsearchProjection:
         if query.vector is not None:
             if len(query.vector) != self.settings.vector_dimensions:
                 raise ContractError("vector_dimension_mismatch", "query vector does not match index mapping")
-            kwargs["knn"] = {
-                "field": "vector",
-                "query_vector": list(query.vector),
-                "k": query.top_k,
-                "num_candidates": min(max(query.top_k * 10, 100), 10_000),
-                "filter": filters,
+            lexical_query = kwargs.pop("query")
+            kwargs["retriever"] = {
+                "rrf": {
+                    "retrievers": [
+                        {"standard": {"query": lexical_query}},
+                        {
+                            "knn": {
+                                "field": "vector",
+                                "query_vector": list(query.vector),
+                                "k": query.top_k,
+                                "num_candidates": min(max(query.top_k * 10, 100), 10_000),
+                                "filter": filters,
+                            }
+                        },
+                    ],
+                    "rank_window_size": query.top_k,
+                }
             }
-            kwargs["rank"] = {"rrf": {}}
         response = self.client.search(**kwargs)
         body = response.body if hasattr(response, "body") else response
         hits = require_mapping(require_mapping(body, "elasticsearch.response").get("hits"), "elasticsearch.hits").get("hits", ())
@@ -336,6 +374,8 @@ class DifySettings:
             value = require_string(getattr(self, field_name), f"dify.{field_name}")
             if field_name == "api_key" and value.upper() in {"SET_ME", "CHANGEME", "PLACEHOLDER"}:
                 raise ContractError("dify_not_configured", "Dify API key is not configured")
+        if not _DIFY_WORKFLOW_ID.fullmatch(self.workflow_id):
+            raise ContractError("invalid_dify_workflow_id", "Dify workflow_id must be one URL-safe path segment")
         if not _EXACT_VERSION.fullmatch(self.expected_version):
             raise ContractError("invalid_dify_version", "Dify expected_version must be exact")
         if not 1 <= self.timeout_seconds <= 300:
@@ -412,7 +452,7 @@ class DifyWorkflowClient:
         )
         payload = {"inputs": payload_inputs, "response_mode": "blocking", "user": actor}
         response = self.client.post(
-            "/v1/workflows/run",
+            f"/v1/workflows/{self.settings.workflow_id}/run",
             headers={
                 "Authorization": f"Bearer {self.settings.api_key}",
                 "Content-Type": "application/json",
@@ -478,6 +518,7 @@ def integration_fingerprint(settings: ElasticsearchSettings | DifySettings) -> s
                 "index_name": settings.index_name,
                 "vector_dimensions": settings.vector_dimensions,
                 "expected_version": settings.expected_version,
+                "expected_license_type": settings.expected_license_type,
             }
         )
     return sha256_payload(
