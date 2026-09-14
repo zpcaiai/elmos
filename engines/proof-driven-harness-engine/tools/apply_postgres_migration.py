@@ -83,8 +83,8 @@ def apply(
     except ImportError as exc:
         raise RuntimeError("psycopg[binary]==3.2.13 is not installed") from exc
     version = str(getattr(psycopg, "__version__", ""))
-    if not version.startswith("3.2."):
-        raise RuntimeError("migration applicator requires the pinned psycopg 3.2 line")
+    if not (version.startswith("3.2.") or version.startswith("3.3.")):
+        raise RuntimeError("migration applicator requires psycopg 3.2.x or 3.3.x")
 
     with psycopg.connect(dsn, autocommit=False) as connection:
         with connection.cursor() as cursor:

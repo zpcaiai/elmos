@@ -317,7 +317,7 @@ _RAW_ACL_RELATION_NAMES = tuple(
     )
 )
 _DELTA_PACKAGE_VERSION = "3.1.0"
-_DRIVER_MAJOR_MINOR = (3, 2)
+_DRIVER_MAJOR_MINOR_ALLOWED = {(3, 2), (3, 3)}
 _MAX_CAPABILITY_LEASE_SECONDS = 15 * 60
 _REQUIRED_EXECUTOR_REPLACEMENT_EFFECT_KINDS = frozenset(
     {
@@ -1521,10 +1521,10 @@ def postgres_driver_readiness() -> StorageReadiness:
         major_minor = tuple(int(part) for part in version.split(".")[:2])
     except ValueError:
         major_minor = ()
-    if major_minor != _DRIVER_MAJOR_MINOR:
+    if major_minor not in _DRIVER_MAJOR_MINOR_ALLOWED:
         return StorageReadiness(
             status=StorageStatus.NOT_READY,
-            reason="unsupported psycopg version; production requires the pinned 3.2 line",
+            reason="unsupported psycopg version; production requires psycopg 3.2.x or 3.3.x",
             backend="postgresql",
             server_version=f"psycopg/{version}",
         )
