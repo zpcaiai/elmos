@@ -1,0 +1,103 @@
+{
+  "created_at": "2026-09-14T04:38:21.007839+00:00",
+  "docker": {
+    "architecture": "arm64",
+    "minimum_api_version": "1.40",
+    "operating_system": "Docker Engine - Community",
+    "rootless": false,
+    "security_options": [
+      "name=seccomp,profile=builtin",
+      "name=cgroupns"
+    ],
+    "server_api_version": "1.54",
+    "server_version": "29.4.0"
+  },
+  "evidence_boundaries": {
+    "certification": "NOT_CERTIFIED",
+    "customer_acceptance": "NOT_RUN",
+    "external_certification": "NOT_RUN",
+    "independent_verification": "NOT_RUN"
+  },
+  "execution_class": "local",
+  "execution_status": "PASSED_LOCAL",
+  "executions": {
+    "source": {
+      "java": "17.0.11",
+      "log_sha256": "998e00e4fe5d4ddea77ef0cf10cf37b1ca751fb3e790947a11725219f4e80f96",
+      "spring_boot": "2.7.18",
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 4
+      }
+    },
+    "target": {
+      "java": "21.0.11",
+      "log_sha256": "c11e17f5abf219efa498b235b11b04c110ab31348f0ffe96357f44980b19974b",
+      "spring_boot": "3.5.3",
+      "tests": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 4
+      }
+    }
+  },
+  "fixture_manifest": {
+    "algorithm": "sha256",
+    "digest": "b2d5902df0ef65be6937707ca73f9f04b065a59609022d23f90e31361d1378ab",
+    "file_count": 21,
+    "files": {
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/pom.xml": "3dd5867fbb212032fa16e7eb9e835de0e49551640aadfff5b7da0a61a63202dc",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/DomainModel.java": "cac795b320885be5d4b6c421ffa8e4c26be1cf86deb046824a9e0f171f007250",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/EnterpriseController.java": "5e77b952b3e6f256ef550bbfa91d41640c95409cf80882fdbf26cd463c9331d1",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/EnterpriseOrderService.java": "bf1fed51d39ec9ca52853ff48d73eca77699f934021cb753d87be36109456b58",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/EnterpriseReferenceApplication.java": "c3b5aca65157d992bfdb421eb3fb3452ce9bd54b40b3ad5d40642efa850e8a72",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/EnterpriseSecurityConfiguration.java": "0b3440cc84c6831f23d8e90aaa458c12777cd8c22733e1ddf8234959e15c2d72",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/MessagingConfiguration.java": "03e34a1bc646aed3c79ca5cff73442d5d170a83c9343fe8f34c43e09f30ce070",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/java/io/elmos/enterprise/OutboxRelayAndConsumer.java": "71e0545c971bd06ba9afc03c80d4483c8f2181ad3510fa668eb1a91b8f042c9c",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/resources/application.properties": "3ff1f25683e1123e5559366807304117fce721d4100ad4c0f0dbee58777bac9b",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/main/resources/schema.sql": "709fbe4fe7beb4d270c1dc92028addb712b7c9ac32785925ee319522fcdaa115",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-source/src/test/java/io/elmos/enterprise/EnterpriseContractIT.java": "9742bf66259ddc466c25b9e47ff93d3aeeb1bc7cff2aaa18a598a1b1b87986cf",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/pom.xml": "ee6dfd9b7f091cf4ddbd31ad82584ac49b1d8ac8f10ef7ad6302ae57e7f50710",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/DomainModel.java": "3c69e2cb1e392068a6f139bdb192f0e2de680fd2451cc84b9c46141be5b53755",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/EnterpriseController.java": "14ccaa4132efc937b5ea5fa9345dbea8630bb59500f78452e8a769f47c5c2074",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/EnterpriseOrderService.java": "d77eb80eb7973f97f7f2178d60d4c7cc258369393aec2e45e3f99eec44115a2e",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/EnterpriseReferenceApplication.java": "c3b5aca65157d992bfdb421eb3fb3452ce9bd54b40b3ad5d40642efa850e8a72",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/EnterpriseSecurityConfiguration.java": "64d13689a7e73ef82236aba8b615e7a28f0db02af134b161d1dbc0f1a39bab16",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/MessagingConfiguration.java": "03e34a1bc646aed3c79ca5cff73442d5d170a83c9343fe8f34c43e09f30ce070",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/java/io/elmos/enterprise/OutboxRelayAndConsumer.java": "6e8d1f385da57a0a9f70a99d0dc1bc7f2288c7f7dc4a13caa746c18dbf2acdd6",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/resources/application.properties": "3ff1f25683e1123e5559366807304117fce721d4100ad4c0f0dbee58777bac9b",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/enterprise-target/src/main/resources/schema.sql": "709fbe4fe7beb4d270c1dc92028addb712b7c9ac32785925ee319522fcdaa115"
+    }
+  },
+  "images": {
+    "postgres": {
+      "architecture": "arm64",
+      "image_id": "sha256:53e5e62266c67313f0d330b6b97c07982324bdf00027c47041c5cf1123560aca",
+      "os": "linux",
+      "reference": "postgres@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa"
+    },
+    "rabbitmq": {
+      "architecture": "arm64",
+      "image_id": "sha256:fb0a158d542dcc7080397502b067f98cb6d04851c216fe038eeab1ef9ec1707d",
+      "os": "linux",
+      "reference": "rabbitmq@sha256:5cbd7145b0306399ad68422c3350b6cbd1bb95704b39f5896480e5b6d4238a04"
+    }
+  },
+  "maven": "3.9.11",
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "revision": "6474d51178ce0b4e70088e9b5afcb4ae37d7bcaf",
+  "runner_sha256": "00e248f98f73eb1f70f3b29d682724c057380cc9819e9b898ad4f58df3528c00",
+  "schema_version": "elmos.batch30.spring-enterprise-container-evidence.v1",
+  "scope": [
+    "role-based HTTP security and fail-closed configuration",
+    "PostgreSQL schema and JPA persistence",
+    "atomic transaction rollback and durable outbox",
+    "pessimistic locking and oversell prevention",
+    "RabbitMQ publisher confirms and idempotent consumption",
+    "bounded actuator exposure"
+  ],
+  "staging_identity": null
+}

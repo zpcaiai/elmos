@@ -1,0 +1,100 @@
+name: Spring enterprise staging qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_revision:
+        description: Exact main commit to qualify
+        required: true
+        type: string
+      deployment_id:
+        description: Existing staging deployment identity
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spring-enterprise-staging-qualification
+  cancel-in-progress: false
+
+jobs:
+  enterprise-contract:
+    name: PostgreSQL and RabbitMQ contract on protected rootless Runner
+    if: github.ref == 'refs/heads/main'
+    runs-on:
+      group: spring-enterprise-staging
+      labels: [self-hosted, Linux, ARM64]
+    environment: spring-enterprise-staging
+    timeout-minutes: 30
+    steps:
+      - name: Validate dispatch revision
+        shell: bash
+        env:
+          DISPATCH_REVISION: ${{ inputs.expected_revision }}
+          EVENT_REVISION: ${{ github.sha }}
+        run: |
+          [[ "$DISPATCH_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$DISPATCH_REVISION" = "$EVENT_REVISION"
+
+      - name: Check out exact main revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.expected_revision }}
+          persist-credentials: false
+
+      - name: Prepare exact Java 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: 17.0.11+9
+          cache: maven
+
+      - name: Capture Java 17 home
+        id: java17_home
+        shell: bash
+        run: echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare exact Java 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: 21.0.11+9
+          cache: maven
+
+      - name: Capture Java 21 home
+        id: java21_home
+        shell: bash
+        run: echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
+
+      - name: Execute exact enterprise container contract
+        shell: bash
+        env:
+          ELMOS_JAVA17_HOME: ${{ steps.java17_home.outputs.home }}
+          ELMOS_JAVA21_HOME: ${{ steps.java21_home.outputs.home }}
+          ELMOS_MAVEN_EXECUTABLE: ${{ vars.ELMOS_MAVEN_EXECUTABLE }}
+          ELMOS_SPRING_RUNNER_CLASS: DEDICATED_ROOTLESS
+          ELMOS_SPRING_RUNNER_ID: ${{ runner.name }}
+          ELMOS_SPRING_RUNNER_ATTESTATION_DIGEST: ${{ vars.ELMOS_SPRING_RUNNER_ATTESTATION_DIGEST }}
+          ELMOS_SPRING_ENVIRONMENT_ID: spring-enterprise-staging
+          ELMOS_SPRING_DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+          ELMOS_SPRING_EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          ELMOS_SPRING_EVIDENCE_OUTPUT: ${{ runner.temp }}/spring-enterprise-${{ github.run_id }}-${{ github.run_attempt }}/evidence.json
+        run: |
+          test -n "$ELMOS_MAVEN_EXECUTABLE"
+          python3 scripts/batch30/run_spring_enterprise_container_gate.py \
+            --execution-class staging \
+            --output "$ELMOS_SPRING_EVIDENCE_OUTPUT" \
+            --maven "$ELMOS_MAVEN_EXECUTABLE" \
+            --java17-home "$ELMOS_JAVA17_HOME" \
+            --java21-home "$ELMOS_JAVA21_HOME"
+
+      - name: Preserve staging evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: spring-enterprise-staging-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/spring-enterprise-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          retention-days: 30

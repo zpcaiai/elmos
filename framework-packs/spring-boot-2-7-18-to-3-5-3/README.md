@@ -25,6 +25,39 @@ The exact web, configuration and lifecycle scope is `limited`, not certified. Gi
 Transformer/Verifier/Runner execution, an authorized customer repository, customer holdout and
 external independent review are separate evidence roles and remain `NOT_RUN`.
 
+## Enterprise capability qualification
+
+The exact source and target tuples now share one executable enterprise contract
+covering least-privilege HTTP security, required runtime credentials, bounded
+Actuator exposure, PostgreSQL schema/JPA behavior, atomic rollback, pessimistic
+inventory locking, a transactional outbox, RabbitMQ publisher confirms, and
+idempotent at-least-once consumption. Both fixtures use digest-pinned PostgreSQL
+17.5 and RabbitMQ 4.1.4 images; the same four test methods execute on Spring Boot
+2.7.18 / Java 17.0.11 and Spring Boot 3.5.3 / Java 21.0.11.
+
+The checked-in `certification/local-enterprise-container-evidence.json` records
+the successful local Linux/ARM64 Docker execution. Its daemon is not Rootless,
+so its status is deliberately limited to `PASSED_LOCAL`; it does not expand the
+historical certification scope. Replay it with exact toolchain locations:
+
+```bash
+python3 scripts/batch30/run_spring_enterprise_container_gate.py \
+  --execution-class local \
+  --output framework-packs/spring-boot-2-7-18-to-3-5-3/certification/local-enterprise-container-evidence.json \
+  --maven /path/to/apache-maven-3.9.11/bin/mvn \
+  --java17-home /path/to/jdk-17.0.11 \
+  --java21-home /path/to/jdk-21.0.11
+```
+
+Protected staging execution is defined by
+`.github/workflows/spring-enterprise-staging-qualification.yml`. It accepts only
+an exact `main` revision and an existing deployment identity, and requires a
+dedicated Linux/ARM64 Rootless Runner plus an attestation digest from the
+protected environment. That workflow has not yet run. Even after it runs, its
+result is staging self-attested evidence; customer acceptance, independent
+verification, all 13 external evidence classes, and Batch 30 certification
+remain separate gates.
+
 Runtime API: `/engine/v1/spring-upgrades`.
 
 Reproducible local reference command:
