@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  release-control:
-    name: Release control and evidence governance
+  release-candidate-evidence:
+    name: Release candidate evidence materialization
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -305,6 +305,9 @@ jobs:
           test "$(/usr/bin/uname -m)" = "arm64"
           test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
           test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
+          # The runner user intentionally opens this reviewed script as stdin
+          # before the root-owned interpreter runs.
+          # shellcheck disable=SC2024
           /usr/bin/sudo -- /usr/bin/python3 -I -B - \
             --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
             <scripts/toolchains/verify_openssl3_ci_runtime.py
@@ -1369,9 +1372,10 @@ jobs:
 
       - name: 应用全部迁移
         run: |
-          for file in $(ls modules/persistence/src/main/resources/db/migration/V*.sql | sort -V); do
+          while IFS= read -r file; do
             psql "$DATABASE_URL" --single-transaction -v ON_ERROR_STOP=1 -q -f "$file"
-          done
+          done < <(find modules/persistence/src/main/resources/db/migration \
+            -maxdepth 1 -type f -name 'V*.sql' -print | sort -V)
 
       - name: 回调台账与幂等
         run: bash tooling/payment-db-verify/verify_payment_callbacks.sh
@@ -1476,3 +1480,57 @@ jobs:
           make batch45-check product-closure-convergence-skills
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
+
+  release-control:
+    name: Release control and evidence governance
+    if: ${{ always() }}
+    needs:
+      - release-candidate-evidence
+      - java
+      - commercial-billing-integration
+      - live-workbench-postgres
+      - dotnet-engine
+      - python-engine
+      - spring-golden-route-engine
+      - external-gate-intake
+      - frontend-client-engine
+      - polyglot-route-pack-contracts
+      - polyglot-route-engine-core
+      - polyglot-route-engine-matrix
+      - polyglot-route-engine
+      - polyglot-routes
+      - sql-dialect-engine
+      - typed-sql-transpiler
+      - batch31-database-gates
+      - project-synthesis
+      - project-synthesis-acceptance
+      - web-console
+      - precision-migration-b01-44
+      - web-console-generation
+      - web-console-runner-e2e
+      - commercial-gates
+      - payment-database-gates
+      - makefile-portability
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every declared CI dependency to close safely
+        env:
+          ELMOS_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          needs = json.loads(os.environ["ELMOS_CI_NEEDS_JSON"])
+          invalid = {
+              name: value.get("result")
+              for name, value in needs.items()
+              if value.get("result") != "success"
+          }
+          if invalid:
+              print("unsafe CI dependency results: " + json.dumps(invalid, sort_keys=True))
+              sys.exit(1)
+          print(f"release governance accepted {len(needs)} closed CI dependencies")
+          PY
