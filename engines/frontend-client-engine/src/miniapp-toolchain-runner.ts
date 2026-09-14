@@ -189,6 +189,15 @@ export function buildToolchainCliCommand(request: ToolchainExecutionRequest): {
   const { action, config } = request;
   const missingCredentials: string[] = [];
 
+  if (action === "analyze") {
+    return {
+      cmd: "analyze",
+      args: [config.projectPath],
+      displayCommand: `analyze ${config.projectPath}`,
+      missingCredentials: [],
+    };
+  }
+
   if (config.platform === "wechat") {
     const args: string[] = [action];
     args.push("--project-path", config.projectPath);
@@ -368,6 +377,24 @@ export async function executeMiniappToolchain(
       bundleMetrics,
       errors: [`Missing required credentials: ${missingCredentials.join(", ")}`],
       diagnostic: `Real platform ${action} requires authentic developer credentials configured in host broker.`,
+    };
+  }
+
+  // 5.1 If action is analyze, return bundle metrics without spawning child process
+  if (action === "analyze") {
+    return {
+      platform: config.platform,
+      action: "analyze",
+      status: "PASSED",
+      durationMs: Date.now() - t0,
+      exitCode: 0,
+      command: displayCommand,
+      stdout: bundleMetrics
+        ? `[ANALYZE] Total: ${(bundleMetrics.totalBytes / 1024).toFixed(2)} KiB across ${bundleMetrics.fileCount} files.`
+        : "[ANALYZE] Complete.",
+      stderr: "",
+      bundleMetrics,
+      errors: [],
     };
   }
 
