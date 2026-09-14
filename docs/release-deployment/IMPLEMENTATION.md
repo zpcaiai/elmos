@@ -23,6 +23,35 @@ These are not ECS/ACR/container/Temporal-server or independent acceptance result
 
 ## Runtime composition
 
+`alibaba_sts.py` now implements regional HTTPS AssumeRole through the bounded RPC
+transport. It requires an existing scoped bootstrap broker, an exact host role
+grant, durable issuance claim and canonical credential store. Inline policies
+contain explicit actions/resources; wildcard grants are rejected. Returned role
+identity and real STS expiry are validated, stored secrets are read back, and
+revocation is checked before using cached credentials. Unknown issuance is never
+automatically retried. This is a real transport implementation tested with a
+provider fixture, not evidence of cloud credential issuance. STS tokens retain
+their actual minimum 900-second cloud lifetime; a host lease revocation does not
+claim to revoke an already issued cloud token.
+
+`DeploymentCasEvidenceVerifier` reads actual tenant CAS bytes, checks digest/size,
+and verifies a separately signed Ed25519 decision bound to the full canonical
+ToolCall context, invocation, artifact and producer identity. Producer and verifier
+principals and key digests must differ. Decisions expire within 300 seconds and
+current key revocation is checked on each verification, including completed-call
+reads. Enable `elmos.release-deployment.evidence-enabled` with runtime-enabled on
+the billing component to install this adapter; existing TenantCasStore, authenticated
+artifact bindings and current verifier trust services are mandatory beans. It does
+not install a signer or manufacture independent verification. Live service binding
+and independent verification remain NOT_RUN.
+
+These additions do not complete networked Terraform: the isolated backend remains
+offline until a governed egress proxy/network, credential mount lifecycle and
+crash/orphan reconciliation are implemented and exercised. Other matrix gaps remain.
+
+STS protocol and minimum lifetime reference:
+[Alibaba Cloud AssumeRole](https://www.alibabacloud.com/help/en/ram/user-guide/assume-a-ram-role).
+
 The dedicated offline Linux backend and exact request/scope worker registry now
 live in `isolated_native_worker.py`, with an owner-checked installation probe
 `elmos-deployment-worker-check`. See [WORKER_INSTALLATION.md](WORKER_INSTALLATION.md)
@@ -133,7 +162,7 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-01 | Exact signed certification/release bridge, revoke | Bind real Assurance verdict and CAS objects |
 | RD-02 | Ticket issue/approve/revoke/expiry + OPA rules | Host policy/signature/RBAC service wiring |
 | RD-03 | Signed target registry + ECS/assistant mapping + bounded signed HTTPS RPC | Canonical session broker wiring and live account/resource probe |
-| RD-04 | Scoped leases + STS request/session policy | Canonical broker/session vault wiring |
+| RD-04 | Scoped leases, regional HTTPS AssumeRole provider, exact role/session policy, response identity checks and unknown-issuance fencing | Installed bootstrap broker, durable credential claims/session vault, live STS acceptance |
 | RD-05 | OCI manifest/config byte verification by digest | ACR-authenticated blob fetcher |
 | RD-06 | RunCommand/poll/cancel mapping, scoped log redaction + durable host recovery port | SDK transport, signed remote permit delivery, canonical CAS wiring |
 | RD-07 | Canonical Docker/Compose + executable Linux agent | Four real language image deployments; full runtime preflight |
@@ -141,7 +170,7 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-09 | Five-tool typed migration IR classification and policy gates | Native tool discovery/IR extraction, execution, backup/restore adapters |
 | RD-10 | Bounded retry/deadline probes, exact case sets, loopback HTTP | Representative application/business probes |
 | RD-11 | Automatic and manual immutable rollback workflow | Live provider snapshot/restore/traffic adapters |
-| RD-12 | Signed operation receipts, raw-log hashes/references and immutable schema-valid evidence | Canonical CAS/evidence host integration |
+| RD-12 | Signed operation receipts, log hashes, tenant CAS read/digest verification and independently signed exact-context decision verifier with Spring wiring | Installed artifact ownership/index bindings, production CAS, current verifier trust and independent service acceptance |
 | RD-13 | Durable reconciliation and Temporal workflow/activity definitions | Java worker registration, PostgreSQL/HA and real Temporal execution |
 | RD-14 | Three backend profiles + Vue in canonical Compose | Real external DB configuration and container runs |
 | RD-15 | P0 WSGI API + Spring authenticated host mount, exact-byte Ed25519 bridge, durable replay checks | Operator binding configuration, complete authority/execution/evidence adapters, product UI |

@@ -1,0 +1,28 @@
+{
+  "status": "LOCAL_ENGINEERING_VALIDATED",
+  "tests": 11,
+  "files": {
+    "apps/production-runtime-control-plane/pom.xml": "e849908c03a6b14e949aa96e4813d1293d5f57bd90a926937cc0a6e492d99225",
+    "modules/production-runtime/src/main/java/io/elmos/productionruntime/DeploymentToolExecutor.java": "39d58e24de00e866abdc45b6e0ff24980a38f81d4a3c5e128cbe862751d1b8ce",
+    "modules/production-runtime/src/test/java/io/elmos/productionruntime/DeploymentToolExecutorTest.java": "8009bca7a587ea14b318459490b979ac3b5a4812e811c28e2ce8dd406ec99f6f",
+    "apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentCasEvidenceVerifier.java": "2839d5e9f3f4ebee322d8483b0d38971b36ce8e5c0329583ef32710b2d40adc7",
+    "apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentEvidenceConfiguration.java": "cb4adb217ee2d3ac5c90e1aee44eff1a0af64e606c5fb69e847814ea32171743",
+    "apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentSecretConfiguration.java": "e47c9657efa990788f3f7334c38b18800ffee656dba0e9d089152b131a1850a3",
+    "apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentRuntimeController.java": "94da3538c4b511913c0d509d5b851272e0993062bfa2310ca396ea54cb82cfa9",
+    "apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentCasEvidenceVerifierTest.java": "673959a6716f1c1a3f6f55c8f895626b0bba6119304ef10e92a4481238cc6778",
+    "apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentSecretConfigurationTest.java": "4d7264080418a71969688222cf09b64cd0c8aced15272a003525956851503647",
+    "apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentRuntimeControllerTest.java": "d7cb6624da0bee8697d82d3612032dec7b23b29145ea54c8abdb58fbf0553a81"
+  },
+  "logs": {
+    "docs/release-deployment/qualification/cloud-host-TEST-io.elmos.controlplane.DeploymentCasEvidenceVerifierTest.xml": "3202eabf557484ba4a1584cdec18dfdbd6abb7c62c8fc2494dafe48792f664c6",
+    "docs/release-deployment/qualification/cloud-host-TEST-io.elmos.controlplane.DeploymentRuntimeControllerTest.xml": "296c2816737f8c22189e23d8340cd460e2ca75a318ce6b14af235ebf6981ba16",
+    "docs/release-deployment/qualification/cloud-host-TEST-io.elmos.controlplane.DeploymentSecretConfigurationTest.xml": "3920dab99c330b21c4c074b12d97c8c6c84333d91e44ab59e7479543b95260d1",
+    "docs/release-deployment/qualification/cloud-host-TEST-io.elmos.productionruntime.DeploymentToolExecutorTest.xml": "1c91df705cf3ee31d97b50bb7fba4333ceddb8d154115140e382ba1e35368009"
+  },
+  "command": "mvn -o -pl apps/production-runtime-control-plane -am -Dtest=DeploymentCasEvidenceVerifierTest,DeploymentToolExecutorTest,DeploymentSecretConfigurationTest,DeploymentRuntimeControllerTest -Dsurefire.failIfNoSpecifiedTests=false test -q",
+  "scope": "Local disk CAS and test Ed25519 keys; Java host negative wiring and dispatch regression",
+  "host_installation": "NOT_RUN",
+  "cloud_execution": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

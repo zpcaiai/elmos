@@ -1,6 +1,11 @@
 test_nested_backend_list_uses_rpc_indexed_fields (test_alibaba_rpc.RpcTests.test_nested_backend_list_uses_rpc_indexed_fields) ... ok
 test_request_uses_exact_https_endpoint_and_ephemeral_token (test_alibaba_rpc.RpcTests.test_request_uses_exact_https_endpoint_and_ephemeral_token) ... ok
 test_unknown_action_and_region_never_open_connection (test_alibaba_rpc.RpcTests.test_unknown_action_and_region_never_open_connection) ... ok
+test_actual_transport_signs_and_binds_assume_role_without_secret_audit (test_alibaba_sts.StsTests.test_actual_transport_signs_and_binds_assume_role_without_secret_audit) ... ok
+test_cross_scope_and_wildcard_grants_never_issue (test_alibaba_sts.StsTests.test_cross_scope_and_wildcard_grants_never_issue) ... ok
+test_revocation_blocks_cached_credentials (test_alibaba_sts.StsTests.test_revocation_blocks_cached_credentials) ... ok
+test_unknown_issuance_cannot_issue_again (test_alibaba_sts.StsTests.test_unknown_issuance_cannot_issue_again) ... ok
+test_wrong_provider_identity_never_saves_secret (test_alibaba_sts.StsTests.test_wrong_provider_identity_never_saves_secret) ... ok
 test_cross_tenant_and_expired_lease_before_network (test_argocd_adapter.ArgoTests.test_cross_tenant_and_expired_lease_before_network) ... ok
 test_exact_application_observation (test_argocd_adapter.ArgoTests.test_exact_application_observation) ... ok
 test_identity_spec_and_compared_source_drift (test_argocd_adapter.ArgoTests.test_identity_spec_and_compared_source_drift) ... ok
@@ -117,6 +122,6 @@ test_security_policy_drift_blocks_write (test_tls_controller.TlsControllerTests.
 test_wrong_certificate_bytes_never_call_provider (test_tls_controller.TlsControllerTests.test_wrong_certificate_bytes_never_call_provider) ... ok
 
 ----------------------------------------------------------------------
-Ran 117 tests in 157.595s
+Ran 122 tests in 148.201s
 
 OK

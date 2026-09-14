@@ -40,3 +40,7 @@ apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/Deploy
 apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentSecretConfigurationTest.java -text
 apps/production-runtime-control-plane/pom.xml -text
 tooling/validate_release_tmpfs.py -text
+
+apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentCasEvidenceVerifier.java -text
+apps/production-runtime-control-plane/src/main/java/io/elmos/controlplane/DeploymentEvidenceConfiguration.java -text
+apps/production-runtime-control-plane/src/test/java/io/elmos/controlplane/DeploymentCasEvidenceVerifierTest.java -text

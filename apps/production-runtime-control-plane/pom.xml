@@ -10,6 +10,7 @@
   <artifactId>elmos-production-runtime-control-plane</artifactId>
   <name>ELMOS Dedicated Production Runtime Control Plane</name>
   <dependencies>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-cas</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-secret</artifactId><version>${project.version}</version></dependency>
     <dependency>
       <groupId>io.elmos</groupId>

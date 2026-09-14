@@ -80,6 +80,7 @@ class DeploymentToolExecutorTest {
         var verified=new DeploymentToolExecutor(ledger,r->{},(r,i,a)->assertEquals(artifact,a),
                                                 Map.of("traffic.apply",provider),ledger);
         assertEquals(ToolCallStatus.COMPLETE,verified.tick(request).status());
+        assertThrows(IllegalStateException.class,()->rejecting.tick(request));
     }
 
     @Test void bindsActualWorkflowAndExtensionActionsAndRejectsArbitraryTools() throws Exception {

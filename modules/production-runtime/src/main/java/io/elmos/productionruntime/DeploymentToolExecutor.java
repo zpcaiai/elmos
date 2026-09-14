@@ -82,7 +82,13 @@ public final class DeploymentToolExecutor {
             if (receipt == null) throw new IllegalStateException("DEPLOYMENT_DURABLE_RECEIPT_MISSING");
         }
         UUID tenant = context.tenantId(), call = receipt.toolCallId();
-        if (receipt.status() == ToolCallStatus.COMPLETE || receipt.status() == ToolCallStatus.FAILED) return receipt;
+        if (receipt.status() == ToolCallStatus.COMPLETE) {
+            requireInvocation(receipt.providerRequestId());
+            if (receipt.responseArtifactId() == null) throw new IllegalStateException("DEPLOYMENT_ARTIFACT_MISSING");
+            evidence.require(request,receipt.providerRequestId(),receipt.responseArtifactId());
+            return receipt;
+        }
+        if (receipt.status() == ToolCallStatus.FAILED) return receipt;
         String invocation = receipt.providerRequestId();
         if (receipt.status() == ToolCallStatus.CREATED) {
             // A concurrent claimant or a lost claim response prevents this caller from sending.
