@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "elmos.batch31.sql-corpus-scan-summary",
-  "scanned_at": "2026-09-14T13:07:22.063972+00:00",
+  "scanned_at": "2026-09-14T14:44:49.730299+00:00",
   "source_root": "modules/persistence/src/main/resources/db/migration",
   "source_dialect": "postgres",
   "namespace_profile": {
@@ -12,33 +12,33 @@
     },
     "digest": "21cb5cbb1f12ee8de95711b911b5fc60f452e897b23b16764ba63bcbd1651daa"
   },
-  "source_tree_digest": "sha256:146e68b378e0ce0fc099022c5cb335cccdc1c8705c3833be4d4564ae007bbaa6",
+  "source_tree_digest": "sha256:86d7d89f053928a527a50f9a07548b938d20b5dd5f7c9720d6402fa27c650a43",
   "scan_report_path": "docs/batch31/evidence/sql-corpus-scan-report.json",
-  "scan_report_digest": "sha256:e01d32f048338ac78d3454b8832c3dd1e80bdf89d95061ba8cd6171a46d85d08",
-  "reachability_report_digest": "sha256:73a7d9bcb5b138abc6dcaadeab09f10da7577a2adb08a273d268503f9b338d55",
+  "scan_report_digest": "sha256:8eafcf50d986061416adc6b713fb6e41dc4a17cd15fc63f6e149aafd69072be6",
+  "reachability_report_digest": "sha256:5cdf9044cc72ba55b39f5fae3bad68ef609a5ab8db9a01c03dca85fcc7169b54",
   "totals": {
-    "files": 88,
-    "discovered": 1910,
-    "automated_translation_candidates": 1390,
-    "manual_migration_required": 518,
+    "files": 89,
+    "discovered": 1916,
+    "automated_translation_candidates": 1394,
+    "manual_migration_required": 520,
     "source_format_review": 2,
     "engine_defects": 0,
     "disposition_coverage": 1.0,
-    "automatic_candidate_rate": 0.7277
+    "automatic_candidate_rate": 0.7276
   },
   "four_target_reachability": {
-    "intersection": 1213,
-    "intersection_rate_of_candidates": 0.8727,
-    "postgres": 1390,
-    "mysql": 1262,
-    "oracle": 1224,
-    "tsql": 1317
+    "intersection": 1215,
+    "intersection_rate_of_candidates": 0.8716,
+    "postgres": 1394,
+    "mysql": 1264,
+    "oracle": 1226,
+    "tsql": 1321
   },
   "chinadb_route_ledger": {
     "target_count": 13,
     "planned_routes": 78,
-    "route_units": 24830,
-    "disposition_covered": 24830,
+    "route_units": 24908,
+    "disposition_covered": 24908,
     "automatic_target_emissions": 0,
     "implementation_status": "LOCAL_BOUNDED",
     "external_execution": "NOT_RUN",

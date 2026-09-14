@@ -10,10 +10,10 @@ Runner, or independent certification.
 The machine-readable authority is `evidence/sql-route-closure-plan.json`:
 
 - high-priority P0 route cells: `0` open;
-- frozen source disposition: `1,910 / 1,910` units accounted for;
-- automatic candidates: `1,390`; manual migration: `518` (`83` open);
-- four-target common reachability: `1,213 / 1,390` admitted candidates;
-- blocked route cells: `367` (P1/P2, preserved explicitly);
+- frozen source disposition: `1,916 / 1,916` units accounted for;
+- automatic candidates: `1,394`; manual migration: `520` (`85` open);
+- four-target common reachability: `1,215 / 1,394` admitted candidates;
+- blocked route cells: `371` (P1/P2, preserved explicitly);
 - real ChinaDB production execution: `0 / 13`;
 - dedicated Runner 75 ms qualification: `NOT_RUN_ENVIRONMENT_INVALID`;
 - independent verification: `NOT_RUN`;

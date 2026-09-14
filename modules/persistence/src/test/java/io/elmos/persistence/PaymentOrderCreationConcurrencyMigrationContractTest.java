@@ -19,6 +19,8 @@ class PaymentOrderCreationConcurrencyMigrationContractTest {
         assertTrue(sql.indexOf("FROM wallet_accounts")
                 < sql.indexOf("SELECT coalesce(sum(amount_minor), 0)"));
         assertTrue(sql.contains("ELMOS_WALLET_TOPUP_IDEMPOTENCY_CONFLICT"));
+        assertTrue(sql.contains("p_amount_minor numeric(19,0)"),
+                "minor-unit money must keep the exact persisted precision and scale");
         assertTrue(sql.contains("SET search_path = pg_catalog, public, pg_temp"));
         assertTrue(sql.contains("v_existing.actor_id IS DISTINCT FROM p_actor_id"));
         assertTrue(sql.contains("v_existing.amount_minor IS DISTINCT FROM p_amount_minor"));
@@ -38,5 +40,7 @@ class PaymentOrderCreationConcurrencyMigrationContractTest {
         assertFalse(sql.contains("LOCK TABLE"), "unrelated tenants must remain concurrent");
         assertTrue(sql.contains("REVOKE ALL ON FUNCTION elmos_wallet_create_topup_order"));
         assertTrue(sql.contains("REVOKE ALL ON FUNCTION elmos_commercial_create_order"));
+        assertFalse(sql.contains("IF EXISTS (SELECT 1 FROM pg_roles"),
+                "post-migration role provisioning owns runtime grants; function replacement preserves existing grants");
     }
 }

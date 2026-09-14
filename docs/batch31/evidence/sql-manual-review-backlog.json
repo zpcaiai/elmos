@@ -15593,6 +15593,60 @@
       }
     },
     {
+      "excerpt": "/* ELMOS V89: serialize payment-order creation and bind idempotent replays. */ /* V73 checked the wallet daily...",
+      "family": "structure",
+      "finding_id": "sql-review-079f57bfa0dba7d54be8",
+      "fingerprint": "sha256:079f57bfa0dba7d54be81f94587053fdcb45fbcc4088926df587f673a8f77612",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 1,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_create_order(p_order_id VARCHAR, p_actor_id VARCHAR, p_sku VARCHAR...",
+      "family": "structure",
+      "finding_id": "sql-review-f9015db170de5b89b0ef",
+      "fingerprint": "sha256:f9015db170de5b89b0efe4707e763a3d10898b5f8404eae8bd5754d266452a0a",
+      "owner": "UNASSIGNED",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "recommended_action": "Hand-port through typed routine IR with source/target behavior evidence.",
+      "resolution": {
+        "artifact_refs": [],
+        "strategy": "NOT_SET"
+      },
+      "revalidation": {
+        "evidence_refs": [],
+        "status": "NOT_RUN"
+      },
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 3,
+      "status": "OPEN",
+      "waiver": {
+        "approved_by": [],
+        "expires_at": null,
+        "reason": null,
+        "status": "NOT_REQUESTED"
+      }
+    },
+    {
       "excerpt": "CREATE OR REPLACE FUNCTION elmos_forbid_append_only_mutation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN   ...",
       "family": "statement-kind",
       "finding_id": "sql-review-233f0a8ba4b30a6578c8",
@@ -15656,14 +15710,14 @@
   ],
   "kind": "elmos.batch31.manual-review-backlog",
   "schema_version": 1,
-  "source_report_digest": "sha256:e01d32f048338ac78d3454b8832c3dd1e80bdf89d95061ba8cd6171a46d85d08",
+  "source_report_digest": "sha256:8eafcf50d986061416adc6b713fb6e41dc4a17cd15fc63f6e149aafd69072be6",
   "summary": {
     "blocked": 0,
     "in_review": 0,
-    "open": 83,
+    "open": 85,
     "release_blocked": true,
     "resolved": 362,
-    "total": 518,
+    "total": 520,
     "waived": 73
   }
 }

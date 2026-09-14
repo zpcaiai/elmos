@@ -1,27 +1,27 @@
 {
   "kind": "elmos.sql-dialect.target-reachability",
-  "discovered_units": 1910,
-  "admitted_source_side": 1390,
-  "source_candidate_rate": 0.7277,
-  "disposition_units": 1910,
-  "disposition_covered": 1910,
+  "discovered_units": 1916,
+  "admitted_source_side": 1394,
+  "source_candidate_rate": 0.7276,
+  "disposition_units": 1916,
+  "disposition_covered": 1916,
   "disposition_unknown": 0,
   "disposition_coverage": 1.0,
-  "translatable_to_all_four": 1213,
-  "all_four_ratio_of_admitted": 0.8727,
+  "translatable_to_all_four": 1215,
+  "all_four_ratio_of_admitted": 0.8716,
   "reachable_per_target": {
-    "postgres": 1390,
-    "mysql": 1262,
-    "oracle": 1224,
-    "tsql": 1317
+    "postgres": 1394,
+    "mysql": 1264,
+    "oracle": 1226,
+    "tsql": 1321
   },
   "target_route_rate": {
     "postgres": 1.0,
-    "mysql": 0.9079,
-    "oracle": 0.8806,
-    "tsql": 0.9475
+    "mysql": 0.9067,
+    "oracle": 0.8795,
+    "tsql": 0.9476
   },
-  "all_target_intersection_rate": 0.8727,
+  "all_target_intersection_rate": 0.8716,
   "routeStrategy": {
     "mode": "target-specific-portfolio",
     "targetPriority": [
@@ -44,16 +44,16 @@
       "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX": 7,
       "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 6,
       "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
+      "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 3,
       "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
       "CERTIFIED_DDL_MYSQL_TEXT_DEFAULT_UNSUPPORTED": 1,
       "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER": 1,
-      "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": 1,
-      "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 1
+      "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": 1
     },
     "oracle": {
       "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET": 71,
+      "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 30,
       "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET": 28,
-      "CERTIFIED_COMMENT_TARGET_UNSUPPORTED": 28,
       "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 15,
       "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET": 12,
       "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 7,
@@ -77,11 +77,11 @@
     "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED": 8,
     "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX": 7,
     "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET": 3,
+    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 3,
     "CERTIFIED_DDL_SPECIAL_FLOAT_UNSUPPORTED_BY_TARGET": 2,
     "CERTIFIED_DDL_MYSQL_TEXT_DEFAULT_UNSUPPORTED": 1,
     "CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER": 1,
-    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": 1,
-    "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED": 1
+    "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED": 1
   },
   "namespaceProfile": {
     "name": "persistence-public-to-dbo",
@@ -287,7 +287,7 @@
   "externalExecution": "NOT_RUN",
   "independentVerification": "NOT_RUN",
   "certification": "NOT_CERTIFIED",
-  "sourceCatalogEvidenceUnits": 851,
+  "sourceCatalogEvidenceUnits": 853,
   "routeUnits": [
     {
       "unitId": "persistence:V1__batch_one_baseline.sql#1:7a41b115fb61",
@@ -39189,6 +39189,118 @@
       "sourceDialect": "postgres",
       "statementKind": "Grant",
       "statementDigest": "sha256:e515bf1f617b8e50024861e529439f6660cc82bfdd0ca3f12a13d368de797041",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V89__payment_order_creation_concurrency.sql#2:cf4ecbfe80a2",
+      "corpus": "persistence",
+      "sourcePath": "V89__payment_order_creation_concurrency.sql",
+      "parsedStatementIndex": 2,
+      "sourceDialect": "postgres",
+      "statementKind": "Comment",
+      "statementDigest": "sha256:cf4ecbfe80a29038ead75712eb47836bf76de1e7dc85abd97d814dd1cc787bd5",
+      "allFourReachable": false,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "BLOCKED",
+          "refusalCode": "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED"
+        },
+        "oracle": {
+          "state": "BLOCKED",
+          "refusalCode": "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V89__payment_order_creation_concurrency.sql#4:ee1393aadf1d",
+      "corpus": "persistence",
+      "sourcePath": "V89__payment_order_creation_concurrency.sql",
+      "parsedStatementIndex": 4,
+      "sourceDialect": "postgres",
+      "statementKind": "Comment",
+      "statementDigest": "sha256:ee1393aadf1d8eaa920c4b6d827dd420d04e1826dca31895dc567e08ebfb2187",
+      "allFourReachable": false,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "BLOCKED",
+          "refusalCode": "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED"
+        },
+        "oracle": {
+          "state": "BLOCKED",
+          "refusalCode": "CERTIFIED_COMMENT_TARGET_UNSUPPORTED"
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V89__payment_order_creation_concurrency.sql#5:676f9c06528f",
+      "corpus": "persistence",
+      "sourcePath": "V89__payment_order_creation_concurrency.sql",
+      "parsedStatementIndex": 5,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:676f9c06528f47f69f6d94eed684d6ab0aa510acb934a930368c8f1baa7c53a1",
+      "allFourReachable": true,
+      "targets": {
+        "postgres": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "mysql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "oracle": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        },
+        "tsql": {
+          "state": "REACHABLE",
+          "refusalCode": null
+        }
+      }
+    },
+    {
+      "unitId": "persistence:V89__payment_order_creation_concurrency.sql#6:f76b0e9f378a",
+      "corpus": "persistence",
+      "sourcePath": "V89__payment_order_creation_concurrency.sql",
+      "parsedStatementIndex": 6,
+      "sourceDialect": "postgres",
+      "statementKind": "Revoke",
+      "statementDigest": "sha256:f76b0e9f378a7da1d1fc7285da87fcd02da05f6d490b4bb7fd1c579d1b20bdab",
       "allFourReachable": true,
       "targets": {
         "postgres": {

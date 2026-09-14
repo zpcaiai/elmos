@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION elmos_wallet_create_topup_order(
     p_topup_order_id varchar,
     p_organization_id varchar,
     p_actor_id varchar,
-    p_amount_minor numeric,
+    p_amount_minor numeric(19,0),
     p_provider varchar,
     p_out_trade_no varchar,
     p_idempotency_key varchar,
@@ -96,8 +96,11 @@ CREATE OR REPLACE FUNCTION elmos_commercial_create_order(
     p_order_id varchar, p_actor_id varchar, p_sku varchar, p_project_id varchar,
     p_provider varchar, p_out_trade_no varchar, p_idempotency_key varchar,
     p_request_hash char(64), p_ttl_seconds integer
-) RETURNS varchar LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = pg_catalog, public, pg_temp AS $$
+) RETURNS varchar
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
 DECLARE
     v_org varchar := public.elmos_current_organization_id();
     v_product public.commercial_products%ROWTYPE;
@@ -155,16 +158,3 @@ REVOKE ALL ON FUNCTION elmos_wallet_create_topup_order(
     varchar, varchar, varchar, numeric, varchar, varchar, varchar, integer) FROM PUBLIC;
 REVOKE ALL ON FUNCTION elmos_commercial_create_order(
     varchar, varchar, varchar, varchar, varchar, varchar, varchar, char, integer) FROM PUBLIC;
-
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN
-        GRANT EXECUTE ON FUNCTION elmos_wallet_create_topup_order(
-            varchar, varchar, varchar, numeric, varchar, varchar, varchar, integer)
-            TO elmos_billing_runtime;
-        GRANT EXECUTE ON FUNCTION elmos_commercial_create_order(
-            varchar, varchar, varchar, varchar, varchar, varchar, varchar, char, integer)
-            TO elmos_billing_runtime;
-    END IF;
-END;
-$$;

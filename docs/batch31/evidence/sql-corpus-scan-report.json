@@ -4,22 +4,22 @@
   "profile": "certified-ddl-v1 + certified-alter-v1 + certified-drop-v1 + certified-schema-v1 + certified-routine-v1 + certified-view-v1 + certified-comment-v1 + certified-privilege-v1 + certified-dml-v1 + certified-rls-v1 + certified-static-do-v1",
   "repository": "F:\\PythonPro\\elmos\\.tmp-worktrees\\p0-p2-complete-20260914\\modules\\persistence\\src\\main\\resources\\db\\migration",
   "source_dialect": "postgres",
-  "scanned_at": "2026-09-14T13:07:22.063972+00:00",
+  "scanned_at": "2026-09-14T14:44:49.730299+00:00",
   "totals": {
-    "discovered": 1910,
-    "inSubset": 1390,
-    "outOfSubset": 520,
+    "discovered": 1916,
+    "inSubset": 1394,
+    "outOfSubset": 522,
     "scanErrors": 0,
-    "files": 88,
-    "dispositionUnits": 1910,
-    "dispositionCovered": 1910,
+    "files": 89,
+    "dispositionUnits": 1916,
+    "dispositionCovered": 1916,
     "dispositionUnknown": 0
   },
   "upper_bound_coverage": 0.728,
   "disposition_coverage": 1.0,
   "disposition_counts": {
-    "AUTOMATED_TRANSLATION_CANDIDATE": 1390,
-    "MANUAL_MIGRATION_REQUIRED": 518,
+    "AUTOMATED_TRANSLATION_CANDIDATE": 1394,
+    "MANUAL_MIGRATION_REQUIRED": 520,
     "SOURCE_FORMAT_REVIEW": 2
   },
   "blockers": [
@@ -29,7 +29,7 @@
       "what": "table name is qualified by source schema 'identity'; provide an explicit namespace_map",
       "count": 181,
       "distinct_reasons": 40,
-      "share_of_blocked": 0.348,
+      "share_of_blocked": 0.347,
       "example_statements": [
         "CREATE TABLE identity.tenants (id UUID PRIMARY KEY DEFAULT UUID(), name TEXT NOT NULL CHECK (LENGTH(TRIM(name)...",
         "CREATE TABLE project.projects (id UUID PRIMARY KEY DEFAULT UUID(), tenant_id UUID NOT NULL REFERENCES identity...",
@@ -44,7 +44,7 @@
       "what": "DO block contains control flow, query/DML or dynamic SQL; manual migration is required",
       "count": 81,
       "distinct_reasons": 1,
-      "share_of_blocked": 0.156,
+      "share_of_blocked": 0.155,
       "example_statements": [
         "DO $$ DECLARE tenant_table record; BEGIN     FOR tenant_table IN         SELECT tablename FROM pg_tables      ..."
       ]
@@ -53,9 +53,9 @@
       "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
       "family": "structure",
       "what": "the function body is neither one table-free SELECT expression nor a narrow static PL/pgSQL block",
-      "count": 77,
+      "count": 79,
       "distinct_reasons": 3,
-      "share_of_blocked": 0.148,
+      "share_of_blocked": 0.151,
       "example_statements": [
         "CREATE OR REPLACE FUNCTION elmos_execution_concurrency_limit(p_organization_id VARCHAR) RETURNS INT LANGUAGE s...",
         "CREATE OR REPLACE FUNCTION elmos_enqueue_execution_job(p_job_id VARCHAR, p_organization_id VARCHAR, p_actor_id...",
@@ -68,7 +68,7 @@
       "what": "a statement no certified profile covers -- query DML and procedural control flow still land here",
       "count": 68,
       "distinct_reasons": 1,
-      "share_of_blocked": 0.131,
+      "share_of_blocked": 0.13,
       "example_statements": [
         "CREATE OR REPLACE FUNCTION elmos_forbid_append_only_mutation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN   ..."
       ]
@@ -143,7 +143,7 @@
       "what": "the DML value is outside the typed column/literal/timestamp/COALESCE/MIN expression core",
       "count": 6,
       "distinct_reasons": 3,
-      "share_of_blocked": 0.012,
+      "share_of_blocked": 0.011,
       "example_statements": [
         "INSERT INTO snapshot_reconciliation_tenant_work (organization_id, work_pending, next_attempt_at, updated_at) S...",
         "WITH revoked AS (UPDATE public.platform_administrators AS administrator SET revoked_at = CLOCK_TIMESTAMP(), re...",
@@ -246,8 +246,8 @@
   "families": [
     {
       "family": "structure",
-      "count": 116,
-      "share_of_blocked": 0.223
+      "count": 118,
+      "share_of_blocked": 0.226
     },
     {
       "family": "statement-kind",
@@ -257,7 +257,7 @@
     {
       "family": "types",
       "count": 32,
-      "share_of_blocked": 0.062
+      "share_of_blocked": 0.061
     },
     {
       "family": "identifiers",
@@ -21285,12 +21285,78 @@
       "family": null,
       "excerpt": "DO $$ BEGIN     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN         GRANT ...",
       "disposition": "MANUAL_MIGRATION_REQUIRED"
+    },
+    {
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 1,
+      "status": "OUT_OF_SUBSET",
+      "statement_kind": "Create",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "family": "structure",
+      "excerpt": "/* ELMOS V89: serialize payment-order creation and bind idempotent replays. */ /* V73 checked the wallet daily...",
+      "disposition": "MANUAL_MIGRATION_REQUIRED"
+    },
+    {
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 2,
+      "status": "IN_SUBSET",
+      "statement_kind": "Comment",
+      "reason_code": null,
+      "reason": null,
+      "family": null,
+      "excerpt": "COMMENT ON FUNCTION elmos_wallet_create_topup_order(varchar, varchar, varchar, numeric, varchar, varchar, varc...",
+      "disposition": "AUTOMATED_TRANSLATION_CANDIDATE"
+    },
+    {
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 3,
+      "status": "OUT_OF_SUBSET",
+      "statement_kind": "Create",
+      "reason_code": "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+      "reason": "PL/pgSQL routine body must be a dollar-quoted block",
+      "family": "structure",
+      "excerpt": "CREATE OR REPLACE FUNCTION elmos_commercial_create_order(p_order_id VARCHAR, p_actor_id VARCHAR, p_sku VARCHAR...",
+      "disposition": "MANUAL_MIGRATION_REQUIRED"
+    },
+    {
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 4,
+      "status": "IN_SUBSET",
+      "statement_kind": "Comment",
+      "reason_code": null,
+      "reason": null,
+      "family": null,
+      "excerpt": "COMMENT ON FUNCTION elmos_commercial_create_order(varchar, varchar, varchar, varchar, varchar, varchar, varcha...",
+      "disposition": "AUTOMATED_TRANSLATION_CANDIDATE"
+    },
+    {
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 5,
+      "status": "IN_SUBSET",
+      "statement_kind": "Revoke",
+      "reason_code": null,
+      "reason": null,
+      "family": null,
+      "excerpt": "REVOKE ALL ON FUNCTION ELMOS_WALLET_CREATE_TOPUP_ORDER(varchar, varchar, varchar, numeric, varchar, varchar, v...",
+      "disposition": "AUTOMATED_TRANSLATION_CANDIDATE"
+    },
+    {
+      "source_path": "V89__payment_order_creation_concurrency.sql",
+      "statement_index": 6,
+      "status": "IN_SUBSET",
+      "statement_kind": "Revoke",
+      "reason_code": null,
+      "reason": null,
+      "family": null,
+      "excerpt": "REVOKE ALL ON FUNCTION ELMOS_COMMERCIAL_CREATE_ORDER(varchar, varchar, varchar, varchar, varchar, varchar, var...",
+      "disposition": "AUTOMATED_TRANSLATION_CANDIDATE"
     }
   ],
   "caveats": [
     "This is an UPPER BOUND. Parsing proves a statement is inside certified-ddl-v1 from the SOURCE side. During a real run each emission is re-parsed by the TARGET dialect in strict mode, and a statement can still be reported BLOCKED there.",
     "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified parser. Nothing is sampled or extrapolated.",
-    "Disposition coverage is 1910/1910 (100.0%): every discovered unit has an explicit next action. This is not a claim that every unit is automatically translatable; the automatic-translation candidate ratio remains the separate upper-bound metric above.",
+    "Disposition coverage is 1916/1916 (100.0%): every discovered unit has an explicit next action. This is not a claim that every unit is automatically translatable; the automatic-translation candidate ratio remains the separate upper-bound metric above.",
     "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct reasons is one idiom repeated across a schema; widening the subset for it buys far less than the raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
     "Statements are split by the real parser, not by semicolons, so string literals, $$-quoted bodies and BEGIN ... END blocks are counted correctly.",
     "Everything executable stays in the denominator. Unlike the component scanner -- where a function returning no JSX is a helper rather than a migration unit -- an ALTER TABLE, view or stored procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding exactly what this engine cannot do.",
@@ -21304,14 +21370,14 @@
       {
         "targetId": "dm8",
         "label": "DM8",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21321,14 +21387,14 @@
       {
         "targetId": "kingbasees",
         "label": "KingbaseES",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21338,14 +21404,14 @@
       {
         "targetId": "opengauss",
         "label": "openGauss",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21355,14 +21421,14 @@
       {
         "targetId": "tidb",
         "label": "TiDB",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21372,14 +21438,14 @@
       {
         "targetId": "gbase-8s",
         "label": "GBase 8s",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21389,14 +21455,14 @@
       {
         "targetId": "gbase-8c",
         "label": "GBase 8c",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21406,14 +21472,14 @@
       {
         "targetId": "gbase-8a",
         "label": "GBase 8a",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21423,14 +21489,14 @@
       {
         "targetId": "highgo-hgdb",
         "label": "HighGo / HGDB",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21440,14 +21506,14 @@
       {
         "targetId": "oceanbase-oracle",
         "label": "OceanBase Oracle-compatible mode",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21457,14 +21523,14 @@
       {
         "targetId": "oceanbase-mysql",
         "label": "OceanBase MySQL-compatible mode",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21474,14 +21540,14 @@
       {
         "targetId": "gaussdb-oracle",
         "label": "GaussDB Oracle-compatible mode",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21491,14 +21557,14 @@
       {
         "targetId": "gaussdb-m",
         "label": "GaussDB M-compatible mode",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21508,14 +21574,14 @@
       {
         "targetId": "goldendb",
         "label": "GoldenDB",
-        "routeDispositionUnits": 1910,
-        "routeDispositionCovered": 1910,
+        "routeDispositionUnits": 1916,
+        "routeDispositionCovered": 1916,
         "routeDispositionUnknown": 0,
         "routeDispositionCoverage": 1.0,
-        "sourceAutomaticCandidates": 1390,
+        "sourceAutomaticCandidates": 1394,
         "automaticTargetEmissions": 0,
-        "targetAdapterReviewRequired": 1390,
-        "manualMigrationRequired": 518,
+        "targetAdapterReviewRequired": 1394,
+        "manualMigrationRequired": 520,
         "sourceFormatReview": 2,
         "engineDefects": 0,
         "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
@@ -21536,14 +21602,14 @@
     "certification": "NOT_CERTIFIED",
     "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
     "claim": "Local DDL emission under an explicit compatibility-mode allow-list, mapped onto existing postgres/mysql/oracle emitters. This is not native ChinaDB DDL, live execution, result equivalence, or certification.",
-    "sourceUnits": 1910,
-    "routeUnits": 24830,
-    "routeDispositionCovered": 24830,
+    "sourceUnits": 1916,
+    "routeUnits": 24908,
+    "routeDispositionCovered": 24908,
     "routeDispositionUnknown": 0,
     "routeDispositionCoverage": 1.0,
     "dispositionCounts": {
-      "TARGET_ADAPTER_REVIEW_REQUIRED": 1390,
-      "MANUAL_MIGRATION_REQUIRED": 518,
+      "TARGET_ADAPTER_REVIEW_REQUIRED": 1394,
+      "MANUAL_MIGRATION_REQUIRED": 520,
       "SOURCE_FORMAT_REVIEW": 2,
       "ENGINE_DEFECT": 0
     },
@@ -58106,6 +58172,143 @@
         }
       ],
       "statementDigest": "cc0d99c83bc4834b6382488a43b05eef15b3b73b2dcdbaebbc96805a463c1ea8",
+      "routeStatus": "IDENTITY_EVIDENCE_ONLY"
+    },
+    {
+      "kind": "CREATE_ROUTINE_IDENTITY",
+      "routineKind": "FUNCTION",
+      "routine": "dbo.elmos_wallet_create_topup_order",
+      "parameterTypes": [
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "DECIMAL",
+          "precision": 19,
+          "scale": 0,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "INT32",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        }
+      ],
+      "statementDigest": "f7e4d33e038ed962fc4e804bc6a0bbec50d3083e8a72e93b57c085abaf71f692",
+      "routeStatus": "IDENTITY_EVIDENCE_ONLY"
+    },
+    {
+      "kind": "CREATE_ROUTINE_IDENTITY",
+      "routineKind": "FUNCTION",
+      "routine": "dbo.elmos_commercial_create_order",
+      "parameterTypes": [
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "TEXT",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "CHAR",
+          "precision": null,
+          "scale": null,
+          "length": 64,
+          "jsonBinary": false
+        },
+        {
+          "canonicalType": "INT32",
+          "precision": null,
+          "scale": null,
+          "length": null,
+          "jsonBinary": false
+        }
+      ],
+      "statementDigest": "70c1d302c94f68abc4eb9fe492c415b16bf198a9ecb08fe7f22f6bbf1884f1b9",
       "routeStatus": "IDENTITY_EVIDENCE_ONLY"
     }
   ]
