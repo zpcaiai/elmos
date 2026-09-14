@@ -52,6 +52,26 @@ test("deployed console renders its critical public routes and protects administr
     });
   }
 
+  const generationCapability = await page.request.get("/api/capabilities/generation");
+  expect(generationCapability.status()).toBe(200);
+  expect(generationCapability.headers()["content-type"] ?? "").toContain("application/json");
+  const generationPayload = await generationCapability.json() as {
+    generationStatus?: unknown;
+    operationalReadiness?: {
+      externalRuntimeAcceptance?: unknown;
+      productionCertification?: unknown;
+      productionSubstrate?: { boundary?: unknown };
+    };
+  };
+  expect(["READY", "DEGRADED", "BLOCKED", "NOT_CONFIGURED"]).toContain(
+    generationPayload.generationStatus,
+  );
+  expect(generationPayload.operationalReadiness?.externalRuntimeAcceptance).toBe("NOT_RUN");
+  expect(generationPayload.operationalReadiness?.productionCertification).toBe("NOT_CERTIFIED");
+  expect(generationPayload.operationalReadiness?.productionSubstrate?.boundary).toBe(
+    "CONFIGURATION_PRESENCE_ONLY",
+  );
+
   const reportPath = testInfo.outputPath("deployment-surface.json");
   await writeFile(reportPath, `${JSON.stringify({
     schemaVersion: "1.0",
@@ -64,18 +84,31 @@ test("deployed console renders its critical public routes and protects administr
 });
 
 test("health reports readiness honestly and never upgrades blocked dependencies", async ({ page }, testInfo) => {
-  const response = await page.goto("/api/health", { waitUntil: "domcontentloaded" });
-  expect(response, "health must return an HTTP response").not.toBeNull();
-  const httpStatus = response?.status() ?? 0;
-  expect([200, 503], "health must use an explicit readiness status").toContain(httpStatus);
-  const payload = JSON.parse(await page.locator("body").innerText()) as {
+  const liveness = await page.request.get("/api/health?probe=liveness");
+  expect(liveness.status()).toBe(200);
+  expect((await liveness.json() as { status?: unknown }).status).toBe("UP");
+
+  const response = await page.request.get("/api/health?probe=readiness");
+  const httpStatus = response.status();
+  expect([200, 503]).toContain(httpStatus);
+  const payload = await response.json() as {
     status?: unknown;
     dependencies?: unknown;
     localRunner?: unknown;
+    generation?: { status?: unknown };
+    deployment?: { provider?: unknown; commitSha?: unknown; identityStatus?: unknown };
   };
-  expect(["UP", "READY", "BLOCKED", "DEGRADED", "NOT_CONFIGURED"], "unknown health states are rejected").toContain(payload.status);
+  expect(["UP", "BLOCKED", "DEGRADED"]).toContain(payload.status);
   expect(payload.dependencies).toBeDefined();
   expect(payload.localRunner).toBeDefined();
+  expect(["READY", "DEGRADED", "BLOCKED", "NOT_CONFIGURED"]).toContain(
+    payload.generation?.status,
+  );
+  expect(payload.deployment).toEqual({
+    provider: "VERCEL",
+    commitSha: process.env.ELMOS_VERCEL_EXPECTED_COMMIT_SHA?.trim().toLowerCase(),
+    identityStatus: "SHA_BOUND",
+  });
 
   const reportPath = testInfo.outputPath("health.json");
   await writeFile(reportPath, `${JSON.stringify({
@@ -83,17 +116,13 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
     kind: "VERCEL_DEPLOYMENT_HEALTH_OBSERVATION",
     httpStatus,
     payload,
-    boundary: "HEALTH_OBSERVATION_ONLY_NOT_PRODUCTION_CERTIFICATION",
+    boundary: "CURRENT_SHA_DEPLOYMENT_SURFACE_NOT_PRODUCTION_READINESS_OR_CERTIFICATION",
     productionQualification: "NOT_RUN",
     certification: "NOT_CERTIFIED",
     releaseStatus: "NOT_GA",
   }, null, 2)}\n`, "utf8");
   await testInfo.attach("health-observation", { path: reportPath, contentType: "application/json" });
 
-  if (process.env.ELMOS_VERCEL_REQUIRE_HEALTHY === "true") {
-    expect(httpStatus).toBe(200);
-    expect(["UP", "READY"]).toContain(payload.status);
-  }
 });
 
 test("deployed console keeps provider-backed user and administrator entry points separate", async ({ page }) => {

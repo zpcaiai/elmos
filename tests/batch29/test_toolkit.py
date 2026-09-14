@@ -948,7 +948,7 @@ class ToolkitTests(unittest.TestCase):
             mock.patch.dict(
                 os.environ,
                 {
-                    "ImageVersion": "20260831.0337.3",
+                    "ImageVersion": "20260907.0351.1",
                     "GITHUB_ACTIONS": "true",
                     "RUNNER_ENVIRONMENT": "github-hosted",
                     "ImageOS": "macos26",
@@ -995,7 +995,7 @@ class ToolkitTests(unittest.TestCase):
             failures=failures,
         )
         self.assertTrue(
-            any("toolchain exact identity is invalid" in failure for failure in failures),
+            any("Apple host profile is not registered" in failure for failure in failures),
             failures,
         )
 
@@ -1005,7 +1005,7 @@ class ToolkitTests(unittest.TestCase):
             mock.patch.dict(
                 os.environ,
                 {
-                    "ImageVersion": "20260831.0337.3",
+                    "ImageVersion": "20260907.0351.1",
                     "ELMOS_APPLE_ROUTE_XCODE_SEALED": "1",
                 },
                 clear=True,
@@ -1050,11 +1050,28 @@ class ToolkitTests(unittest.TestCase):
                 )
                 self.assertTrue(
                     any(
-                        "toolchain exact identity is invalid" in failure
+                        "Apple host profile is not registered" in failure
                         for failure in failures
                     ),
                     failures,
                 )
+
+                for invalid_profile in ([], [
+                    f"apple-host-profile={profile.profile_id}",
+                    f"apple-host-profile={profile.profile_id}",
+                ]):
+                    malformed = copy.deepcopy(receipt)
+                    malformed["toolchain"]["profile"] = [
+                        item
+                        for item in malformed["toolchain"]["profile"]
+                        if not item.startswith("apple-host-profile=")
+                    ]
+                    malformed["toolchain"]["profile"][1:1] = invalid_profile
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "receipt does not declare one registered Apple host profile",
+                    ):
+                        validator._registered_swift_receipt_contract(malformed)
 
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
@@ -2558,7 +2575,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 38)
+        self.assertEqual(len(swift_definition_names), 40)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},

@@ -32,15 +32,15 @@ def test_node26_profile_registry_is_complete_and_includes_the_hosted_image() -> 
         "homebrew-node26-libada-e4b04b323411-613248",
         "homebrew-node26-libada-b39ba5c76cfa-598704",
         "github-macos26-20260728-node26-b39ba5c76cfa-598704",
-        "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "github-macos26-20260907-node26-b39ba5c76cfa-598704",
     ]
     assert all(set(profile) == toolchains._NODE26_PROFILE_FIELDS for profile in profiles)
     hosted = profiles[-1]
     assert hosted == {
-        "profile": "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "profile": "github-macos26-20260907-node26-b39ba5c76cfa-598704",
         "sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "bytes": 119_975_888,
-        "qualification_host": "github-macos-26-arm64@20260831.0337.3",
+        "qualification_host": "github-macos-26-arm64@20260907.0351.1",
         "node_version": "v26.0.0",
         "platform": "darwin",
         "arch": "arm64",
@@ -668,7 +668,7 @@ def test_ci_installer_pins_every_node_formula_for_each_host_profile() -> None:
     assert "brew install \\\n    brotli" not in closure_body
     assert 'HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"' in installer
     assert '"20260728.0273.1:26.5.2:25F84"' in installer
-    assert '"20260831.0337.3:26.6.2:25G83"' in installer
+    assert '"20260907.0351.1:26.6.2:25G83"' in installer
 
     frontend = installer.split('if [[ "${CI_PROFILE}" == "frontend-formal" ]]', 1)[1].split("\n  exit 0\nfi", 1)[0]
     assert frontend.index("preflight_exact_route_toolchain javascript") < frontend.index('>>"${GITHUB_PATH}"')

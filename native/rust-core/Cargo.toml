@@ -32,7 +32,13 @@ memchr = { version = "=2.8.3" }
 serde = { path = "../../engines/polyglot-route-engine/native/rust/vendor/serde-1.0.219" }
 serde_derive = { path = "../../engines/polyglot-route-engine/native/rust/vendor/serde_derive-1.0.219" }
 serde_json = { path = "../../engines/polyglot-route-engine/native/rust/vendor/serde_json-1.0.143" }
+itoa = { path = "../../engines/polyglot-route-engine/native/rust/vendor/itoa-1.0.18" }
 memchr = { path = "../../engines/polyglot-route-engine/native/rust/vendor/memchr-2.8.3" }
+proc-macro2 = { path = "../../engines/polyglot-route-engine/native/rust/vendor/proc-macro2-1.0.107" }
+quote = { path = "../../engines/polyglot-route-engine/native/rust/vendor/quote-1.0.47" }
+ryu = { path = "../../engines/polyglot-route-engine/native/rust/vendor/ryu-1.0.23" }
+syn = { path = "../../engines/polyglot-route-engine/native/rust/vendor/syn-2.0.119" }
+unicode-ident = { path = "../../engines/polyglot-route-engine/native/rust/vendor/unicode-ident-1.0.24" }
 
 [package]
 name = "elmos-native-core"

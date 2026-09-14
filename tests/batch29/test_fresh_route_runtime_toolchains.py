@@ -316,6 +316,7 @@ def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None
     assert cache_path_lts_label in installer
     assert f"20260728.0273.1:26.5.2:25F84:{cache_path}" in installer
     assert f"20260831.0337.3:26.6.2:25G83:{cache_path_lts_label}" in installer
+    assert f"20260907.0351.1:26.6.2:25G83:{cache_path_lts_label}" in installer
     assert "Java_Temurin-Hotspot_jdk/*" not in installer
     assert signature_verification in installer
     assert environment_binding in installer
@@ -356,6 +357,21 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert "observed %s:%s" in installer
     assert "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" in installer
     assert "ada-url brotli" not in installer
+
+
+def test_ci_node_profiles_bind_the_current_openssl_bottle_identity() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+
+    assert installer.count(
+        "openssl@3/3.6.3/lib/libcrypto.3.dylib|444|4856256|"
+        "43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
+    ) == 1
+    assert installer.count(
+        "openssl@3/3.6.3/lib/libssl.3.dylib|444|872080|"
+        "26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
+    ) == 1
+    assert "a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71" not in installer
+    assert "ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca" not in installer
 
 
 def test_ci_ada_url_abi_link_rejects_drift_and_cellar_escape(tmp_path: Path) -> None:
@@ -502,6 +518,19 @@ def test_ci_java_profiles_never_mutate_or_inject_a_homebrew_signature() -> None:
     assert '"${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python"' in installer
     assert 'ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}"' in installer
     assert 'ELMOS_JAVA21_DISTRIBUTION=temurin' in installer
+    assert (
+        '"20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"'
+    ) in installer
+    assert (
+        '"20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"'
+    ) in installer
+    assert (
+        '"20260907.0351.1:26.6.2:25G83:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"'
+    ) in installer
+    assert 'case "${TEMURIN_HOST_BINDING}" in' in installer
     assert homebrew_install in installer
     assert all(
         marker not in installer
@@ -740,7 +769,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
         assert environment["ELMOS_JAVA21_HOME"] == "/fixed/java/Contents/Home"
         assert environment["ELMOS_JAVA21_DISTRIBUTION"] == "temurin"
         assert environment["ELMOS_HOMEBREW_ROUTE_PROFILE_ID"] == (
-            "github-macos26-20260831.0337.3"
+            "github-macos26-20260907.0351.1"
         )
         assert environment["ELMOS_POLYGLOT_ROUTE_CI_PROFILE"] == "full"
         assert environment["CI"] == "true"
@@ -762,7 +791,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
     monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
     monkeypatch.setenv(
         "ELMOS_HOMEBREW_ROUTE_PROFILE_ID",
-        "github-macos26-20260831.0337.3",
+        "github-macos26-20260907.0351.1",
     )
     monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", "full")
     monkeypatch.setenv("CI", "true")

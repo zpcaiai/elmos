@@ -57,6 +57,47 @@ def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
     assert sanitized_child is legacy
 
 
+def test_homebrew_host_profiles_bind_each_exact_php_tree() -> None:
+    current = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260831.0337.3",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
+    latest = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260907.0351.1",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
+
+    assert current.profile_id == "github-macos26-20260831.0337.3"
+    assert (
+        current.php_tree_sha256,
+        current.php_tree_bytes,
+        current.php_tree_record_count,
+        current.php_tree_file_count,
+        current.php_tree_directory_count,
+    ) == (
+        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+        129_937_220,
+        643,
+        532,
+        109,
+    )
+    assert (
+        latest.php_tree_sha256,
+        latest.php_tree_bytes,
+        latest.php_tree_record_count,
+        latest.php_tree_file_count,
+        latest.php_tree_directory_count,
+    ) == (
+        "ca33ea07e927e25416bc906af465ba6713824e3e5af66fb974f319e92c43d6d9",
+        129_938_026,
+        644,
+        533,
+        109,
+    )
+
+
 @pytest.mark.parametrize(
     ("image_version", "product_version", "build_version"),
     [

@@ -1,0 +1,51 @@
+[Unit]
+Description=ELMOS governed generation Runner Web Console
+After=network-online.target elmos-generation-runtime-reaper.service
+Wants=network-online.target
+Requires=elmos-generation-runtime-reaper.service
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=elmos-runner
+Group=elmos-runner
+EnvironmentFile=/etc/elmos/generation-runner.env
+Environment=NODE_ENV=production
+UnsetEnvironment=HOME XDG_RUNTIME_DIR DOCKER_HOST DOCKER_CONTEXT CONTAINER_HOST NPM_TOKEN NODE_AUTH_TOKEN
+ExecStartPre=/usr/bin/python3 ${ELMOS_REPOSITORY_ROOT}/deploy/local-runner/validate_production_contract.py --runtime
+ExecStart=/usr/bin/env ${ELMOS_LOCAL_RUNNER_PNPM_PATH} --dir ${ELMOS_REPOSITORY_ROOT}/apps/web-console start --hostname 127.0.0.1 --port 3000
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=90
+TimeoutStopSec=45
+KillMode=mixed
+KillSignal=SIGTERM
+SendSIGKILL=true
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ReadOnlyPaths=/opt/elmos
+ReadWritePaths=/var/lib/elmos-generation-runner
+ProtectHome=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+CPUQuota=200%
+MemoryMax=2G
+TasksMax=768
+LimitNOFILE=8192
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

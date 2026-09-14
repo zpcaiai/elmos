@@ -1,0 +1,131 @@
+{
+  "authentication": [
+    {"algorithm": "HS256", "key_transport": "owner-only-secret-file", "mode": "jwt", "token_profile": "JWT"},
+    {"algorithm": "RS256", "key_transport": "owner-only-jwks-file", "mode": "oidc", "token_profile": "OIDC-JWT"}
+  ],
+  "evidence_boundaries": {
+    "certification": "NOT_CERTIFIED",
+    "independent_verification": "NOT_RUN",
+    "local_engineering": "SELF_ATTESTED",
+    "managed_provider_runtime": "NOT_RUN",
+    "production_delivery": "NOT_RUN"
+  },
+  "generation_profile": "starter-v1",
+  "kind": "elmos.project-synthesis.p0-launch-scope",
+  "languages": [
+    {
+      "directory": "java",
+      "exact_qualification_toolchain": [
+        {"component": "OpenJDK", "executable": "java", "version": "21.0.11"},
+        {"component": "Apache Maven", "executable": "mvn", "version": "3.9.10"}
+      ],
+      "framework": "spring-boot",
+      "language": "java",
+      "request_runtime_selector": "21",
+      "source_skill": "PG077-PG088"
+    },
+    {
+      "directory": "python",
+      "exact_qualification_toolchain": [
+        {"component": "CPython", "executable": "python", "version": "3.12.12"},
+        {"component": "uv", "executable": "uv", "version": "0.11.16"}
+      ],
+      "framework": "fastapi",
+      "language": "python",
+      "request_runtime_selector": "3.12",
+      "source_skill": "PG089-PG100"
+    },
+    {
+      "directory": "dotnet",
+      "exact_qualification_toolchain": [
+        {"component": ".NET SDK", "executable": "dotnet", "version": "10.0.301"}
+      ],
+      "framework": "aspnet-core",
+      "language": "csharp",
+      "request_runtime_selector": "10.0",
+      "source_skill": "PG101-PG112"
+    },
+    {
+      "directory": "typescript",
+      "exact_qualification_toolchain": [
+        {"component": "Node.js", "executable": "node", "version": "26.0.0"},
+        {"component": "pnpm", "executable": "pnpm", "version": "10.12.4"}
+      ],
+      "framework": "nestjs-fastify",
+      "language": "typescript",
+      "request_runtime_selector": "26.0.0",
+      "source_skill": "PG226"
+    },
+    {
+      "directory": "go",
+      "exact_qualification_toolchain": [
+        {"component": "Go", "executable": "go", "version": "1.25.0"}
+      ],
+      "framework": "net-http",
+      "language": "go",
+      "request_runtime_selector": "1.25.0",
+      "source_skill": "PG237"
+    },
+    {
+      "directory": "kotlin",
+      "exact_qualification_toolchain": [
+        {"component": "Kotlin Gradle Plugin", "executable": "gradle", "version": "2.2.20"},
+        {"component": "OpenJDK", "executable": "java", "version": "21.0.11"},
+        {"component": "Gradle", "executable": "gradle", "version": "8.14.3"}
+      ],
+      "framework": "ktor",
+      "language": "kotlin",
+      "request_runtime_selector": "2.2.20",
+      "source_skill": "PG250"
+    },
+    {
+      "directory": "php",
+      "exact_qualification_toolchain": [
+        {"component": "PHP", "executable": "php", "version": "8.4.12"}
+      ],
+      "framework": "native-http",
+      "language": "php",
+      "request_runtime_selector": "8.4.12",
+      "source_skill": "PG263"
+    },
+    {
+      "directory": "rust",
+      "exact_qualification_toolchain": [
+        {"component": "rustc", "executable": "rustc", "version": "1.89.0"},
+        {"component": "cargo", "executable": "cargo", "version": "1.89.0"}
+      ],
+      "framework": "axum",
+      "language": "rust",
+      "request_runtime_selector": "1.89.0",
+      "source_skill": "PG287"
+    }
+  ],
+  "managed_provider_contract": {
+    "algorithm_mismatch_policy": "BLOCKED",
+    "database_exact_version_observation": "REQUIRED_SEPARATE_DIGEST_BOUND_EVIDENCE",
+    "oidc_required_jwk_algorithm": "RS256",
+    "oidc_required_jwk_kty": "RSA",
+    "provider_evidence_status": "NOT_RUN"
+  },
+  "multi_entity_languages": ["java", "python", "csharp", "typescript", "go", "kotlin", "php", "rust"],
+  "persistence": {
+    "engine": "postgresql",
+    "exact_local_runtime_version": "17.5",
+    "managed_provider_evidence_status": "NOT_RUN",
+    "managed_provider_version_policy": "SEPARATE_EXACT_OBSERVATION_REQUIRED",
+    "qualification_class": "disposable-local-container"
+  },
+  "project_kind": "api",
+  "release_requirements": {
+    "artifact_integrity": "REQUIRED_COMPLETE_OR_NOT_APPLICABLE",
+    "dependency_graph": "EXPLICIT_INCOMPLETE_FLATTENED_ALLOWED",
+    "generation_manifest": "REQUIRED_DIGEST_BOUND",
+    "independent_verification": "REQUIRED_FOR_PRODUCTION",
+    "release_manifest": "REQUIRED_DIGEST_BOUND",
+    "release_signature": "REQUIRED_TRUSTED_ED25519",
+    "transitive_dependency_inventory": "REQUIRED_COMPLETE"
+  },
+  "schema_version": "1.0.0",
+  "scope_id": "project-synthesis-api-v1",
+  "status": "FROZEN"
+}

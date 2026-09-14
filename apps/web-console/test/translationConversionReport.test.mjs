@@ -640,7 +640,10 @@ test("real producer output validates every shard and rejects missing, reordered,
   try {
     const produced = spawnSync(
       process.env.ELMOS_UV_PATH || "uv",
-      ["run", "--project", engineRoot, "python", producer, output],
+      [
+        "run", "--offline", "--frozen", "--no-dev", "--project", engineRoot,
+        "python", producer, output,
+      ],
       { encoding: "utf8", timeout: 120_000 },
     );
     assert.equal(produced.status, 0, `${produced.stdout}\n${produced.stderr}`);
@@ -803,7 +806,8 @@ test("real producer output validates every shard and rejects missing, reordered,
     const appended = spawnSync(
       process.env.ELMOS_UV_PATH || "uv",
       [
-        "run", "--project", engineRoot, "python", "-c",
+        "run", "--offline", "--frozen", "--no-dev", "--project", engineRoot,
+        "python", "-c",
         "import sys,zipfile; z=zipfile.ZipFile(sys.argv[1],'a'); z.writestr('extra.json',b'{}'); z.close()",
         extraEntryBundle,
       ],

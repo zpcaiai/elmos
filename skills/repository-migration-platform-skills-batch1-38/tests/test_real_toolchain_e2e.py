@@ -15,6 +15,20 @@ import real_toolchain_e2e as e2e  # noqa: E402
 
 
 class RealToolchainE2ETest(unittest.TestCase):
+    def test_minio_server_uses_the_official_digest_pinned_quay_image(self) -> None:
+        self.assertRegex(
+            e2e.MINIO_IMAGE,
+            r"^quay\.io/minio/minio@sha256:[0-9a-f]{64}$",
+        )
+        self.assertNotIn(":latest", e2e.MINIO_IMAGE)
+
+    def test_minio_client_uses_the_official_digest_pinned_quay_image(self) -> None:
+        self.assertRegex(
+            e2e.MC_IMAGE,
+            r"^quay\.io/minio/mc@sha256:[0-9a-f]{64}$",
+        )
+        self.assertNotIn(":latest", e2e.MC_IMAGE)
+
     def test_only_unique_ephemeral_resource_names_are_allowed(self) -> None:
         self.assertEqual("rmp-e2e-deadbeef", e2e.safe_resource("rmp-e2e-deadbeef"))
         self.assertEqual("rmp-e2e-deadbeef-source", e2e.safe_resource("rmp-e2e-deadbeef-source"))

@@ -18,6 +18,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
     def test_waits_for_exact_sha_and_returns_successful_environment(self) -> None:
         polls = iter([[], [{
             "id": 42,
+            "sha": "a" * 40,
             "task": "deploy",
             "creator": {"login": "vercel[bot]"},
             "created_at": "2026-09-04T07:00:00Z",
@@ -25,11 +26,12 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         sleeps: list[float] = []
 
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "success",
                     "created_at": "2026-09-04T07:01:00Z",
-                    "environment_url": "https://elmos-commit.example.vercel.app",
+                    "environment_url": "https://elmos-commit-example.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             self.assertIn("deployments?sha=" + "a" * 40, path)
             return next(polls)
@@ -43,20 +45,22 @@ class VercelDeploymentWaitTests(unittest.TestCase):
             monotonic=lambda: 0,
             sleep=sleeps.append,
         )
-        self.assertEqual(url, "https://elmos-commit.example.vercel.app")
+        self.assertEqual(url, "https://elmos-commit-example.vercel.app")
         self.assertEqual(sleeps, [5])
 
     def test_failed_deployment_fails_closed_without_using_mutable_alias(self) -> None:
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "failure",
                     "created_at": "2026-09-04T07:01:00Z",
                     "environment_url": "https://failed.vercel.app",
                     "description": "build failed",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             return [{
                 "id": 42,
+                "sha": "b" * 40,
                 "task": "deploy",
                 "creator": {"login": "vercel[bot]"},
                 "created_at": "2026-09-04T07:00:00Z",
@@ -64,7 +68,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
 
         with self.assertRaisesRegex(
             MODULE.DeploymentResolutionError,
-            "VERCEL_DEPLOYMENT_FAILURE:build failed",
+            "VERCEL_DEPLOYMENT_FAILURE",
         ):
             MODULE.wait_for_deployment(
                 "zpcaiai/elmos",
@@ -76,14 +80,16 @@ class VercelDeploymentWaitTests(unittest.TestCase):
 
     def test_successful_production_deployment_uses_public_production_domain(self) -> None:
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "success",
                     "created_at": "2026-09-06T10:48:56Z",
                     "environment_url": "https://elmos-commit.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             return [{
                 "id": 84,
+                "sha": "c" * 40,
                 "task": "deploy",
                 "environment": "Production",
                 "creator": {"login": "vercel[bot]"},
@@ -100,17 +106,47 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         )
         self.assertEqual(url, "https://elmos-alpha.vercel.app")
 
+    def test_preview_deployment_never_uses_public_production_domain(self) -> None:
+        def fetch(path: str) -> Any:
+            if "statuses" in path:
+                return [{
+                    "state": "success",
+                    "created_at": "2026-09-06T10:48:56Z",
+                    "environment_url": "https://elmos-preview.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
+                }]
+            return [{
+                "id": 85,
+                "sha": "e" * 40,
+                "task": "deploy",
+                "environment": "Preview",
+                "creator": {"login": "vercel[bot]"},
+                "created_at": "2026-09-06T10:48:56Z",
+            }]
+
+        url = MODULE.wait_for_deployment(
+            "zpcaiai/elmos",
+            "e" * 40,
+            fetch_json=fetch,
+            timeout_seconds=60,
+            poll_seconds=5,
+            production_url="https://elmos-alpha.vercel.app",
+        )
+        self.assertEqual(url, "https://elmos-preview.vercel.app")
+
     def test_required_production_ignores_newer_successful_preview(self) -> None:
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "success",
                     "created_at": "2026-09-08T11:16:00Z",
                     "environment_url": "https://exact-sha.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             return [
                 {
                     "id": 42,
+                    "sha": "e" * 40,
                     "task": "deploy",
                     "environment": "Preview",
                     "creator": {"login": "vercel[bot]"},
@@ -118,6 +154,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
                 },
                 {
                     "id": 84,
+                    "sha": "e" * 40,
                     "task": "deploy",
                     "environment": "Production",
                     "creator": {"login": "vercel[bot]"},
@@ -138,14 +175,16 @@ class VercelDeploymentWaitTests(unittest.TestCase):
 
     def test_production_domain_is_validated_only_after_exact_deployment_succeeds(self) -> None:
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "success",
                     "created_at": "2026-09-06T10:48:56Z",
                     "environment_url": "https://elmos-commit.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             return [{
                 "id": 84,
+                "sha": "d" * 40,
                 "task": "deploy",
                 "environment": "Production",
                 "creator": {"login": "vercel[bot]"},

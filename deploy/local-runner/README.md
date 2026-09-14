@@ -7,15 +7,30 @@ and stop a project without granting arbitrary shell access.
 ## Secure configuration
 
 1. Copy `runner.env.example` to an owner-only file outside the repository.
-2. Create a random token of at least 24 characters in a separate owner-only
-   file (`chmod 600`). Configure its absolute path with
-   `ELMOS_LOCAL_RUNNER_AUTH_TOKEN_FILE`; do not configure the inline token at
-   the same time. Bind the lease with
-   `ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT`; it must include a timezone, be
-   in the future, and be no more than 24 hours away.
-3. Use a dedicated absolute state directory that is neither the repository nor
+2. Create an issuer/verifier signing key of at least 32 random bytes in a
+   separate owner-only file (`chmod 600`) and configure its absolute path and
+   rotation identifier with `ELMOS_LOCAL_RUNNER_AUTH_SIGNING_KEY_FILE` and
+   `ELMOS_LOCAL_RUNNER_AUTH_KEY_ID`. Production rejects the legacy inline and
+   file-backed static bearer. The trusted local controller must issue a one-use
+   HS256 credential lasting at most 300 seconds, with exact issuer, audience,
+   tenant, actor, permission, HTTP method, request path, key id, and `jti`
+   bindings. Replays fail closed. `ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT`
+   bounds the signing-key authorization lease: startup requires a timezone and
+   at least five minutes remaining, and refuses a lease over 24 hours.
+   The repository-owned issuer is `issue_service_credential.py`; invoke it only
+   from the trusted local controller and pass the exact tenant, actor,
+   permission, method, and `/api/generation/...` path for one request.
+3. Install the immutable repository at `/opt/elmos` and use the dedicated
+   `/var/lib/elmos-generation-runner` state directory. Both systemd units bind
+   `/opt/elmos` read-only and permit writes only to the state root. The startup
+   preflight recursively rejects any repository entry writable by the service
+   UID and rejects service-replaceable or hard-linked `uv`, `pnpm`, or
+   container-engine paths. Each executable must also match its owner-supplied
+   SHA-256 (`ELMOS_UV_SHA256`, `ELMOS_LOCAL_RUNNER_PNPM_SHA256`, and
+   `ELMOS_LOCAL_RUNNER_CONTAINER_ENGINE_SHA256`).
+   The state directory must be neither the repository nor
    one of its ancestors. The Runner creates tenant/job files with owner-only
-   permissions and never stores the bearer token in jobs, logs, or artifacts.
+   permissions and never stores credentials or signing keys in jobs, logs, or artifacts.
 4. Store the environment as `/etc/elmos/generation-runner.env`, owned by root
    and mode `0600`. Keep both `ELMOS_LOCAL_RUNNER_ROOT` and the repository on a
    persistent filesystem; `/tmp`, an ephemeral container layer, and a network
@@ -30,19 +45,26 @@ and stop a project without granting arbitrary shell access.
    socket owned by the service user. Give the filesystem path only, not a
    `unix://` URI. TCP, HTTP, SSH, relative, symlinked, and non-socket endpoints
    fail closed.
-5. Install the independent lease reaper before starting the Web Console. It
-   must run as the same `elmos-runner` user that owns the rootless engine and
-   Runner state:
+5. Set `ELMOS_LOCAL_RUNNER_SERVICE_UID` to the numeric, non-root UID of the
+   fixed `elmos-runner` account and set `ELMOS_LOCAL_RUNNER_PNPM_PATH` to an
+   absolute executable. Install the independent lease reaper and Runner units.
+   Both units run as the same `elmos-runner` user/group and execute the
+   repository-owned production preflight before startup:
 
    ```bash
    sudo install -o root -g root -m 0644 \
      deploy/local-runner/systemd/elmos-generation-runtime-reaper.service \
      /etc/systemd/system/elmos-generation-runtime-reaper.service
+   sudo install -o root -g root -m 0644 \
+     deploy/local-runner/systemd/elmos-generation-runner.service \
+     /etc/systemd/system/elmos-generation-runner.service
    sudo systemctl daemon-reload
-   sudo systemctl enable --now elmos-generation-runtime-reaper.service
+   sudo systemctl enable --now elmos-generation-runtime-reaper.service \
+     elmos-generation-runner.service
    sudo systemctl is-active elmos-generation-runtime-reaper.service
-   sudo systemctl show -p User,Group,EnvironmentFiles \
-     elmos-generation-runtime-reaper.service
+   sudo systemctl is-active elmos-generation-runner.service
+   sudo systemctl show -p User,Group,EnvironmentFiles,CPUQuotaPerSecUSec,MemoryMax,TasksMax \
+     elmos-generation-runtime-reaper.service elmos-generation-runner.service
    ```
 
    Verify that `$ELMOS_LOCAL_RUNNER_ROOT/.runtime-reaper-heartbeat.json` is
@@ -53,9 +75,11 @@ and stop a project without granting arbitrary shell access.
    a fresh heartbeat produced for a different context. Production start fails
    closed as `RUNTIME_REAPER_NOT_READY` when this heartbeat is missing, blocked,
    or stale.
-6. Run `pnpm --dir apps/web-console check`, then start the Web Console as the
-   same service user. Readiness is available at `/api/health?probe=readiness`;
-   liveness is `/api/health?probe=liveness`.
+6. Run `python3 deploy/local-runner/validate_production_contract.py` for the
+   digest-bound static contract and `pnpm --dir apps/web-console check`. The
+   systemd units then perform the live UID/path/ownership preflight. Readiness
+   is available at `/api/health?probe=readiness`; liveness is
+   `/api/health?probe=liveness`.
 7. Production mode requires `ELMOS_LOCAL_RUNNER_EXECUTOR=ROOTLESS_CONTAINER`
    and an absolute rootless Podman or Docker executable. Startup preflight
    verifies rootless mode. `HOST_DEVELOPMENT` is an explicit local-only escape
@@ -63,7 +87,7 @@ and stop a project without granting arbitrary shell access.
 
 The containerized shared Web Console keeps the local Runner disabled. It is a
 separate security boundary and must not mount a repository, host toolchains, or
-the Runner token.
+the Runner signing key.
 
 ## Supported workflow and limits
 
@@ -101,6 +125,12 @@ internal network and published on `127.0.0.1`, so it has no external egress.
 
 Repository tests cover canonical-path validation, TCP rejection, Unix-socket
 mapping, sanitized helper environments, and the heartbeat context binding.
+The production contract additionally binds the exact rootless helper and
+reaper digests, fixed systemd service identity, capability bounding, restart
+limits, stop escalation window, service resource ceilings, default-deny build
+network, tenant scan bounds, and backup-bound retained-job GC. The reaper has
+an explicit systemd IP deny with loopback as its only IP exception; job
+containers retain the stronger per-job internal/no-external-egress contract.
 Execution against a real Linux systemd service and a real rootless Docker
 daemon/socket remains `NOT_RUN` until performed under the target service UID;
 production Docker configuration therefore fails closed when the explicit Unix

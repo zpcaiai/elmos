@@ -1,7 +1,8 @@
 """Universal AST & Semantic Intermediate Representation (Universal IR).
 
 This module models arbitrary enterprise software constructs across the four critical hazard domains:
-1. Object Graph Lifecycle: Classes, structs, interfaces, enums, fields, constructors, destructors/finalizers, inheritance.
+1. Object Graph Lifecycle: Classes, structs, interfaces, enums, fields,
+   constructors, destructors/finalizers, inheritance.
 2. Async & Concurrency: Async/await, Tasks, Promises, CompletableFutures, Coroutines, Goroutines, Channels, Locks.
 3. Exception Unwinding: Try/catch/finally, throw/raise, Result<T,E>, (T, error) tuples, panic/recover.
 4. Complex Framework & Web API: REST controllers, HTTP route annotations, DI/IoC bindings, DTO models.

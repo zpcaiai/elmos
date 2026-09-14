@@ -304,7 +304,9 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             / "_route.ts"
         ).read_text(encoding="utf-8")
         self.assertIn('source: "REPOSITORY_CONTRACT"', route)
-        self.assertEqual(3, route.count(': "NOT_RUN"'))
+        self.assertIn('externalExecutionEvidence: "NOT_RUN"', route)
+        self.assertIn('productionDeliveryStatus: "NOT_RUN"', route)
+        self.assertIn("aggregateGenerationReadiness", route)
         self.assertIn('certificationStatus: "NOT_CERTIFIED"', route)
         self.assertNotIn("child_process", route)
         self.assertNotIn("exec(", route)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -71,6 +72,12 @@ def test_environment_parser_rejects_missing_secret(tmp_path: Path) -> None:
         MODULE.parse_environment_file(path)
 
 
+def test_environment_parser_rejects_vercel_redaction_placeholder(tmp_path: Path) -> None:
+    path = environment_file(tmp_path, PGPASSWORD="[SENSITIVE]")
+    with pytest.raises(MODULE.DeploymentError, match="redacted Vercel values"):
+        MODULE.parse_environment_file(path)
+
+
 def test_identity_and_database_are_derived_without_secret_in_plan(tmp_path: Path) -> None:
     value = profile()
     env = MODULE.parse_environment_file(environment_file(tmp_path))
@@ -119,8 +126,9 @@ def test_database_rejects_host_injection(tmp_path: Path) -> None:
 
 
 class FakeGcloud:
-    def __init__(self, current: bytes):
+    def __init__(self, current: bytes, version: str = "7"):
         self.current = current
+        self.version = version
         self.calls: list[tuple[str, ...]] = []
 
     def run(self, *args: str, input_bytes=None, capture=False, check=True):
@@ -128,22 +136,76 @@ class FakeGcloud:
         self.calls.append(args)
         if args[:2] == ("secrets", "describe"):
             return type("Result", (), {"returncode": 0, "stdout": b""})()
+        if args[:3] == ("secrets", "versions", "list"):
+            return type("Result", (), {"returncode": 0, "stdout": self.version.encode()})()
         if args[:3] == ("secrets", "versions", "access"):
             return type("Result", (), {"returncode": 0, "stdout": self.current})()
         if args[:3] == ("secrets", "versions", "add"):
             self.current = input_bytes
+            self.version = str(int(self.version) + 1)
         return type("Result", (), {"returncode": 0, "stdout": b""})()
 
 
 def test_secret_promotion_is_idempotent_when_value_is_unchanged() -> None:
     gcloud = FakeGcloud(b"same-value")
-    MODULE.ensure_secret(gcloud, profile(), "elmos-control-plane-database-user", b"same-value")
+    version = MODULE.ensure_secret(gcloud, profile(), "elmos-control-plane-database-user", b"same-value")
+    assert version == "7"
     assert not any(call[:3] == ("secrets", "versions", "add") for call in gcloud.calls)
+    assert any(call[:4] == ("secrets", "versions", "access", "7") for call in gcloud.calls)
     assert any(call[:2] == ("secrets", "add-iam-policy-binding") for call in gcloud.calls)
 
 
 def test_secret_promotion_appends_version_only_when_value_changes() -> None:
     gcloud = FakeGcloud(b"old-value")
-    MODULE.ensure_secret(gcloud, profile(), "elmos-control-plane-database-user", b"new-value")
+    version = MODULE.ensure_secret(gcloud, profile(), "elmos-control-plane-database-user", b"new-value")
+    assert version == "8"
     assert sum(call[:3] == ("secrets", "versions", "add") for call in gcloud.calls) == 1
     assert gcloud.current == b"new-value"
+
+
+def test_secret_version_identifier_fails_closed() -> None:
+    gcloud = FakeGcloud(b"same-value", version="latest")
+    with pytest.raises(MODULE.DeploymentError, match="invalid immutable version"):
+        MODULE.ensure_secret(gcloud, profile(), "elmos-control-plane-database-user", b"same-value")
+
+
+def test_cloud_run_secret_bindings_are_immutable_numeric_versions() -> None:
+    value = profile()
+    versions = {secret: str(index) for index, secret in enumerate(value.secrets.values(), 7)}
+    argument = MODULE.secret_mount_argument(value, versions)
+    assert ":latest" not in argument
+    assert "ELMOS_DATABASE_URL=elmos-control-plane-database-url:7" in argument
+    with pytest.raises(MODULE.DeploymentError, match="immutable numeric versions"):
+        MODULE.secret_mount_argument(value, {**versions, value.secrets["ELMOS_DATABASE_URL"]: "latest"})
+
+
+def test_exact_maven_build_context_excludes_non_reactor_payloads() -> None:
+    revision = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True
+    ).stdout.strip()
+    modules = MODULE.reactor_module_paths(revision)
+    resources = MODULE.reactor_resource_paths(revision, modules)
+    assert "apps/control-plane" in modules
+    assert all(path.split("/", 1)[0] in {"apps", "contracts", "engines", "modules", "recipes"} for path in modules)
+    assert resources == (
+        "contracts/pricing-catalog-schema",
+        "skills/elmos-batch105-108/compiled-contracts",
+    )
+    with MODULE.exact_maven_build_context(revision) as context:
+        assert (context / "pom.xml").is_file()
+        assert (context / "apps/control-plane/Dockerfile").is_file()
+        assert (context / "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json").is_file()
+        assert (context / "skills/elmos-batch105-108/compiled-contracts/B105-S01.compiled.json").is_file()
+        assert not (context / "routes").exists()
+        assert not (context / "skills/subskills").exists()
+        assert not (context / "client-packs").exists()
+
+
+def test_maven_resource_path_normalization_fails_closed() -> None:
+    assert MODULE.normalize_reactor_resource_path(
+        "modules/example", "../../skills/example/compiled-contracts"
+    ) == "skills/example/compiled-contracts"
+    with pytest.raises(MODULE.DeploymentError, match="escapes the repository"):
+        MODULE.normalize_reactor_resource_path("modules/example", "../../../outside")
+    with pytest.raises(MODULE.DeploymentError, match="unsafe resource path"):
+        MODULE.normalize_reactor_resource_path("modules/example", "${repository.root}/secret")

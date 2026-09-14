@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import hmac
 import json
@@ -12,13 +13,15 @@ import re
 import shlex
 import subprocess
 import sys
+import tarfile
 import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from pathlib import Path, PurePosixPath
+from typing import Any, Iterator, Mapping, Sequence
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -40,6 +43,7 @@ ALLOWED_VERCEL_KEYS = {
     "PGUSER",
     "PGPASSWORD",
 }
+VERCEL_REDACTED_VALUES = {"[SENSITIVE]", "[ENCRYPTED]", "[REDACTED]"}
 
 
 class DeploymentError(RuntimeError):
@@ -86,6 +90,9 @@ def parse_environment_file(path: Path) -> dict[str, str]:
     missing = sorted(key for key in ALLOWED_VERCEL_KEYS if not values.get(key))
     if missing:
         raise DeploymentError("missing required Vercel keys: " + ", ".join(missing))
+    redacted = sorted(key for key in ALLOWED_VERCEL_KEYS if values[key] in VERCEL_REDACTED_VALUES)
+    if redacted:
+        raise DeploymentError("redacted Vercel values are unusable: " + ", ".join(redacted))
     return {key: values[key] for key in ALLOWED_VERCEL_KEYS}
 
 
@@ -332,7 +339,27 @@ def ensure_gcloud_identity(gcloud: Gcloud, profile: DeploymentProfile) -> None:
     gcloud.run("config", "set", "project", profile.project_id, capture=True)
 
 
-def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: bytes) -> None:
+def enabled_secret_version(gcloud: Gcloud, profile: DeploymentProfile, name: str) -> str | None:
+    result = gcloud.run(
+        "secrets", "versions", "list", name,
+        "--project", profile.project_id,
+        "--filter=state:ENABLED",
+        "--sort-by=~createTime",
+        "--limit=1",
+        "--format=value(name)",
+        capture=True,
+        check=False,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
+        return None
+    raw = result.stdout.decode().strip()
+    match = re.fullmatch(r"(?:projects/[^/]+/secrets/[^/]+/versions/)?([1-9][0-9]*)", raw)
+    if not match:
+        raise DeploymentError("Secret Manager returned an invalid immutable version")
+    return match.group(1)
+
+
+def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: bytes) -> str:
     exists = gcloud.run(
         "secrets", "describe", name, "--project", profile.project_id,
         capture=True, check=False,
@@ -342,8 +369,9 @@ def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: 
             "secrets", "create", name, "--project", profile.project_id,
             "--replication-policy=automatic",
         )
+    version = enabled_secret_version(gcloud, profile, name)
     current = gcloud.run(
-        "secrets", "versions", "access", "latest", "--secret", name,
+        "secrets", "versions", "access", version or "latest", "--secret", name,
         "--project", profile.project_id, capture=True, check=False,
     )
     if current.returncode != 0 or not hmac.compare_digest(current.stdout, value):
@@ -351,6 +379,15 @@ def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: 
             "secrets", "versions", "add", name, "--project", profile.project_id,
             "--data-file=-", input_bytes=value,
         )
+        version = enabled_secret_version(gcloud, profile, name)
+    if version is None:
+        raise DeploymentError("Secret Manager did not return an immutable version")
+    observed = gcloud.run(
+        "secrets", "versions", "access", version, "--secret", name,
+        "--project", profile.project_id, capture=True,
+    )
+    if not hmac.compare_digest(observed.stdout, value):
+        raise DeploymentError("Secret Manager immutable version verification failed")
     gcloud.run(
         "secrets", "add-iam-policy-binding", name,
         "--project", profile.project_id,
@@ -358,6 +395,18 @@ def ensure_secret(gcloud: Gcloud, profile: DeploymentProfile, name: str, value: 
         "--role=roles/secretmanager.secretAccessor",
         "--condition=None",
         capture=True,
+    )
+    return version
+
+
+def secret_mount_argument(profile: DeploymentProfile, secret_versions: Mapping[str, str]) -> str:
+    if set(secret_versions) != set(profile.secrets.values()):
+        raise DeploymentError("Secret Manager version set does not match the deployment profile")
+    if any(re.fullmatch(r"[1-9][0-9]*", version) is None for version in secret_versions.values()):
+        raise DeploymentError("Cloud Run Secret bindings require immutable numeric versions")
+    return ",".join(
+        f"{variable}={secret}:{secret_versions[secret]}"
+        for variable, secret in sorted(profile.secrets.items())
     )
 
 
@@ -375,6 +424,121 @@ def docker_login(gcloud: Gcloud, profile: DeploymentProfile, docker_config: Path
         env={**os.environ, "DOCKER_CONFIG": str(docker_config)},
         check=True,
     )
+
+
+def reactor_module_paths(revision: str) -> tuple[str, ...]:
+    completed = subprocess.run(
+        ["git", "show", f"{revision}:pom.xml"],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    try:
+        root = ET.fromstring(completed.stdout)
+    except ET.ParseError as exc:
+        raise DeploymentError("root Maven reactor POM is invalid") from exc
+    namespace = root.tag.removesuffix("project")
+    values = tuple(
+        (item.text or "").strip()
+        for item in root.findall(f"{namespace}modules/{namespace}module")
+    )
+    if not values or "apps/control-plane" not in values:
+        raise DeploymentError("root Maven reactor does not contain the Control Plane")
+    for value in values:
+        path = PurePosixPath(value)
+        if (
+            not value
+            or path.is_absolute()
+            or any(part in {"", ".", ".."} for part in path.parts)
+            or path.parts[0] not in {"apps", "contracts", "engines", "modules", "recipes"}
+        ):
+            raise DeploymentError("root Maven reactor contains an unsafe module path")
+    return values
+
+
+def normalize_reactor_resource_path(module: str, value: str) -> str:
+    if not value or "${" in value or "\\" in value:
+        raise DeploymentError("Maven reactor contains an unsafe resource path")
+    raw = PurePosixPath(value)
+    if raw.is_absolute():
+        raise DeploymentError("Maven reactor contains an unsafe resource path")
+    parts = list(PurePosixPath(module).parts)
+    for part in raw.parts:
+        if part in {"", "."}:
+            continue
+        if part == "..":
+            if not parts:
+                raise DeploymentError("Maven reactor resource escapes the repository")
+            parts.pop()
+        else:
+            parts.append(part)
+    if not parts or parts[0] not in {
+        "apps", "contracts", "engines", "modules", "recipes", "skills"
+    }:
+        raise DeploymentError("Maven reactor contains an unsafe resource path")
+    return PurePosixPath(*parts).as_posix()
+
+
+def reactor_resource_paths(revision: str, modules: Sequence[str]) -> tuple[str, ...]:
+    resources: set[str] = set()
+    for module in modules:
+        completed = subprocess.run(
+            ["git", "show", f"{revision}:{module}/pom.xml"],
+            cwd=REPOSITORY_ROOT,
+            check=True,
+            stdout=subprocess.PIPE,
+        )
+        try:
+            root = ET.fromstring(completed.stdout)
+        except ET.ParseError as exc:
+            raise DeploymentError(f"Maven reactor POM is invalid: {module}") from exc
+        namespace = root.tag.removesuffix("project")
+        directories = root.findall(
+            f"{namespace}build/{namespace}resources/"
+            f"{namespace}resource/{namespace}directory"
+        )
+        module_parts = PurePosixPath(module).parts
+        for directory in directories:
+            path = normalize_reactor_resource_path(module, (directory.text or "").strip())
+            if PurePosixPath(path).parts[: len(module_parts)] == module_parts:
+                continue
+            exists = subprocess.run(
+                ["git", "cat-file", "-e", f"{revision}:{path}"],
+                cwd=REPOSITORY_ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
+            if exists.returncode != 0:
+                raise DeploymentError(f"Maven reactor resource is missing: {path}")
+            resources.add(path)
+    return tuple(sorted(resources))
+
+
+@contextlib.contextmanager
+def exact_maven_build_context(revision: str) -> Iterator[Path]:
+    modules = reactor_module_paths(revision)
+    resources = reactor_resource_paths(revision, modules)
+    with tempfile.TemporaryDirectory(prefix="elmos-control-plane-context-") as temporary_raw:
+        temporary = Path(temporary_raw)
+        context = temporary / "context"
+        archive = temporary / "source.tar"
+        context.mkdir(mode=0o700)
+        subprocess.run(
+            [
+                "git", "archive", "--format=tar", f"--output={archive}",
+                revision, "--", "pom.xml", *modules, *resources,
+            ],
+            cwd=REPOSITORY_ROOT,
+            check=True,
+        )
+        with tarfile.open(archive, mode="r:") as handle:
+            handle.extractall(context, filter="data")
+        archive.unlink()
+        dockerfile = context / "apps/control-plane/Dockerfile"
+        if not dockerfile.is_file():
+            raise DeploymentError("exact Maven build context is missing the Control Plane Dockerfile")
+        yield context
 
 
 def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, expected: str | None) -> dict[str, Any]:
@@ -411,8 +575,10 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
             "--project", profile.project_id,
             "--display-name=ELMOS Control Plane runtime",
         )
-    for name, value in secrets.items():
-        ensure_secret(gcloud, profile, name, value)
+    secret_versions = {
+        name: ensure_secret(gcloud, profile, name, value)
+        for name, value in secrets.items()
+    }
     tag = f"{profile.image_base}:{revision}"
     existing_image = gcloud.run(
         "artifacts", "docker", "images", "describe", tag,
@@ -424,14 +590,15 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         with tempfile.TemporaryDirectory(prefix="elmos-docker-auth-") as docker_config_raw:
             docker_config = Path(docker_config_raw)
             docker_login(gcloud, profile, docker_config)
-            subprocess.run(
-                [
-                    "docker", "build", "--platform=linux/amd64",
-                    "--file", str(REPOSITORY_ROOT / profile.container["dockerfile"]),
-                    "--tag", tag, str(REPOSITORY_ROOT),
-                ],
-                check=True,
-            )
+            with exact_maven_build_context(revision) as build_context:
+                subprocess.run(
+                    [
+                        "docker", "build", "--platform=linux/amd64",
+                        "--file", str(build_context / profile.container["dockerfile"]),
+                        "--tag", tag, str(build_context),
+                    ],
+                    check=True,
+                )
             subprocess.run(
                 ["docker", "push", tag],
                 env={**os.environ, "DOCKER_CONFIG": str(docker_config)},
@@ -452,9 +619,7 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         **identity,
     }
     env_argument = ",".join(f"{key}={value}" for key, value in sorted(env_values.items()))
-    secret_argument = ",".join(
-        f"{variable}={secret}:latest" for variable, secret in sorted(profile.secrets.items())
-    )
+    secret_argument = secret_mount_argument(profile, secret_versions)
     labels = profile.raw.get("labels")
     if not isinstance(labels, dict) or not labels:
         raise DeploymentError("labels must be a non-empty object")
@@ -497,6 +662,10 @@ def deploy(profile: DeploymentProfile, env_file: Path, gcloud_dir: Path | None, 
         "service_url": service_url,
         "image_digest": digest,
         "revision": revision,
+        "secret_versions": {
+            variable: secret_versions[secret]
+            for variable, secret in sorted(profile.secrets.items())
+        },
         "profile_sha256": hashlib.sha256(json.dumps(profile.raw, sort_keys=True).encode()).hexdigest(),
     }
 

@@ -6,11 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      deployment_url:
-        description: "HTTPS Vercel deployment URL to probe"
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -27,15 +22,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      ELMOS_E2E_BASE_URL: ${{ inputs.deployment_url || vars.ELMOS_VERCEL_SMOKE_URL || 'https://elmos-alpha.vercel.app' }}
       ELMOS_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ELMOS_VERCEL_EXPECTED_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       ELMOS_DEPLOYMENT_ENVIRONMENT: ${{ github.event_name == 'pull_request' && 'Preview' || 'Production' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: "${{ env.ELMOS_DEPLOYMENT_SHA }}"
 
       - name: Resolve exact successful Vercel deployment
-        if: ${{ !inputs.deployment_url }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
           ELMOS_PRODUCTION_SMOKE_URL: ${{ vars.ELMOS_VERCEL_SMOKE_URL || 'https://elmos-alpha.vercel.app' }}

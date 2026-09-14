@@ -241,7 +241,7 @@ def test_swift_probe_environment_drops_ambient_host_profile_metadata(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    profile_id = "github-macos26-20260831.0337.3"
+    profile_id = "github-macos26-20260907.0351.1"
     monkeypatch.setenv("ELMOS_HOMEBREW_ROUTE_PROFILE_ID", profile_id)
     monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("RUNNER_ENVIRONMENT", "github-hosted")

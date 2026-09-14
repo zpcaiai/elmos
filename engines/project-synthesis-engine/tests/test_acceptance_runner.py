@@ -8,6 +8,8 @@ from typing import Any
 
 import pytest
 
+from elmos_project_synthesis.verification import _dotnet_acceptance_commands
+
 
 def _load_runner() -> ModuleType:
     script = Path(__file__).parents[1] / "scripts" / "run_acceptance.py"
@@ -21,6 +23,24 @@ def _load_runner() -> ModuleType:
 @pytest.fixture
 def runner() -> ModuleType:
     return _load_runner()
+
+
+def test_dotnet_acceptance_is_locked_and_does_not_claim_remote_audit() -> None:
+    assert _dotnet_acceptance_commands("/exact/dotnet") == (
+        [
+            "/exact/dotnet",
+            "restore",
+            "--use-lock-file",
+            "-p:NuGetAudit=false",
+        ],
+        [
+            "/exact/dotnet",
+            "restore",
+            "--locked-mode",
+            "-p:NuGetAudit=false",
+        ],
+        ["/exact/dotnet", "test", "--no-restore", "-c", "Release"],
+    )
 
 
 def _passed_evidence(language: str, port: int) -> dict[str, Any]:

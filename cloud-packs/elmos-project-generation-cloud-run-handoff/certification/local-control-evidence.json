@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-09-13T04:28:58Z",
+  "executed_at": "2026-09-13T05:58:06Z",
   "executor": "local-codex-session",
   "environment": {
-    "python": "3.12.14",
+    "python": "3.14.6",
     "uv": "0.11.16",
-    "provider_cli": "NOT_INSTALLED"
+    "provider_cli": "GCLOUD_584.0.0_INSTALLED_NOT_AUTHORIZED"
   },
   "command": "uv run --project engines/project-synthesis-engine pytest engines/project-synthesis-engine/tests/test_cloud_run_control.py engines/project-synthesis-engine/tests/test_deployment_guidance.py",
   "tests": 22,

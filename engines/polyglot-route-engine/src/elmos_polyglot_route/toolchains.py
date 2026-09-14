@@ -1972,10 +1972,10 @@ _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
         "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
     },
     {
-        "profile": "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "profile": "github-macos26-20260907-node26-b39ba5c76cfa-598704",
         "sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "bytes": 119_975_888,
-        "qualification_host": "github-macos-26-arm64@20260831.0337.3",
+        "qualification_host": "github-macos-26-arm64@20260907.0351.1",
         "node_version": "v26.0.0",
         "platform": "darwin",
         "arch": "arm64",
