@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "transformation_key": "vue3-todo-ir-to-alipay-native-candidate-v1",
+  "transformation_key": "vue3-todo-ir-to-douyin-native-candidate-v1",
   "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "input_contract": "ui-ir/model.json",
   "target_profile": "target-profile/profile.json",
@@ -8,12 +8,12 @@
   "regex_or_template_replacement_core": false,
   "mappings": [
     {"source_node": "route.home", "target_contract": "app.json pages[0] equals pages/index/index and pages/index/index.json exists"},
-    {"source_node": "component.app-shell", "target_contract": "pages/index/index.axml contains the source-traced application shell"},
-    {"source_node": "component.todo-input", "target_contract": "pages/index/index.axml input value binds text and onInput targets handleInput0"},
-    {"source_node": "component.add-button", "target_contract": "pages/index/index.axml button disabled binds !canSubmit0 and onTap targets handleSubmit0"},
-    {"source_node": "component.todo-list", "target_contract": "pages/index/index.axml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"},
+    {"source_node": "component.app-shell", "target_contract": "pages/index/index.ttml contains the source-traced application shell"},
+    {"source_node": "component.todo-input", "target_contract": "pages/index/index.ttml input value binds text and bindinput targets handleInput0"},
+    {"source_node": "component.add-button", "target_contract": "pages/index/index.ttml button disabled binds !canSubmit0 and bindtap targets handleSubmit0"},
+    {"source_node": "component.todo-list", "target_contract": "pages/index/index.ttml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"},
     {"source_node": "effect.add-todo", "target_contract": "pages/index/index.js trims text appends one value persists application items and clears text"},
-    {"source_node": "token.app-shell", "target_contract": "pages/index/index.acss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"},
+    {"source_node": "token.app-shell", "target_contract": "pages/index/index.ttss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"},
     {"source_node": "permission.local-only", "target_contract": "adapters/platform.js exposes no network identity payment upload review or release capability"}
   ],
   "fallbacks": {"webview": "DENIED", "full_page_canvas": "DENIED", "silent_drop": "DENIED"},
