@@ -59,6 +59,25 @@
   },
   "external_evidence_status": "NOT_RUN",
   "immutable_source_rewritten": false,
+  "local_qualification": {
+    "implementation_summary": {
+      "code_binding_coverage_percent": 100,
+      "exact_native_programs": 40,
+      "host_route_bound": 34,
+      "host_routes_digest": "sha256:617bd441ad33555e2bcf1886361b25dd880d18fd888fd4db141f9899fa0aeaec",
+      "local_terminal_programs": 6,
+      "prepare_only": 0,
+      "whole_skills_complete": 0
+    },
+    "path": "engines/autonomous-qa-engine/qualification/local-qualification.json",
+    "qualification_digest": "sha256:a3153067a949193c129c8ee06329204a1af46fce4d656b8dbff6f5a08322b73e",
+    "sha256": "sha256:230d317f8b14273ac6b8c54bb327cba4fd4eb5e50f508bf3d108a82f3be4872d",
+    "state_counts": {
+      "BLOCKED": 10,
+      "PARTIAL": 24,
+      "SUCCEEDED": 6
+    }
+  },
   "namespace": "autonomous-qa-self-healing-v1",
   "package": {
     "id": "elmos.autonomous-qa-self-healing",
@@ -144,6 +163,11 @@
         "sha256": "sha256:e2cfb5ae217f6194601b772dbb8180eb6af38cdcbb318b601c8040160e9ce71b"
       },
       {
+        "bytes": 20700,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/host_runtime.py",
+        "sha256": "sha256:83203cc17ca667c3f04b2801159f74e56ecf07145815343d5f22798c7c5e3bd1"
+      },
+      {
         "bytes": 22025,
         "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/project.py",
         "sha256": "sha256:0830ab8c0f660b840211e14ebf746b94363e1883e47f2fe2fcf2e4db78a4fef0"
@@ -159,8 +183,8 @@
         "sha256": "sha256:0f59b84302446267507bf4a261c5f8a5178b5e0604a1e680ca5920272ddbc516"
       }
     ],
-    "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+    "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
     "bindings": [
       {
         "handler_id": "execute_00_qa_control_plane",
@@ -459,8 +483,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -497,8 +521,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -537,8 +561,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -577,8 +601,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -617,8 +641,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -657,8 +681,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -697,8 +721,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -737,8 +761,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -777,8 +801,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -817,8 +841,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -857,8 +881,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -897,8 +921,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -937,8 +961,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -977,8 +1001,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1017,8 +1041,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1057,8 +1081,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1097,8 +1121,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1137,8 +1161,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1177,8 +1201,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1218,8 +1242,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1259,8 +1283,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1299,8 +1323,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1340,8 +1364,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1381,8 +1405,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1421,8 +1445,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1462,8 +1486,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1503,8 +1527,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1543,8 +1567,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1583,8 +1607,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1624,8 +1648,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1666,8 +1690,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1708,8 +1732,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1749,8 +1773,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1790,8 +1814,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1831,8 +1855,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1871,8 +1895,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1913,8 +1937,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -1968,8 +1992,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -2025,8 +2049,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",
@@ -2071,8 +2095,8 @@
       "package_version": "1.1.0",
       "repository_owned_wrapper": true,
       "runtime_binding": {
-        "authority_sha256": "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c",
-        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "authority_sha256": "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743",
+        "binding_state": "LOCAL_HANDLER_BOUND_EXACT",
         "certification_status": "NOT_CERTIFIED",
         "dispatcher": "dispatch_skill",
         "external_evidence_status": "NOT_RUN",

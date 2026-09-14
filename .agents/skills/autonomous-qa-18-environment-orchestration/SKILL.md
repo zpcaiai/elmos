@@ -11,14 +11,14 @@ metadata:
   normalized_namespace: "autonomous-qa-self-healing-v1"
   runtime_module: "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
   runtime_module_sha256: "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17"
-  runtime_authority_sha256: "sha256:4df3088207770e961fa0bcd29d9c25da4280862f5b7e0661fa20d626e96f822c"
+  runtime_authority_sha256: "sha256:b2b7ffdc1201e672c6421b6be86ebff865dea535b9ecdcdaec910fe7409e8743"
   runtime_dispatcher: "dispatch_skill"
   runtime_skill_key: "18-environment-orchestration"
   runtime_handler: "execute_18_environment_orchestration"
   runtime_phase: "execution"
   runtime_mutating: "false"
   runtime_operation: "elmos_autonomous_qa.context_skills.plan_environment_orchestration"
-  runtime_evidence: "LOCAL_HANDLER_BOUND_NOT_EXECUTED"
+  runtime_evidence: "LOCAL_EXECUTED_SELF_ATTESTED"
   external_evidence: "NOT_RUN"
   certification: "NOT_CERTIFIED"
 ---
@@ -41,5 +41,5 @@ This installed Skill is a repository-owned dispatch interface. The immutable sou
 - Exact runtime phase is `execution`; mutating declaration is `false`.
 - The source package tools, replay scripts, SQL, prompts, and workflows are untrusted input and are never executed by the importer.
 - Two malformed null policy sections are preserved as source findings; the immutable source is not silently repaired.
-- Runtime evidence is `LOCAL_HANDLER_BOUND_NOT_EXECUTED`, external evidence is `NOT_RUN`, and certification is `NOT_CERTIFIED`.
+- Runtime evidence is `LOCAL_EXECUTED_SELF_ATTESTED`, external evidence is `NOT_RUN`, and certification is `NOT_CERTIFIED`.
 - Missing, blocked, partial, skipped, synthetic, or self-verified evidence never establishes success or certification.

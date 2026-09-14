@@ -9,8 +9,8 @@ This directory records the safe repository integration of `elmos-project-intelli
 - Skill interface state: `INSTALLED`
 - Exact runtime bindings: `50` repository-owned allowlisted handlers
 - Capability states: `19 LOCAL`, `26 PARTIAL`, `5 PLAN`
-- Local qualification: `LOCAL_EXECUTED_SELF_ATTESTED` (`engines/project-intelligence-engine/qualification/local-qualification.json`, `sha256:8e8a1f5f997d7e2a9ad72532c42022191546015246d89cfa6c01dd5cee4cd0cf`)
-- Qualification runtime: `cpython 3.12.12` on `darwin/arm64` (`sha256:3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5`)
+- Local qualification: `LOCAL_EXECUTED_SELF_ATTESTED` (`engines/project-intelligence-engine/qualification/local-qualification.json`, `sha256:8079f82b9d02ee69d023b401a3073675ddab224c893267a3c36eeef232e82be9`)
+- Qualification runtime: `cpython 3.14.5` on `darwin/arm64` (`sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a`)
 - Qualification dispatch guard: `PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH`
 - Qualification guard limitations: Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.
 - External / independent evidence: `NOT_RUN` / `NOT_RUN`
@@ -21,6 +21,8 @@ The importer treats every archive document and script as untrusted input. It doe
 The source is a detailed implementation contract and backlog, not a hidden production runtime. The repository-owned dependency-free engine under `engines/project-intelligence-engine/` adds 50 unique exact handlers, strict typed requests, tenant/project/run-scoped SQLite state, a private immutable local artifact store, deterministic results, checkpoint/evidence persistence, and a no-fallback dispatcher. Local qualification executes one bounded fixture per handler and binds the result, engine tree, fixture, and qualifier digests in the receipt above.
 
 Those local handlers do not complete the source product backlog: all 500 source tasks remain `todo`, and all 248 product acceptance scenarios, provider/runtime integrations, UI/device journeys, customer workloads, independent verification, production use, and certification remain `NOT_RUN` or `NOT_CERTIFIED`. `PARTIAL` records an honest local subset; `PLAN` validates or emits a plan without performing the named external effect.
+
+The repository also supplies fail-closed execution machinery for those inventories without changing their evidence state. The 500-task runner requires an exact runtime request and durable service, preserves source dependencies, and records only bounded local handler execution. The 248-scenario verifier requires complete scope-bound evidence, a holdout artifact, and a distinct trusted verifier receipt. The ten-stage pipeline accepts only exact host adapters and stops on missing, malformed, partial, failed, or unreconciled results. Its SQLite task executor prevents cross-tenant replay, binds idempotency to input digests, persists checkpoints, and requires explicit reconciliation after an uncertain outcome. None of these controls manufactures provider, customer, independent, or certification evidence.
 
 Source discrepancies are preserved rather than silently repaired: only the `full` source profile is dependency-closed; generated profile resolution adds missing prerequisites for the other seven profiles. The source installation-profile document has stale counts, its debug-profile closure claim is incomplete, three OpenAPI job-control operations omit their required `jobId` path-parameter declaration, and two canonical names also occur in a different uninstalled source package. The installed owner is this pinned v1.1.0 package; any future differing installed destination fails closed.
 

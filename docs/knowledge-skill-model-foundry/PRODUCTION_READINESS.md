@@ -2,6 +2,9 @@
 
 Current maximum state: `READY_FOR_EXTERNAL_GATE` for successfully exercised
 local control-plane behavior. The package as a whole remains `NOT_CERTIFIED`.
+Whole-Skill completion remains `0 / 1,310` until the required provider,
+environment, acceptance, holdout, independent-verifier, and gate evidence is
+attached and verified for each exact identity.
 
 ## Implemented local controls
 
