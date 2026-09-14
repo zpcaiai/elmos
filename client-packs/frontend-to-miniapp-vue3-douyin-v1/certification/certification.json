@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "pack_key": "frontend-to-miniapp-vue3-douyin-v1",
   "status": "experimental",
   "owner": "independent-client-gate",
   "exact_tuple": {
@@ -27,28 +27,28 @@
       "devices": []
     },
     "target": {
-      "stack": "alipay-native-miniapp-candidate",
-      "versions": ["alipay-base-library-2.10.2-requested-NOT_RUN"],
+      "stack": "douyin-native-miniapp-candidate",
+      "versions": ["douyin-base-library-2.10.2-requested-NOT_RUN"],
       "language": "javascript",
       "language_versions": ["ecmascript-2022-output-contract"],
-      "runtime": "alipay-miniapp-runtime-candidate",
-      "runtime_versions": ["alipay-base-library-2.10.2-requested-NOT_RUN"],
+      "runtime": "douyin-miniapp-runtime-candidate",
+      "runtime_versions": ["douyin-base-library-2.10.2-requested-NOT_RUN"],
       "generator_profile_version": "2026-08-20.1",
-      "official_toolchain_version": "minidev-3.9.4-NOT_RUN",
+      "official_toolchain_version": "tt-cli-1.0.0-NOT_RUN",
       "build_tool": "local-semantic-ir-candidate-generator-1.0.0",
       "package_manager": "none-generated-native-project",
       "router": ["app-json-native-pages-contract-1"],
-      "renderer": ["axml-native-view-candidate"],
+      "renderer": ["ttml-native-view-candidate"],
       "state": ["page-data-setdata-candidate"],
-      "forms": ["native-input-oninput-candidate"],
-      "styling": ["acss-native-style-candidate"],
+      "forms": ["native-input-bindinput-candidate"],
+      "styling": ["ttss-native-style-candidate"],
       "design_system": ["fixture-local-tokens-candidate"],
       "api_client": [],
       "identity": ["none-in-scoped-journey"],
       "i18n": ["literal-en-fixture-copy-candidate"],
       "test_tools": ["batch32-static-contract-validation-v1"],
       "browsers": [],
-      "devices": ["alipay-devtools-emulator-NOT_RUN", "alipay-physical-device-NOT_RUN"]
+      "devices": ["douyin-devtools-emulator-NOT_RUN", "douyin-physical-device-NOT_RUN"]
     }
   },
   "evidence_refs": ["certification/source-build-evidence.json", "certification/local-static-evidence.json", "certification/local-runtime-candidate-evidence.json", "certification/external-evidence-status.json"],

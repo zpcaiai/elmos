@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "pack_key": "frontend-to-miniapp-vue3-douyin-v1",
   "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "routes": [
     {
@@ -9,7 +9,7 @@
       "name": "Todo home",
       "path": "/",
       "references": ["view.home"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/router.ts"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/router.ts"]
     }
   ],
   "views": [
@@ -18,14 +18,14 @@
       "kind": "view",
       "name": "Application shell",
       "references": ["component.app-shell"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/App.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/App.vue"]
     },
     {
       "id": "view.home",
       "kind": "view",
       "name": "Todo entry and list",
       "references": ["component.home-view", "form.todo-entry", "permission.local-only"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     }
   ],
   "components": [
@@ -35,7 +35,7 @@
       "name": "App shell",
       "ownership": "generated-candidate",
       "references": ["token.app-shell"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/App.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/App.vue"]
     },
     {
       "id": "component.home-view",
@@ -43,21 +43,21 @@
       "name": "Home view",
       "ownership": "generated-candidate",
       "references": ["component.todo-input", "component.add-button", "component.todo-list"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     },
     {
       "id": "component.todo-input",
       "kind": "native-input-candidate",
       "name": "Todo text input",
       "references": ["binding.todo-text", "a11y.todo-input-label"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     },
     {
       "id": "component.add-button",
       "kind": "native-button-candidate",
       "name": "Add todo button",
       "references": ["action.submit-todo", "state.todo-text", "a11y.disabled-state"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     },
     {
       "id": "component.todo-list",
@@ -65,7 +65,7 @@
       "name": "Todo list",
       "stable_key_contract": "item text plus source index; duplicate text remains distinct by index",
       "references": ["state.todo-items"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     }
   ],
   "states": [
@@ -75,7 +75,7 @@
       "name": "Current input text",
       "initial_value": "",
       "references": [],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     },
     {
       "id": "state.todo-items",
@@ -83,7 +83,7 @@
       "name": "Todo item strings",
       "initial_value": [],
       "references": [],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/stores/todo.ts"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/stores/todo.ts"]
     }
   ],
   "actions": [
@@ -92,7 +92,7 @@
       "kind": "input-event",
       "name": "Update todo text",
       "references": ["state.todo-text"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     },
     {
       "id": "action.submit-todo",
@@ -101,8 +101,8 @@
       "precondition": "trim(todo-text) is nonempty",
       "references": ["state.todo-text", "state.todo-items", "effect.add-todo"],
       "source_refs": [
-        "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue",
-        "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/stores/todo.ts"
+        "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue",
+        "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/stores/todo.ts"
       ]
     }
   ],
@@ -114,8 +114,8 @@
       "cleanup": "not-applicable-synchronous-effect",
       "references": ["state.todo-items", "state.todo-text"],
       "source_refs": [
-        "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/stores/todo.ts",
-        "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"
+        "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/stores/todo.ts",
+        "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"
       ]
     }
   ],
@@ -127,7 +127,7 @@
       "fields": ["todo-text"],
       "validation": "trimmed value must be nonempty before add is enabled",
       "references": ["binding.todo-text", "action.submit-todo"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     }
   ],
   "bindings": [
@@ -137,7 +137,7 @@
       "name": "Vue v-model todo text",
       "target_candidate": "Alipay input value plus bindinput handler",
       "references": ["state.todo-text", "action.input-todo"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     }
   ],
   "permissions": [
@@ -147,7 +147,7 @@
       "name": "No network platform identity payment upload or release effect",
       "effect": "deny undeclared external side effects",
       "references": [],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/package.json"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/package.json"]
     }
   ],
   "resources": [
@@ -157,7 +157,7 @@
       "name": "Pinned Vue 3 todo fixture",
       "digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
       "references": [],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/package.json"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/package.json"]
     }
   ],
   "design_tokens": [
@@ -167,7 +167,7 @@
       "name": "App shell width margin and padding",
       "values": {"max_width_px": 640, "margin_inline": "auto", "padding_px": 16},
       "references": [],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/App.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/App.vue"]
     }
   ],
   "accessibility": [
@@ -177,14 +177,14 @@
       "name": "Todo input accessible name",
       "expected_name": "Todo text",
       "references": ["component.todo-input"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     },
     {
       "id": "a11y.disabled-state",
       "kind": "disabled-state-contract",
       "name": "Add button disabled for blank trimmed input",
       "references": ["component.add-button", "state.todo-text"],
-      "source_refs": ["client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
+      "source_refs": ["client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1/src/views/HomeView.vue"]
     }
   ],
   "source_map": [
