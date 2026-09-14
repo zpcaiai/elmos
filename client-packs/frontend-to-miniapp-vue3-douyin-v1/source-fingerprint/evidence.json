@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "pack_key": "frontend-to-miniapp-vue3-douyin-v1",
   "runs": [
     {
       "run_id": "vue3-todo-static-inventory-2026-08-27",

@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "evidence_key": "vue3-todo-alipay-local-runtime-2026-08-20",
+  "evidence_key": "vue3-todo-douyin-local-runtime-2026-08-20",
   "scope": "bounded local conversion runtime and generated-candidate static validation",
   "source": {
     "archive_path": "skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip",
     "archive_sha256": "sha256:e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82",
     "archive_bytes": 281829,
-    "manifest_sha256": "sha256:ef80549a6a1eda9dc92e477ac3a92850fb7bd9bfe889a59f16992c3e7f029650",
+    "manifest_sha256": "sha256:5416eeb9c60b87e0f30333935e123847a635ccd9e120a6a0881384a4989ea01d",
     "manifest_bytes": 2273,
     "snapshot_id": "vue3-todo-source-snapshot-1.0.1",
     "privacy": "public synthetic fixture; no credentials or personal data",
@@ -17,70 +17,70 @@
     "source_scripts_executed": false
   },
   "runtime_implementation": {
-    "digest": "sha256:52e6228c6cd37b68d1fbf435c8c9d56c72295014399cd8c31979a2b66c9d2eb9",
+    "digest": "sha256:abefdf7d31a834c63d5a3d86eb6d286a498d2f4b58e9728b6b431fbbc471db20",
     "file_count": 24,
     "node_version": "26.0.0",
     "typescript_version": "5.9.2",
     "vue_compiler_sfc_version": "3.5.39"
   },
   "evidence_root": {
-    "digest": "sha256:580774e0b851b1888fc6dd58ebc9894aaf55c44418e9f3147fd6aca640ec7463",
+    "digest": "sha256:4ca1092a7c3a7c6fa5781ff9a10dfddaf96aa288cc46eb0f9313351ad8b127e1",
     "entry_count": 38,
     "entries": [
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/acceptance/acceptance-profile.json",
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/acceptance/acceptance-profile.json",
         "bytes": 2166,
-        "sha256": "sha256:d6bc14944a24928f08d2827550367809d2ab210cd93bae0c4682ecc5336802e4"
+        "sha256": "sha256:002bac86c78cc219b947e194a19d729d24a3a70d0bb7f7b8c9606efdbe3f69de"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/certification.json",
-        "bytes": 2840,
-        "sha256": "sha256:b3dc009bfba3d82deb88b241da532aab214eea8e0338e36e32b2501b0674813c"
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/certification.json",
+        "bytes": 2841,
+        "sha256": "sha256:d511005170c24adc6d01799d618401daecf678b62df1ef55293c5e9dd5d0963e"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/external-evidence-status.json",
-        "bytes": 856,
-        "sha256": "sha256:34236f38e16e0386478135e92a976a62d43d520ff9fc39081bc5ff97367e3e86"
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/external-evidence-status.json",
+        "bytes": 683,
+        "sha256": "sha256:7a3e187fc0087f5b514b31a9680c410a12be0f4e116f331c84f0d8aefab2480b"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/replay-local-runtime.mjs",
-        "bytes": 44792,
-        "sha256": "sha256:cea960db5d28583b83388344de02299cd421b94e23f9371e7b4dafc1c4077f5b"
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/replay-local-runtime.mjs",
+        "bytes": 44803,
+        "sha256": "sha256:ce7c67c146e2d1f685732a3295a13e69711c18e092d15d9e466764be7df35c8d"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/source-build-evidence.json",
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/source-build-evidence.json",
         "bytes": 3330,
-        "sha256": "sha256:5c3d7ce6f54bc7599c3a5ef5ae211c74d2a03e7731f88f357042b2469a4634fd"
+        "sha256": "sha256:660427029a2d914608a3b7e16dc8ade5fab0139410acb00d7ca154704ac60f92"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/pack.json",
-        "bytes": 4730,
-        "sha256": "sha256:257fbf778cdfa88ef670d297e26450322d9e05b11ef735c7282a482d5b79f1d8"
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/pack.json",
+        "bytes": 4732,
+        "sha256": "sha256:256cc3146cd5fad5eef11f7794887db3ae8528e45797a304d150e960344e954e"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/route-matrix.json",
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/route-matrix.json",
         "bytes": 1497,
-        "sha256": "sha256:27b5994ab6fe8a49b9810c6d68ea93b43d85bb40bd1c62e149128fba86c2ca4b"
+        "sha256": "sha256:37b6b8bfb36dd98f63aeeb22999089b85c5ac8cd35465b6ce9cad10dcdb99fda"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/manifest.json",
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/manifest.json",
         "bytes": 2273,
-        "sha256": "sha256:ef80549a6a1eda9dc92e477ac3a92850fb7bd9bfe889a59f16992c3e7f029650"
+        "sha256": "sha256:5416eeb9c60b87e0f30333935e123847a635ccd9e120a6a0881384a4989ea01d"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/target-profile/profile.json",
-        "bytes": 2889,
-        "sha256": "sha256:ae2cd5cf85e54434390c524d5eebde53f9ec65f77e68692d4cbe172f3c7484e4"
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/target-profile/profile.json",
+        "bytes": 2891,
+        "sha256": "sha256:bccb21c4bef058b64a6e668aa9a4ba74e6c6ba1d0015483078dfe8dab5a808da"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/transformations/vue3-todo-to-alipay-native.json",
-        "bytes": 3326,
-        "sha256": "sha256:3904acef95f51ad77acb6f7e7fcd087aec8bc3eb59337725bfa287a8ec2f07eb"
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/transformations/vue3-todo-to-douyin-native.json",
+        "bytes": 3330,
+        "sha256": "sha256:a58adb80159519ef3345f262064e96749ca99aaaee818a0c271df545fa2d8be2"
       },
       {
-        "path": "client-packs/frontend-to-miniapp-vue3-alipay-v1/ui-ir/model.json",
+        "path": "client-packs/frontend-to-miniapp-vue3-douyin-v1/ui-ir/model.json",
         "bytes": 9647,
-        "sha256": "sha256:31098784d0633bc736cce3f4802303bfbf5b6acc42f33b36b26d3b7b12a54738"
+        "sha256": "sha256:9db4174ef6965b0b806945cf87541c7ada42d4bc3582d8de24022f48639dcc95"
       },
       {
         "path": "dist/src/miniapp-contract-validation.js",
@@ -220,18 +220,18 @@
     ]
   },
   "request": {
-    "request_id": "conv-vue3-todo-alipay",
-    "request_digest": "sha256:8f71c25a5024702526403c3311840c57e6c0a53e8cb09a10de2ef99eddd82701",
+    "request_id": "conv-vue3-todo-douyin",
+    "request_digest": "sha256:d2455ddeb2cb67ce020421f5a22986992e4ddb5425b6c9c404461fd4350a0a6a",
     "source_revision": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
     "target": {
-      "platform": "alipay",
+      "platform": "douyin",
       "platformVersion": "2.10.2",
       "toolchainVersion": "3.9.4"
     },
-    "target_profile_digest": "sha256:ae2cd5cf85e54434390c524d5eebde53f9ec65f77e68692d4cbe172f3c7484e4",
+    "target_profile_digest": "sha256:bccb21c4bef058b64a6e668aa9a4ba74e6c6ba1d0015483078dfe8dab5a808da",
     "target_profile": {
-      "profile_key": "frontend-to-miniapp-vue3-alipay-v1-target",
-      "framework": "alipay-native-miniapp-candidate",
+      "profile_key": "frontend-to-miniapp-vue3-douyin-v1-target",
+      "framework": "douyin-native-miniapp-candidate",
       "versions": [
         "2.10.2"
       ],
@@ -250,19 +250,19 @@
       "file_model": {
         "application_config": "app.json",
         "page_config": "<page>.json",
-        "template_extension": ".axml",
-        "style_extension": ".acss",
+        "template_extension": ".ttml",
+        "style_extension": ".ttss",
         "script_extension": ".js"
       }
     }
   },
   "conversion": {
-    "run_id": "miniapp-run-conv-vue3-todo-alipay-fb637095662477be",
-    "deterministic_digest": "sha256:9f2e89ef8ff28ccbb9b2b1fb5cad5592e595e6dc123a470a3e503fee12e715c2",
+    "run_id": "miniapp-run-conv-vue3-todo-douyin-7827933702984416",
+    "deterministic_digest": "sha256:7ec7ffa072bd811bea262c5b3ec911f3f4be70bebf9275121ab3a12838a1e652",
     "analysis_digest": "sha256:474a0dbe13b1ce6f9f6555206b3706c5d0a9c0afcd55ad4dfc99635ad63c7de6",
-    "semantic_ir_digest": "sha256:a7bdbe5044f3611b6bcacc7faba5744b4929b9af7d33fcc0ec3c3f81bcf48b21",
-    "plan_digest": "sha256:17b06dbd5bb4ae323a1f379b27e5de7e9968c475ed361946396b16734c97ed29",
-    "checkpoint_digest": "sha256:3c3571290f2fa40557be1cc28146764d46f4cb2f54a0e41eadabd08243582fe1"
+    "semantic_ir_digest": "sha256:a6b6cec4c1720fec1d69fd6dd816b4f78d41d0257fcb7cdc2758e2e697aff842",
+    "plan_digest": "sha256:3ef0bc8da52d01813e811c31527c6b7613a9a13f6ae4e16a469633ba9291c535",
+    "checkpoint_digest": "sha256:b629087757816e42ea136af62f45a93855836b1a6084587d3a554519eb20004a"
   },
   "analysis": {
     "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+deterministic-css-parser+router-ast+source-build-config-inventory-only+source-build-entrypoint+typescript-compiler-api+vue-router-ast",
@@ -290,8 +290,8 @@
     "batch32_pack_model": "ui-ir/model.json is a separate 20-node review model, not this runtime IR"
   },
   "review_model_binding": {
-    "ui_ir_digest": "sha256:31098784d0633bc736cce3f4802303bfbf5b6acc42f33b36b26d3b7b12a54738",
-    "transformation_digest": "sha256:3904acef95f51ad77acb6f7e7fcd087aec8bc3eb59337725bfa287a8ec2f07eb",
+    "ui_ir_digest": "sha256:9db4174ef6965b0b806945cf87541c7ada42d4bc3582d8de24022f48639dcc95",
+    "transformation_digest": "sha256:a58adb80159519ef3345f262064e96749ca99aaaee818a0c271df545fa2d8be2",
     "review_node_count": 20,
     "review_node_mapping_coverage": 1,
     "declared_transformation_mapping_count": 8,
@@ -317,24 +317,24 @@
       },
       {
         "source_node": "component.app-shell",
-        "target_contract": "pages/index/index.axml contains the source-traced application shell",
+        "target_contract": "pages/index/index.ttml contains the source-traced application shell",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           }
         ],
         "verified": true
       },
       {
         "source_node": "component.todo-input",
-        "target_contract": "pages/index/index.axml input value binds text and onInput targets handleInput0",
+        "target_contract": "pages/index/index.ttml input value binds text and bindinput targets handleInput0",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -346,12 +346,12 @@
       },
       {
         "source_node": "component.add-button",
-        "target_contract": "pages/index/index.axml button disabled binds !canSubmit0 and onTap targets handleSubmit0",
+        "target_contract": "pages/index/index.ttml button disabled binds !canSubmit0 and bindtap targets handleSubmit0",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -363,12 +363,12 @@
       },
       {
         "source_node": "component.todo-list",
-        "target_contract": "pages/index/index.axml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index",
+        "target_contract": "pages/index/index.ttml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -392,10 +392,10 @@
       },
       {
         "source_node": "token.app-shell",
-        "target_contract": "pages/index/index.acss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding",
+        "target_contract": "pages/index/index.ttss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding",
         "target_artifacts": [
           {
-            "path": "pages/index/index.acss",
+            "path": "pages/index/index.ttss",
             "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
             "bytes": 574
           }
@@ -408,7 +408,7 @@
         "target_artifacts": [
           {
             "path": "adapters/platform.js",
-            "sha256": "sha256:be1cfe59f3f77ec66fd87e0b3a76a2a2c78a2bd104bfd1c44373bb83585c2b83",
+            "sha256": "sha256:cf79dee187c3e89452ff419efd58c007a2dd4d09a4df18f1171ad99737d3a335",
             "bytes": 129
           }
         ],
@@ -472,9 +472,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           }
         ],
         "verified": true
@@ -501,9 +501,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           }
         ],
         "verified": true
@@ -530,9 +530,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           }
         ],
         "verified": true
@@ -559,9 +559,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           }
         ],
         "verified": true
@@ -588,9 +588,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -622,9 +622,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -656,9 +656,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -855,9 +855,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -891,9 +891,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -924,7 +924,7 @@
         "target_artifacts": [
           {
             "path": "adapters/platform.js",
-            "sha256": "sha256:be1cfe59f3f77ec66fd87e0b3a76a2a2c78a2bd104bfd1c44373bb83585c2b83",
+            "sha256": "sha256:cf79dee187c3e89452ff419efd58c007a2dd4d09a4df18f1171ad99737d3a335",
             "bytes": 129
           }
         ],
@@ -951,7 +951,7 @@
         "target_artifacts": [
           {
             "path": "source-snapshots/manifest.json",
-            "sha256": "sha256:ef80549a6a1eda9dc92e477ac3a92850fb7bd9bfe889a59f16992c3e7f029650",
+            "sha256": "sha256:5416eeb9c60b87e0f30333935e123847a635ccd9e120a6a0881384a4989ea01d",
             "bytes": 2273
           }
         ],
@@ -979,7 +979,7 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.acss",
+            "path": "pages/index/index.ttss",
             "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
             "bytes": 574
           }
@@ -1008,9 +1008,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           }
         ],
         "verified": true
@@ -1040,9 +1040,9 @@
         "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
         "target_artifacts": [
           {
-            "path": "pages/index/index.axml",
-            "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-            "bytes": 1074
+            "path": "pages/index/index.ttml",
+            "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+            "bytes": 1081
           },
           {
             "path": "pages/index/index.js",
@@ -1063,17 +1063,25 @@
       "A": 8,
       "B": 0,
       "C": 0,
-      "D": 0,
+      "D": 1,
       "E": 0
     },
-    "findings": []
+    "findings": [
+      {
+        "code": "MINIAPP_TARGET_VERSION_TUPLE_UNSUPPORTED",
+        "platform": "douyin",
+        "classification": "D",
+        "blocking": true,
+        "message": "douyin/2.10.2/3.9.4 is not bound to generator profile 2026-08-20.1."
+      }
+    ]
   },
   "generated_project": {
-    "platform": "alipay",
+    "platform": "douyin",
     "platform_version": "2.10.2",
     "toolchain_version": "3.9.4",
     "profile_version": "2026-08-20.1",
-    "deterministic_digest": "sha256:6fa16c8dfe50546f4ed506753a39ad37d0e0acafb5d16d9a722c20d4d36a4042",
+    "deterministic_digest": "sha256:0283a1eef3f5d46c380b54a63150b8d31f68fdb144748ba640f282279dc183de",
     "file_count": 11,
     "static_validation": "PASSED",
     "official_build": "NOT_RUN",
@@ -1082,13 +1090,8 @@
     "artifacts": [
       {
         "path": "adapters/platform.js",
-        "sha256": "sha256:be1cfe59f3f77ec66fd87e0b3a76a2a2c78a2bd104bfd1c44373bb83585c2b83",
+        "sha256": "sha256:cf79dee187c3e89452ff419efd58c007a2dd4d09a4df18f1171ad99737d3a335",
         "bytes": 129
-      },
-      {
-        "path": "app.acss",
-        "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
-        "bytes": 574
       },
       {
         "path": "app.js",
@@ -1101,24 +1104,14 @@
         "bytes": 223
       },
       {
-        "path": "migration-findings.json",
-        "sha256": "sha256:ecda5e4cd9197ce98656501078d95d7c3f4f46beb7bf1bc9cd38985aea3ec3c8",
-        "bytes": 575
-      },
-      {
-        "path": "mini.project.json",
-        "sha256": "sha256:fead09c4580fb582a99b8849d2905f6e7deac4a91afa4f310cd9f7061311b22a",
-        "bytes": 140
-      },
-      {
-        "path": "pages/index/index.acss",
+        "path": "app.ttss",
         "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
         "bytes": 574
       },
       {
-        "path": "pages/index/index.axml",
-        "sha256": "sha256:f1b641b858b9a6c851b4c606d47a154b9963547f2dd1254ad126734ac153bdaa",
-        "bytes": 1074
+        "path": "migration-findings.json",
+        "sha256": "sha256:51b51b5985cc56ed4f233b2816013303adaea0a09169b098d2f89253d140f71c",
+        "bytes": 695
       },
       {
         "path": "pages/index/index.js",
@@ -1131,9 +1124,24 @@
         "bytes": 64
       },
       {
+        "path": "pages/index/index.ttml",
+        "sha256": "sha256:38f120763b490338b977c5e7248a8ce3d1fc1e613f2b322543c5194ca3fc388a",
+        "bytes": 1081
+      },
+      {
+        "path": "pages/index/index.ttss",
+        "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+        "bytes": 574
+      },
+      {
+        "path": "project.config.json",
+        "sha256": "sha256:66f1f1c1f9f9730b941582f669e59cc8fdc3362175e07f2827fee5a20935d904",
+        "bytes": 203
+      },
+      {
         "path": "trace-map.json",
-        "sha256": "sha256:ef694b6d278d5f0c147eaa64b558ba3c6f5ad2344f2b9dfb234b2ba5cca8804e",
-        "bytes": 1323
+        "sha256": "sha256:09b1ae5d6802c27b4a6ac29b5f197ce5a21e6c3fa7cc59e3ceff57a1fbe7829b",
+        "bytes": 1325
       }
     ]
   },
@@ -1141,8 +1149,8 @@
     "G0": "PASSED",
     "G1": "PASSED",
     "G2": "PASSED",
-    "G3": "PASSED",
-    "G4": "NOT_RUN",
+    "G3": "BLOCKED",
+    "G4": "BLOCKED",
     "G5": "NOT_RUN",
     "G6": "NOT_RUN",
     "G7": "NOT_RUN",
@@ -1150,14 +1158,14 @@
     "G9": "NOT_RUN"
   },
   "task_states": {
-    "EXECUTED_LOCAL": 24,
+    "BLOCKED": 24,
     "NOT_APPLICABLE": 7,
     "NOT_RUN_EXTERNAL": 9
   },
-  "local_engineering": "PASSED",
+  "local_engineering": "BLOCKED",
   "readiness": "NOT_READY",
   "certification": "NOT_CERTIFIED",
   "external_evidence": "NOT_RUN",
-  "official_alipay_build_preview_device_upload_review_release": "NOT_RUN",
-  "replay": "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/replay-local-runtime.mjs --check"
+  "official_douyin_build_preview_device_upload_review_release": "NOT_RUN",
+  "replay": "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/replay-local-runtime.mjs --check"
 }

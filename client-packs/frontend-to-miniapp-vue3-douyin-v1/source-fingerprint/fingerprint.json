@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "pack_key": "frontend-to-miniapp-vue3-alipay-v1",
+  "pack_key": "frontend-to-miniapp-vue3-douyin-v1",
   "source_tuple": {
     "stack": "vue3-sfc-fixture",
     "versions": ["vue3-source-snapshot-1.0.1-vue-3.5.39"],

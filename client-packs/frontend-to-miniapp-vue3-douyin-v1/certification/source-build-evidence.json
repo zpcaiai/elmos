@@ -3,9 +3,9 @@
   "evidence_key": "vue3-todo-source-build-2026-08-27",
   "source_snapshot_id": "vue3-todo-source-snapshot-1.0.1",
   "source_snapshot_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
-  "source_root": "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1",
+  "source_root": "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1",
   "source_manifest": "source-snapshots/manifest.json",
-  "source_manifest_sha256": "sha256:1f1848a8d4d40f1aa5a47ee61bc1b5157ebe55001b8aef6759266e8ea6c8c04b",
+  "source_manifest_sha256": "sha256:5416eeb9c60b87e0f30333935e123847a635ccd9e120a6a0881384a4989ea01d",
   "package": {
     "name": "elmos-vue3-todo-fixture",
     "version": "1.0.1",

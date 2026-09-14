@@ -33,7 +33,7 @@ const engineRootStat = lstatSync(engineRootCandidate);
 assert.ok(engineRootStat.isDirectory() && !engineRootStat.isSymbolicLink(), "engine root must be a directory and not a symlink");
 const engineRoot = realpathSync(engineRootCandidate);
 assertStrictDescendant(repositoryRoot, engineRoot, "canonical engine root");
-const sourceRootRelative = "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1";
+const sourceRootRelative = "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1";
 const sourceRootCandidate = resolve(repositoryRoot, sourceRootRelative);
 assertStrictDescendant(repositoryRoot, sourceRootCandidate, "source root");
 const sourceRootStat = lstatSync(sourceRootCandidate);
@@ -95,7 +95,7 @@ const replayScriptRaw = readFileSync(replayScriptPath);
 const implementationEntries = [
   ...engineImplementationEntries,
   {
-    path: "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/replay-local-runtime.mjs",
+    path: "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/replay-local-runtime.mjs",
     bytes: replayScriptRaw.byteLength,
     sha256: `sha256:${createHash("sha256").update(replayScriptRaw).digest("hex")}`,
   },
@@ -184,12 +184,12 @@ const targetProfileRaw = readFileSync(targetProfilePath);
 const targetProfileDigest = `sha256:${createHash("sha256").update(targetProfileRaw).digest("hex")}`;
 const targetProfile = JSON.parse(targetProfileRaw.toString("utf8"));
 const requestedTarget = {
-  platform: "alipay",
+  platform: "douyin",
   platformVersion: "2.10.2",
   toolchainVersion: "3.9.4",
 };
-assert.equal(targetProfile.profile_key, "frontend-to-miniapp-vue3-alipay-v1-target", "target profile identity drift");
-assert.equal(targetProfile.framework, "alipay-native-miniapp-candidate", "target framework drift");
+assert.equal(targetProfile.profile_key, "frontend-to-miniapp-vue3-douyin-v1-target", "target profile identity drift");
+assert.equal(targetProfile.framework, "douyin-native-miniapp-candidate", "target framework drift");
 assert.deepEqual(targetProfile.versions, [requestedTarget.platformVersion], "target base-library tuple drift");
 assert.deepEqual(targetProfile.runtime_versions, [requestedTarget.platformVersion], "target runtime tuple drift");
 assert.equal(targetProfile.official_toolchain_version, requestedTarget.toolchainVersion, "target toolchain tuple drift");
@@ -210,8 +210,8 @@ assert.deepEqual(targetProfile.authorization, {
 assert.deepEqual(targetProfile.file_model, {
   application_config: "app.json",
   page_config: "<page>.json",
-  template_extension: ".axml",
-  style_extension: ".acss",
+  template_extension: ".ttml",
+  style_extension: ".ttss",
   script_extension: ".js",
 }, "target file model drift");
 const readBoundedRepositoryEntry = (path, maximumBytes = MAX_CONTROL_FILE_BYTES) => {
@@ -231,16 +231,16 @@ const readBoundedRepositoryEntry = (path, maximumBytes = MAX_CONTROL_FILE_BYTES)
   };
 };
 const evidenceControlPaths = [
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/pack.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/route-matrix.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/manifest.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/target-profile/profile.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/acceptance/acceptance-profile.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/ui-ir/model.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/transformations/vue3-todo-to-alipay-native.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/source-build-evidence.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/external-evidence-status.json",
-  "client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/certification.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/pack.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/route-matrix.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/manifest.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/target-profile/profile.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/acceptance/acceptance-profile.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/ui-ir/model.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/transformations/vue3-todo-to-douyin-native.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/source-build-evidence.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/external-evidence-status.json",
+  "client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/certification.json",
   "scripts/batch32/validate_client_pack.py",
   "scripts/batch32/validate_ui_ir.py",
   "scripts/batch32/run_client_gate.py",
@@ -259,12 +259,12 @@ const evidenceRootDigest = `sha256:${createHash("sha256").update(
   "utf8",
 ).digest("hex")}`;
 const uiIrEntry = evidenceControlEntries.find(entry => entry.path.endsWith("/ui-ir/model.json"));
-const transformationEntry = evidenceControlEntries.find(entry => entry.path.endsWith("/transformations/vue3-todo-to-alipay-native.json"));
+const transformationEntry = evidenceControlEntries.find(entry => entry.path.endsWith("/transformations/vue3-todo-to-douyin-native.json"));
 assert.ok(uiIrEntry && transformationEntry, "review UI IR and transformation evidence-root entries are required");
 const reviewUiIr = JSON.parse(uiIrEntry.raw.toString("utf8"));
 const transformation = JSON.parse(transformationEntry.raw.toString("utf8"));
 assert.equal(reviewUiIr.schema_version, 1, "review UI IR schema drift");
-assert.equal(reviewUiIr.pack_key, "frontend-to-miniapp-vue3-alipay-v1", "review UI IR pack drift");
+assert.equal(reviewUiIr.pack_key, "frontend-to-miniapp-vue3-douyin-v1", "review UI IR pack drift");
 assert.equal(reviewUiIr.source_snapshot_digest, snapshotDigest, "review UI IR source digest drift");
 const reviewGroups = [
   "routes", "views", "components", "states", "actions", "effects", "forms", "bindings",
@@ -302,12 +302,12 @@ assert.deepEqual(transformation.fallbacks, { webview: "DENIED", full_page_canvas
 assert.ok(Array.isArray(transformation.mappings) && transformation.mappings.length === 8, "eight declared transformation mappings required");
 const expectedTransformationContracts = new Map([
   ["route.home", "app.json pages[0] equals pages/index/index and pages/index/index.json exists"],
-  ["component.app-shell", "pages/index/index.axml contains the source-traced application shell"],
-  ["component.todo-input", "pages/index/index.axml input value binds text and onInput targets handleInput0"],
-  ["component.add-button", "pages/index/index.axml button disabled binds !canSubmit0 and onTap targets handleSubmit0"],
-  ["component.todo-list", "pages/index/index.axml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"],
+  ["component.app-shell", "pages/index/index.ttml contains the source-traced application shell"],
+  ["component.todo-input", "pages/index/index.ttml input value binds text and bindinput targets handleInput0"],
+  ["component.add-button", "pages/index/index.ttml button disabled binds !canSubmit0 and bindtap targets handleSubmit0"],
+  ["component.todo-list", "pages/index/index.ttml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index"],
   ["effect.add-todo", "pages/index/index.js trims text appends one value persists application items and clears text"],
-  ["token.app-shell", "pages/index/index.acss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"],
+  ["token.app-shell", "pages/index/index.ttss scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding"],
   ["permission.local-only", "adapters/platform.js exposes no network identity payment upload review or release capability"],
 ]);
 assert.deepEqual(
@@ -325,7 +325,7 @@ for (const mapping of transformation.mappings) {
 }
 const request = {
   schemaVersion: "1.0",
-  requestId: "conv-vue3-todo-alipay",
+  requestId: "conv-vue3-todo-douyin",
   tenantId: "tenant-local-engineering",
   source: {
     root: "source-snapshots/vue3-todo-v1.0.1",
@@ -384,8 +384,8 @@ const todoInteraction = one(run.semanticIr.interactions.filter(interaction => in
   && interaction.listComponentId === todoList.id), "todo interaction");
 const todoForm = one(run.semanticIr.forms.filter(form => form.sourceRefs.some(ref => ref.path === "src/views/HomeView.vue")), "todo form");
 const appShellStyle = one(run.semanticIr.styles.filter(style => style.selector === ".app-shell"), "app shell style");
-const templateEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".axml")), "generated AXML");
-const styleEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".acss") && path.startsWith("pages/")), "generated page ACSS");
+const templateEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".ttml")), "generated TTML");
+const styleEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".ttss") && path.startsWith("pages/")), "generated page TTSS");
 const scriptEntry = one(Object.entries(project.files).filter(([path]) => path.endsWith(".js") && path.startsWith("pages/")), "generated page script");
 const adapterSource = project.files["adapters/platform.js"] ?? "";
 const appManifest = JSON.parse(project.files["app.json"] ?? "{}");
@@ -438,9 +438,9 @@ const bindTargetArtifacts = (paths, label) => paths.map(path => {
 });
 
 const templateLines = new Set(templateEntry[1].split("\n").map(line => line.trim()).filter(Boolean));
-const stylePlan = one(run.plan.styles.filter(item => item.platform === "alipay"), "Alipay style plan");
+const stylePlan = one(run.plan.styles.filter(item => item.platform === "douyin"), "Douyin style plan");
 const appShellRule = one(stylePlan.rules.filter(rule => rule.styleId === appShellStyle.id), "app shell style rule");
-assert.deepEqual(appManifest.pages, ["pages/index/index"], "route.home must be the only emitted Alipay page");
+assert.deepEqual(appManifest.pages, ["pages/index/index"], "route.home must be the only emitted Douyin page");
 assert.deepEqual(JSON.parse(project.files["pages/index/index.json"] ?? "null"), {
   navigationBarTitleText: "Todo",
   usingComponents: {},
@@ -451,12 +451,12 @@ assert.deepEqual(appShellStyle.declarations, { margin: "0 auto", "max-width": "6
 assert.equal(appShellRule.selector, `.app-shell.${appShellStyle.scopeClass}`, "scoped app shell selector drift");
 assert.deepEqual(appShellRule.declarations, { margin: "0 auto", "max-width": "1280rpx", padding: "32rpx" }, "lowered app shell layout token drift");
 const exactAppShellRule = `${appShellRule.selector} {\n  margin: 0 auto;\n  max-width: 1280rpx;\n  padding: 32rpx;\n}`;
-assert.ok(styleEntry[1].includes(exactAppShellRule), "generated ACSS must contain the exact scoped app shell rule");
-assert.ok(templateLines.has(`<view class="elmos-node app-shell ${appShellStyle.scopeClass}" data-source-node="${appShell.id}" role="main">`), "generated AXML app shell opening tag drift");
-assert.ok(templateLines.has(`<input class="elmos-control" data-source-node="${todoInput.id}" aria-label="Todo text" value="{{text}}" onInput="handleInput0" />`), "generated AXML todo input contract drift");
-assert.ok(templateLines.has(`<button class="elmos-control" data-source-node="${addButton.id}" disabled="{{!canSubmit0}}" onTap="handleSubmit0">Add</button>`), "generated AXML add button contract drift");
-assert.ok(templateLines.has('<block a:for="{{itemsRender}}" a:for-item="item" a:key="__elmosKey">'), "generated AXML todo iteration contract drift");
-assert.ok(templateLines.has(`<view class="elmos-list-item" data-source-node="${todoList.id}" role="listitem"><text>{{item.value}}</text></view>`), "generated AXML todo item contract drift");
+assert.ok(styleEntry[1].includes(exactAppShellRule), "generated TTSS must contain the exact scoped app shell rule");
+assert.ok(templateLines.has(`<view class="elmos-node app-shell ${appShellStyle.scopeClass}" data-source-node="${appShell.id}" role="main">`), "generated TTML app shell opening tag drift");
+assert.ok(templateLines.has(`<input class="elmos-control" data-source-node="${todoInput.id}" aria-label="Todo text" value="{{text}}" bindinput="handleInput0" />`), "generated TTML todo input contract drift");
+assert.ok(templateLines.has(`<button class="elmos-control" data-source-node="${addButton.id}" disabled="{{!canSubmit0}}" bindtap="handleSubmit0">Add</button>`), "generated TTML add button contract drift");
+assert.ok(templateLines.has('<block tt:for="{{itemsRender}}" tt:for-item="item" tt:key="__elmosKey">'), "generated TTML todo iteration contract drift");
+assert.ok(templateLines.has(`<view class="elmos-list-item" data-source-node="${todoList.id}" role="listitem"><text>{{item.value}}</text></view>`), "generated TTML todo item contract drift");
 assert.equal(todoInput.modelBinding, "text", "typed todo input model binding drift");
 assert.equal(todoInteraction.draftStateId, todoText.id, "typed todo draft-state edge drift");
 assert.equal(todoInteraction.collectionStateId, todoItems.id, "typed todo collection-state edge drift");
@@ -483,9 +483,9 @@ assert.ok(scriptEntry[1].includes('this.setData({ text: value, canSubmit0: value
 assert.equal(project.files["app.js"]?.includes('"items":[]'), true, "application-scoped todo state drift");
 assert.equal(adapterSource, [
   '"use strict";',
-  'const platformApi = typeof my === "object" ? my : null;',
+  'const platformApi = typeof tt === "object" ? tt : null;',
   "module.exports = Object.freeze({",
-  '  platform: "alipay",',
+  '  platform: "douyin",',
   "});",
   "",
 ].join("\n"), "zero-capability platform adapter drift");
@@ -578,7 +578,7 @@ const countStates = values => Object.fromEntries(
 );
 const observed = {
   schema_version: 1,
-  evidence_key: "vue3-todo-alipay-local-runtime-2026-08-20",
+  evidence_key: "vue3-todo-douyin-local-runtime-2026-08-20",
   scope: "bounded local conversion runtime and generated-candidate static validation",
   source: {
     archive_path: sourceArchiveRelative,
@@ -682,8 +682,8 @@ const observed = {
   readiness: run.readiness,
   certification: run.certification,
   external_evidence: "NOT_RUN",
-  official_alipay_build_preview_device_upload_review_release: "NOT_RUN",
-  replay: "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-alipay-v1/certification/replay-local-runtime.mjs --check",
+  official_douyin_build_preview_device_upload_review_release: "NOT_RUN",
+  replay: "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-douyin-v1/certification/replay-local-runtime.mjs --check",
 };
 
 if (expected !== null) assert.deepEqual(observed, expected, "local runtime evidence drift");

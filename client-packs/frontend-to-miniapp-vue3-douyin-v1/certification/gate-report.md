@@ -1,4 +1,4 @@
-# Batch 32 gate: frontend-to-miniapp-vue3-alipay-v1
+# Batch 32 gate: frontend-to-miniapp-vue3-douyin-v1
 
 - Pack status: `experimental`
 - Structural status: `PASSED`

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "snapshot_id": "vue3-todo-source-snapshot-1.0.1",
-  "source_root": "client-packs/frontend-to-miniapp-vue3-alipay-v1/source-snapshots/vue3-todo-v1.0.1",
+  "source_root": "client-packs/frontend-to-miniapp-vue3-douyin-v1/source-snapshots/vue3-todo-v1.0.1",
   "aggregate_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
   "file_count": 12,
   "files": [
