@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "elmos.project-synthesis.request.v1.1",
+  "$id": "elmos.project-synthesis.request.v1.2",
   "title": "ELMOS governed project synthesis request",
   "type": "object",
   "additionalProperties": false,
@@ -21,8 +21,23 @@
     "open_questions",
     "approval"
   ],
+  "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": "1.2.0"}}},
+      "then": {
+        "properties": {
+          "project": {"required": ["generation_profile"]}
+        }
+      },
+      "else": {
+        "properties": {
+          "project": {"not": {"required": ["generation_profile"]}}
+        }
+      }
+    }
+  ],
   "properties": {
-    "schema_version": {"const": "1.1.0"},
+    "schema_version": {"enum": ["1.1.0", "1.2.0"]},
     "project": {
       "type": "object",
       "additionalProperties": false,
@@ -34,7 +49,8 @@
         "namespace": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"},
         "kind": {"enum": ["api", "worker"]},
         "persistence": {"enum": ["in-memory", "postgresql", "sqlite", "mysql"]},
-        "auth_mode": {"enum": ["none", "jwt", "oidc"]}
+        "auth_mode": {"enum": ["none", "jwt", "oidc"]},
+        "generation_profile": {"const": "relational-v2"}
       }
     },
     "actors": {
@@ -178,6 +194,18 @@
                 "field": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$"},
                 "operator": {"enum": ["gte", "gt", "lte", "lt", "eq", "neq"]},
                 "value": {"type": ["string", "number", "integer", "boolean"]}
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "entity", "left_field", "operator", "right_field"],
+              "properties": {
+                "type": {"const": "field-reference-comparison"},
+                "entity": {"$ref": "#/$defs/identifier"},
+                "left_field": {"$ref": "#/$defs/identifier"},
+                "operator": {"enum": ["gte", "gt", "lte", "lt", "eq", "neq"]},
+                "right_field": {"$ref": "#/$defs/identifier"}
               }
             }
           ]

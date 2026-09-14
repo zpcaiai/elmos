@@ -868,7 +868,9 @@ def _probe(
                 process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 if hasattr(os, "killpg"):
-                    os.killpg(process.pid, signal.SIGKILL)
+                    # SIGKILL does not exist on Windows, even though this
+                    # branch only executes on hosts that expose killpg.
+                    os.killpg(process.pid, getattr(signal, "SIGKILL", signal.SIGTERM))
                 else:
                     process.kill()
         # The child is gone, so the reader sees EOF and finishes. Bounded

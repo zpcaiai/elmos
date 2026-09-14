@@ -15,6 +15,7 @@ from typing import Any
 from .intake import approve_request, create_draft
 from .models import (
     SUPPORTED_AUTH_MODES,
+    SUPPORTED_GENERATION_PROFILES,
     SUPPORTED_LANGUAGES,
     SUPPORTED_PERSISTENCE,
     SUPPORTED_PROJECT_KINDS,
@@ -77,6 +78,7 @@ def _draft_from_intent(intent: dict[str, Any]) -> dict[str, Any]:
         project_kind=str(intent.get("project_kind", "api")),
         persistence=str(intent.get("persistence", "in-memory")),
         auth_mode=str(intent.get("auth_mode", "none")),
+        generation_profile=str(intent.get("generation_profile", "starter-v1")),
         requirement_sources=(
             intent.get("requirement_sources", []) if isinstance(intent.get("requirement_sources", []), list) else []
         ),
@@ -354,6 +356,11 @@ def _parser() -> argparse.ArgumentParser:
     draft.add_argument("--project-kind", choices=list(SUPPORTED_PROJECT_KINDS), default="api")
     draft.add_argument("--persistence", choices=list(SUPPORTED_PERSISTENCE), default="in-memory")
     draft.add_argument("--auth-mode", choices=list(SUPPORTED_AUTH_MODES), default="none")
+    draft.add_argument(
+        "--generation-profile",
+        choices=list(SUPPORTED_GENERATION_PROFILES),
+        default="starter-v1",
+    )
     draft.add_argument("--output", type=Path, required=True)
 
     analyze = subparsers.add_parser("analyze", help="Analyze a typed natural-language intent JSON")
@@ -442,6 +449,7 @@ def main(argv: list[str] | None = None) -> int:
                 project_kind=args.project_kind,
                 persistence=args.persistence,
                 auth_mode=args.auth_mode,
+                generation_profile=args.generation_profile,
             )
             _write_json(args.output, result)
         elif args.command == "analyze":

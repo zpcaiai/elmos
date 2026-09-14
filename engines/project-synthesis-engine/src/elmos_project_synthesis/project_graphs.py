@@ -346,11 +346,17 @@ def render_declared_dependency_graph(request: SynthesisRequest) -> dict[str, Any
         provider_id = (
             "provider:sqlite:3.45"
             if request.is_sqlite
-            else "provider:mysql:8.0"
+            else "provider:mysql:8.0.41"
             if request.is_mysql
             else "provider:postgresql:17.5"
         )
-        coordinate = "sqlite@3.45" if request.is_sqlite else "mysql@8.0" if request.is_mysql else "postgresql@17.5"
+        coordinate = (
+            "sqlite@3.45"
+            if request.is_sqlite
+            else "mysql@8.0.41"
+            if request.is_mysql
+            else "postgresql@17.5"
+        )
         nodes.append(
             {
                 "id": provider_id,

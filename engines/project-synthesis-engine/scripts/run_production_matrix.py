@@ -13,9 +13,12 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
+from elmos_project_synthesis.evidence_identity import git_identity, source_identity
 from elmos_project_synthesis.models import SUPPORTED_LANGUAGES, SUPPORTED_PROFILE_TARGETS
 
 SCRIPT = Path(__file__).with_name("run_production_acceptance.py").resolve()
+ENGINE_ROOT = SCRIPT.parent.parent
+REPOSITORY_ROOT = ENGINE_ROOT.parents[1]
 AUTH_MODES = ("jwt", "oidc")
 
 
@@ -151,6 +154,10 @@ def run_matrix(
         "environment": {
             "platform": platform.platform(),
             "python": sys.version.split()[0],
+        },
+        "evidence_subject": {
+            "repository": git_identity(REPOSITORY_ROOT),
+            "engine_source": source_identity(ENGINE_ROOT),
         },
         "replay": (
             "uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py"

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .container_images import MYSQL_IMAGE, POSTGRES_IMAGE
-from .models import EntitySpec, FieldSpec, SynthesisRequest
+from .models import EntitySpec, FieldSpec, SynthesisRequest, association_field_name
 from .rendering import clean, pretty_json
 
 
@@ -39,9 +39,26 @@ def _table(entity: EntitySpec) -> str:
     return entity.plural
 
 
+def _association_columns(request: SynthesisRequest, entity_name: str) -> tuple[str, str] | None:
+    for relation in request.relations:
+        if relation.kind == "many-to-many" and relation.association_entity.singular == entity_name:
+            return association_field_name(relation.source), association_field_name(relation.target)
+    return None
+
+
+def _association_foreign_key(request: SynthesisRequest, source: str) -> bool:
+    return any(
+        relation.kind == "many-to-many" and relation.association_entity.singular == source
+        for relation in request.relations
+    )
+
+
 def _comparison_sql(rule: dict[str, Any]) -> str | None:
     predicate = rule.get("predicate")
-    if not isinstance(predicate, dict) or predicate.get("type") != "field-comparison":
+    if not isinstance(predicate, dict) or predicate.get("type") not in {
+        "field-comparison",
+        "field-reference-comparison",
+    }:
         return None
     operator_name = predicate.get("operator")
     if not isinstance(operator_name, str):
@@ -54,8 +71,15 @@ def _comparison_sql(rule: dict[str, Any]) -> str | None:
         "eq": "=",
         "neq": "<>",
     }.get(operator_name)
+    if operator is None:
+        return None
+    if predicate.get("type") == "field-reference-comparison":
+        return (
+            f'CONSTRAINT "{rule["id"].lower()}_check" '
+            f'CHECK ("{predicate["left_field"]}" {operator} "{predicate["right_field"]}")'
+        )
     value = predicate.get("value")
-    if operator is None or not isinstance(value, int | float | bool | str):
+    if not isinstance(value, int | float | bool | str):
         return None
     literal = (
         "TRUE"
@@ -71,7 +95,10 @@ def _comparison_sql(rule: dict[str, Any]) -> str | None:
 
 def _mysql_comparison_sql(rule: dict[str, Any]) -> str | None:
     predicate = rule.get("predicate")
-    if not isinstance(predicate, dict) or predicate.get("type") != "field-comparison":
+    if not isinstance(predicate, dict) or predicate.get("type") not in {
+        "field-comparison",
+        "field-reference-comparison",
+    }:
         return None
     operator_name = predicate.get("operator")
     if not isinstance(operator_name, str):
@@ -84,8 +111,15 @@ def _mysql_comparison_sql(rule: dict[str, Any]) -> str | None:
         "eq": "=",
         "neq": "<>",
     }.get(operator_name)
+    if operator is None:
+        return None
+    if predicate.get("type") == "field-reference-comparison":
+        return (
+            f"CONSTRAINT `{rule['id'].lower()}_check` "
+            f"CHECK (`{predicate['left_field']}` {operator} `{predicate['right_field']}`)"
+        )
     value = predicate.get("value")
-    if operator is None or not isinstance(value, int | float | bool | str):
+    if not isinstance(value, int | float | bool | str):
         return None
     literal = (
         "TRUE"
@@ -125,6 +159,12 @@ def _sqlite_schema_sql(request: SynthesisRequest) -> str:
             'CONSTRAINT "tenant_id_not_blank" CHECK (length(trim("tenant_id")) > 0)',
             f'CONSTRAINT "pk_{entity.singular}" PRIMARY KEY ("tenant_id", "id")',
         ]
+        association_columns = _association_columns(request, entity.singular)
+        if association_columns is not None:
+            left, right = association_columns
+            columns.append(
+                f'CONSTRAINT "uq_{entity.singular}_pair" UNIQUE ("tenant_id", "{left}", "{right}")'
+            )
         for rule in request.raw["business_rules"]:
             predicate = rule.get("predicate")
             if isinstance(predicate, dict) and predicate.get("entity") == entity.singular:
@@ -139,7 +179,8 @@ def _sqlite_schema_sql(request: SynthesisRequest) -> str:
                 f'CONSTRAINT "fk_{relation.source}_{relation.source_field}_{relation.target}" '
                 f'FOREIGN KEY ("tenant_id", "{relation.source_field}") '
                 f'REFERENCES "{target_table}" ("tenant_id", "{relation.target_field}") '
-                "ON UPDATE CASCADE ON DELETE RESTRICT"
+                "ON UPDATE CASCADE ON DELETE "
+                + ("CASCADE" if _association_foreign_key(request, relation.source) else "RESTRICT")
             )
             columns.append(fk_constraint)
             if relation.enforces_uniqueness:
@@ -198,6 +239,12 @@ def _mysql_schema_sql(request: SynthesisRequest) -> str:
             "CONSTRAINT `tenant_id_not_blank` CHECK (CHAR_LENGTH(TRIM(`tenant_id`)) > 0)",
             "PRIMARY KEY (`tenant_id`, `id`)",
         ]
+        association_columns = _association_columns(request, entity.singular)
+        if association_columns is not None:
+            left, right = association_columns
+            columns.append(
+                f"CONSTRAINT `uq_{entity.singular}_pair` UNIQUE KEY (`tenant_id`, `{left}`, `{right}`)"
+            )
         for rule in request.raw["business_rules"]:
             predicate = rule.get("predicate")
             if isinstance(predicate, dict) and predicate.get("entity") == entity.singular:
@@ -212,7 +259,8 @@ def _mysql_schema_sql(request: SynthesisRequest) -> str:
                 f"CONSTRAINT `fk_{relation.source}_{relation.source_field}_{relation.target}` "
                 f"FOREIGN KEY (`tenant_id`, `{relation.source_field}`) "
                 f"REFERENCES `{target_table}` (`tenant_id`, `{relation.target_field}`) "
-                "ON UPDATE CASCADE ON DELETE RESTRICT"
+                "ON UPDATE CASCADE ON DELETE "
+                + ("CASCADE" if _association_foreign_key(request, relation.source) else "RESTRICT")
             )
             columns.append(fk_constraint)
             if relation.enforces_uniqueness:
@@ -270,6 +318,12 @@ def _schema_sql(request: SynthesisRequest) -> str:
             'CONSTRAINT "tenant_id_not_blank" CHECK (length(btrim("tenant_id")) > 0)',
             f'CONSTRAINT "pk_{entity.singular}" PRIMARY KEY ("tenant_id", "id")',
         ]
+        association_columns = _association_columns(request, entity.singular)
+        if association_columns is not None:
+            left, right = association_columns
+            columns.append(
+                f'CONSTRAINT "uq_{entity.singular}_pair" UNIQUE ("tenant_id", "{left}", "{right}")'
+            )
         for rule in request.raw["business_rules"]:
             predicate = rule.get("predicate")
             if isinstance(predicate, dict) and predicate.get("entity") == entity.singular:
@@ -303,7 +357,8 @@ def _schema_sql(request: SynthesisRequest) -> str:
                 f'ALTER TABLE "app"."{source_table}" ADD CONSTRAINT "{constraint}"',
                 f'  FOREIGN KEY ("tenant_id", "{relation.source_field}")',
                 f'  REFERENCES "app"."{target_table}" ("tenant_id", "{relation.target_field}")',
-                "  ON UPDATE CASCADE ON DELETE RESTRICT;",
+                "  ON UPDATE CASCADE ON DELETE "
+                + ("CASCADE;" if _association_foreign_key(request, relation.source) else "RESTRICT;"),
             ]
         )
         if relation.enforces_uniqueness:
@@ -668,7 +723,9 @@ def render_production_assets(request: SynthesisRequest) -> dict[str, str]:
                     {
                         "schema_version": "1.0.0",
                         "provider": "sqlite" if request.is_sqlite else ("mysql" if request.is_mysql else "postgresql"),
-                        "provider_version": "3.45" if request.is_sqlite else ("8.0" if request.is_mysql else "17.5"),
+                        "provider_version": (
+                            "3.45" if request.is_sqlite else ("8.0.41" if request.is_mysql else "17.5")
+                        ),
                         "strategy": "forward-only",
                         "migrations": [
                             {

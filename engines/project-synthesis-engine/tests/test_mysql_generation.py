@@ -89,7 +89,7 @@ def test_mysql_ddl_and_production_assets() -> None:
 
     manifest = json.loads(files["database/migrations/manifest.json"])
     assert manifest["provider"] == "mysql"
-    assert manifest["provider_version"] == "8.0"
+    assert manifest["provider_version"] == "8.0.41"
 
     migration_sql = files["database/migrations/001_initial.sql"]
     assert "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;" in migration_sql
@@ -203,7 +203,7 @@ def test_mysql_python_profile_renders_shared_assets() -> None:
 
     dep_graph = json.loads(files["requirements/declared-dependency-graph.json"])
     node_ids = {node["id"] for node in dep_graph["nodes"]}
-    assert "provider:mysql:8.0" in node_ids
+    assert "provider:mysql:8.0.41" in node_ids
 
     blueprint = json.loads(files["requirements/project-blueprint.json"])
     assert blueprint["applications"][0]["storage"] == "mysql"

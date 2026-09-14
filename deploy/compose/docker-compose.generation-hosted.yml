@@ -1,0 +1,46 @@
+# Hosted generation dependencies for closed local drills.
+# This file does not certify a cloud provider, a public IdP, or production DR.
+services:
+  generation-hosted-postgres:
+    image: postgres:17.5-alpine@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa
+    environment:
+      POSTGRES_USER: ${ELMOS_HOSTED_POSTGRES_USER:?set ELMOS_HOSTED_POSTGRES_USER}
+      POSTGRES_PASSWORD_FILE: /run/secrets/generation_hosted_postgres_password
+      POSTGRES_DB: ${ELMOS_HOSTED_POSTGRES_DATABASE:?set ELMOS_HOSTED_POSTGRES_DATABASE}
+    secrets:
+      - generation_hosted_postgres_password
+    ports:
+      - "127.0.0.1:${ELMOS_HOSTED_POSTGRES_PORT:-55432}:5432"
+    command:
+      - postgres
+      - -c
+      - ssl=off
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  generation-hosted-postgres-restore:
+    image: postgres:17.5-alpine@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa
+    environment:
+      POSTGRES_USER: ${ELMOS_HOSTED_POSTGRES_USER:?set ELMOS_HOSTED_POSTGRES_USER}
+      POSTGRES_PASSWORD_FILE: /run/secrets/generation_hosted_postgres_password
+      POSTGRES_DB: ${ELMOS_HOSTED_POSTGRES_RESTORE_DATABASE:?set ELMOS_HOSTED_POSTGRES_RESTORE_DATABASE}
+    secrets:
+      - generation_hosted_postgres_password
+    ports:
+      - "127.0.0.1:${ELMOS_HOSTED_POSTGRES_RESTORE_PORT:-55433}:5432"
+    command:
+      - postgres
+      - -c
+      - ssl=off
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+secrets:
+  generation_hosted_postgres_password:
+    file: ${ELMOS_HOSTED_POSTGRES_PASSWORD_FILE:?set ELMOS_HOSTED_POSTGRES_PASSWORD_FILE}
