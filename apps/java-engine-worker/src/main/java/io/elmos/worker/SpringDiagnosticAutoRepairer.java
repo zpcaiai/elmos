@@ -113,6 +113,23 @@ public final class SpringDiagnosticAutoRepairer {
             rulesApplied.addAll(secRes.rulesApplied());
         }
 
+        var legacySecurity = io.elmos.worker.security.SpringLegacySecurityModernizer.modernize(projectRoot);
+        if (legacySecurity.modified()) {
+            changesCount += legacySecurity.modifiedFiles().size();
+            modifiedFiles.addAll(legacySecurity.modifiedFiles());
+            rulesApplied.addAll(legacySecurity.rulesApplied());
+        }
+        blockingObligations.addAll(legacySecurity.blockingObligations());
+
+        var legacyIntegration = io.elmos.worker.integration.SpringLegacyEnterpriseIntegrationModernizer
+                .modernize(projectRoot);
+        if (legacyIntegration.modified()) {
+            changesCount += legacyIntegration.modifiedFiles().size();
+            modifiedFiles.addAll(legacyIntegration.modifiedFiles());
+            rulesApplied.addAll(legacyIntegration.rulesApplied());
+        }
+        blockingObligations.addAll(legacyIntegration.blockingObligations());
+
         // 5. JPA / Hibernate 6 SQM & Composite Query Modernizer
         var jpaRes = io.elmos.worker.jpa.SpringJpaHibernateQueryModernizer.modernize(projectRoot);
         if (jpaRes.modified()) {
