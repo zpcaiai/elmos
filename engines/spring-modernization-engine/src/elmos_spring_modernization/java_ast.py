@@ -282,10 +282,65 @@ class JavaLexer:
 # ==============================================================================
 
 @dataclass
+class Comment:
+    is_multiline: bool
+    text: str
+    trailing_newline: bool = False
+
+
+@dataclass
+class Space:
+    whitespace: str = ""
+    comments: List[Comment] = field(default_factory=list)
+
+    @classmethod
+    def build(cls, raw: str) -> "Space":
+        if not raw:
+            return cls()
+        comments: List[Comment] = []
+        i = 0
+        n = len(raw)
+        ws_buf: List[str] = []
+        while i < n:
+            if raw[i:i+2] == "//":
+                end = raw.find("\n", i + 2)
+                if end == -1:
+                    comments.append(Comment(is_multiline=False, text=raw[i:], trailing_newline=False))
+                    i = n
+                else:
+                    comments.append(Comment(is_multiline=False, text=raw[i:end], trailing_newline=True))
+                    i = end + 1
+                    ws_buf.append("\n")
+            elif raw[i:i+2] == "/*":
+                end = raw.find("*/", i + 2)
+                if end == -1:
+                    comments.append(Comment(is_multiline=True, text=raw[i:], trailing_newline=False))
+                    i = n
+                else:
+                    comments.append(Comment(is_multiline=True, text=raw[i:end+2], trailing_newline=False))
+                    i = end + 2
+            else:
+                ws_buf.append(raw[i])
+                i += 1
+        return cls(whitespace="".join(ws_buf), comments=comments)
+
+    def print(self) -> str:
+        parts = []
+        if self.comments:
+            for c in self.comments:
+                parts.append(c.text + ("\n" if c.trailing_newline else ""))
+        if self.whitespace:
+            parts.append(self.whitespace)
+        return "".join(parts)
+
+
+@dataclass
 class JavaASTNode:
     parent: Optional[JavaASTNode] = field(default=None, repr=False)
     leading_trivia: str = ""
     trailing_trivia: str = ""
+    prefix_space: Space = field(default_factory=Space)
+    suffix_space: Space = field(default_factory=Space)
     start_offset: int = 0
     end_offset: int = 0
     symbol_attributes: Dict[str, Any] = field(default_factory=dict)
@@ -436,9 +491,10 @@ class JavaASTParser:
     Parses Java source tokens into a strongly typed, attribute-resolved CompilationUnit AST.
     """
 
-    def __init__(self, tokens: List[Token]):
+    def __init__(self, tokens: List[Token], source: str = ""):
         self.tokens = tokens
         self.length = len(tokens)
+        self.source = source
         self.pos = 0
 
     def parse(self) -> CompilationUnit:
@@ -498,6 +554,7 @@ class JavaASTParser:
         name = "".join(parts).strip()
         decl = PackageDeclaration(name=name, start_offset=start_offset, end_offset=end_offset)
         decl.leading_trivia = pkg_tok.leading_trivia
+        decl.prefix_space = Space.build(pkg_tok.leading_trivia)
         return decl
 
     def _parse_import(self) -> ImportDeclaration:
@@ -532,6 +589,7 @@ class JavaASTParser:
             end_offset=end_offset
         )
         decl.leading_trivia = imp_tok.leading_trivia
+        decl.prefix_space = Space.build(imp_tok.leading_trivia)
         return decl
 
     def _parse_type_declaration(self, ctx: SymbolResolutionContext) -> Optional[TypeDeclaration]:
@@ -651,7 +709,14 @@ class JavaASTParser:
                         break
 
                 # Parse method declarations inside class body
-                if depth == 1 and t.type == TokenType.ANNOTATION_AT:
+                # Parse method declarations inside class body (annotated or unannotated)
+                if depth == 1 and (
+                    t.type == TokenType.ANNOTATION_AT
+                    or (t.type == TokenType.KEYWORD and t.value in (
+                        "public", "protected", "private", "static", "final", "abstract", "default", "synchronized", "void"
+                    ))
+                    or t.type == TokenType.IDENTIFIER
+                ):
                     method_decl = self._try_parse_method(ctx)
                     if method_decl:
                         members.append(method_decl)
@@ -674,6 +739,7 @@ class JavaASTParser:
             start_offset=type_start_offset or 0,
             end_offset=type_end_offset
         )
+        type_node.prefix_space = Space.build(leading_trivia)
         for anno in annotations:
             anno.parent = type_node
         for m in members:
@@ -740,6 +806,7 @@ class JavaASTParser:
             end_offset=end_offset
         )
         anno.leading_trivia = at_tok.leading_trivia
+        anno.prefix_space = Space.build(at_tok.leading_trivia)
         for arg in arguments:
             arg.parent = anno
         return anno
@@ -798,45 +865,93 @@ class JavaASTParser:
 
         self.pos += 1  # '('
         param_depth = 1
+        param_tokens: List[Token] = []
+        parameters: List[MethodParameter] = []
+
         while self.pos < self.length and param_depth > 0:
             t = self._peek()
+            if not t:
+                break
             if t.value == "(":
                 param_depth += 1
+                param_tokens.append(t)
             elif t.value == ")":
                 param_depth -= 1
+                if param_depth == 0:
+                    if param_tokens:
+                        parameters.append(self._build_method_param(param_tokens))
+                    self.pos += 1
+                    break
+                else:
+                    param_tokens.append(t)
+            elif t.value == "," and param_depth == 1:
+                if param_tokens:
+                    parameters.append(self._build_method_param(param_tokens))
+                param_tokens = []
+            else:
+                param_tokens.append(t)
             self.pos += 1
 
         method_end = self.pos
         # Skip throws or body
+        body_content = None
         while self.pos < self.length:
             t = self._peek()
             if not t or t.value in (";", "{"):
                 if t and t.value == "{":
+                    body_start_offset = t.start
                     body_depth = 1
                     self.pos += 1
                     while self.pos < self.length and body_depth > 0:
                         bt = self._peek()
+                        if not bt:
+                            break
                         if bt.value == "{":
                             body_depth += 1
                         elif bt.value == "}":
                             body_depth -= 1
+                            if body_depth == 0:
+                                method_end = bt.end
+                                self.pos += 1
+                                break
                         method_end = bt.end
                         self.pos += 1
+                    if self.source:
+                        body_content = self.source[body_start_offset:method_end]
                 elif t and t.value == ";":
                     method_end = t.end
                     self.pos += 1
                 break
             self.pos += 1
 
-        return MethodDeclaration(
+        decl = MethodDeclaration(
             annotations=annotations,
             modifiers=modifiers,
             return_type="".join(type_parts).strip(),
             name=method_name,
+            parameters=parameters,
             leading_trivia=leading_trivia,
             start_offset=method_start or 0,
-            end_offset=method_end
+            end_offset=method_end,
+            body=body_content
         )
+        decl.prefix_space = Space.build(leading_trivia)
+        for param in parameters:
+            param.parent = decl
+        for anno in annotations:
+            anno.parent = decl
+        return decl
+
+    def _build_method_param(self, tokens: List[Token]) -> MethodParameter:
+        if not tokens:
+            return MethodParameter(type_name="", name="")
+        name = tokens[-1].value
+        type_parts = [t.value for t in tokens[:-1] if t.type != TokenType.ANNOTATION_AT]
+        type_name = "".join(type_parts).strip()
+        param = MethodParameter(type_name=type_name, name=name)
+        param.start_offset = tokens[0].start
+        param.end_offset = tokens[-1].end
+        return param
 
 
 # ==============================================================================
@@ -1045,3 +1160,236 @@ class JavaASTRewriter:
             res = res[:edit.start] + edit.replacement + res[edit.end:]
 
         return res, visitor.rewrites_count
+
+    @classmethod
+    def rewrite_with_lst(
+        cls,
+        code: str,
+        mutator_fn: Any
+    ) -> Tuple[str, int]:
+        """
+        Parses source code into a CompilationUnit LST, executes in-memory tree mutations
+        via JavaLSTMutator, and formats the output via AutoFormatVisitor.
+        Completely immune to coordinate drift, string scanning, and regular expressions.
+        """
+        lexer = JavaLexer(code)
+        tokens = lexer.tokenize()
+        parser = JavaASTParser(tokens, source=code)
+        unit = parser.parse()
+
+        mutator = JavaLSTMutator(unit)
+        mutator_fn(mutator)
+
+        if mutator.mutations_count == 0:
+            return code, 0
+
+        formatter = AutoFormatVisitor()
+        formatted_code = formatter.format(unit)
+        return formatted_code, mutator.mutations_count
+
+
+# ==============================================================================
+# 8. LST Mutator & AutoFormat Engine (Pure Tree Mutation & Reconstruction)
+# ==============================================================================
+
+class JavaLSTMutator:
+    """
+    Direct in-memory tree mutator for Lossless Semantic Trees (LST).
+    Executes node additions, removals, and replacements without textual coordinates.
+    """
+
+    def __init__(self, unit: CompilationUnit):
+        self.unit = unit
+        self.mutations_count = 0
+
+    def add_import(self, import_fqcn: str, is_static: bool = False) -> None:
+        for imp in self.unit.imports:
+            if imp.name == import_fqcn and imp.is_static == is_static:
+                return
+        decl = ImportDeclaration(name=import_fqcn, is_static=is_static)
+        decl.prefix_space = Space(whitespace="\n")
+        self.unit.imports.append(decl)
+        self.mutations_count += 1
+
+    def remove_import(self, import_fqcn: str) -> None:
+        orig_len = len(self.unit.imports)
+        self.unit.imports = [imp for imp in self.unit.imports if imp.name != import_fqcn]
+        if len(self.unit.imports) != orig_len:
+            self.mutations_count += 1
+
+    def replace_import(self, old_fqcn: str, new_fqcn: str) -> bool:
+        for imp in self.unit.imports:
+            if imp.name == old_fqcn:
+                imp.name = new_fqcn
+                self.mutations_count += 1
+                return True
+        return False
+
+    def replace_annotation(self, holder: JavaASTNode, old_anno_name: str, new_anno: AnnotationNode) -> bool:
+        if not hasattr(holder, "annotations"):
+            return False
+        replaced = False
+        new_annos: List[AnnotationNode] = []
+        for anno in getattr(holder, "annotations"):
+            if anno.name == old_anno_name or (anno.resolved_type and anno.resolved_type.endswith(old_anno_name)):
+                new_annos.append(new_anno)
+                new_anno.parent = holder
+                replaced = True
+                self.mutations_count += 1
+            else:
+                new_annos.append(anno)
+        setattr(holder, "annotations", new_annos)
+        return replaced
+
+    def replace_extends(self, type_decl: TypeDeclaration, old_extends: str, new_implements: Optional[str] = None) -> bool:
+        orig_len = len(type_decl.extends_types)
+        type_decl.extends_types = [
+            ext for ext in type_decl.extends_types
+            if ext.name != old_extends and not (ext.resolved_type and ext.resolved_type.endswith(old_extends))
+        ]
+        if len(type_decl.extends_types) != orig_len:
+            if new_implements:
+                if not any(imp.name == new_implements for imp in type_decl.implements_types):
+                    type_decl.implements_types.append(TypeReference(name=new_implements, parent=type_decl))
+            self.mutations_count += 1
+            return True
+        return False
+
+    def add_implements(self, type_decl: TypeDeclaration, iface_name: str) -> None:
+        if not any(imp.name == iface_name for imp in type_decl.implements_types):
+            type_decl.implements_types.append(TypeReference(name=iface_name, parent=type_decl))
+            self.mutations_count += 1
+
+    def replace_method_body(self, method_decl: MethodDeclaration, new_body: str) -> None:
+        method_decl.body = new_body
+        self.mutations_count += 1
+
+
+class AutoFormatVisitor:
+    """
+    Renders an in-memory CompilationUnit LST back into formatted Java source text,
+    adhering to standard 4-space indentation, preserving attached comments,
+    and rendering clean class/method structures without coordinate drift.
+    """
+
+    def __init__(self, indent_size: int = 4):
+        self.indent_size = indent_size
+
+    def format(self, unit: CompilationUnit) -> str:
+        lines: List[str] = []
+
+        # 1. Package
+        if unit.package_decl:
+            if unit.package_decl.prefix_space.comments:
+                for c in unit.package_decl.prefix_space.comments:
+                    lines.append(c.text)
+            lines.append(f"package {unit.package_decl.name};")
+            lines.append("")
+
+        # 2. Imports
+        if unit.imports:
+            static_imports = [imp for imp in unit.imports if imp.is_static]
+            normal_imports = [imp for imp in unit.imports if not imp.is_static]
+            for imp in static_imports:
+                lines.append(f"import static {imp.name};")
+            if static_imports and normal_imports:
+                lines.append("")
+            for imp in normal_imports:
+                lines.append(f"import {imp.name};")
+            lines.append("")
+
+        # 3. Types
+        for i, type_decl in enumerate(unit.type_declarations):
+            if i > 0:
+                lines.append("")
+            lines.extend(self._format_type_declaration(type_decl, indent_level=0))
+
+        return "\n".join(lines).strip() + "\n"
+
+    def _format_type_declaration(self, decl: TypeDeclaration, indent_level: int) -> List[str]:
+        indent = " " * (indent_level * self.indent_size)
+        lines: List[str] = []
+
+        if decl.prefix_space.comments:
+            for c in decl.prefix_space.comments:
+                lines.append(f"{indent}{c.text}")
+
+        for anno in decl.annotations:
+            lines.append(f"{indent}{self._format_annotation(anno)}")
+
+        mods = (" ".join(decl.modifiers) + " ") if decl.modifiers else ""
+        header_parts = [f"{indent}{mods}{decl.kind} {decl.name}"]
+
+        if decl.extends_types:
+            ext_names = ", ".join(ext.name for ext in decl.extends_types)
+            header_parts.append(f"extends {ext_names}")
+
+        if decl.implements_types:
+            imp_names = ", ".join(imp.name for imp in decl.implements_types)
+            header_parts.append(f"implements {imp_names}")
+
+        header = " ".join(header_parts) + " {"
+        lines.append(header)
+
+        # Members
+        for idx, member in enumerate(decl.members):
+            if idx > 0:
+                lines.append("")
+            if isinstance(member, MethodDeclaration):
+                lines.extend(self._format_method(member, indent_level + 1))
+            elif isinstance(member, TypeDeclaration):
+                lines.extend(self._format_type_declaration(member, indent_level + 1))
+
+        lines.append(f"{indent}}}")
+        return lines
+
+    def _format_annotation(self, anno: AnnotationNode) -> str:
+        if not anno.arguments:
+            return f"@{anno.name}"
+        args_str: List[str] = []
+        for arg in anno.arguments:
+            if arg.name and arg.name != "value":
+                args_str.append(f"{arg.name} = {arg.value}")
+            elif arg.name == "value" and len(anno.arguments) > 1:
+                args_str.append(f"value = {arg.value}")
+            else:
+                args_str.append(arg.value)
+        return f"@{anno.name}({', '.join(args_str)})"
+
+    def _format_method(self, method: MethodDeclaration, indent_level: int) -> List[str]:
+        indent = " " * (indent_level * self.indent_size)
+        lines: List[str] = []
+
+        if method.prefix_space.comments:
+            for c in method.prefix_space.comments:
+                lines.append(f"{indent}{c.text}")
+
+        for anno in method.annotations:
+            lines.append(f"{indent}{self._format_annotation(anno)}")
+
+        mods = (" ".join(method.modifiers) + " ") if method.modifiers else ""
+        ret = (method.return_type + " ") if method.return_type else ""
+        params_str = ", ".join(f"{p.type_name} {p.name}" for p in method.parameters)
+        throws_str = (" throws " + ", ".join(method.throws_types)) if method.throws_types else ""
+
+        sig = f"{indent}{mods}{ret}{method.name}({params_str}){throws_str}"
+
+        if method.body is None:
+            lines.append(f"{sig};")
+        else:
+            raw_body = method.body.strip()
+            # If body already starts and ends with braces, strip outer braces
+            if raw_body.startswith("{") and raw_body.endswith("}"):
+                inner = raw_body[1:-1].strip()
+            else:
+                inner = raw_body
+
+            lines.append(f"{sig} {{")
+            body_indent = " " * ((indent_level + 1) * self.indent_size)
+            for bl in inner.splitlines():
+                sbl = bl.strip()
+                if sbl:
+                    lines.append(f"{body_indent}{sbl}")
+            lines.append(f"{indent}}}")
+
+        return lines

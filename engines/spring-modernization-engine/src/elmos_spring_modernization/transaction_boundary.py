@@ -178,3 +178,12 @@ class TransactionBoundaryExtractor:
                         )
 
         return findings
+
+    @classmethod
+    def extract_from_ast(cls, type_decl: Any) -> list[str]:
+        """
+        Runs Control Flow Graph (CFG) based self-invocation detection directly on a TypeDeclaration AST.
+        """
+        from .control_flow import TransactionalSelfInvocationDetector
+        findings = TransactionalSelfInvocationDetector.analyze_type(type_decl)
+        return [f"{f.severity}: {f.message} Location: {f.location}" for f in findings]
