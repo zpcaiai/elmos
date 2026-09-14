@@ -10,8 +10,8 @@ OpenRewrite Spring recipes. Bean graphs, security, persistence, transactions,
 messaging, cache, scheduler, views, reactive backpressure, and provider
 behavior are emitted as FCM obligations and remain conditional until their
 real contract, holdout, provider, customer, and independent verification exists.
-Nine of this pack's twelve exact routes now have bounded local source/target
-build, startup, and HTTP behavior evidence. Those synthetic reference receipts
+All twelve exact routes now have bounded local source/target build, startup,
+and observable behavior evidence. Those synthetic reference receipts
 do not close the pack-level verification tracks.
 
 The fingerprint also emits an explicit `unmapped-spring-construct` observation

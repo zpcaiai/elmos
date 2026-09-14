@@ -266,8 +266,10 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             "boot-2.7-maven-to-boot-4.1.0-java-21": ("2.7.18", "17"),
             "boot-3.0-3.4-maven-to-boot-4.1.0-java-21": ("3.4.1", "17"),
             "boot-3.5-maven-to-boot-4.1.0-java-21": ("3.5.3", "21"),
+            "boot-1.5-gradle-to-boot-4.1.0-java-21": ("1.5.22.RELEASE", "8"),
             "boot-2.x-gradle-to-boot-4.1.0-java-21": ("2.7.18", "17"),
             "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21": ("5.3.39", "11"),
+            "spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21": ("5.3.39", "11"),
         }
         for route_id, (source_boot, source_java) in expected.items():
             record = json.loads(
@@ -298,6 +300,33 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_boot_4_1_1_local_records_are_exact(self) -> None:
+        expected = {
+            "boot-1.5-gradle-to-boot-4.1.1-java-21": ("1.5.22.RELEASE", "8"),
+            "spring-mvc-3.2-7.0-maven-to-boot-4.1.1-java-21": ("5.3.39", "11"),
+            "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21": ("5.3.39", "11"),
+        }
+        for route_id, (source_boot, source_java) in expected.items():
+            record = json.loads(
+                (ROOT / "evidence/spring-routes" / f"{route_id}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(record["execution_status"], "PASSED_LOCAL")
+            self.assertTrue(record["behavioral_parity"])
+            self.assertEqual(
+                record["recorded_tuple"],
+                {
+                    "source_boot": source_boot,
+                    "source_java": source_java,
+                    "target_boot": "4.1.1",
+                    "target_java": "21",
+                },
+            )
+            self.assertEqual(record["external_evidence_status"], "NOT_RUN")
+            self.assertEqual(record["independent_verification"], "NOT_RUN")
+            self.assertEqual(record["certification_status"], "NOT_CERTIFIED")
 
     def test_tampered_boot_3_5_evidence_fails_contract_validator(self) -> None:
         target_evidence = ROOT / "evidence/spring-routes/boot-2.7-maven-to-boot-3.5.3-java-21.json"
@@ -348,6 +377,32 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             REFERENCE.gradle_settings(route),
             "rootProject.name = 'spring-reference-2-7-18'\n",
         )
+
+    def test_boot_1_5_gradle_fixture_and_bootstrap_bind_both_toolchains(self) -> None:
+        route = REFERENCE.ROUTES["boot-1.5-gradle-to-boot-4.1.1-java-21"]
+        source_build = REFERENCE.gradle_build(route)
+        self.assertNotIn("useJUnitPlatform()", source_build)
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            (project / "build.gradle").write_text(source_build, encoding="utf-8")
+            receipt = REFERENCE.bootstrap_legacy_gradle_descriptor(project, route)
+            target_build = (project / "build.gradle").read_text(encoding="utf-8")
+        self.assertEqual(receipt["source_gradle"], "Gradle 4.10.3")
+        self.assertEqual(receipt["target_gradle"], "Gradle 8.14.3")
+        self.assertIn("version '4.1.1'", target_build)
+        self.assertIn("version '1.1.7'", target_build)
+        self.assertIn("sourceCompatibility = '21'", target_build)
+        self.assertIn("useJUnitPlatform()", target_build)
+
+    def test_boot_1_5_gradle_bootstrap_rejects_non_admitted_route(self) -> None:
+        route = REFERENCE.ROUTES["boot-2.x-gradle-to-boot-4.1.1-java-21"]
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            (project / "build.gradle").write_text(
+                REFERENCE.gradle_build(route), encoding="utf-8"
+            )
+            with self.assertRaises(REFERENCE.RunFailure):
+                REFERENCE.bootstrap_legacy_gradle_descriptor(project, route)
 
     def test_all_catalogued_boot_routes_have_exact_local_executor_entries(self) -> None:
         expected = {

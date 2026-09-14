@@ -264,17 +264,17 @@ class SpringRouteCatalogTest {
         }
     }
 
-    @Test void olderSpringMvcLinesSelectTheUnverifiedPreparationEdge() {
+    @Test void olderSpringMvcLinesCarryOnlyTheRecordedFcmTuple() {
         SpringRoute inventory = SpringRouteCatalog
                 .byId("spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21").orElseThrow();
-        assertEquals(EvidenceStatus.NOT_RUN, inventory.routeEvidence());
+        assertEquals(EvidenceStatus.PASSED_LOCAL, inventory.routeEvidence());
         assertTrue(inventory.implemented());
         assertEquals("/rewrite/spring-framework-3.2-5.2-mvc-to-spring-boot-3.5.3.yml",
                 inventory.recipeResource());
         assertEquals("io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21",
                 inventory.recipeId());
-        assertTrue(inventory.verifiedSourceBoot().isBlank());
-        assertTrue(inventory.verifiedSourceJava().isBlank());
+        assertEquals("5.2.25.RELEASE", inventory.verifiedSourceBoot());
+        assertEquals("11", inventory.verifiedSourceJava());
 
         var selection = SpringRouteCatalog.selectSpringMvc(
                 "5.2.22.RELEASE", "8", "maven", "3.5.3", "21");
@@ -351,6 +351,10 @@ class SpringRouteCatalogTest {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("1.5.22.RELEASE", route.verifiedSourceBoot());
                 assertEquals("8", route.verifiedSourceJava());
+            } else if (route.routeId().equals("boot-1.5-gradle-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("1.5.22.RELEASE", route.verifiedSourceBoot());
+                assertEquals("8", route.verifiedSourceJava());
             } else if (route.routeId().equals("boot-2.0-2.6-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("2.3.12.RELEASE", route.verifiedSourceBoot());
@@ -384,6 +388,10 @@ class SpringRouteCatalogTest {
                 assertEquals("4.0.0", route.verifiedSourceBoot());
                 assertEquals("21", route.verifiedSourceJava());
             } else if (route.routeId().equals("spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21")) {
+                assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
+                assertEquals("5.3.39", route.verifiedSourceBoot());
+                assertEquals("11", route.verifiedSourceJava());
+            } else if (route.routeId().equals("spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21")) {
                 assertEquals(EvidenceStatus.PASSED_LOCAL, route.routeEvidence(), route.routeId());
                 assertEquals("5.3.39", route.verifiedSourceBoot());
                 assertEquals("11", route.verifiedSourceJava());
