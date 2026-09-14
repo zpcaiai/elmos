@@ -17,6 +17,8 @@ from .messaging_middleware_emitter import (
     MessageBrokerType,
     MessageDeliveryStatus,
     ResilientMessageConsumerPipeline,
+    idempotent_consumer_ddl,
+    idempotent_consumer_insert_sql,
 )
 
 __all__ = [
@@ -24,6 +26,8 @@ __all__ = [
     "MessageDeliveryStatus",
     "ConsumedMessage",
     "IdempotentDeduplicationStore",
+    "idempotent_consumer_ddl",
+    "idempotent_consumer_insert_sql",
     "ExponentialBackoffWithJitter",
     "DeadLetterRecord",
     "DeadLetterQueueManager",

@@ -24,7 +24,10 @@ from .production_contract import (
     TENANT_CLAIM,
     TENANT_SETTING,
     all_entity_sql,
+    fixture_chain,
     production_contract,
+    relation_parents,
+    uuid_relation_fields,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (
@@ -185,6 +188,7 @@ def _security_source(request: SynthesisRequest) -> str:
 
 def _store_source(request: SynthesisRequest) -> str:
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="?")}
+    uuids = uuid_relation_fields(request)
     classes: list[str] = []
     for entity in request.entities:
         entity_class = pascal(entity.singular)
@@ -195,7 +199,10 @@ def _store_source(request: SynthesisRequest) -> str:
             ["rows.getString(1)"] + [_reader(field, index + 2) for index, field in enumerate(entity.fields)]
         )
         bind_upsert = "\n                statement.".join(
-            f"setObject({index + 3}, payload.{camel(field.name)})" for index, field in enumerate(entity.fields)
+            f"setObject({index + 3}, java.util.UUID.fromString(payload.{camel(field.name)}))"
+            if (entity.singular, field.name) in uuids
+            else f"setObject({index + 3}, payload.{camel(field.name)})"
+            for index, field in enumerate(entity.fields)
         )
         classes.append(
             f"""
@@ -449,10 +456,80 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
     )
 
 
+def _kotlin_body_expression(request: SynthesisRequest, entity: object, parent_variables: dict[str, str]) -> str:
+    parents = dict(relation_parents(request, entity.singular))  # type: ignore[attr-defined]
+    pieces: list[str] = []
+    for field in entity.fields:  # type: ignore[attr-defined]
+        key = camel(field.name)
+        if field.name in parents:
+            variable = parent_variables[parents[field.name]]
+            pieces.append(f'"\\"{key}\\": \\"" + {variable} + "\\""')
+        else:
+            literal = json.dumps(_sample_json(field))
+            escaped = literal.replace("\\", "\\\\").replace('"', '\\"')
+            pieces.append(f'"\\"{key}\\": {escaped}"')
+    joined = ' + ", " + '.join(pieces) if pieces else '""'
+    return '"{" + ' + joined + ' + "}"'
+
+
+def _kotlin_entity_scenario_methods(request: SynthesisRequest) -> str:
+    by_name = {entity.singular: entity for entity in request.entities}
+    blocks: list[str] = []
+    for entity in request.entities:
+        parent_variables: dict[str, str] = {}
+        fixture_lines: list[str] = []
+        for parent in fixture_chain(request, entity.singular):
+            variable = f"{camel(parent)}Id"
+            parent_variables[parent] = variable
+            parent_body = _kotlin_body_expression(request, by_name[parent], parent_variables)
+            fixture_lines.extend(
+                (
+                    f"val {variable} = UUID.randomUUID().toString()",
+                    f'val created{pascal(parent)} = send("PUT", "/{by_name[parent].plural}/" + {variable}, tenantA, {parent_body})',
+                    f"assertEquals(200, created{pascal(parent)}.statusCode(), created{pascal(parent)}.body())",
+                )
+            )
+        kotlin_body = _kotlin_body_expression(request, entity, parent_variables)
+        fixtures = ("\n".join(fixture_lines) + "\n").replace("\n", "\n                ") if fixture_lines else ""
+        blocks.append(
+            clean(
+                f"""
+                @Test
+                fun isolatesTenantsFor{pascal(entity.singular)}() {{
+                    val issuer = requireNotNull(System.getenv("{ENV_AUTH_ISSUER}"))
+                    val audience = requireNotNull(System.getenv("{ENV_AUTH_AUDIENCE}"))
+                    val tenantA = token("tenant-a", issuer, audience, true)
+                    val tenantB = token("tenant-b", issuer, audience, true)
+                    {fixtures}// upsert-and-read
+                    val recordId = UUID.randomUUID().toString()
+                    val created = send("PUT", "/{entity.plural}/$recordId", tenantA, {kotlin_body})
+                    assertEquals(200, created.statusCode(), created.body())
+                    val read = send("GET", "/{entity.plural}/$recordId", tenantA, null)
+                    assertEquals(200, read.statusCode())
+                    assertTrue(read.body().contains(recordId))
+
+                    // list-scoped-to-tenant
+                    val listed = send("GET", "/{entity.plural}", tenantA, null)
+                    assertEquals(200, listed.statusCode())
+                    assertTrue(listed.body().contains(recordId))
+
+                    // cross-tenant-read-blocked
+                    assertEquals(404, send("GET", "/{entity.plural}/$recordId", tenantB, null).statusCode())
+                    assertFalse(send("GET", "/{entity.plural}", tenantB, null).body().contains(recordId))
+
+                    // delete-removes-record
+                    assertEquals(204, send("DELETE", "/{entity.plural}/$recordId", tenantA, null).statusCode())
+                    assertEquals(404, send("GET", "/{entity.plural}/$recordId", tenantA, null).statusCode())
+                }}
+                """
+            ).rstrip()
+        )
+    return "\n\n".join(blocks)
+
+
 def _integration_test_source(request: SynthesisRequest, port: int) -> str:
     entity = request.entities[0]
-    body_json = json.dumps({field.name: _sample_json(field) for field in entity.fields})
-    kotlin_body = body_json.replace("\\", "\\\\").replace('"', '\\"')
+    entity_scenarios = _kotlin_entity_scenario_methods(request).replace("\n", "\n            ")
     if request.auth_mode == "jwt":
         signer = f"""
         private fun algorithm(valid: Boolean): Algorithm {{
@@ -546,7 +623,6 @@ def _integration_test_source(request: SynthesisRequest, port: int) -> str:
                 val issuer = requireNotNull(System.getenv("{ENV_AUTH_ISSUER}"))
                 val audience = requireNotNull(System.getenv("{ENV_AUTH_AUDIENCE}"))
                 val tenantA = token("tenant-a", issuer, audience, true)
-                val tenantB = token("tenant-b", issuer, audience, true)
 
                 // health-unauthenticated
                 assertEquals(200, send("GET", "/health", null, null).statusCode())
@@ -560,28 +636,9 @@ def _integration_test_source(request: SynthesisRequest, port: int) -> str:
                 assertEquals(401, send("GET", "/{entity.plural}", token("tenant-a", "https://attacker.invalid/", audience, true), null).statusCode())
                 // missing-tenant-claim-rejected
                 assertEquals(401, send("GET", "/{entity.plural}", token(null, issuer, audience, true), null).statusCode())
-
-                // upsert-and-read
-                val recordId = UUID.randomUUID().toString()
-                val created = send("PUT", "/{entity.plural}/$recordId", tenantA, "{kotlin_body}")
-                assertEquals(200, created.statusCode(), created.body())
-                val read = send("GET", "/{entity.plural}/$recordId", tenantA, null)
-                assertEquals(200, read.statusCode())
-                assertTrue(read.body().contains(recordId))
-
-                // list-scoped-to-tenant
-                val listed = send("GET", "/{entity.plural}", tenantA, null)
-                assertEquals(200, listed.statusCode())
-                assertTrue(listed.body().contains(recordId))
-
-                // cross-tenant-read-blocked
-                assertEquals(404, send("GET", "/{entity.plural}/$recordId", tenantB, null).statusCode())
-                assertFalse(send("GET", "/{entity.plural}", tenantB, null).body().contains(recordId))
-
-                // delete-removes-record
-                assertEquals(204, send("DELETE", "/{entity.plural}/$recordId", tenantA, null).statusCode())
-                assertEquals(404, send("GET", "/{entity.plural}/$recordId", tenantA, null).statusCode())
             }}
+
+            {entity_scenarios}
         }}
         """
     )

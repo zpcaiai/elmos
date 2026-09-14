@@ -33,13 +33,19 @@ def generate_enterprise_dotnet_files(request: SynthesisRequest) -> dict[str, str
     """Generate all files for a production-grade enterprise .NET 8 microservice."""
     files: dict[str, str] = {}
     ns = request.namespace or "Elmos.Enterprise"
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
+    entities = request.entities or (EntitySpec(singular="order", plural="orders", fields=()),)
+    entity = entities[0]
     entity_name = pascal(entity.singular)
     entity_plural = pascal(entity.plural)
     proj_name = pascal(request.project_name) or "EnterpriseService"
     relations = request.canonical_relations
 
     # 1. .csproj
+    db_package_ref = (
+        '    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />'
+        if request.is_mysql
+        else '    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />'
+    )
     files[f"{proj_name}.csproj"] = f"""<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -51,7 +57,7 @@ def generate_enterprise_dotnet_files(request: SynthesisRequest) -> dict[str, str
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+{db_package_ref}
     <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
     <PackageReference Include="Confluent.Kafka" Version="2.4.0" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
@@ -62,45 +68,74 @@ def generate_enterprise_dotnet_files(request: SynthesisRequest) -> dict[str, str
 """
 
     # 2. appsettings.json
-    files["appsettings.json"] = """{
-  "Logging": {
-    "LogLevel": {
+    db_conn_setting = (
+        '"MySQL": "Server=localhost;Port=3306;Database=enterprise_db;User=root;Password=root;"'
+        if request.is_mysql
+        else '"Postgres": "Host=localhost;Port=5432;Database=enterprise_db;Username=postgres;Password=postgres"'
+    )
+    files["appsettings.json"] = f"""{{
+  "Logging": {{
+    "LogLevel": {{
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning",
       "Microsoft.EntityFrameworkCore.Database.Command": "Warning"
-    }
-  },
+    }}
+  }},
   "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "Postgres": "Host=localhost;Port=5432;Database=enterprise_db;Username=postgres;Password=postgres",
+  "ConnectionStrings": {{
+    {db_conn_setting},
     "Redis": "localhost:6379,abortConnect=false"
-  },
-  "Kafka": {
+  }},
+  "Kafka": {{
     "BootstrapServers": "localhost:9092",
     "OutboxTopic": "enterprise.domain.events",
     "GroupId": "enterprise-outbox-worker"
-  }
-}
+  }}
+}}
 """
 
-    # 3. Models/Entities.cs
-    entity_fields = []
-    for f in entity.fields:
-        cs_t = _csharp_type(f.type)
-        entity_fields.append(f"        public {cs_t} {pascal(f.name)} {{ get; set; }} = default!;")
-    fields_code = (
-        "\n".join(entity_fields)
-        if entity_fields
-        else "        public string Reference { get; set; } = default!;\n        public decimal Total { get; set; };"
-    )
+    # 3. Models/Entities.cs (Multi-Entity with EF Core Navigation Properties)
+    entity_classes = []
+    for ent in entities:
+        ent_name = pascal(ent.singular)
+        ent_fields = []
+        existing_field_names = {f.name for f in ent.fields}
+        for f in ent.fields:
+            cs_t = _csharp_type(f.type)
+            ent_fields.append(f"        public {cs_t} {pascal(f.name)} {{ get; set; }} = default!;")
+        fields_code = (
+            "\n".join(ent_fields)
+            if ent_fields
+            else "        public string Reference { get; set; } = default!;\n        public decimal Total { get; set; };"
+        )
 
-    # Relational foreign keys
-    rel_fields = []
-    for rel in relations:
-        if rel.target.lower() == entity.singular.lower() and rel.target_field:
-            rel_fields.append(f"        public string {pascal(rel.target_field)} {{ get; set; }} = default!;")
-    rel_code = "\n" + "\n".join(rel_fields) if rel_fields else ""
+        rel_fields = []
+        for rel in relations:
+            if rel.source == ent.singular and rel.source_field:
+                target_name = pascal(rel.target)
+                sf_name = pascal(rel.source_field)
+                if rel.source_field not in existing_field_names:
+                    rel_fields.append(f"        public string {sf_name} {{ get; set; }} = default!;")
+                    existing_field_names.add(rel.source_field)
+                rel_fields.append(f"        [ForeignKey(nameof({sf_name}))]\n        public virtual {target_name}? {target_name} {{ get; set; }}")
 
+        for rel in relations:
+            if rel.target == ent.singular and rel.source_field:
+                source_name = pascal(rel.source)
+                source_ent = next((e for e in entities if e.singular == rel.source), None)
+                source_plural_name = pascal(source_ent.plural) if source_ent else f"{source_name}s"
+                rel_fields.append(f"        public virtual ICollection<{source_name}> {source_plural_name} {{ get; set; }} = new List<{source_name}>();")
+
+        rel_code = "\n" + "\n".join(rel_fields) if rel_fields else ""
+
+        class_code = f"""    [Table("{ent.plural}")]
+    public class {ent_name} : AuditEntity
+    {{
+{fields_code}{rel_code}
+    }}"""
+        entity_classes.append(class_code)
+
+    all_entity_classes_str = "\n\n".join(entity_classes)
     files["Models/Entities.cs"] = f"""using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -130,11 +165,7 @@ namespace {ns}.Models
         public bool IsDeleted {{ get; set; }} = false;
     }}
 
-    [Table("{entity.plural}")]
-    public class {entity_name} : AuditEntity
-    {{
-{fields_code}{rel_code}
-    }}
+{all_entity_classes_str}
 
     [Table("outbox_events")]
     public class OutboxEvent
@@ -184,6 +215,20 @@ namespace {ns}.Models
 """
 
     # 4. Data/AppDbContext.cs
+    all_db_sets = "\n".join(
+        f"        public DbSet<{pascal(e.singular)}> {pascal(e.plural)} => Set<{pascal(e.singular)}>();"
+        for e in entities
+    )
+    model_configs_list = []
+    for e in entities:
+        ename = pascal(e.singular)
+        model_configs_list.append(f"""            modelBuilder.Entity<{ename}>(entity =>
+            {{
+                entity.HasIndex(x => new {{ x.TenantId, x.IsDeleted }});
+                entity.HasQueryFilter(x => !x.IsDeleted);
+            }});""")
+    all_model_configs = "\n\n".join(model_configs_list)
+
     files["Data/AppDbContext.cs"] = f"""using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -194,7 +239,7 @@ namespace {ns}.Data
 {{
     public class AppDbContext : DbContext
     {{
-        public DbSet<{entity_name}> {entity_plural} => Set<{entity_name}>();
+{all_db_sets}
         public DbSet<OutboxEvent> OutboxEvents => Set<OutboxEvent>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {{ }}
@@ -203,11 +248,7 @@ namespace {ns}.Data
         {{
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<{entity_name}>(entity =>
-            {{
-                entity.HasIndex(e => new {{ e.TenantId, e.IsDeleted }});
-                entity.HasQueryFilter(e => !e.IsDeleted);
-            }});
+{all_model_configs}
 
             modelBuilder.Entity<OutboxEvent>(entity =>
             {{
@@ -630,7 +671,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Database Context
 var pgConn = builder.Configuration.GetConnectionString("Postgres")
     ?? "Host=localhost;Port=5432;Database=enterprise_db;Username=postgres;Password=postgres";
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(pgConn));
+var mysqlConn = builder.Configuration.GetConnectionString("MySQL")
+    ?? "Server=localhost;Port=3306;Database=enterprise_db;User=root;Password=root;";
+
+{"builder.Services.AddDbContext<AppDbContext>(opt => opt.UseMySql(mysqlConn, ServerVersion.AutoDetect(mysqlConn)));" if request.is_mysql else "builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(pgConn));"}
 
 // Add Redis Connection
 var redisConn = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379,abortConnect=false";

@@ -152,4 +152,155 @@ class SpringDiagnosticAutoRepairerTest {
         assertFalse(updated.contains("extends HandlerInterceptorAdapter"));
         assertTrue(updated.contains("implements HandlerInterceptor") || updated.contains("HandlerInterceptor"));
     }
+
+    @Test
+    void repairPipelineIncludesLegacyOauthDwrAndExplicitRuntimeObligations() throws IOException {
+        Files.writeString(tempDir.resolve("pom.xml"), """
+                <project><dependencies><dependency>
+                  <groupId>org.springframework.security.oauth</groupId>
+                  <artifactId>spring-security-oauth2</artifactId><version>2.5.2.RELEASE</version>
+                </dependency></dependencies></project>
+                """);
+        Path source = tempDir.resolve("LegacyAuthorizationServer.java");
+        Files.writeString(source, """
+                import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+                @EnableAuthorizationServer public class LegacyAuthorizationServer {}
+                """);
+        Path dwr = tempDir.resolve("LegacyRemote.java");
+        Files.writeString(dwr, """
+                import org.directwebremoting.annotations.RemoteProxy;
+                import org.directwebremoting.annotations.RemoteMethod;
+                @RemoteProxy(name = "legacy") public class LegacyRemote {
+                  @RemoteMethod public String read(String id) { return id; }
+                }
+                """);
+
+        var result = SpringDiagnosticAutoRepairer.repair(tempDir, List.of());
+
+        assertTrue(result.repaired());
+        assertTrue(result.rulesApplied().contains("LEGACY_OAUTH2_AUTHORIZATION_SERVER_TO_BOOT_STARTER"));
+        assertTrue(result.rulesApplied().contains("DWR_ANNOTATED_REMOTE_TO_REST_CONTROLLER"));
+        assertFalse(result.blockingObligations().isEmpty());
+        assertTrue(Files.readString(source).contains("AuthorizationServerSettings"));
+        assertTrue(Files.readString(dwr).contains("@PostMapping(\"/read\")"));
+    }
+
+    @Test
+    void repairSpringDataJpaGetOneToGetReferenceById() throws IOException {
+        Path srcDir = tempDir.resolve("src/main/java/com/example");
+        Files.createDirectories(srcDir);
+        Path service = srcDir.resolve("UserService.java");
+        Files.writeString(service, """
+                package com.example;
+
+                import org.springframework.stereotype.Service;
+
+                @Service
+                public class UserService {
+                    private UserRepository userRepository;
+
+                    public User find(Long id) {
+                        return userRepository.getOne(id);
+                    }
+                }
+                """);
+
+        var result = SpringDiagnosticAutoRepairer.repair(tempDir, List.of(
+                "[ERROR] cannot find symbol: method getOne(java.lang.Long)"
+        ));
+
+        assertTrue(result.repaired());
+        assertTrue(result.rulesApplied().contains("MODERNIZE_JPA_GET_ONE_TO_REFERENCE_BY_ID"));
+        String updated = Files.readString(service);
+        assertFalse(updated.contains("userRepository.getOne("));
+        assertTrue(updated.contains("userRepository.getReferenceById(id)"));
+    }
+
+    @Test
+    void repairSwagger2ToSpringdocOpenApi3Annotations() throws IOException {
+        Path srcDir = tempDir.resolve("src/main/java/com/example");
+        Files.createDirectories(srcDir);
+        Path controller = srcDir.resolve("UserController.java");
+        Files.writeString(controller, """
+                package com.example;
+
+                import io.swagger.annotations.Api;
+                import io.swagger.annotations.ApiOperation;
+                import io.swagger.annotations.ApiParam;
+                import org.springframework.web.bind.annotation.GetMapping;
+                import org.springframework.web.bind.annotation.PathVariable;
+                import org.springframework.web.bind.annotation.RestController;
+
+                @Api(tags = "User Management")
+                @RestController
+                public class UserController {
+
+                    @ApiOperation(value = "Get User Profile", notes = "Fetches complete user details by id")
+                    @GetMapping("/users/{id}")
+                    public String getUser(@ApiParam(value = "Target user ID", required = true) @PathVariable Long id) {
+                        return "user";
+                    }
+                }
+                """);
+
+        Path model = srcDir.resolve("UserDto.java");
+        Files.writeString(model, """
+                package com.example;
+
+                import io.swagger.annotations.ApiModel;
+                import io.swagger.annotations.ApiModelProperty;
+
+                @ApiModel(description = "User Data Transfer Object")
+                public class UserDto {
+                    @ApiModelProperty(value = "User full name", example = "Alice")
+                    private String name;
+                }
+                """);
+
+        Path pom = tempDir.resolve("pom.xml");
+        Files.writeString(pom, """
+                <project xmlns="http://maven.apache.org/POM/4.0.0">
+                  <modelVersion>4.0.0</modelVersion>
+                  <groupId>com.example</groupId>
+                  <artifactId>demo</artifactId>
+                  <version>1.0.0</version>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.springframework.boot</groupId>
+                      <artifactId>spring-boot-starter-web</artifactId>
+                    </dependency>
+                  </dependencies>
+                </project>
+                """);
+
+        var result = SpringDiagnosticAutoRepairer.repair(tempDir, List.of(
+                "[ERROR] package io.swagger.annotations does not exist",
+                "[ERROR] cannot find symbol: class Api",
+                "[ERROR] cannot find symbol: class ApiOperation",
+                "[ERROR] cannot find symbol: class ApiParam"
+        ));
+
+        assertTrue(result.repaired());
+        assertTrue(result.rulesApplied().contains("MODERNIZE_SWAGGER_API_TO_TAG"));
+        assertTrue(result.rulesApplied().contains("MODERNIZE_SWAGGER_OPERATION"));
+        assertTrue(result.rulesApplied().contains("MODERNIZE_SWAGGER_PARAM"));
+        assertTrue(result.rulesApplied().contains("MODERNIZE_SWAGGER_MODEL"));
+        assertTrue(result.rulesApplied().contains("MODERNIZE_SWAGGER_MODEL_PROPERTY"));
+        assertTrue(result.rulesApplied().contains("INJECT_SPRINGDOC_OPENAPI"));
+
+        String updatedController = Files.readString(controller);
+        assertFalse(updatedController.contains("@Api("));
+        assertTrue(updatedController.contains("@Tag(name = \"User Management\")"));
+        assertTrue(updatedController.contains("@Operation(summary = \"Get User Profile\", description = \"Fetches complete user details by id\")"));
+        assertTrue(updatedController.contains("@Parameter(description = \"Target user ID\", required = true)"));
+
+        String updatedModel = Files.readString(model);
+        assertFalse(updatedModel.contains("@ApiModel("));
+        assertFalse(updatedModel.contains("@ApiModelProperty("));
+        assertTrue(updatedModel.contains("@Schema(description = \"User Data Transfer Object\")"));
+        assertTrue(updatedModel.contains("@Schema(description = \"User full name\", example = \"Alice\")"));
+
+        String updatedPom = Files.readString(pom);
+        assertTrue(updatedPom.contains("springdoc-openapi-starter-webmvc-ui"));
+    }
 }

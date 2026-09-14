@@ -113,6 +113,31 @@ class WorkerAgentDaemon:
                 dest_file.parent.mkdir(parents=True, exist_ok=True)
                 dest_file.write_text(content, encoding="utf-8")
 
+            # 5.1 Optional Rootless Sandbox execution verification
+            sandbox_info = None
+            if job.payload.get("sandbox_command"):
+                from .rootless_container_sandbox import LinuxRootlessSandboxRunner, SandboxSecurityConfig
+
+                sec_cfg = SandboxSecurityConfig(
+                    memory_mb=int(job.payload.get("sandbox_memory_mb", 512)),
+                    cpus=float(job.payload.get("sandbox_cpus", 1.0)),
+                    timeout_seconds=min(job.timeout_seconds, 120),
+                )
+                sandbox_runner = LinuxRootlessSandboxRunner(config=sec_cfg)
+                cmd = job.payload["sandbox_command"]
+                backend = job.payload.get("sandbox_backend")
+                sb_result = sandbox_runner.run(cmd, host_workspace_path=job_workspace, backend=backend)
+                sandbox_info = {
+                    "exit_code": sb_result.exit_code,
+                    "backend_used": sb_result.backend_used,
+                    "is_success": sb_result.is_success,
+                    "duration_seconds": sb_result.duration_ms / 1000.0,
+                    "duration_ms": sb_result.duration_ms,
+                    "security_verifications": sb_result.security_verifications,
+                }
+                if not sb_result.is_success and job.payload.get("fail_on_sandbox_error", True):
+                    raise RuntimeError(f"SANDBOX_EXECUTION_FAILED: exit={sb_result.exit_code}, err={sb_result.stderr}")
+
             # 6. Post-execution lease fencing check (Brain-split & zombie worker guard)
             if not self.fleet.verify_lease(lease.lease_id, lease.fencing_token):
                 logger.error(
@@ -127,6 +152,7 @@ class WorkerAgentDaemon:
                 "fencing_token": lease.fencing_token,
                 "files_count": len(generated_files),
                 "target_language": target_lang,
+                "sandbox_info": sandbox_info,
                 "completed_at": dt.datetime.now(dt.UTC).isoformat(),
             }
             digest = hashlib.sha256(json.dumps(manifest_summary, sort_keys=True).encode()).hexdigest()
@@ -134,13 +160,16 @@ class WorkerAgentDaemon:
             # 8. Complete job in fleet
             self.fleet.complete_job(job.job_id, success=True)
 
-            return {
+            res = {
                 "status": "COMPLETED",
                 "files_count": len(generated_files),
                 "target_language": target_lang,
                 "workspace": str(job_workspace),
                 "evidence_sha256": f"sha256:{digest}",
             }
+            if sandbox_info:
+                res["sandbox_info"] = sandbox_info
+            return res
 
         except Exception as exc:
             logger.exception(f"Worker {self.node_id} job execution failed: {exc}")

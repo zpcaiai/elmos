@@ -89,6 +89,7 @@ public final class SpringEnterpriseModernizationAuditSuite {
     private final SpringCloudArchitectureValidator cloudValidator = new SpringCloudArchitectureValidator();
     private final SpringXmlMigrationValidator xmlValidator = new SpringXmlMigrationValidator();
     private final SpringEcosystemAuditValidator ecosystemValidator = new SpringEcosystemAuditValidator();
+    private final SpringLegacySurfaceAuditValidator legacySurfaceValidator = new SpringLegacySurfaceAuditValidator();
     private final SpringWebRoutingAuditValidator webValidator = new SpringWebRoutingAuditValidator();
     private final SpringTestingAuditValidator testingValidator = new SpringTestingAuditValidator();
 
@@ -136,6 +137,18 @@ public final class SpringEnterpriseModernizationAuditSuite {
         logs.add("  - Ecosystem Audit: " + (ecoReport.isCompliant() ? "COMPLIANT" : "NON-COMPLIANT")
                 + " (Score: " + ecoReport.complianceScore() + ", Violations: " + ecoReport.totalViolations() + ")");
 
+        var legacyReport = legacySurfaceValidator.auditProject(projectRoot);
+        for (var violation : legacyReport.violations()) {
+            logs.add("    Legacy Surface Violation: " + violation.ruleId() + " "
+                    + violation.filePath() + " - " + violation.message());
+        }
+        logs.add("  - Legacy Enterprise Surface Audit: "
+                + (legacyReport.compliant() ? "COMPLIANT" : "NON-COMPLIANT")
+                + " (Score: " + legacyReport.complianceScore()
+                + ", Violations: " + legacyReport.violations().size() + ")");
+        double combinedEcosystemScore = Math.min(ecoReport.complianceScore(), legacyReport.complianceScore());
+        boolean combinedEcosystemCompliant = ecoReport.isCompliant() && legacyReport.compliant();
+
         // 6. Web Routing Audit (Trailing slash, jakarta exception handlers)
         var webReport = webValidator.auditProject(projectRoot);
         for (var v : webReport.violations()) {
@@ -156,7 +169,7 @@ public final class SpringEnterpriseModernizationAuditSuite {
                 + jpaReport.complianceScore()
                 + cloudReport.complianceScore()
                 + xmlReport.migrationCompletenessRate()
-                + ecoReport.complianceScore()
+                + combinedEcosystemScore
                 + webReport.complianceScore()
                 + testReport.complianceScore()) / 7.0;
 
@@ -164,7 +177,7 @@ public final class SpringEnterpriseModernizationAuditSuite {
                 && jpaReport.isCompliant()
                 && cloudReport.isCompliant()
                 && xmlReport.isFullyMigrated()
-                && ecoReport.isCompliant()
+                && combinedEcosystemCompliant
                 && webReport.isCompliant()
                 && testReport.isCompliant();
 
@@ -179,8 +192,8 @@ public final class SpringEnterpriseModernizationAuditSuite {
                 cloudReport.complianceScore(),
                 xmlReport.isFullyMigrated(),
                 xmlReport.migrationCompletenessRate(),
-                ecoReport.isCompliant(),
-                ecoReport.complianceScore(),
+                combinedEcosystemCompliant,
+                combinedEcosystemScore,
                 webReport.isCompliant(),
                 webReport.complianceScore(),
                 testReport.isCompliant(),

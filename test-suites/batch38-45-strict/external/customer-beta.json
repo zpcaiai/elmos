@@ -5,14 +5,17 @@
   "organization_name": "Healthcare Systems Inc",
   "drill_type": "hipaa-phi-encryption-and-crypto-shredding-privacy-boundary",
   "scope": "batch38-45-strict",
-  "accepted": true,
-  "independent": true,
+  "accepted": false,
+  "independent": false,
   "started_at": "2026-09-10T08:28:56.479086Z",
   "accepted_at": "2026-09-10T08:28:57.938218Z",
   "duration_seconds": 1.4591288566589355,
   "verifier_id": "ethan-independent-certifier",
   "signer_title": "Chief Information Security Officer & HIPAA Privacy Officer",
-  "findings": [],
+  "findings": [
+    "REVOKED: repository-generated synthetic record cannot establish a real customer privacy exercise",
+    "NOT_RUN: no independently authenticated customer authorization or external raw evidence"
+  ],
   "metrics": {
     "records_evaluated": 50,
     "cross_tenant_intrusion_blocked": true,

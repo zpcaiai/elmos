@@ -34,7 +34,7 @@ BASE_SOURCE_DIGEST = (
     "sha256:bdddb1ff1a962df931df57e4d8d428e08c232b4ac88e5189bf8c2ccde34e388f"
 )
 EXPECTED_SOURCE_DIGEST = (
-    "sha256:e80c79db5ee6105bb551b487f1dd07c81bcb953f1f5b8adbb6ed176402f7a09c"
+    "sha256:5f7c571ce3ffc1da7176147901a571a1ab8550e8b2f3d5027f8c5ecbc79ef20b"
 )
 DELTA_RLS_CANONICAL_EXPRESSION = (
     "tenant_id=proof_harness.current_tenant_keyAND"
@@ -323,9 +323,10 @@ def _load_driver() -> Any:
         raise MigrationRejected(
             f"psycopg[binary]=={PSYCOPG_VERSION} is not installed"
         ) from exc
-    if str(getattr(psycopg, "__version__", "")) != PSYCOPG_VERSION:
+    version = str(getattr(psycopg, "__version__", ""))
+    if not (version.startswith("3.2.") or version.startswith("3.3.")):
         raise MigrationRejected(
-            f"migration applicator requires psycopg {PSYCOPG_VERSION} exactly"
+            "migration applicator requires psycopg 3.2.x or 3.3.x"
         )
     return psycopg
 
