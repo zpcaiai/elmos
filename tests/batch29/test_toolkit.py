@@ -1069,7 +1069,7 @@ class ToolkitTests(unittest.TestCase):
                     malformed["toolchain"]["profile"][1:1] = invalid_profile
                     with self.assertRaisesRegex(
                         ValueError,
-                        "receipt does not select one registered Apple host profile",
+                        "receipt does not declare one registered Apple host profile",
                     ):
                         validator._registered_swift_receipt_contract(malformed)
 
