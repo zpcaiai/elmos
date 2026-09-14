@@ -1,15 +1,11 @@
 {
   "batch": 43,
   "packKey": "elmos-platform-product-lifecycle",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
-  "evidenceRefs": [
-    "b43-schema-compatibility-run",
-    "batch43-execution",
-    "batch43-provenance",
-    "batch43-schema-compatibility-provenance",
-    "batch43-verification"
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "source domain certification withdrawn by ELMOS-CERT-KEY-2026-09-13-01"
   ],
+  "evidenceRefs": [],
   "externalOperationExecuted": false
 }

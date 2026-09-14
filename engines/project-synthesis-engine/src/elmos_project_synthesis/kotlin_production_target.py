@@ -697,7 +697,13 @@ def render_kotlin_production(request: SynthesisRequest, port: int) -> dict[str, 
         ),
         "scripts/local_runtime.py": render_local_runtime(
             auth_mode=request.auth_mode,
-            app_command=["gradle", "--no-daemon", "--offline", "run"],
+            # ``verify_workspace`` has already run ``installDist``. Launching
+            # the resulting application script avoids keeping a Gradle
+            # single-use daemon alive while the separate integration task is
+            # executed against the running service.
+            app_command=[
+                f"build/install/{request.project_name}/bin/{request.project_name}"
+            ],
             verify_command=["gradle", "--no-daemon", "--offline", "integrationTest"],
         ),
         "openapi.yaml": openapi_yaml(request, server_port=port),

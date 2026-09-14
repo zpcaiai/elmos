@@ -1,87 +1,17 @@
 {
-  "kind": "elmos.project-synthesis.production-readiness-audit",
-  "timestamp": "2026-09-11T12:27:55.175623+00:00",
-  "audit_version": "1.0.0",
-  "overall_status": "PASSED",
-  "overall_score_percent": 100.0,
-  "target_count": 8,
-  "targets_passed": 8,
-  "production_nfr_contract": {
-    "liveness_probe": "/health/live",
-    "readiness_probe": "/health/ready",
-    "metrics_endpoint": "/metrics",
-    "required_security_headers": [
-      "X-Content-Type-Options",
-      "X-Frame-Options",
-      "Content-Security-Policy",
-      "Strict-Transport-Security"
-    ],
-    "graceful_shutdown": true
-  },
-  "target_audits": [
-    {
-      "language": "java",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "python",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "csharp",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "typescript",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "go",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "kotlin",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "php",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    },
-    {
-      "language": "rust",
-      "status": "PASSED",
-      "score_percent": 100.0,
-      "checks_passed": 4,
-      "checks_total": 4,
-      "findings": []
-    }
-  ]
+  "schema_version": 1,
+  "status": "BLOCKED",
+  "decision": "NOT_CERTIFIED",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "scope": "generation-production-nfr-audit",
+  "prior_report_sha256": "sha256:a2ab7278493af53d047f538a6993abe85eca53f8c4b75230fb0c52e78ae15389",
+  "prior_claim_status": "REVOKED_UNTRUSTED",
+  "local_evidence": "SELF_ATTESTED_ENGINEERING_ONLY",
+  "external_execution": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "trust_anchor_status": "REVOKED",
+  "release_effect": "NONE",
+  "reason": "the prior positive claim relied on repository-held signing keys or exceeded the authoritative evidence boundary",
+  "required_action": "re-execute exact-SHA evidence in the named real environment and obtain an authenticated repository-external independent signature under a new key"
 }

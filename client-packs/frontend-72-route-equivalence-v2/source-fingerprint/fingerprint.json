@@ -4,7 +4,7 @@
   "source_tuple": {
     "stack": "angular",
     "versions": [
-      "22.0.8"
+      "22.1.4"
     ],
     "language": "TypeScript",
     "language_versions": [
@@ -14,10 +14,10 @@
     "runtime_versions": [
       "26.0.0"
     ],
-    "build_tool": "Angular CLI 22.0.8",
+    "build_tool": "Angular CLI 22.1.4",
     "package_manager": "npm 11.12.1",
     "router": [
-      "Angular Router 22.0.8"
+      "Angular Router 22.1.4"
     ],
     "renderer": [
       "CSR"
@@ -51,7 +51,7 @@
     ],
     "devices": []
   },
-  "snapshot_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
+  "snapshot_digest": "sha256:1a3ffe1e99fed96c3123238e4a50e5b202a4dcc7d42189ed226db057f9353893",
   "coverage": 1.0,
   "routes": [],
   "components": [],

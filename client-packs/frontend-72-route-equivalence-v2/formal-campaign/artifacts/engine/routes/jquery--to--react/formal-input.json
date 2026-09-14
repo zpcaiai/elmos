@@ -11,8 +11,8 @@
     "target_profile": "react",
     "target_framework_version": "19.2.8"
   },
-  "source_project_digest": "sha256:b6f97f365ec00660a6d028964a9c848776c99b4bfa614e159ba57ada1172af1b",
-  "target_project_digest": "sha256:f9afd91e0068ad1a903377e20cfea85d95bba26147b298399c8d3e9a757354ef",
+  "source_project_digest": "sha256:f05e7d4b131fe3df67626a3b2941b6caa1a5d6c4103edd09b11ecd607c9a9fba",
+  "target_project_digest": "sha256:2363b65dbe2e7e4c3712a285ec436aab9869ae9ca41f3764729247f8c9e82fed",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:d2a99493f186782ee7da506aa1707fd36e14d4716cf5448163934e7981d30a9a",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:e1ef99ba42405a1c6015594ee2cf513b9f9c98298bb9377ce3ca07b14987e76b",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

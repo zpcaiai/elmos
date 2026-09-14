@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "angular--to--react-native",
-  "formal_input_digest": "sha256:543b5a6cac3dc47fc1be4ac8cbe99b7865ced288bf6075bdc09bbc59316cd78b",
-  "solver_input_digest": "sha256:0b7c41465797257a2f21f054ce30dc442ef72d24b5d22a28027a24f050f0c54b",
-  "smt2_digest": "sha256:0b7c41465797257a2f21f054ce30dc442ef72d24b5d22a28027a24f050f0c54b"
+  "formal_input_digest": "sha256:ce81cd90e7a254fe364088397188bfc69a066b5b5053125701eefec83e5ad621",
+  "solver_input_digest": "sha256:95ab159190f7c9eaa0c893951d8072e8ae9696cc9c5c4a10fa4c1746843166db",
+  "smt2_digest": "sha256:95ab159190f7c9eaa0c893951d8072e8ae9696cc9c5c4a10fa4c1746843166db"
 }

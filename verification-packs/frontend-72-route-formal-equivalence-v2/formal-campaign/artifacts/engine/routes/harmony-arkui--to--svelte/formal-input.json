@@ -11,8 +11,8 @@
     "target_profile": "svelte",
     "target_framework_version": "5.56.8"
   },
-  "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
-  "target_project_digest": "sha256:8f4a10ae5d98feefa83392599deb5a8d4398e6a0d41b56df6bfaa02b8562ff7e",
+  "source_project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
+  "target_project_digest": "sha256:289541005f124d9695604633922b6345c9e36a72fb7844d93569d998537dea00",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:7bc63018ac3c26d71243abd42f67ed7f478832f2c7c44bc779f1a4c043101966",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:e1ef99ba42405a1c6015594ee2cf513b9f9c98298bb9377ce3ca07b14987e76b",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

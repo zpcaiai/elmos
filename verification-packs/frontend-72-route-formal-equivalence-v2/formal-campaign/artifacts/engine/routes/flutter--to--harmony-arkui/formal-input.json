@@ -11,8 +11,8 @@
     "target_profile": "harmony-arkui",
     "target_framework_version": "6.0.0(20)"
   },
-  "source_project_digest": "sha256:68b881d1cb18813e5413f80f2111c35be9b8d7596a2a77217fac410b5594557f",
-  "target_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
+  "source_project_digest": "sha256:36245137d1f5c535380895e61de4b263575c09e7587402ce38e60b5e7557b086",
+  "target_project_digest": "sha256:00f2f6981e2cd5f90598cc561f237c3dd9fcca048092073e6667bf3c52452b83",
   "canonical_model": {
     "schemaVersion": "1.0",
     "profile": "bounded-frontend-interaction-v1",
@@ -202,7 +202,7 @@
   "chunk_digest": "sha256:057d40a602a8a5c8a3d7f7149d91f2fb221b86e0f59cb882b4540401f94419c4",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
-  "mutation_campaign_digest": "sha256:e1ef99ba42405a1c6015594ee2cf513b9f9c98298bb9377ce3ca07b14987e76b",
+  "mutation_campaign_digest": "sha256:a563d205739da66b79c9060ea992b68cd7d334ad22a09bcf561ade75786eaae2",
   "semantic_block_ids": [
     "route-navigation-deeplink-404",
     "component-template-view",

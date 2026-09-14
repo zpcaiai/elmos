@@ -5,7 +5,7 @@
   "capabilities": [
     {
       "capabilityId": "b42-agent-autonomy-levels",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -15,7 +15,7 @@
     },
     {
       "capabilityId": "b42-agent-budget-resource-limits",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -25,7 +25,7 @@
     },
     {
       "capabilityId": "b42-agent-eval-benchmark",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -35,7 +35,7 @@
     },
     {
       "capabilityId": "b42-agent-factory-gate",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -45,7 +45,7 @@
     },
     {
       "capabilityId": "b42-agent-incident-killswitch-rollback",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -55,7 +55,7 @@
     },
     {
       "capabilityId": "b42-agent-memory-state-governance",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -65,7 +65,7 @@
     },
     {
       "capabilityId": "b42-agent-migration-factory",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -75,7 +75,7 @@
     },
     {
       "capabilityId": "b42-agent-red-team",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -85,7 +85,7 @@
     },
     {
       "capabilityId": "b42-agent-shadow-canary",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -95,7 +95,7 @@
     },
     {
       "capabilityId": "b42-agent-team-topology",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -105,7 +105,7 @@
     },
     {
       "capabilityId": "b42-agent-tool-permissions",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -115,7 +115,7 @@
     },
     {
       "capabilityId": "b42-deterministic-execution-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -125,7 +125,7 @@
     },
     {
       "capabilityId": "b42-human-approval-takeover",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -135,7 +135,7 @@
     },
     {
       "capabilityId": "b42-language-framework-specialist-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -145,7 +145,7 @@
     },
     {
       "capabilityId": "b42-migration-planner-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -155,7 +155,7 @@
     },
     {
       "capabilityId": "b42-minimal-context-evidence",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -165,7 +165,7 @@
     },
     {
       "capabilityId": "b42-model-routing-provider-failover",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -175,7 +175,7 @@
     },
     {
       "capabilityId": "b42-multiagent-consensus-arbitration",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -185,7 +185,7 @@
     },
     {
       "capabilityId": "b42-policy-enforcement-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -195,7 +195,7 @@
     },
     {
       "capabilityId": "b42-recipe-candidate-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -205,7 +205,7 @@
     },
     {
       "capabilityId": "b42-supervisor-coordination-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",
@@ -215,7 +215,7 @@
     },
     {
       "capabilityId": "b42-verification-agent",
-      "status": "certified",
+      "status": "experimental",
       "owner": "REPLACE_ME",
       "evidenceRefs": [
         "batch42-execution",

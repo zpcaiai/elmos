@@ -6,7 +6,7 @@
   "packType": "product-lifecycle",
   "version": "0.1.0",
   "owner": "Sarah Jenkins, VP of Engineering & Compatibility",
-  "status": "certified",
+  "status": "experimental",
   "artifactDigest": "sha256:5f3066063a7a7deffecec00c324e79eb240ee62bacae3655590d486d446256fc",
   "environmentDigest": "sha256:2fa6f80ab2cad65bd45a7172ba474484f7a4e290d555c5ac6475013b6c124942",
   "requiredBatches": [

@@ -104,6 +104,9 @@ class CommercialCreditMigrationContractTest {
         assertTrue(script.contains("GRANT UPDATE (processing_status, attempt_count, updated_at)"));
         assertFalse(script.contains("GRANT INSERT ON TABLE commercial_credit_accounts"));
         assertFalse(script.contains("GRANT DELETE ON TABLE commercial_credit_ledger_entries"));
+        assertFalse(script.contains("INSERT ON TABLE commercial_credit"));
+        assertFalse(script.contains("UPDATE ON TABLE commercial_credit"));
+        assertFalse(script.contains("DELETE ON TABLE commercial_credit"));
     }
 
     @Test void elmpayDigestTriggersUseSchemaQualifiedHashFunctions() throws Exception {

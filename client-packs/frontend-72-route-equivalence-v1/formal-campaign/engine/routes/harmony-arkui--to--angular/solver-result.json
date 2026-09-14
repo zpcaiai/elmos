@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:acfe2b1be5acc5679c30189f4d927fd55785f60056673a94235b3882198f9e54",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/Users/stephen/DevProjects/AIProjects/elmos-pr81-final-20260908/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos-release-control-a-20260913/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "harmony-arkui--to--angular",
-  "formal_input_digest": "sha256:1ee0f5b97bd50db50b6b28906d5ead25d513f5f78f2da8e0a1f066ed2465c7c3",
-  "solver_input_digest": "sha256:c15f3a14f2faef2b8dc3a1bf75839026f7c68ec305d6440cf3c6b161ac20794d",
-  "smt2_digest": "sha256:c15f3a14f2faef2b8dc3a1bf75839026f7c68ec305d6440cf3c6b161ac20794d"
+  "formal_input_digest": "sha256:25d405c0fd2a643da7e746e989193814044e7705474f06303df532f15605dfe0",
+  "solver_input_digest": "sha256:4db93589b438b48391d023c3c21616d69d2676219a274afe1286b7b27589bcf9",
+  "smt2_digest": "sha256:4db93589b438b48391d023c3c21616d69d2676219a274afe1286b7b27589bcf9"
 }

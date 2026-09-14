@@ -4,12 +4,12 @@
   "route_id": "angular--to--svelte",
   "source_lifting": {
     "profile_id": "angular",
-    "project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
+    "project_digest": "sha256:77c3f2342e3876aeadc4294d9e4461772670012b58bfe764177410d807de9b9f",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "target_lowering_relift": {
     "profile_id": "svelte",
-    "project_digest": "sha256:8f4a10ae5d98feefa83392599deb5a8d4398e6a0d41b56df6bfaa02b8562ff7e",
+    "project_digest": "sha256:289541005f124d9695604633922b6345c9e36a72fb7844d93569d998537dea00",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",

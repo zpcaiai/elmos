@@ -4,12 +4,12 @@
   "route_id": "flutter--to--vue2",
   "source_lifting": {
     "profile_id": "flutter",
-    "project_digest": "sha256:68b881d1cb18813e5413f80f2111c35be9b8d7596a2a77217fac410b5594557f",
+    "project_digest": "sha256:36245137d1f5c535380895e61de4b263575c09e7587402ce38e60b5e7557b086",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "target_lowering_relift": {
     "profile_id": "vue2",
-    "project_digest": "sha256:2c038dd212afa81ce44fa44293ac5fa43179d46f94c9ec547a112f2b78c39458",
+    "project_digest": "sha256:7f29612e94587f65bdf1f951fdbda4fe99b6f473f932940c9a9c63e791fed412",
     "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
   },
   "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",

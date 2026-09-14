@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0",
-  "projectId": "db967a28c4d5fe042b9e5194",
+  "projectId": "b2c77d6f25194e1ed26e76fb",
   "direction": {
     "routeId": "angular--to--vue3",
     "source": "angular",
     "target": "vue3",
-    "sourceProfileVersion": "22.0.8",
+    "sourceProfileVersion": "22.1.4",
     "targetProfileVersion": "3.5.40",
     "supportState": "PROJECT_GENERATION_READY",
     "semanticConversionEvidence": "NOT_RUN",
@@ -43,7 +43,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:1da4758eb724a67d06a925f5d75c9939351b9f106f0cfb965e4c516807320179",
+  "contentDigest": "sha256:5a8b5b00dfcb41bedafeba09fc30bc0b39be8b65cf0fd705711c0dc6224db5bc",
   "ownership": {
     "generated": [
       ".editorconfig",

@@ -1,11 +1,17 @@
 {
-  "receipt_id": "RCPT-CERT-M32-L5-FRONTEND-690CFF94F767AAD3",
-  "target": "Business Line 4: 大前端与小程序迁移 (Batch 32 / M32)",
-  "verdict": "CERTIFIED",
-  "declared_rate": "100.0%",
-  "industrial_grade_quality": "100.0%",
-  "merkle_root": "03ea65e68b2acc52a363e028d2ce4d15928fc8fc24cd2ac3df0413d308ba232c",
-  "timestamp": "2026-09-11T17:18:11.006148+00:00",
-  "total_loc": 81163,
-  "automated_tests_passed": true
+  "schema_version": 1,
+  "status": "BLOCKED",
+  "decision": "NOT_CERTIFIED",
+  "incident_id": "ELMOS-CERT-KEY-2026-09-13-01",
+  "scope": "frontend-client-industrial-evaluation-receipt",
+  "prior_report_sha256": "sha256:e1e6043bcb98e94d76d86c1a5fb9e89d877da08f1b1b8be9e225897394d46036",
+  "prior_claim_status": "REVOKED_UNTRUSTED",
+  "local_evidence": "SELF_ATTESTED_ENGINEERING_ONLY",
+  "external_execution": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "trust_anchor_status": "REVOKED",
+  "release_effect": "NONE",
+  "reason": "the prior positive claim relied on repository-held signing keys or exceeded the authoritative evidence boundary",
+  "required_action": "re-execute exact-SHA evidence in the named real environment and obtain an authenticated repository-external independent signature under a new key"
 }

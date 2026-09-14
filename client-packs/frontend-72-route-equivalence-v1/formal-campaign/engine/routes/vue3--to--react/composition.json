@@ -3,12 +3,12 @@
   "route_id": "vue3--to--react",
   "source_lifting": {
     "profile_id": "vue3",
-    "project_digest": "sha256:830facbbdbefcb003490f232251a6f5ebd9c5090d192ed0bf3b11396952711fb",
+    "project_digest": "sha256:229149b086150e45c175c18012f8097ab79b94c9fee1f8d78c17121ef0b5718a",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {
     "profile_id": "react",
-    "project_digest": "sha256:5e544167ab78553c8020f13df8332706d2c6c27e585afbb508f5b6cd2d1d25fe",
+    "project_digest": "sha256:c799bfee348e3dd4dca373e7f94432fe1eea469c86cb1ef7895b30a98c8add6c",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",

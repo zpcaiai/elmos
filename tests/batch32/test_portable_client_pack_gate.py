@@ -268,18 +268,54 @@ class PortableClientPackGateTest(unittest.TestCase):
             with self.assertRaisesRegex(portable.PortableGateError, "duplicate"):
                 portable.validate_all(root)
 
+    def test_repository_auxiliary_output_is_fail_closed(self) -> None:
+        output = ROOT / "client-packs/web-console-full-syntax-wechat"
+        portable.validate_auxiliary_output(
+            output, "web-console-next16-react19-wechat-v1"
+        )
+        closure = json.loads(
+            (output / "transformations/component-migration-closure.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        closure["entries"][0]["certification"] = "CERTIFIED"
+        self.assertEqual(["$.entries[0].certification"], portable.certified_paths(closure))
+
     def test_auxiliary_output_is_explicitly_bound_and_non_certifying(self) -> None:
         with tempfile.TemporaryDirectory(prefix="batch32-portable-test-") as directory:
             output = Path(directory) / "web-console-full-syntax-wechat"
             (output / "target-project").mkdir(parents=True)
-            (output / "target-project/app.js").write_text("App({});\n", encoding="utf-8")
+            (output / "target-project/handoff.json").write_text(
+                json.dumps({"pack_key": output.name}), encoding="utf-8"
+            )
+            components = output / "target-project/components"
+            components.mkdir()
             (output / "transformations").mkdir()
+            entries = []
+            for index in range(71):
+                target_files = []
+                for suffix in ("js", "json", "wxml", "wxss"):
+                    relative = f"target-project/components/c{index}.{suffix}"
+                    (output / relative).write_text("{}\n", encoding="utf-8")
+                    target_files.append(relative)
+                entries.append(
+                    {
+                        "certification": "NOT_CERTIFIED",
+                        "runtime_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+                        "independent_evidence": "NOT_RUN",
+                        "target_files": target_files,
+                    }
+                )
             closure = {
                 "kind": "elmos.frontend-component-migration-closure",
                 "pack_key": "web-console-next16-react19-wechat-v1",
                 "certification": "NOT_CERTIFIED",
                 "runtime_evidence": "NOT_RUN",
                 "production_evidence": "NOT_RUN",
+                "entries": entries,
+                "release_control_downgrade": {
+                    "incident_id": "ELMOS-CERT-KEY-2026-09-13-01"
+                },
             }
             (output / "transformations/component-migration-closure.json").write_text(
                 json.dumps(closure), encoding="utf-8"
@@ -292,7 +328,7 @@ class PortableClientPackGateTest(unittest.TestCase):
                 json.dumps(closure), encoding="utf-8"
             )
             with self.assertRaisesRegex(
-                portable.PortableGateError, "may not grant certification"
+                portable.PortableGateError, "NOT_CERTIFIED"
             ):
                 portable.validate_auxiliary_output(
                     output, "web-console-next16-react19-wechat-v1"

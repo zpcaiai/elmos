@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 import re
 import subprocess
@@ -33,9 +32,6 @@ EXTERNAL_ENGINEERING_CASES = VERIFICATION_PACK / "external-engineering-qualifica
 EXTERNAL_ENGINEERING_RESULTS = VERIFICATION_PACK / "external-engineering-qualification" / "results.json"
 TRUST_STORE_EXAMPLE = ROOT / "config" / "precision-migration" / "trust-store.example.json"
 TEMPLATE_ROOT = ROOT / "templates" / "precision-migration-b01-44"
-OFFICIAL_VALIDATOR = Path(
-    "/Users/stephen/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
-)
 EXPECTED_SCHEMAS = {
     "adapter-registry.schema.json",
     "catalog.schema.json",
@@ -63,19 +59,11 @@ def digest(path: Path) -> str:
 
 
 def load_validator() -> Callable[[Path], tuple[bool, str]]:
-    if not OFFICIAL_VALIDATOR.is_file():
-        sys.path.insert(0, str(ROOT / "tooling"))
-        from skill_creator_tools import validate_skill
+    """Use the repository-owned validator identically on every host."""
+    sys.path.insert(0, str(ROOT / "tooling"))
+    from skill_creator_tools import validate_skill
 
-        return validate_skill
-    spec = importlib.util.spec_from_file_location(
-        "elmos_precision_migration_validator", OFFICIAL_VALIDATOR
-    )
-    if spec is None or spec.loader is None:
-        fail("cannot load official skill-creator validator")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module.validate_skill
+    return validate_skill
 
 
 def validate_interface(skill_dir: Path, name: str) -> None:

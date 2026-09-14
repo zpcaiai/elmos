@@ -115,8 +115,10 @@ test("已保存的跨语言交接可下载且保持未执行状态", async ({ pa
   });
   await page.goto("/translation");
 
+  const exportButton = page.getByRole("button", { name: "导出 JSON" });
+  await expect(exportButton).toBeEnabled();
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "导出 JSON" }).click();
+  await exportButton.click();
   const download = await downloadPromise;
 
   expect(download.suggestedFilename()).toBe("java-to-python-handoff.json");
