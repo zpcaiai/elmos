@@ -1,9 +1,12 @@
 {
   "batch": 43,
   "packKey": "elmos-platform-product-lifecycle",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "externalOperationExecuted=false",
+    "repository-held certification keys revoked; field evidence and independent certification NOT_RUN"
+  ],
   "evidenceRefs": [
     "b43-schema-compatibility-run",
     "batch43-execution",

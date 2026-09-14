@@ -1,9 +1,12 @@
 {
   "batch": 40,
   "packKey": "elmos-platform-supply-chain",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "externalOperationExecuted=false",
+    "repository-held certification keys revoked; field evidence and independent certification NOT_RUN"
+  ],
   "evidenceRefs": [
     "b40-dependabot-alerts",
     "b40-dependabot-alerts-provenance",
