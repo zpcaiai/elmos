@@ -91,7 +91,8 @@ class SpringProjectScanner:
         has_ws_adapter = False
         has_filter_chain = False
 
-        for r, _, files in os.walk(project_root):
+        for r, dirs, files in os.walk(project_root):
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in {"target", "build", "node_modules", ".venv", "tmp", "temp", "Library", "System", "private"}]
             for f in files:
                 if f.endswith(".java"):
                     try:
@@ -148,7 +149,8 @@ class SpringProjectScanner:
 
         root = Path(project_root)
         if root.exists():
-            for r, _, files in os.walk(project_root):
+            for r, dirs, files in os.walk(project_root):
+                dirs[:] = [d for d in dirs if not d.startswith(".") and d not in {"target", "build", "node_modules", ".venv", "tmp", "temp", "Library", "System", "private"}]
                 for f in files:
                     if f.endswith(".java"):
                         try:
