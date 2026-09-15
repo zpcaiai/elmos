@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RuntimeOwner",
+  "type": "object",
+  "required": [
+    "execution_id",
+    "owner_execution_id",
+    "owner_epoch",
+    "ownership_state"
+  ],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_epoch": {
+      "type": "integer"
+    },
+    "ownership_state": {
+      "enum": [
+        "OWNED",
+        "QUIESCING",
+        "HANDOFF_READY",
+        "TRANSFERRING",
+        "RECOVERING",
+        "RELEASED"
+      ]
+    },
+    "parent_execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "root_execution_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

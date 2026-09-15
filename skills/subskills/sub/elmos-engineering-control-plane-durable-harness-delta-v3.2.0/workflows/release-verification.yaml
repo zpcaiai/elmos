@@ -1,0 +1,10 @@
+name: release-verification
+steps:
+  - bind_code_policy_skills_runner_dependencies
+  - collect_dependency_evidence
+  - verify_artifact_digest_and_signature
+  - publish_via_broker
+  - verify_published_exact_bytes
+  - run_fresh_install_or_deploy_verification
+  - emit_release_evidence_manifest
+status_semantics: [PASS,FAIL,WAIVED,PENDING]

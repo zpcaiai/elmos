@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CapabilityNegotiationResult",
+  "type": "object",
+  "required": [
+    "runtime_id",
+    "result"
+  ],
+  "properties": {
+    "runtime_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "result": {
+      "enum": [
+        "SUPPORTED_EXACTLY",
+        "SUPPORTED_WITH_NARROWER_SCOPE",
+        "UNSUPPORTED"
+      ]
+    },
+    "requested": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "effective": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "mapping_errors": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CapabilityLease",
+  "type": "object",
+  "required": [
+    "lease_id",
+    "authority_id",
+    "capabilities",
+    "expires_at"
+  ],
+  "properties": {
+    "lease_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "budget": {
+      "type": "object"
+    },
+    "fence_epoch": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false
+}

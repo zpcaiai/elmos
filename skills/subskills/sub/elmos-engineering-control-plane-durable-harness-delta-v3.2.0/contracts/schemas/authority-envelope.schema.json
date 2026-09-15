@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuthorityEnvelope",
+  "type": "object",
+  "required": [
+    "authority_id",
+    "subject",
+    "resource",
+    "capabilities",
+    "binding"
+  ],
+  "properties": {
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object"
+    },
+    "resource": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "denied": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "constraints": {
+      "type": "object"
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "execution_plan_digest"
+      ],
+      "properties": {
+        "execution_plan_digest": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,54 @@
+{
+  "requirements": [
+    {
+      "id": "R-OWN-001",
+      "description": "Same execution id survives suspension/handoff",
+      "skill": "elmos-durable-execution-ownership"
+    },
+    {
+      "id": "R-CTX-001",
+      "description": "Context provenance survives transformations",
+      "skill": "elmos-typed-context-provenance"
+    },
+    {
+      "id": "R-TML-001",
+      "description": "Timeline is durable replay source",
+      "skill": "elmos-execution-timeline-artifacts"
+    },
+    {
+      "id": "R-POL-001",
+      "description": "Hard denies cannot be widened",
+      "skill": "elmos-effective-policy-authority"
+    },
+    {
+      "id": "R-NEG-001",
+      "description": "Unmappable provider security semantics fail closed",
+      "skill": "elmos-runtime-capability-negotiation"
+    },
+    {
+      "id": "R-STA-001",
+      "description": "Runtime status observation is side-effect free",
+      "skill": "elmos-runtime-state-observation"
+    },
+    {
+      "id": "R-APR-001",
+      "description": "Approval is effect/action granular and exact-bound",
+      "skill": "elmos-effect-level-approval"
+    },
+    {
+      "id": "R-INT-001",
+      "description": "Interrupt hooks see durable transcript before abort",
+      "skill": "elmos-interrupt-lifecycle"
+    },
+    {
+      "id": "R-RSL-001",
+      "description": "Builder cannot bypass ResultFence",
+      "skill": "elmos-result-fence-reconcile"
+    },
+    {
+      "id": "R-REL-001",
+      "description": "Release evidence distinguishes pending/waived/pass/fail",
+      "skill": "elmos-release-evidence-exact-artifact"
+    }
+  ]
+}

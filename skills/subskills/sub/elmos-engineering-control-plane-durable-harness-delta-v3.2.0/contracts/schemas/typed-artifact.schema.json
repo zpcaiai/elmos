@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TypedArtifact",
+  "type": "object",
+  "required": [
+    "execution_id",
+    "artifact_type",
+    "identity_key",
+    "digest",
+    "created_at"
+  ],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identity_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

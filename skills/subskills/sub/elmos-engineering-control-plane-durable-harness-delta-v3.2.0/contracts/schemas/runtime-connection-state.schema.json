@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RuntimeConnectionState",
+  "type": "object",
+  "required": [
+    "adapter_id",
+    "observed_at",
+    "state"
+  ],
+  "properties": {
+    "adapter_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "thread_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "enum": [
+        "UNKNOWN",
+        "NOT_STARTED",
+        "STARTING",
+        "CONNECTED",
+        "AUTHENTICATION_REQUIRED",
+        "FAILED",
+        "CANCELLED",
+        "DISABLED"
+      ]
+    },
+    "configuration_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "side_effect_free_observation": {
+      "const": true
+    }
+  },
+  "additionalProperties": false
+}

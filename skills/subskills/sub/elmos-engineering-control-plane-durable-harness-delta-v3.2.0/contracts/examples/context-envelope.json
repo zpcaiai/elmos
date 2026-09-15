@@ -1,0 +1,12 @@
+{
+  "context_id": "ctx-1",
+  "role": "developer",
+  "kind": "policy.internal_context",
+  "producer": "authority-gateway",
+  "source": "SYSTEM_INTERNAL",
+  "trust": "SYSTEM",
+  "scope": "LINEAGE",
+  "retention_policy": "durable",
+  "replay_policy": "preserve",
+  "content_digest": "sha256:abc"
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceManifest",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "ticket_id",
+    "execution_plan_digest",
+    "commit",
+    "runner_digest",
+    "checks"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ticket_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_plan_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "commit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runner_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": false
+}

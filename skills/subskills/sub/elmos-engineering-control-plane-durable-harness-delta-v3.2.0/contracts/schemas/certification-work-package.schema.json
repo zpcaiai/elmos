@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CertificationWorkPackage",
+  "type": "object",
+  "required": [
+    "work_package_id",
+    "state",
+    "repository_scope",
+    "dependencies",
+    "assurance_level"
+  ],
+  "properties": {
+    "work_package_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "DRAFT",
+        "SPECIFIED",
+        "READY",
+        "LEASED",
+        "BUILDING",
+        "BUILT",
+        "VERIFYING",
+        "CERTIFYING",
+        "REVIEW",
+        "CERTIFIED",
+        "PUBLISHED",
+        "BLOCKED",
+        "FAILED",
+        "REJECTED",
+        "QUARANTINED",
+        "CANCELLED",
+        "STALE"
+      ]
+    },
+    "repository_scope": {
+      "type": "object"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "assurance_level": {
+      "enum": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    "execution_plan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verification_ticket_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

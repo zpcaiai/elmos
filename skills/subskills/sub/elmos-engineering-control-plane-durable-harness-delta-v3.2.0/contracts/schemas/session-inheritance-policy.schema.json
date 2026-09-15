@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SessionInheritancePolicy",
+  "type": "object",
+  "required": [
+    "policy_id",
+    "session_role",
+    "allow",
+    "deny"
+  ],
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_role": {
+      "enum": [
+        "ROOT",
+        "SUBAGENT",
+        "REVIEWER",
+        "VERIFIER",
+        "GUARDIAN",
+        "SYSTEM_INTERNAL"
+      ]
+    },
+    "allow": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "deny": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "inherit_user_instructions": {
+      "type": "boolean"
+    },
+    "inherit_extensions": {
+      "type": "boolean"
+    },
+    "inherit_mcp_servers": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

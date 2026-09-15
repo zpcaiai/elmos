@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResultFence",
+  "type": "object",
+  "required": [
+    "fence_id",
+    "execution_id",
+    "candidate_checkpoint_id",
+    "state"
+  ],
+  "properties": {
+    "fence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_checkpoint_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "CANDIDATE",
+        "INTERCEPTED",
+        "RECONCILING",
+        "VERIFIED",
+        "CERTIFIED",
+        "REJECTED",
+        "PUBLISHED"
+      ]
+    },
+    "evidence_manifest_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publication_request_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

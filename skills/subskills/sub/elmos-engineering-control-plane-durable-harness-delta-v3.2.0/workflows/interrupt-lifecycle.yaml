@@ -1,0 +1,11 @@
+name: interrupt-lifecycle
+states: [Started,Running,InterruptRequested,InterruptHooks,Aborted,Suspended,Completed]
+sequence:
+  - request_interrupt
+  - flush_transcript
+  - persist_checkpoint
+  - execute_bounded_interrupt_hooks
+  - emit_abort_or_suspend
+invariants:
+  - hooks_observe_durable_history
+  - repeated_interrupt_is_idempotent

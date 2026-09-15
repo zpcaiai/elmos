@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PluginLifecycleEvent",
+  "type": "object",
+  "required": [
+    "event_id",
+    "source",
+    "phase",
+    "blocking",
+    "control_effect",
+    "cancellation_scope",
+    "environment_id"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "enum": [
+        "HOST_PLUGIN",
+        "EXECUTOR_PLUGIN",
+        "MCP_ADAPTER",
+        "SANDBOX_RUNTIME",
+        "SYSTEM"
+      ]
+    },
+    "phase": {
+      "enum": [
+        "BEFORE",
+        "AFTER",
+        "STOP",
+        "INTERRUPT",
+        "ERROR",
+        "RECOVERY"
+      ]
+    },
+    "blocking": {
+      "type": "boolean"
+    },
+    "control_effect": {
+      "type": "boolean"
+    },
+    "cancellation_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

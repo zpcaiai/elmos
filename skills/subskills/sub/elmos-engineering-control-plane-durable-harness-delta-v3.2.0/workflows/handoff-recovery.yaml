@@ -1,0 +1,16 @@
+name: durable-owner-handoff
+steps:
+  - quiesce
+  - assert_no_live_descendants_or_explicit_subtree_handoff
+  - flush_timeline
+  - durable_checkpoint
+  - close_writer
+  - mark_HANDOFF_READY
+  - transfer_owner_epoch
+  - revalidate_environment_and_policy
+  - recover_same_execution_id
+  - reopen_writer
+invariants:
+  - suspension_is_nonterminal
+  - resume_preserves_execution_id
+  - stale_owner_epoch_cannot_write

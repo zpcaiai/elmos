@@ -1,0 +1,9 @@
+name: runtime-admission
+steps:
+  - read_capability_inventory
+  - observe_runtime_state_without_side_effect
+  - compute_effective_policy_intersection
+  - validate_policy_mapping
+  - negotiate_capabilities_and_approval_modes
+  - reject_if_unsupported
+  - mint_invocation_capability_lease

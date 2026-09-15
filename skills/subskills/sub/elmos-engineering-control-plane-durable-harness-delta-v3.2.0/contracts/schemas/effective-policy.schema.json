@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EffectivePolicy",
+  "type": "object",
+  "required": [
+    "policy_id",
+    "tenant",
+    "harness",
+    "environment",
+    "tool",
+    "effective"
+  ],
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant": {
+      "type": "object"
+    },
+    "harness": {
+      "type": "object"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "tool": {
+      "type": "object"
+    },
+    "effective": {
+      "type": "object"
+    },
+    "hard_denies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}

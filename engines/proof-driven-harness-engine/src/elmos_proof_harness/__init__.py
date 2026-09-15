@@ -46,9 +46,12 @@ from .service import (
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
 from .transformation import ChangeSet, FileChange, WorkspaceTransformer
 
+from . import delta_v32
+
 __version__ = SERVICE_VERSION
 
 __all__ = [
+    "delta_v32",
     "AdapterInvocation",
     "AdapterManifest",
     "AdapterRegistry",

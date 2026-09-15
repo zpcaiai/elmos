@@ -1,0 +1,7 @@
+id: elmos-runtime-capability-negotiation
+version: 3.2.0
+priority: P0
+routable: false
+owner: harness-core
+architecture: Elmos Proof-Driven Agentic Harness / Repository Semantic Compiler v3
+failureMode: fail-closed
