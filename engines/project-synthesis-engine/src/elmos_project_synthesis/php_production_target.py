@@ -38,7 +38,10 @@ from .production_contract import (
     TENANT_CLAIM,
     TENANT_SETTING,
     all_entity_sql,
+    fixture_chain,
     production_contract,
+    relation_parents,
+    uuid_relation_fields,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (
@@ -487,9 +490,6 @@ declare(strict_types=1);
  */
 
 const WRONG_SECRET = 'an-entirely-different-secret-value-of-length';
-const SAMPLE_BODY = __SAMPLE_BODY__;
-const RECORD_ID = '6f1d9c52-4f0a-4c2e-9a58-6f4b2c8d1e70';
-const COLLECTION_PATH = __COLLECTION_PATH__;
 
 __SIGNER__
 function base64UrlEncode(string $value): string
@@ -517,6 +517,21 @@ function token(?string $tenant, string $issuer, string $audience, bool $valid): 
     $signingInput = $header . '.' . $body;
 
     return $signingInput . '.' . base64UrlEncode(signToken($signingInput, $valid));
+}
+
+function uuid(): string
+{
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0x0fff) | 0x4000,
+        mt_rand(0, 0x3fff) | 0x8000,
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+    );
 }
 
 /**
@@ -573,37 +588,27 @@ $issuer = (string) getenv(__ENV_AUTH_ISSUER__);
 $audience = (string) getenv(__ENV_AUTH_AUDIENCE__);
 $tenantA = token('tenant-a', $issuer, $audience, true);
 $tenantB = token('tenant-b', $issuer, $audience, true);
-$itemPath = COLLECTION_PATH . '/' . RECORD_ID;
 
 check('health-unauthenticated', send('GET', '/health', null, null)[0] === 200);
-check('missing-token-rejected', send('GET', COLLECTION_PATH, null, null)[0] === 401);
+check('missing-token-rejected', send('GET', __FIRST_COLLECTION_PATH__, null, null)[0] === 401);
 check(
     'bad-signature-rejected',
-    send('GET', COLLECTION_PATH, token('tenant-a', $issuer, $audience, false), null)[0] === 401,
+    send('GET', __FIRST_COLLECTION_PATH__, token('tenant-a', $issuer, $audience, false), null)[0] === 401,
 );
 check(
     'wrong-audience-rejected',
-    send('GET', COLLECTION_PATH, token('tenant-a', $issuer, 'another-service', true), null)[0] === 401,
+    send('GET', __FIRST_COLLECTION_PATH__, token('tenant-a', $issuer, 'another-service', true), null)[0] === 401,
 );
 check(
     'wrong-issuer-rejected',
-    send('GET', COLLECTION_PATH, token('tenant-a', 'https://attacker.invalid/', $audience, true), null)[0] === 401,
+    send('GET', __FIRST_COLLECTION_PATH__, token('tenant-a', 'https://attacker.invalid/', $audience, true), null)[0] === 401,
 );
 check(
     'missing-tenant-claim-rejected',
-    send('GET', COLLECTION_PATH, token(null, $issuer, $audience, true), null)[0] === 401,
+    send('GET', __FIRST_COLLECTION_PATH__, token(null, $issuer, $audience, true), null)[0] === 401,
 );
 
-[$createdStatus, $createdBody] = send('PUT', $itemPath, $tenantA, SAMPLE_BODY);
-check('upsert-accepted', $createdStatus === 200, $createdBody);
-[$readStatus, $readBody] = send('GET', $itemPath, $tenantA, null);
-check('read-returns-record', $readStatus === 200 && str_contains($readBody, RECORD_ID), $readBody);
-[$listStatus, $listBody] = send('GET', COLLECTION_PATH, $tenantA, null);
-check('list-scoped-to-tenant', $listStatus === 200 && str_contains($listBody, RECORD_ID), $listBody);
-check('cross-tenant-read-blocked', send('GET', $itemPath, $tenantB, null)[0] === 404);
-check('cross-tenant-list-blocked', !str_contains(send('GET', COLLECTION_PATH, $tenantB, null)[1], RECORD_ID));
-check('delete-removes-record', send('DELETE', $itemPath, $tenantA, null)[0] === 204);
-check('deleted-record-is-gone', send('GET', $itemPath, $tenantA, null)[0] === 404);
+__ENTITY_SCENARIOS__
 
 if ($failures > 0) {
     printf("%d integration check(s) failed\\n", $failures);
@@ -619,11 +624,11 @@ declare(strict_types=1);
 
 namespace __NAMESPACE__;
 
-// Both classes are required here so this file doubles as a parse check over
-// the whole workspace: the repository's build analysis runs it, and `php -l`
-// does not follow requires.
+// All entity store classes are required here so this file doubles as a parse
+// check over the whole workspace: the repository's build analysis runs it,
+// and `php -l` does not follow requires.
 require __DIR__ . '/../src/TenantAuthenticator.php';
-require __DIR__ . '/../src/__ENTITY__Store.php';
+__STORE_REQUIRES__
 
 /**
  * Offline guards. These need neither a database nor key material, so the
@@ -899,9 +904,90 @@ __HANDLERS__
     )
 
 
+def _php_json_body(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    parent_vars: dict[str, str],
+) -> str:
+    parents = dict(relation_parents(request, entity.singular))
+    fields_tokens: list[str] = []
+    for field in entity.fields:
+        if field.name in parents:
+            parent_var = parent_vars[parents[field.name]]
+            fields_tokens.append(f"{_php_literal(field.name)} => {parent_var}")
+        elif field.type == "string":
+            fields_tokens.append(f"{_php_literal(field.name)} => {_php_literal(f'sample-{field.name}')}")
+        elif field.type == "integer":
+            fields_tokens.append(f"{_php_literal(field.name)} => 1")
+        elif field.type == "number":
+            fields_tokens.append(f"{_php_literal(field.name)} => 1.5")
+        elif field.type == "boolean":
+            fields_tokens.append(f"{_php_literal(field.name)} => true")
+        elif field.type == "datetime":
+            fields_tokens.append(f"{_php_literal(field.name)} => '2026-01-01T00:00:00Z'")
+    return "json_encode([\n        " + ",\n        ".join(fields_tokens) + "\n    ])"
+
+
+def _php_entity_scenario(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    declared_vars: set[str] | None = None,
+) -> str:
+    if declared_vars is None:
+        declared_vars = set()
+    by_name = {item.singular: item for item in request.entities}
+    parent_vars: dict[str, str] = {}
+    lines: list[str] = []
+    for parent in fixture_chain(request, entity.singular):
+        var_name = f"${parent}Id"
+        parent_vars[parent] = var_name
+        parent_entity = by_name[parent]
+        if var_name not in declared_vars:
+            declared_vars.add(var_name)
+            parent_body = _php_json_body(request, parent_entity, parent_vars)
+            lines.extend(
+                [
+                    f"{var_name} = uuid();",
+                    f"$fixtureBody = {parent_body};",
+                    f"[$fixtureStatus, $fixtureResp] = send('PUT', '/{parent_entity.plural}/' . {var_name}, $tenantA, $fixtureBody);",
+                    f"check('fixture-{parent}', $fixtureStatus === 200, $fixtureResp);",
+                ]
+            )
+    record_var = f"${entity.singular}Id"
+    if record_var not in declared_vars:
+        declared_vars.add(record_var)
+        lines.append(f"{record_var} = uuid();")
+    else:
+        lines.append(f"{record_var} = uuid();")
+    body_expr = _php_json_body(request, entity, parent_vars)
+    lines.extend(
+        [
+            f"$itemPath_{entity.singular} = '/{entity.plural}/' . {record_var};",
+            f"$collectionPath_{entity.singular} = '/{entity.plural}';",
+            f"$payload_{entity.singular} = {body_expr};",
+            f"[$createdStatus, $createdBody] = send('PUT', $itemPath_{entity.singular}, $tenantA, $payload_{entity.singular});",
+            f"check('upsert-accepted-{entity.singular}', $createdStatus === 200, $createdBody);",
+            f"[$readStatus, $readBody] = send('GET', $itemPath_{entity.singular}, $tenantA, null);",
+            f"check('read-returns-record-{entity.singular}', $readStatus === 200 && str_contains($readBody, {record_var}), $readBody);",
+            f"[$listStatus, $listBody] = send('GET', $collectionPath_{entity.singular}, $tenantA, null);",
+            f"check('list-scoped-to-tenant-{entity.singular}', $listStatus === 200 && str_contains($listBody, {record_var}), $listBody);",
+            f"check('cross-tenant-read-blocked-{entity.singular}', send('GET', $itemPath_{entity.singular}, $tenantB, null)[0] === 404);",
+            f"check('cross-tenant-list-blocked-{entity.singular}', !str_contains(send('GET', $collectionPath_{entity.singular}, $tenantB, null)[1], {record_var}));",
+            f"check('delete-removes-record-{entity.singular}', send('DELETE', $itemPath_{entity.singular}, $tenantA, null)[0] === 204);",
+            f"check('deleted-record-is-gone-{entity.singular}', send('GET', $itemPath_{entity.singular}, $tenantA, null)[0] === 404);",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def _integration_source(request: SynthesisRequest, port: int) -> str:
-    entity = request.entities[0]
-    body = json.dumps({field.name: _sample_json(field) for field in entity.fields}, ensure_ascii=False)
+    declared_vars: set[str] = set()
+    scenario_blocks = [
+        _php_entity_scenario(request, entity, declared_vars)
+        for entity in request.entities
+    ]
+    entity_scenarios = "\n\n".join(scenario_blocks)
+    first_entity = request.entities[0]
     if request.auth_mode == "jwt":
         signer = _substitute(
             _INTEGRATION_JWT_SIGNER,
@@ -916,8 +1002,8 @@ def _integration_source(request: SynthesisRequest, port: int) -> str:
         _INTEGRATION_SOURCE,
         {
             "__SIGNER__": signer,
-            "__SAMPLE_BODY__": _php_literal(body),
-            "__COLLECTION_PATH__": _php_literal(f"/{entity.plural}"),
+            "__FIRST_COLLECTION_PATH__": _php_literal(f"/{first_entity.plural}"),
+            "__ENTITY_SCENARIOS__": entity_scenarios,
             "__TENANT_CLAIM__": _php_literal(TENANT_CLAIM),
             "__PORT__": str(port),
             "__ENV_AUTH_ISSUER__": _php_literal(ENV_AUTH_ISSUER),
@@ -958,7 +1044,10 @@ def render_php_production(request: SynthesisRequest, port: int) -> dict[str, str
             _OFFLINE_TEST_SOURCE,
             {
                 "__NAMESPACE__": _php_namespace(request),
-                "__ENTITY__": pascal(request.entities[0].singular),
+                "__STORE_REQUIRES__": "\n".join(
+                    f"require __DIR__ . '/../src/{pascal(entity.singular)}Store.php';"
+                    for entity in request.entities
+                ),
                 "__REQUIRED_EXTENSIONS__": "["
                 + ", ".join(_php_literal(name.lower()) for name in REQUIRED_EXTENSIONS)
                 + "]",

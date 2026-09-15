@@ -1,10 +1,8 @@
 from __future__ import annotations
-import tempfile
-from pathlib import Path
 from elmos_spring_modernization.rule_engine import RuleEngine
 from elmos_spring_modernization.migration_rules import RULE_CATALOG
 from elmos_spring_modernization.models import (
-    MigrationPlan, SpringVersion, MigrationRule, MigrationCategory, RiskLevel
+    MigrationPlan, SpringVersion, RiskLevel
 )
 
 def test_apply_rule():
@@ -129,3 +127,107 @@ def test_apply_plan_and_validate(tmp_path):
     assert validation["valid"] is True
     assert validation["residual_legacy_count"] == 0
     assert validation["files_checked"] >= 3
+
+
+def test_token_shielding_comments_and_strings():
+    engine = RuleEngine()
+    rule = RULE_CATALOG["RULE_001"]
+    
+    code = (
+        "package com.example;\n"
+        "// Notice: keep javax.persistence.Entity1 commented out for reference\n"
+        "/* In ancient times, javax.persistence.Entity1 was used */\n"
+        "public class Example {\n"
+        '    private String desc = "javax.persistence.Entity1 in string literal";\n'
+        "    private javax.persistence.Entity1 entity;\n"
+        "}\n"
+    )
+    
+    transformed, count = engine.apply_rule(code, rule, is_java_file=True)
+    assert count == 1
+    # Line comment shielded
+    assert "// Notice: keep javax.persistence.Entity1 commented out" in transformed
+    # Block comment shielded
+    assert "/* In ancient times, javax.persistence.Entity1 was used */" in transformed
+    # String literal shielded
+    assert '"javax.persistence.Entity1 in string literal"' in transformed
+    # Code token transformed
+    assert "private jakarta.persistence.Entity1 entity;" in transformed
+
+
+def test_ast_spring_mvc_composed_annotations():
+    engine = RuleEngine()
+    code = (
+        "package com.example.api;\n"
+        "import org.springframework.web.bind.annotation.RequestMapping;\n"
+        "import org.springframework.web.bind.annotation.RequestMethod;\n"
+        "import org.springframework.web.bind.annotation.RestController;\n"
+        "@RestController\n"
+        "public class OrderController {\n"
+        '    @RequestMapping(value = "/api/orders", method = RequestMethod.GET)\n'
+        "    public List<Order> getOrders() { return null; }\n"
+        '    @RequestMapping(path = "/api/orders", method = RequestMethod.POST)\n'
+        "    public Order createOrder() { return null; }\n"
+        "}\n"
+    )
+    
+    transformed, count = engine.rewrite_spring_mvc_annotations(code)
+    assert count == 2
+    assert '@GetMapping("/api/orders")' in transformed
+    assert '@PostMapping("/api/orders")' in transformed
+    assert "@RequestMapping" not in transformed
+
+
+def test_ast_webmvc_configurer_adapter():
+    engine = RuleEngine()
+    code = (
+        "package com.example.config;\n"
+        "import org.springframework.context.annotation.Configuration;\n"
+        "import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;\n"
+        "@Configuration\n"
+        "public class WebConfig extends WebMvcConfigurerAdapter {\n"
+        "}\n"
+    )
+    
+    transformed, count = engine.rewrite_webmvc_configurer_adapter(code)
+    assert count == 2
+    assert "public class WebConfig implements WebMvcConfigurer {" in transformed
+    assert "org.springframework.web.servlet.config.annotation.WebMvcConfigurer;" in transformed
+    assert "WebMvcConfigurerAdapter" not in transformed
+
+
+def test_syntactic_integrity_protection():
+    engine = RuleEngine()
+    # Balanced code
+    assert engine.validate_syntactic_integrity("class A { void m() {} }", "class A { void m() {} }") is True
+    # Corrupted code with missing brace
+    assert engine.validate_syntactic_integrity("class A { void m() {} }", "class A { void m() { }") is False
+    # Corrupted code with missing paren
+    assert engine.validate_syntactic_integrity("foo(bar);", "foo(bar;") is False
+
+
+def test_apply_plan_does_not_claim_rules_when_atomic_write_fails(tmp_path, monkeypatch):
+    engine = RuleEngine()
+    source = tmp_path / "Entity.java"
+    source.write_text("import javax.persistence.Entity1;", encoding="utf-8")
+    rule = RULE_CATALOG["RULE_001"]
+    plan = MigrationPlan(
+        plan_id="write-failure",
+        source_version=SpringVersion.BOOT_2_7,
+        target_version=SpringVersion.BOOT_3_5,
+        rules=[rule],
+        estimated_changes=1,
+        risk_summary={RiskLevel.LOW: 1},
+    )
+
+    def fail_write(_path, _content):
+        raise OSError("injected durable write failure")
+
+    monkeypatch.setattr(engine, "_atomic_write", fail_write)
+    result = engine.apply_plan(str(tmp_path), plan, dry_run=False)
+
+    assert result.applied_rules == []
+    assert result.failed_rules == [rule.rule_id]
+    assert result.file_changes == []
+    assert "javax.persistence" in source.read_text(encoding="utf-8")
+    assert any("durable write failure" in warning for warning in result.warnings)

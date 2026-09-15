@@ -43,6 +43,18 @@ SPRING_EVIDENCE_MODULE = ROOT / "scripts/batch30/spring_launch_evidence.py"
 _SPRING_EVIDENCE: types.ModuleType | None = None
 
 
+def current_uid() -> int:
+    """Return the native owner identity used by local filesystem checks."""
+
+    getuid = getattr(os, "getuid", None)
+    return int(getuid()) if getuid is not None else int(ROOT.stat().st_uid)
+
+
+def current_gid() -> int:
+    getgid = getattr(os, "getgid", None)
+    return int(getgid()) if getgid is not None else int(ROOT.stat().st_gid)
+
+
 def load_spring_evidence_module() -> types.ModuleType:
     """Load the receipt verifier from its exact repository path."""
 
@@ -529,7 +541,7 @@ def secure_environment_file_bytes(
                 return None
             if (
                 parent != path.parent
-                and parent_details.st_uid not in {0, os.getuid()}
+                and parent_details.st_uid not in {0, current_uid()}
             ):
                 errors.append(
                     f"{label} must not traverse ancestors owned outside root/current UID"
@@ -560,8 +572,8 @@ def secure_environment_file_bytes(
     parent_details = path.parent.lstat()
     if (
         stat.S_IMODE(parent_details.st_mode) != 0o700
-        or parent_details.st_uid != os.getuid()
-        or parent_details.st_gid != os.getgid()
+        or parent_details.st_uid != current_uid()
+        or parent_details.st_gid != current_gid()
     ):
         errors.append(
             f"{label} parent directory must be mode 0700 and owned by the current UID/GID"
@@ -585,8 +597,8 @@ def secure_environment_file_bytes(
             return None
         mode = stat.S_IMODE(opened_details.st_mode)
         if (
-            opened_details.st_uid != os.getuid()
-            or opened_details.st_gid != os.getgid()
+            opened_details.st_uid != current_uid()
+            or opened_details.st_gid != current_gid()
         ):
             errors.append(f"{label} must be owned by the current UID/GID")
             return None
@@ -1062,8 +1074,8 @@ def inspect_secret_file(
     expected_gid: int | None = None,
 ) -> tuple[bool, tuple[int, int] | None, bytes | None, str | None]:
     """Return stable inode and content identities for a bounded non-symlink secret."""
-    owner_uid = os.getuid() if expected_uid is None else expected_uid
-    owner_gid = os.getgid() if expected_gid is None else expected_gid
+    owner_uid = current_uid() if expected_uid is None else expected_uid
+    owner_gid = current_gid() if expected_gid is None else expected_gid
     if (
         not path.is_absolute()
         or path == Path("/")
@@ -1312,8 +1324,8 @@ def inspect_owner_only_directory(
     expected_gid: int | None = None,
 ) -> tuple[bool, tuple[int, int] | None, str | None]:
     """Validate the host bind root used for persistent anti-replay state."""
-    owner_uid = os.getuid() if expected_uid is None else expected_uid
-    owner_gid = os.getgid() if expected_gid is None else expected_gid
+    owner_uid = current_uid() if expected_uid is None else expected_uid
+    owner_gid = current_gid() if expected_gid is None else expected_gid
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         return False, None, "must use a normalized absolute non-root path"
     ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
@@ -1573,7 +1585,7 @@ def validate_external(
         return None
     require(errors, resolved.is_file() and not path.is_symlink(), "external evidence must be a regular non-symlink file")
     require(errors, not resolved.is_relative_to(ROOT.resolve()), "external evidence must be mounted from outside the repository")
-    require(errors, details.st_uid == os.getuid(), "external evidence file must be owned by the current user")
+    require(errors, details.st_uid == current_uid(), "external evidence file must be owned by the current user")
     require(errors, stat.S_IMODE(details.st_mode) in {0o400, 0o600}, "external evidence file permissions must be 0400 or 0600")
     require(errors, details.st_nlink == 1, "external evidence file must not be hard-linked")
     if len(errors) != initial_error_count:
@@ -1720,13 +1732,13 @@ def validate_environment(
     application_secret_path: Path | None = None,
     production: bool = False,
 ) -> None:
-    runtime_uid = os.getuid() if expected_uid is None else expected_uid
-    runtime_gid = os.getgid() if expected_gid is None else expected_gid
+    runtime_uid = current_uid() if expected_uid is None else expected_uid
+    runtime_gid = current_gid() if expected_gid is None else expected_gid
     if production:
         require(
             errors,
-            os.getuid() == APPLICATION_RUNTIME_UID
-            and os.getgid() == APPLICATION_RUNTIME_GID,
+            current_uid() == APPLICATION_RUNTIME_UID
+            and current_gid() == APPLICATION_RUNTIME_GID,
             "production launch gate must run as the dedicated application observer UID/GID 10001:10001",
         )
     for name in REQUIRED_TRUE_ENVIRONMENT:
@@ -2052,8 +2064,8 @@ def derive_launch_environment_binding(
         if compose_environment_file is not None
         else None
     )
-    runtime_uid = APPLICATION_RUNTIME_UID if production else os.getuid()
-    runtime_gid = APPLICATION_RUNTIME_GID if production else os.getgid()
+    runtime_uid = APPLICATION_RUNTIME_UID if production else current_uid()
+    runtime_gid = APPLICATION_RUNTIME_GID if production else current_gid()
     validate_environment(
         errors,
         effective,

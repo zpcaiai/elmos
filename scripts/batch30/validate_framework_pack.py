@@ -86,6 +86,37 @@ PACK_SPECIFIC_VALIDATORS = {
     ),
 }
 
+# This launch recipe must be the resource actually executed by the Java Worker,
+# not merely a similar-looking Pack copy. The two assets are frozen independently.
+WORKER_RECIPE_RESOURCES = {
+    "spring-boot-2-7-18-to-3-5-3": "spring-boot-2.7.18-to-3.5.3.yml",
+}
+
+
+def _validate_worker_recipe_binding(errors: list[str], pack: Path, pack_key: str) -> None:
+    resource = WORKER_RECIPE_RESOURCES.get(pack_key)
+    if resource is None:
+        return
+    repo = Path(__file__).resolve().parents[2]
+    worker_recipe = (
+        repo / "apps/java-engine-worker/src/main/resources/rewrite" / resource
+    )
+    pack_recipe = pack / "recipes" / resource
+    try:
+        recipe_manifest = load(pack / "recipes/manifest.json")
+        if recipe_manifest.get("recipe_config") != f"recipes/{resource}":
+            errors.append("Pack recipe manifest does not bind the executed Worker resource")
+        worker_raw = worker_recipe.read_bytes()
+        pack_raw = pack_recipe.read_bytes()
+        if b"\r" in worker_raw or b"\r" in pack_raw:
+            errors.append("Worker and Pack recipe bytes must use canonical LF on every host")
+        if worker_raw != pack_raw:
+            errors.append(
+                "executed Java Worker recipe bytes differ from frozen Pack recipe bytes"
+            )
+    except (OSError, ValueError) as exc:
+        errors.append(f"Worker/Pack recipe binding unavailable: {exc}")
+
 
 @dataclass(frozen=True)
 class EvidenceSnapshot:
@@ -135,7 +166,13 @@ def _read_bound_pack_file(pack: Path, reference: object) -> tuple[bytes | None, 
         return None, "path does not exist"
     if not resolved.is_relative_to(root):
         return None, "path escapes the framework pack"
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    # Preserve byte-addressed evidence on Windows; text-mode os.read would
+    # translate CRLF and falsely report a stable file as truncated.
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     try:
         descriptor = os.open(resolved, flags)
         try:
@@ -467,7 +504,7 @@ def main() -> int:
         errors.append(f"missing pack dir: {pack}")
     for rel in REQUIRED_DIRS:
         if not (pack / rel).exists():
-            errors.append(f"missing: {pack / rel}")
+            errors.append(f"missing: {(pack / rel).as_posix()}")
     manifest = {}
     try:
         manifest = load(pack / "pack.json")
@@ -597,6 +634,7 @@ def main() -> int:
             errors.append(str(exc))
     if manifest:
         _validate_coexistence(errors, pack, manifest)
+        _validate_worker_recipe_binding(errors, pack, str(manifest.get("pack_key", "")))
     try:
         certification = load(pack / "certification" / "certification.json")
         if str(certification.get("status", "")).lower() != str(manifest.get("status", "")).lower():

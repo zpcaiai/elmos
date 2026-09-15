@@ -113,6 +113,23 @@ public final class SpringDiagnosticAutoRepairer {
             rulesApplied.addAll(secRes.rulesApplied());
         }
 
+        var legacySecurity = io.elmos.worker.security.SpringLegacySecurityModernizer.modernize(projectRoot);
+        if (legacySecurity.modified()) {
+            changesCount += legacySecurity.modifiedFiles().size();
+            modifiedFiles.addAll(legacySecurity.modifiedFiles());
+            rulesApplied.addAll(legacySecurity.rulesApplied());
+        }
+        blockingObligations.addAll(legacySecurity.blockingObligations());
+
+        var legacyIntegration = io.elmos.worker.integration.SpringLegacyEnterpriseIntegrationModernizer
+                .modernize(projectRoot);
+        if (legacyIntegration.modified()) {
+            changesCount += legacyIntegration.modifiedFiles().size();
+            modifiedFiles.addAll(legacyIntegration.modifiedFiles());
+            rulesApplied.addAll(legacyIntegration.rulesApplied());
+        }
+        blockingObligations.addAll(legacyIntegration.blockingObligations());
+
         // 5. JPA / Hibernate 6 SQM & Composite Query Modernizer
         var jpaRes = io.elmos.worker.jpa.SpringJpaHibernateQueryModernizer.modernize(projectRoot);
         if (jpaRes.modified()) {
@@ -278,6 +295,20 @@ public final class SpringDiagnosticAutoRepairer {
                 changes++;
             }
 
+            // Rule 1.6: Ensure springdoc-openapi is present if required by diagnostics
+            boolean needsSpringdoc = diagnostics.stream().anyMatch(d ->
+                    d.contains("io.swagger.v3") || d.contains("springdoc") || d.contains("Parameter") || d.contains("Operation"));
+            if (needsSpringdoc && !content.contains("springdoc-openapi") && content.contains("<dependencies>")) {
+                String springdocDep = "\n    <dependency>\n"
+                        + "      <groupId>org.springdoc</groupId>\n"
+                        + "      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>\n"
+                        + "      <version>2.5.0</version>\n"
+                        + "    </dependency>";
+                content = content.replace("<dependencies>", "<dependencies>" + springdocDep);
+                rules.add("INJECT_SPRINGDOC_OPENAPI");
+                changes++;
+            }
+
             if (changes > 0 && !content.equals(original)) {
                 Files.writeString(pomPath, content, StandardCharsets.UTF_8);
                 return new RepairResult(true, changes, Set.of(pomPath.getFileName().toString()), rules);
@@ -430,6 +461,63 @@ public final class SpringDiagnosticAutoRepairer {
                 content = content.replace("extends HandlerInterceptorAdapter", "implements HandlerInterceptor");
                 rules.add("MODERNIZE_HANDLER_INTERCEPTOR");
                 changes++;
+            }
+
+            // Rule 2.6: Spring Data JPA getOne(id) -> getReferenceById(id)
+            boolean needsGetOneRepair = diagnostics.stream().anyMatch(d ->
+                    d.contains("getOne") || d.contains("cannot find symbol: method getOne"));
+            if ((needsGetOneRepair || content.contains(".getOne(")) && content.contains(".getOne(")) {
+                content = content.replaceAll("(?<=\\.)getOne\\(", "getReferenceById(");
+                rules.add("MODERNIZE_JPA_GET_ONE_TO_REFERENCE_BY_ID");
+                changes++;
+            }
+
+            // Rule 2.7: Swagger 2 to Springdoc OpenAPI 3 annotations
+            if (content.contains("@Api") || content.contains("@ApiOperation") || content.contains("@ApiParam") || content.contains("@ApiModel") || content.contains("@ApiModelProperty")) {
+                if (content.contains("@Api(") || content.contains("@Api\n") || content.contains("@Api ")) {
+                    content = ensureImport(content, "io.swagger.v3.oas.annotations.tags.Tag");
+                    content = content.replaceAll("import\\s+io\\.(?:springfox|swagger)\\.annotations\\.Api;\\s*", "");
+                    content = content.replaceAll("@Api\\s*\\(\\s*(?:tags|value)\\s*=\\s*(\"[^\"]+\")\\s*\\)", "@Tag(name = $1)");
+                    rules.add("MODERNIZE_SWAGGER_API_TO_TAG");
+                    changes++;
+                }
+                if (content.contains("@ApiOperation")) {
+                    content = ensureImport(content, "io.swagger.v3.oas.annotations.Operation");
+                    content = content.replaceAll("import\\s+io\\.(?:springfox|swagger)\\.annotations\\.ApiOperation;\\s*", "");
+                    content = content.replaceAll("@ApiOperation\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")\\s*,\\s*notes\\s*=\\s*(\"[^\"]+\")\\s*\\)", "@Operation(summary = $1, description = $2)");
+                    content = content.replaceAll("@ApiOperation\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")\\s*\\)", "@Operation(summary = $1)");
+                    content = content.replaceAll("@ApiOperation\\s*\\(\\s*(\"[^\"]+\")\\s*\\)", "@Operation(summary = $1)");
+                    rules.add("MODERNIZE_SWAGGER_OPERATION");
+                    changes++;
+                }
+                if (content.contains("@ApiParam")) {
+                    content = ensureImport(content, "io.swagger.v3.oas.annotations.Parameter");
+                    content = content.replaceAll("import\\s+io\\.(?:springfox|swagger)\\.annotations\\.ApiParam;\\s*", "");
+                    content = content.replaceAll("@ApiParam\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")", "@Parameter(description = $1");
+                    content = content.replaceAll("@ApiParam\\s*\\(\\s*(\"[^\"]+\")", "@Parameter(description = $1");
+                    content = content.replaceAll("@ApiParam\\b", "@Parameter");
+                    rules.add("MODERNIZE_SWAGGER_PARAM");
+                    changes++;
+                }
+                if (content.contains("@ApiModelProperty")) {
+                    content = ensureImport(content, "io.swagger.v3.oas.annotations.media.Schema");
+                    content = content.replaceAll("import\\s+io\\.(?:springfox|swagger)\\.annotations\\.ApiModelProperty;\\s*", "");
+                    content = content.replaceAll("@ApiModelProperty\\s*\\(\\s*value\\s*=\\s*(\"[^\"]+\")", "@Schema(description = $1");
+                    content = content.replaceAll("@ApiModelProperty\\s*\\(\\s*notes\\s*=\\s*(\"[^\"]+\")", "@Schema(description = $1");
+                    content = content.replaceAll("@ApiModelProperty\\s*\\(\\s*(\"[^\"]+\")", "@Schema(description = $1");
+                    content = content.replaceAll("@ApiModelProperty\\b", "@Schema");
+                    rules.add("MODERNIZE_SWAGGER_MODEL_PROPERTY");
+                    changes++;
+                }
+                if (content.contains("@ApiModel")) {
+                    content = ensureImport(content, "io.swagger.v3.oas.annotations.media.Schema");
+                    content = content.replaceAll("import\\s+io\\.(?:springfox|swagger)\\.annotations\\.ApiModel;\\s*", "");
+                    content = content.replaceAll("@ApiModel\\s*\\(\\s*(?:value|description)\\s*=\\s*(\"[^\"]+\")", "@Schema(description = $1");
+                    content = content.replaceAll("@ApiModel\\s*\\(\\s*(\"[^\"]+\")", "@Schema(description = $1");
+                    content = content.replaceAll("@ApiModel\\b", "@Schema");
+                    rules.add("MODERNIZE_SWAGGER_MODEL");
+                    changes++;
+                }
             }
 
             if (changes > 0 && !content.equals(original)) {

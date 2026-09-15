@@ -1,0 +1,12 @@
+{
+  "canonical_recipe_sha256": "sha256:04f555bdc43911352d9992fbe4237a866f7845367e027121e4ba3cc6b7c95f5a",
+  "certification_eligible": false,
+  "execution_status": "NOT_RUN",
+  "pack_key": "spring-boot-2-0-2-6-to-2-7-18",
+  "recipe_config": "recipes/spring-boot-2.0-2.6-to-2.7.18.yml",
+  "recipes": [
+    "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot2_7_18Java17"
+  ],
+  "schema_version": 1,
+  "worker_recipe_resource": "/rewrite/spring-boot-2.0-2.6-to-2.7.18.yml"
+}

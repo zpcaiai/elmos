@@ -1,16 +1,17 @@
 {
   "authorities": [
     {
-      "signer_id": "ethan-independent-certifier",
+      "algorithm": "rsa-sha256",
+      "public_key": "keys/ethan-independent-certifier.pub.pem",
+      "public_key_sha256": "sha256:4b1bd04bcc0b63504f56cf35a2402abedcf52c6def9ca330b7f169d9b3071fef",
+      "revocation_reason": "PRIVATE_KEY_DISCLOSED_IN_REPOSITORY_HISTORY",
+      "revoked": true,
       "roles": [
         "independent-certifier"
       ],
-      "algorithm": "rsa-sha256",
-      "revoked": true,
+      "signer_id": "ethan-independent-certifier",
       "valid_from": "2026-09-09T09:17:20.233103+00:00",
-      "valid_until": "2027-09-09T09:17:20.233103+00:00",
-      "public_key": "keys/ethan-independent-certifier.pub.pem",
-      "public_key_sha256": "sha256:4b1bd04bcc0b63504f56cf35a2402abedcf52c6def9ca330b7f169d9b3071fef"
+      "valid_until": "2027-09-09T09:17:20.233103+00:00"
     }
   ]
 }

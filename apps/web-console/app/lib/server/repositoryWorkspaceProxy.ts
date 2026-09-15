@@ -825,10 +825,22 @@ export async function repositoryTranslationWorkspace(input: {
       await rename(temporary, destination);
     } catch (error) {
       const code = (error as NodeJS.ErrnoException).code;
-      if (code === "EEXIST" || code === "ENOTEMPTY") {
+      let windowsPublicationRace = false;
+      if (process.platform === "win32" && code === "EPERM") {
+        try {
+          await lstat(destination);
+          windowsPublicationRace = true;
+        } catch (destinationError) {
+          if ((destinationError as NodeJS.ErrnoException).code !== "ENOENT") {
+            throw destinationError;
+          }
+        }
+      }
+      if (code === "EEXIST" || code === "ENOTEMPTY" || windowsPublicationRace) {
         // Another process won the same content-addressed publication race.
-        // Re-enter through the normal cache verifier; never trust the winner
-        // merely because the destination now exists.
+        // Windows reports EPERM instead of EEXIST for this directory collision,
+        // so accept it only after independently observing the destination.
+        // Re-enter through the normal cache verifier; never trust the winner.
         await rm(temporary, { recursive: true, force: true });
         return repositoryTranslationWorkspace(input);
       }

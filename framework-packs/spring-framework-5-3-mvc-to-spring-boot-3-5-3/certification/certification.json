@@ -1,5 +1,5 @@
 {
-  "certification_decision": "CERTIFIED",
+  "certification_decision": "NOT_CERTIFIED",
   "declared_scope": [
     "static-source-fingerprint-contract",
     "static-fcm-contract",
@@ -14,45 +14,43 @@
     "contracts/framework-contract-model.json",
     "recipes/manifest.json",
     "target-profile/scaffold/manifest.json",
-    "certification/local-execution/2026-08-30/evidence-index.json",
-    "certification/external-admission.json"
+    "certification/local-execution/2026-08-30/evidence-index.json"
   ],
   "gate_results": {
-    "authorized_customer_repository": "PASSED",
+    "authorized_customer_repository": "NOT_RUN",
     "batch30_gate": "PASSED_EXPERIMENTAL_NOT_CERTIFIED",
     "batch30_structural_validation": "PASSED_LOCAL",
-    "behavior_equivalence": "PASSED",
-    "behavioral_equivalence": "PASSED",
-    "customer_acceptance": "PASSED",
-    "customer_holdout": "PASSED",
-    "external_certification": "PASSED",
-    "holdout": "PASSED",
-    "independent_review": "PASSED",
-    "negative_corpus": "PASSED",
+    "behavior_equivalence": "PASSED_LOCAL",
+    "customer_acceptance": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
+    "external_certification": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "independent_review": "NOT_RUN",
+    "negative_corpus": "NOT_RUN",
     "openrewrite_execution": "PASSED_LOCAL",
-    "operability": "PASSED",
+    "operability": "NOT_RUN",
     "pack_specific_static_validation": "PASSED_LOCAL_STATIC",
-    "performance": "PASSED",
-    "representative_repository": "PASSED",
-    "rollback": "PASSED",
-    "rootless_runner": "PASSED",
-    "rootless_transformer": "PASSED",
-    "rootless_verifier": "PASSED",
-    "sbom": "PASSED",
-    "security": "PASSED",
-    "source_build": "PASSED",
-    "source_startup": "PASSED",
-    "target_build": "PASSED",
-    "target_startup": "PASSED"
+    "performance": "NOT_RUN",
+    "representative_repository": "NOT_RUN",
+    "rollback": "NOT_RUN",
+    "rootless_runner": "NOT_RUN",
+    "rootless_transformer": "NOT_RUN",
+    "rootless_verifier": "NOT_RUN",
+    "sbom": "NOT_RUN",
+    "security": "NOT_RUN",
+    "source_build": "PASSED_LOCAL",
+    "source_startup": "PASSED_LOCAL",
+    "target_build": "PASSED_LOCAL",
+    "target_startup": "PASSED_LOCAL"
   },
   "issued_at": "2026-08-30",
   "metrics": {
-    "build_green_rate": 1.0,
-    "framework_contract_coverage": 1.0,
-    "p0_contract_pass_rate": 1.0,
-    "source_fingerprint_coverage": 1.0,
-    "source_map_coverage": 1.0,
-    "startup_pass_rate": 1.0
+    "build_green_rate": null,
+    "framework_contract_coverage": null,
+    "p0_contract_pass_rate": null,
+    "source_fingerprint_coverage": null,
+    "source_map_coverage": null,
+    "startup_pass_rate": null
   },
   "next_review_at": "2026-11-09",
   "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
@@ -66,5 +64,5 @@
     "Holdout, representative repository, customer and independent evidence remain NOT_RUN."
   ],
   "schema_version": 1,
-  "status": "certified"
+  "status": "experimental"
 }

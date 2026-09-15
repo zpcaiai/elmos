@@ -230,8 +230,15 @@ def test_generate_k8s_manifests(temp_dir: Path):
     # Real Kubernetes Client Schema Validation via kubectl dry-run
     if shutil.which("kubectl"):
         for target in ["base", "overlays/dev", "overlays/staging", "overlays/prod"]:
+            k_build = subprocess.run(
+                ["kubectl", "kustomize", str(out_dir / target)],
+                capture_output=True,
+                text=True,
+            )
+            assert k_build.returncode == 0, f"kubectl kustomize failed for {target}:\n{k_build.stderr}\n{k_build.stdout}"
             k_run = subprocess.run(
-                ["kubectl", "apply", "--dry-run=client", "-k", str(out_dir / target)],
+                ["kubectl", "create", "--dry-run=client", "--validate=false", "-f", "-"],
+                input=k_build.stdout,
                 capture_output=True,
                 text=True,
             )

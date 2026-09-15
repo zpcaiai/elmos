@@ -168,10 +168,6 @@ def test_python_mysql_target_code_and_ast() -> None:
 
 
 _UNEVIDENCED_RELATIONAL_LANGUAGES = (
-    "typescript",
-    "go",
-    "java",
-    "csharp",
     "kotlin",
     "php",
     "rust",

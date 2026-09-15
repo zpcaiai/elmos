@@ -389,7 +389,12 @@ export async function assessChinaDbSqlLocally(
   callerSignal?: AbortSignal,
 ): Promise<ChinaDbSqlPreflightResult> {
   const engineDir = resolveEngineDirectory();
-  const venvBinary = path.join(engineDir, ".venv/bin/elmos-sql-transpiler");
+  const venvBinary = path.join(
+    engineDir,
+    ".venv",
+    process.platform === "win32" ? "Scripts" : "bin",
+    process.platform === "win32" ? "elmos-sql-transpiler.exe" : "elmos-sql-transpiler",
+  );
   const useDirectBinary = existsSync(venvBinary);
   const command = useDirectBinary ? venvBinary : (process.env.ELMOS_UV_PATH ?? "uv");
   const tmpDir = os.tmpdir();

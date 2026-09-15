@@ -2,6 +2,7 @@ import base64
 import copy
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -10,6 +11,8 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import urlparse
+from urllib.request import url2pathname
 
 from scripts.batch30.validate_external_certification_intake import (
     CUSTOMER_AUTHORIZATION_ROLE,
@@ -167,6 +170,18 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     def setUp(self) -> None:
+        self.openssl_patcher = None
+        if os.name == "nt":
+            executable = shutil.which("openssl")
+            if executable is None:
+                self.skipTest("local Ed25519 fixture generation requires OpenSSL")
+            # Test-only fixture verification. Production still rejects a
+            # user-writable or non-allowlisted verifier.
+            self.openssl_patcher = patch(
+                "scripts.precision_migration.trust.trusted_openssl_path",
+                return_value=Path(executable).resolve(strict=True),
+            )
+            self.openssl_patcher.start()
         self.case = Path(tempfile.mkdtemp(prefix="case-", dir=self.root))
         self.evidence_root = self.case / "evidence"
         self.evidence_root.mkdir()
@@ -307,6 +322,8 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         shutil.rmtree(self.case)
+        if self.openssl_patcher is not None:
+            self.openssl_patcher.stop()
 
     def organization_for(self, evidence_type: str) -> str:
         if evidence_type in PRODUCER_EVIDENCE:
@@ -540,6 +557,10 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         self.assertTrue(all(record["revoked"] for record in trust_template["keys"]))
 
     def test_cli_validates_without_promoting_status(self) -> None:
+        if os.name == "nt":
+            self.skipTest(
+                "Windows host has no independently trusted OpenSSL CLI; local fixture only"
+            )
         intake_path = self.case / "intake.json"
         self.write_json(intake_path, self.intake)
         completed = subprocess.run(
@@ -817,7 +838,8 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
             self.evaluate(linked)
 
         content_uri = self.intake["evidence"]["target_startup"]["content"]["uri"]
-        Path(content_uri.removeprefix("file://")).write_bytes(b"tampered\n")
+        parsed = urlparse(content_uri)
+        Path(url2pathname(parsed.path)).write_bytes(b"tampered\n")
         with self.assertRaisesRegex(ExternalIntakeError, "content .* mismatch"):
             self.evaluate()
 

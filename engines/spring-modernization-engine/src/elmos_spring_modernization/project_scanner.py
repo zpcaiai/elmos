@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict
 from .models import SpringProjectProfile, SpringVersion
 
 class SpringProjectScanner:
@@ -91,7 +91,12 @@ class SpringProjectScanner:
         has_ws_adapter = False
         has_filter_chain = False
 
-        for r, _, files in os.walk(project_root):
+        base_depth = str(project_root).count(os.sep)
+        for r, dirs, files in os.walk(project_root):
+            if r.count(os.sep) - base_depth > 7:
+                dirs.clear()
+                continue
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in {"target", "build", "node_modules", ".venv", "tmp", "temp", "Library", "System", "private", "Frameworks"}]
             for f in files:
                 if f.endswith(".java"):
                     try:
@@ -148,7 +153,12 @@ class SpringProjectScanner:
 
         root = Path(project_root)
         if root.exists():
-            for r, _, files in os.walk(project_root):
+            base_depth = str(project_root).count(os.sep)
+            for r, dirs, files in os.walk(project_root):
+                if r.count(os.sep) - base_depth > 7:
+                    dirs.clear()
+                    continue
+                dirs[:] = [d for d in dirs if not d.startswith(".") and d not in {"target", "build", "node_modules", ".venv", "tmp", "temp", "Library", "System", "private", "Frameworks"}]
                 for f in files:
                     if f.endswith(".java"):
                         try:

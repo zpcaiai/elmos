@@ -1,9 +1,12 @@
 {
   "batch": 45,
   "packKey": "elmos-platform-production-readiness",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "externalOperationExecuted=false",
+    "repository-held certification keys revoked; field evidence and independent certification NOT_RUN"
+  ],
   "evidenceRefs": [
     "batch45-customer-alpha",
     "batch45-customer-beta",

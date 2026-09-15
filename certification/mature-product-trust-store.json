@@ -1,10 +1,6 @@
 {
-  "storeVersion": 1,
   "keys": [
     {
-      "keyId": "ethan-independent-certifier",
-      "publicKeyPath": "keys/ethan-independent-certifier.pub.pem",
-      "revoked": true,
       "authorizedBatches": [
         38,
         39,
@@ -14,7 +10,12 @@
         43,
         44,
         45
-      ]
+      ],
+      "keyId": "ethan-independent-certifier",
+      "publicKeyPath": "keys/ethan-independent-certifier.pub.pem",
+      "revocation_reason": "PRIVATE_KEY_DISCLOSED_IN_REPOSITORY_HISTORY",
+      "revoked": true
     }
-  ]
+  ],
+  "storeVersion": 1
 }

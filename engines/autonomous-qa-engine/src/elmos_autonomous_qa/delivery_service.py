@@ -11,7 +11,6 @@ from __future__ import annotations
 import base64
 import binascii
 import errno
-import fcntl
 import hmac
 import os
 import sqlite3
@@ -38,6 +37,7 @@ from .artifacts import (
     PublishedOutput,
     PublicationError,
 )
+from .file_lock import LOCK_CONTENTION_ERRNOS, lock_exclusive_nonblocking, unlock
 from .canonical import (
     canonical_digest,
     canonical_json_bytes,
@@ -1083,13 +1083,9 @@ class TrustedDeliveryService:
             ):
                 raise DeliveryStateError("delivery operation fence is unsafe")
             try:
-                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                lock_exclusive_nonblocking(descriptor)
             except OSError as exc:
-                if exc.errno not in {
-                    errno.EACCES,
-                    errno.EAGAIN,
-                    errno.EWOULDBLOCK,
-                }:
+                if exc.errno not in LOCK_CONTENTION_ERRNOS:
                     raise
                 with self._PROCESS_FENCE_GUARD:
                     self._PROCESS_FENCES.discard(process_key)
@@ -1190,7 +1186,7 @@ class TrustedDeliveryService:
             except DeliveryStateError as exc:
                 release_error = exc
             try:
-                fcntl.flock(fence.descriptor, fcntl.LOCK_UN)
+                unlock(fence.descriptor)
             except OSError as exc:
                 if release_error is None:
                     release_error = DeliveryStateError(

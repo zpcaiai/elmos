@@ -24,11 +24,14 @@ from .models import EntitySpec, SynthesisRequest, pascal
 def generate_enterprise_rust_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise Rust Axum microservice."""
     files: dict[str, str] = {}
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
+    entities = request.entities or (EntitySpec(singular="order", plural="orders", fields=()),)
+    entity = entities[0]
     entity_cap = pascal(entity.singular)
     entity_plural = entity.plural
+    relations = request.canonical_relations
 
     # 1. Cargo.toml
+    sqlx_feature = "mysql" if request.is_mysql else "postgres"
     files["Cargo.toml"] = f"""[package]
 name = "{request.project_name}"
 version = "0.1.0"
@@ -40,7 +43,7 @@ tokio = {{ version = "1.38", features = ["full"] }}
 tower-http = {{ version = "0.5.2", features = ["trace", "cors"] }}
 tracing = "0.1.40"
 tracing-subscriber = {{ version = "0.3.18", features = ["env-filter", "json"] }}
-sqlx = {{ version = "0.7.4", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json", "migrate"] }}
+sqlx = {{ version = "0.7.4", features = ["runtime-tokio-rustls", "{sqlx_feature}", "chrono", "uuid", "json", "migrate"] }}
 deadpool-redis = "0.16.0"
 rdkafka = {{ version = "0.36.0", features = ["tokio"] }}
 serde = {{ version = "1.0", features = ["derive"] }}
@@ -53,17 +56,33 @@ anyhow = "1.0"
 thiserror = "1.0"
 """
 
-    # 2. src/models.rs
-    files["src/models.rs"] = f"""use chrono::{{DateTime, Utc}};
-use serde::{{Deserialize, Serialize}};
-use uuid::Uuid;
+    # 2. src/models.rs (Multi-Entity with canonical relations)
+    entity_models_list = []
+    for ent in entities:
+        ent_cap = pascal(ent.singular)
+        field_defs = []
+        req_field_defs = []
+        existing_field_names = {f.name for f in ent.fields}
+        for f in ent.fields:
+            rtype = "i64" if f.type == "integer" else ("f64" if f.type == "number" else ("bool" if f.type == "boolean" else "String"))
+            field_defs.append(f"    pub {f.name}: {rtype},")
+            req_field_defs.append(f"    pub {f.name}: {rtype},")
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
-pub struct {entity_cap} {{
+        for rel in relations:
+            if rel.source == ent.singular and rel.source_field:
+                if rel.source_field not in existing_field_names:
+                    field_defs.append(f"    pub {rel.source_field}: String,")
+                    req_field_defs.append(f"    pub {rel.source_field}: String,")
+                    existing_field_names.add(rel.source_field)
+
+        fields_block = "\n".join(field_defs) if field_defs else "    pub reference: String,\n    pub total: f64,"
+        req_fields_block = "\n".join(req_field_defs) if req_field_defs else "    pub reference: String,\n    pub total: f64,"
+
+        model_code = f"""#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+pub struct {ent_cap} {{
     pub id: String,
     pub tenant_id: String,
-    pub reference: String,
-    pub total: f64,
+{fields_block}
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub created_by: String,
@@ -72,16 +91,22 @@ pub struct {entity_cap} {{
 }}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Create{entity_cap}Request {{
-    pub reference: String,
-    pub total: f64,
+pub struct Create{ent_cap}Request {{
+{req_fields_block}
 }}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Update{entity_cap}Request {{
-    pub reference: String,
-    pub total: f64,
-}}
+pub struct Update{ent_cap}Request {{
+{req_fields_block}
+}}"""
+        entity_models_list.append(model_code)
+
+    all_rust_models_str = "\n\n".join(entity_models_list)
+    files["src/models.rs"] = f"""use chrono::{{DateTime, Utc}};
+use serde::{{Deserialize, Serialize}};
+use uuid::Uuid;
+
+{all_rust_models_str}
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct OutboxEvent {{
@@ -425,6 +450,7 @@ def generate_enterprise_kotlin_files(request: SynthesisRequest) -> dict[str, str
     for k, v in java_files.items():
         files[k] = v
     # Add Kotlin specific build file
+    runtime_db_dep = 'runtimeOnly("com.mysql:mysql-connector-j")' if request.is_mysql else 'runtimeOnly("org.postgresql:postgresql")'
     files["build.gradle.kts"] = f"""plugins {{
     id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.5"
@@ -451,7 +477,7 @@ dependencies {{
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    runtimeOnly("org.postgresql:postgresql")
+    {runtime_db_dep}
 }}
 """
     from .polyglot_domain_workflow_emitter import generate_kotlin_domain_workflow_files
@@ -470,9 +496,11 @@ dependencies {{
 def generate_enterprise_php_files(request: SynthesisRequest) -> dict[str, str]:
     """Generate all files for a production-grade enterprise PHP Laravel microservice."""
     files: dict[str, str] = {}
-    entity = request.entities[0] if request.entities else EntitySpec(singular="order", plural="orders", fields=())
+    entities = request.entities or (EntitySpec(singular="order", plural="orders", fields=()),)
+    entity = entities[0]
     entity_cap = pascal(entity.singular)
     entity_plural = entity.plural
+    relations = request.canonical_relations
 
     files["composer.json"] = f"""{{
     "name": "elmos/{request.project_name}",
@@ -495,23 +523,55 @@ def generate_enterprise_php_files(request: SynthesisRequest) -> dict[str, str]:
 }}
 """
 
-    files[f"app/Models/{entity_cap}.php"] = f"""<?php
+    # Multi-Entity Eloquent Models with Relationships
+    for ent in entities:
+        ent_cap = pascal(ent.singular)
+        ent_plural = ent.plural
+        fillables = ["'id'", "'tenant_id'", "'created_by'", "'version'"]
+        for f in ent.fields:
+            fillables.append(f"'{f.name}'")
+
+        rel_methods = []
+        for rel in relations:
+            if rel.source == ent.singular and rel.source_field:
+                target_cap = pascal(rel.target)
+                if f"'{rel.source_field}'" not in fillables:
+                    fillables.append(f"'{rel.source_field}'")
+                rel_methods.append(f"""    public function {rel.target}()
+    {{
+        return $this->belongsTo({target_cap}::class, '{rel.source_field}', 'id');
+    }}""")
+
+        for rel in relations:
+            if rel.target == ent.singular and rel.source_field:
+                source_cap = pascal(rel.source)
+                source_ent = next((e for e in entities if e.singular == rel.source), None)
+                source_plural_prop = source_ent.plural if source_ent else f"{source_cap.lower()}List"
+                rel_methods.append(f"""    public function {source_plural_prop}()
+    {{
+        return $this->hasMany({source_cap}::class, '{rel.source_field}', 'id');
+    }}""")
+
+        rel_methods_code = ("\n\n" + "\n\n".join(rel_methods)) if rel_methods else ""
+        fillable_str = ", ".join(fillables)
+
+        files[f"app/Models/{ent_cap}.php"] = f"""<?php
 
 namespace App\\Models;
 
 use Illuminate\\Database\\Eloquent\\Model;
 use Illuminate\\Database\\Eloquent\\SoftDeletes;
 
-class {entity_cap} extends Model
+class {ent_cap} extends Model
 {{
     use SoftDeletes;
 
-    protected $table = '{entity_plural}';
+    protected $table = '{ent_plural}';
     protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
-        'id', 'tenant_id', 'reference', 'total', 'created_by', 'version'
+        {fillable_str}
     ];
 
     protected $casts = [
@@ -519,7 +579,7 @@ class {entity_cap} extends Model
         'version' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-    ];
+    ];{rel_methods_code}
 }}
 """
 

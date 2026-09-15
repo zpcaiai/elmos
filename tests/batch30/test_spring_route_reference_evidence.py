@@ -124,6 +124,18 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertEqual(payload["execution_status"], "FAILED")
         self.assertEqual(payload["failure"], "SECOND_FAILURE")
         self.assertFalse(payload["certification_eligible"])
+
+    def test_failure_evidence_uses_portable_path_separators(self) -> None:
+        REFERENCE.record_failure_attempt(
+            self.repo,
+            self.route,
+            self.canonical,
+            REFERENCE.RunFailure(r"COMMAND_FAILED:C:\work\source\pom.xml"),
+        )
+
+        attempt = REFERENCE.failure_attempt_destination(self.repo, self.route)
+        payload = json.loads(attempt.read_text(encoding="utf-8"))
+        self.assertEqual(payload["failure"], "COMMAND_FAILED:C:/work/source/pom.xml")
         self.assertEqual(payload["certification_status"], "NOT_CERTIFIED")
         self.assertEqual(payload["external_evidence_status"], "NOT_RUN")
         self.assertEqual(
@@ -179,6 +191,7 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertEqual(
             json.loads(self.canonical.read_text(encoding="utf-8")), success
         )
+        self.assertNotIn(b"\r\n", self.canonical.read_bytes())
         self.assertEqual(replace.call_count, 1)
         source, destination = replace.call_args.args
         self.assertEqual(Path(destination).resolve(), self.canonical.resolve())
@@ -361,28 +374,135 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         # ships, so the recipe must pin the boot plugin for Gradle builds.
         self.assertIn("org.openrewrite.gradle.plugins.ChangePluginVersion", text)
 
-    def test_priority_route_exercises_security_jpa_and_transaction_rollback(self) -> None:
+    def test_priority_route_exercises_all_declared_local_capabilities(self) -> None:
         route = REFERENCE.ROUTES[ROUTE_ID]
         self.assertIn("security", route.extra_starters)
         self.assertIn("data-jpa", route.extra_starters)
+        self.assertIn("cache", route.extra_starters)
         self.assertIn("antMatchers", route.security)
         self.assertIn("javax.persistence.Entity", route.persistence)
         self.assertIn("rollsBackTransactionalWrites", route.test)
+        self.assertIn("preservesConstructorDependencyInjection", route.test)
+        self.assertIn("preservesApplicationEventDelivery", route.test)
+        self.assertIn("preservesCacheHitSemantics", route.test)
+        self.assertIn("schedulerExecutesInTheApplicationContext", route.test)
         self.assertIn("public void createThenRollback", REFERENCE._PERSISTENCE_SERVICE)
+        self.assertIn("@EventListener", route.capabilities)
+        self.assertIn("@Cacheable", route.capabilities)
+        self.assertIn("@Scheduled", route.capabilities)
 
         with tempfile.TemporaryDirectory() as temporary:
             project = Path(temporary) / "source"
             REFERENCE.materialize(project, route)
             entity = (project / "src/main/java/io/elmos/reference/PersistedOrder.java")
+            capabilities = (
+                project / "src/main/java/io/elmos/reference/CapabilityContracts.java"
+            )
             security = (
                 project / "src/main/java/io/elmos/reference/SecurityConfiguration.java"
             )
+            generated_test = (
+                project / "src/test/java/io/elmos/reference/OrderControllerTest.java"
+            ).read_text(encoding="utf-8")
             self.assertIn("javax.persistence.Entity", entity.read_text(encoding="utf-8"))
+            self.assertIn("@EnableScheduling", capabilities.read_text(encoding="utf-8"))
             self.assertIn("antMatchers", security.read_text(encoding="utf-8"))
+            self.assertIn("private CapabilityContracts capabilities;", generated_test)
+            self.assertIn(
+                "org.junit.jupiter.api.Assertions.assertEquals", generated_test
+            )
             pom = (project / "pom.xml").read_text(encoding="utf-8")
             self.assertIn("spring-boot-starter-security", pom)
             self.assertIn("spring-boot-starter-data-jpa", pom)
+            self.assertIn("spring-boot-starter-cache", pom)
             self.assertIn("com.h2database", pom)
+
+    def test_launch_route_rejects_wrong_source_or_target_jdk_patch(self) -> None:
+        source_home = Path("source-jdk")
+        target_home = Path("target-jdk")
+        with mock.patch.object(
+            REFERENCE, "java_version",
+            side_effect=(
+                'openjdk version "17.0.7" 2023-04-18',
+                'openjdk version "21.0.11" 2026-04-14',
+            ),
+        ):
+            with self.assertRaisesRegex(
+                REFERENCE.RunFailure, "EXACT_SOURCE_JDK_PATCH_REQUIRED"
+            ):
+                REFERENCE.require_exact_launch_jdk_patches(
+                    self.repo, self.route, source_home, target_home
+                )
+        with mock.patch.object(
+            REFERENCE, "java_version",
+            side_effect=(
+                'openjdk version "17.0.11" 2024-04-16',
+                'openjdk version "21.0.12.1" 2026-08-18',
+            ),
+        ):
+            with self.assertRaisesRegex(
+                REFERENCE.RunFailure, "EXACT_TARGET_JDK_PATCH_REQUIRED"
+            ):
+                REFERENCE.require_exact_launch_jdk_patches(
+                    self.repo, self.route, source_home, target_home
+                )
+
+    def test_launch_route_accepts_only_exact_jdk_patch_tuple(self) -> None:
+        with mock.patch.object(
+            REFERENCE, "java_version",
+            side_effect=(
+                'openjdk version "17.0.11" 2024-04-16',
+                'openjdk version "21.0.11" 2026-04-14',
+            ),
+        ):
+            REFERENCE.require_exact_launch_jdk_patches(
+                self.repo, self.route, Path("source-jdk"), Path("target-jdk")
+            )
+
+    def test_local_reference_projection_never_promotes_external_evidence(self) -> None:
+        runtime = {
+            "health": {"status": "UP"},
+            "responses": {"42": {"id": 42}},
+            "validation": {
+                "invalid_order_status": 400,
+                "valid_order_status": 200,
+                "valid_order_response": {
+                    "customerId": "customer-42",
+                    "status": "CREATED",
+                },
+            },
+            "security": {"authenticated_order_status": 200},
+            "persistence": {"count_response": {"count": 0}},
+            "dependency_injection": {"injected": True},
+            "messaging": {"status": 200, "response": {"deliveries": 1}},
+            "cache": {"first": 1, "second": 1, "loads": 1},
+            "scheduler": {"active": True},
+        }
+        evidence = {
+            "route_id": ROUTE_ID,
+            "execution_status": "PASSED_LOCAL",
+            "behavioral_parity": True,
+            "source": {"boot": "2.7.18", "java": "17", "build": "PASSED", "runtime": runtime},
+            "target": {"boot": "3.5.3", "java": "21", "build": "PASSED", "runtime": runtime},
+            "transformation": {
+                "recipe_id": "recipe",
+                "recipe_sha256": "0" * 64,
+                "maven": "Apache Maven 3.9.11",
+            },
+        }
+
+        projected = REFERENCE.pack_local_reference_evidence(evidence, "pack")
+
+        self.assertFalse(projected["certification_eligible"])
+        self.assertEqual(projected["source"]["framework"], "spring-boot")
+        self.assertEqual(projected["target"]["framework"], "spring-boot")
+        self.assertEqual(projected["external_certification"], "NOT_RUN")
+        for capability in (
+            "validation", "dependency_injection", "persistence", "messaging",
+            "cache", "scheduler"
+        ):
+            self.assertEqual(projected[capability]["status"], "PASSED_LOCAL")
+            self.assertEqual(projected[capability]["production_status"], "NOT_RUN")
 
     def test_composite_recipe_loads_repository_owned_recipe_artifact(self) -> None:
         boot_3_recipe = (
@@ -433,6 +553,67 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
                 REFERENCE.built_boot_jar(project, "gradle"),
                 gradle_libs / "app-1.0.0.jar",
             )
+
+    def test_java_executable_uses_the_native_windows_suffix(self) -> None:
+        with mock.patch.object(REFERENCE.os, "name", "nt"):
+            self.assertEqual(
+                REFERENCE.java_executable(Path("C:/jdk-21")),
+                Path("C:/jdk-21/bin/java.exe"),
+            )
+
+    def test_run_prepends_java_bin_with_platform_path_separator(self) -> None:
+        completed = subprocess.CompletedProcess(["java"], 0, "", "")
+        with (
+            mock.patch.dict(REFERENCE.os.environ, {"PATH": "existing-path"}, clear=True),
+            mock.patch.object(
+                REFERENCE.subprocess, "run", return_value=completed
+            ) as invoked,
+        ):
+            REFERENCE.run(
+                ["java", "-version"], cwd=self.repo, home=Path("C:/jdk-21")
+            )
+
+        environment = invoked.call_args.kwargs["env"]
+        self.assertEqual(
+            environment["PATH"],
+            REFERENCE.os.pathsep.join((str(Path("C:/jdk-21/bin")), "existing-path")),
+        )
+
+    def test_java_version_executes_the_launcher_from_the_bound_home(self) -> None:
+        completed = subprocess.CompletedProcess(
+            ["C:/jdk-21/bin/java.exe", "-version"],
+            0,
+            "",
+            'openjdk version "21.0.12" 2026-07-21\n',
+        )
+        with (
+            mock.patch.object(REFERENCE.os, "name", "nt"),
+            mock.patch.object(REFERENCE, "run", return_value=completed) as invoked,
+        ):
+            reported = REFERENCE.java_version(
+                Path("C:/jdk-21"), cwd=Path("C:/fixture")
+            )
+
+        self.assertEqual(reported, 'openjdk version "21.0.12" 2026-07-21')
+        self.assertEqual(
+            invoked.call_args.args[0],
+            [str(Path("C:/jdk-21/bin/java.exe")), "-version"],
+        )
+        self.assertEqual(invoked.call_args.kwargs["home"], Path("C:/jdk-21"))
+
+    def test_java_version_fails_closed_on_empty_output(self) -> None:
+        completed = subprocess.CompletedProcess(["java"], 0, "", "")
+        with mock.patch.object(REFERENCE, "run", return_value=completed):
+            with self.assertRaisesRegex(REFERENCE.RunFailure, "JAVA_VERSION_EMPTY"):
+                REFERENCE.java_version(Path("/jdk-21"), cwd=self.repo)
+
+    def test_success_evidence_uses_portable_path_separators(self) -> None:
+        self.assertEqual(
+            REFERENCE.portable_evidence_text(
+                r"Building C:\fixture\target\application.jar"
+            ),
+            "Building C:/fixture/target/application.jar",
+        )
 
 
 if __name__ == "__main__":

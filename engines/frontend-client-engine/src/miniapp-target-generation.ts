@@ -387,6 +387,11 @@ function pageLogic(ir: MiniappSemanticIr, routeId: string): string {
     data[binding.renderCollectionKey] = [];
     data[binding.canSubmitKey] = false;
   }
+  for (const s of ir.states) {
+    if (s.scope === "component" && !(s.name in data)) {
+      data[s.name] = s.stateType === "collection" ? [] : (s.stateType === "object" ? {} : "");
+    }
+  }
   const handlers = interactions.flatMap(binding => [
     `  ${binding.inputHandler}(event) {\n    const raw = event && event.detail ? (event.detail.value ?? \"\") : \"\";\n    const value = String(raw);\n    this.setData({ ${binding.draftKey}: value, ${binding.canSubmitKey}: value.trim().length > 0 });\n  }`,
     `  ${binding.submitHandler}() {\n    const value = String(this.data.${binding.draftKey} ?? \"\").trim();\n    if (!value) {\n      this.setData({ ${binding.canSubmitKey}: false });\n      return;\n    }\n    const current = Array.isArray(this.data.${binding.collectionKey}) ? this.data.${binding.collectionKey} : [];\n    const next = [...current, value];\n    const rendered = next.map((item, index) => ({ value: item, __elmosKey: ${generatedItemKeyExpression(binding)} }));${binding.collectionScope === "application" ? `\n    const application = typeof getApp === \"function\" ? getApp() : null;\n    if (application && application.globalData) application.globalData.${binding.collectionKey} = next;` : ""}\n    this.setData({ ${binding.collectionKey}: next, ${binding.renderCollectionKey}: rendered, ${binding.draftKey}: \"\", ${binding.canSubmitKey}: false });\n  }`,

@@ -1,0 +1,12 @@
+{
+  "canonical_recipe_sha256": "sha256:18ae45cdcaea5a7e67581b23066c534c302ffa25279034cf628727262cf21883",
+  "certification_eligible": false,
+  "execution_status": "NOT_RUN",
+  "pack_key": "spring-boot-2-0-2-6-to-3-2-12",
+  "recipe_config": "recipes/spring-boot-2.0-2.6-to-3.2.12.yml",
+  "recipes": [
+    "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot3_2_12Java17"
+  ],
+  "schema_version": 1,
+  "worker_recipe_resource": "/rewrite/spring-boot-2.0-2.6-to-3.2.12.yml"
+}

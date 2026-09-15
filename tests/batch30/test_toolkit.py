@@ -167,6 +167,46 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(rejected.returncode, 1)
             self.assertIn("pack and certification statuses must match", rejected.stderr)
 
+    def test_framework_validator_rejects_worker_recipe_drift(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            recipe = pack / "recipes/spring-boot-2.7.18-to-3.5.3.yml"
+            recipe.write_bytes(recipe.read_bytes() + b"# unauthorized drift\n")
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "validate_framework_pack.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 1)
+            self.assertIn("executed Java Worker recipe bytes differ", rejected.stderr)
+
+    def test_framework_validator_rejects_recipe_config_redirection(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            manifest_path = pack / "recipes/manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["recipe_config"] = "recipes/other.yml"
+            manifest_path.write_text(json.dumps(manifest) + "\n")
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "validate_framework_pack.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 1)
+            self.assertIn("does not bind the executed Worker resource", rejected.stderr)
+
     def test_framework_validator_requires_coexistence_contract(self):
         with tempfile.TemporaryDirectory() as td:
             pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"

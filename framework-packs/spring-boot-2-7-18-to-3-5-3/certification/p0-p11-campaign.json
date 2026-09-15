@@ -62,7 +62,7 @@
       "cache",
       "scheduler"
     ],
-    "support_matrix_subject_digest": "sha256:fbd7090cf6e1bf1e15df9e82c5f8397aadc62d5723e22bb1a21c8b58bcbca30b"
+    "support_matrix_subject_digest": "sha256:3129c4581dce2e9fffb0dd899aa8a39643f9acd07d97d562ad231e7b779c6a32"
   },
   "corpora": {
     "development": {

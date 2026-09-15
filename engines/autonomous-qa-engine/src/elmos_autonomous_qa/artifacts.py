@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import ctypes
 import errno
-import fcntl
 import hashlib
 import io
 import os
@@ -35,6 +34,7 @@ from .canonical import (
     sha256_file,
     validate_unique_paths,
 )
+from .file_lock import LOCK_CONTENTION_ERRNOS, lock_exclusive_nonblocking, unlock
 
 
 FIXED_ZIP_TIME = (1980, 1, 1, 0, 0, 0)
@@ -3743,9 +3743,9 @@ class ArtifactLifecycleStore:
             ):
                 raise LifecycleError("garbage-collection fence file is unsafe")
             try:
-                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                lock_exclusive_nonblocking(descriptor)
             except OSError as exc:
-                if exc.errno not in {errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK}:
+                if exc.errno not in LOCK_CONTENTION_ERRNOS:
                     raise
                 os.close(descriptor)
                 descriptor = None
@@ -3809,7 +3809,7 @@ class ArtifactLifecycleStore:
             except LifecycleError as exc:
                 verification_error = exc
             try:
-                fcntl.flock(fence.descriptor, fcntl.LOCK_UN)
+                unlock(fence.descriptor)
             finally:
                 try:
                     os.close(fence.descriptor)

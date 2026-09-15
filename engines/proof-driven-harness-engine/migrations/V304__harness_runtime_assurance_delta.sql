@@ -323,6 +323,81 @@ BEGIN
 END
 $runtime_assurance_event_is_exact$;
 
+-- -----------------------------------------------------------------------
+-- runtime_assurance_invocation_receipts: moved before functions that
+-- reference it, because PostgreSQL 17 plans LANGUAGE sql functions at
+-- creation time and requires the table to exist.
+-- -----------------------------------------------------------------------
+CREATE TABLE proof_harness_runtime.runtime_assurance_invocation_receipts (
+  tenant_id text NOT NULL CHECK (length(btrim(tenant_id)) BETWEEN 1 AND 255),
+  project_id text NOT NULL CHECK (length(btrim(project_id)) BETWEEN 1 AND 255),
+  run_id text NOT NULL CHECK (length(btrim(run_id)) BETWEEN 1 AND 512),
+  actor_id text NOT NULL CHECK (length(btrim(actor_id)) BETWEEN 1 AND 512),
+  execution_epoch bigint NOT NULL CHECK (execution_epoch >= 1),
+  fencing_generation bigint NOT NULL CHECK (fencing_generation >= 1),
+  authority_revision text NOT NULL CHECK (authority_revision ~ '^sha256:[0-9a-f]{64}$'),
+  revision_set_id text NOT NULL CHECK (revision_set_id ~ '^sha256:[0-9a-f]{64}$'),
+  invocation_id text NOT NULL CHECK (length(btrim(invocation_id)) BETWEEN 1 AND 512),
+  request_digest text NOT NULL CHECK (request_digest ~ '^sha256:[0-9a-f]{64}$'),
+  claim_epoch bigint NOT NULL DEFAULT 1 CHECK (claim_epoch = 1),
+  claim_backend_pid integer NOT NULL CHECK (claim_backend_pid >= 1),
+  claim_lock_key bigint NOT NULL,
+  state text NOT NULL CHECK (state IN (
+    'IN_PROGRESS', 'COMPLETED', 'RECOVERY_REQUIRED'
+  )),
+  result_ref text CHECK (
+    result_ref IS NULL OR length(btrim(result_ref)) BETWEEN 1 AND 2048
+  ),
+  result_digest text CHECK (
+    result_digest IS NULL OR result_digest ~ '^sha256:[0-9a-f]{64}$'
+  ),
+  claimed_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  completed_at timestamptz,
+  recovery_evidence_ref text CHECK (
+    recovery_evidence_ref IS NULL
+    OR length(btrim(recovery_evidence_ref)) BETWEEN 1 AND 2048
+  ),
+  mutation_event_id text NOT NULL CHECK (
+    mutation_event_id ~ '^evt-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+  ),
+  mutation_event_type text NOT NULL CHECK (mutation_event_type IN (
+    'INVOCATION_CLAIMED', 'INVOCATION_RECOVERY_REQUIRED',
+    'INVOCATION_COMPLETED', 'INVOCATION_RECOVERY_RECONCILED'
+  )),
+  mutation_payload_sha256 text NOT NULL CHECK (
+    mutation_payload_sha256 ~ '^sha256:[0-9a-f]{64}$'
+  ),
+  PRIMARY KEY (
+    tenant_id, project_id, run_id, execution_epoch, fencing_generation,
+    authority_revision, revision_set_id, invocation_id
+  ),
+  FOREIGN KEY (tenant_id, project_id, actor_id)
+    REFERENCES proof_harness_runtime.actors(tenant_id, project_id, actor_id) ON DELETE RESTRICT,
+  FOREIGN KEY (tenant_id, project_id, run_id)
+    REFERENCES proof_harness_runtime.runs(tenant_id, project_id, run_id) ON DELETE RESTRICT,
+  CHECK (updated_at >= claimed_at),
+  CHECK ((state = 'COMPLETED') = (completed_at IS NOT NULL)),
+  CHECK ((state = 'COMPLETED') = (result_ref IS NOT NULL)),
+  CHECK ((state = 'COMPLETED') = (result_digest IS NOT NULL)),
+  CHECK (state = 'COMPLETED' OR recovery_evidence_ref IS NULL),
+  CHECK (
+    (state = 'IN_PROGRESS' AND mutation_event_type = 'INVOCATION_CLAIMED')
+    OR (state = 'RECOVERY_REQUIRED'
+        AND mutation_event_type = 'INVOCATION_RECOVERY_REQUIRED')
+    OR (state = 'COMPLETED'
+        AND mutation_event_type IN (
+          'INVOCATION_COMPLETED', 'INVOCATION_RECOVERY_RECONCILED'
+        ))
+  ),
+  CHECK (completed_at IS NULL OR completed_at >= claimed_at)
+);
+
+CREATE INDEX runtime_assurance_invocation_receipts_state_idx
+  ON proof_harness_runtime.runtime_assurance_invocation_receipts(
+    tenant_id, project_id, run_id, state, updated_at
+  );
+
 CREATE OR REPLACE FUNCTION proof_harness_runtime.is_live_runtime_assurance_claim(
   p_tenant_id text,
   p_project_id text,
@@ -1645,71 +1720,6 @@ CREATE UNIQUE INDEX subagent_execution_specs_budget_unique
     authority_revision, revision_set_id, budget_reservation_id
   );
 
-CREATE TABLE proof_harness_runtime.runtime_assurance_invocation_receipts (
-  tenant_id text NOT NULL CHECK (length(btrim(tenant_id)) BETWEEN 1 AND 255),
-  project_id text NOT NULL CHECK (length(btrim(project_id)) BETWEEN 1 AND 255),
-  run_id text NOT NULL CHECK (length(btrim(run_id)) BETWEEN 1 AND 512),
-  actor_id text NOT NULL CHECK (length(btrim(actor_id)) BETWEEN 1 AND 512),
-  execution_epoch bigint NOT NULL CHECK (execution_epoch >= 1),
-  fencing_generation bigint NOT NULL CHECK (fencing_generation >= 1),
-  authority_revision text NOT NULL CHECK (authority_revision ~ '^sha256:[0-9a-f]{64}$'),
-  revision_set_id text NOT NULL CHECK (revision_set_id ~ '^sha256:[0-9a-f]{64}$'),
-  invocation_id text NOT NULL CHECK (length(btrim(invocation_id)) BETWEEN 1 AND 512),
-  request_digest text NOT NULL CHECK (request_digest ~ '^sha256:[0-9a-f]{64}$'),
-  claim_epoch bigint NOT NULL DEFAULT 1 CHECK (claim_epoch = 1),
-  claim_backend_pid integer NOT NULL CHECK (claim_backend_pid >= 1),
-  claim_lock_key bigint NOT NULL,
-  state text NOT NULL CHECK (state IN (
-    'IN_PROGRESS', 'COMPLETED', 'RECOVERY_REQUIRED'
-  )),
-  result_ref text CHECK (
-    result_ref IS NULL OR length(btrim(result_ref)) BETWEEN 1 AND 2048
-  ),
-  result_digest text CHECK (
-    result_digest IS NULL OR result_digest ~ '^sha256:[0-9a-f]{64}$'
-  ),
-  claimed_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-  updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-  completed_at timestamptz,
-  recovery_evidence_ref text CHECK (
-    recovery_evidence_ref IS NULL
-    OR length(btrim(recovery_evidence_ref)) BETWEEN 1 AND 2048
-  ),
-  mutation_event_id text NOT NULL CHECK (
-    mutation_event_id ~ '^evt-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
-  ),
-  mutation_event_type text NOT NULL CHECK (mutation_event_type IN (
-    'INVOCATION_CLAIMED', 'INVOCATION_RECOVERY_REQUIRED',
-    'INVOCATION_COMPLETED', 'INVOCATION_RECOVERY_RECONCILED'
-  )),
-  mutation_payload_sha256 text NOT NULL CHECK (
-    mutation_payload_sha256 ~ '^sha256:[0-9a-f]{64}$'
-  ),
-  PRIMARY KEY (
-    tenant_id, project_id, run_id, execution_epoch, fencing_generation,
-    authority_revision, revision_set_id, invocation_id
-  ),
-  FOREIGN KEY (tenant_id, project_id, actor_id)
-    REFERENCES proof_harness_runtime.actors(tenant_id, project_id, actor_id) ON DELETE RESTRICT,
-  FOREIGN KEY (tenant_id, project_id, run_id)
-    REFERENCES proof_harness_runtime.runs(tenant_id, project_id, run_id) ON DELETE RESTRICT,
-  CHECK (updated_at >= claimed_at),
-  CHECK ((state = 'COMPLETED') = (completed_at IS NOT NULL)),
-  CHECK ((state = 'COMPLETED') = (result_ref IS NOT NULL)),
-  CHECK ((state = 'COMPLETED') = (result_digest IS NOT NULL)),
-  CHECK (state = 'COMPLETED' OR recovery_evidence_ref IS NULL),
-  CHECK (
-    (state = 'IN_PROGRESS' AND mutation_event_type = 'INVOCATION_CLAIMED')
-    OR (state = 'RECOVERY_REQUIRED'
-        AND mutation_event_type = 'INVOCATION_RECOVERY_REQUIRED')
-    OR (state = 'COMPLETED'
-        AND mutation_event_type IN (
-          'INVOCATION_COMPLETED', 'INVOCATION_RECOVERY_RECONCILED'
-        ))
-  ),
-  CHECK (completed_at IS NULL OR completed_at >= claimed_at)
-);
-
 ALTER TABLE proof_harness_runtime.pending_tool_call_bindings
   ADD CONSTRAINT pending_tool_call_invocation_receipt_fk FOREIGN KEY (
     tenant_id, project_id, run_id, execution_epoch, fencing_generation,
@@ -1765,11 +1775,6 @@ CREATE INDEX typed_ingress_records_correlation_page_idx
   );
 CREATE INDEX subagent_execution_specs_run_idx
   ON proof_harness_runtime.subagent_execution_specs(tenant_id, project_id, run_id, recorded_at);
-CREATE INDEX runtime_assurance_invocation_receipts_state_idx
-  ON proof_harness_runtime.runtime_assurance_invocation_receipts(
-    tenant_id, project_id, run_id, state, updated_at
-  );
-
 CREATE OR REPLACE FUNCTION proof_harness_runtime.claim_runtime_assurance_invocation(
   p_tenant_id text,
   p_project_id text,

@@ -874,12 +874,17 @@ function analyzeTypeScript(
   };
   const unresolvedComponentStatements = (body: ts.ConciseBody): boolean => {
     if (!ts.isBlock(body)) return false;
-    const modeledStateFactories = new Set(["useState", "useReducer", "createSignal"]);
+    const modeledStateFactories = new Set([
+      "useState", "useReducer", "createSignal", "useMemo", "useCallback", "ref", "reactive", "computed",
+    ]);
     return body.statements.some(statement => {
       if (ts.isReturnStatement(statement)) return !statement.expression || directJsxOpening(statement.expression) === undefined;
       if (ts.isVariableStatement(statement)) {
         return statement.declarationList.declarations.some(declaration => {
           const initializer = declaration.initializer;
+          if (initializer && (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer))) {
+            return false;
+          }
           return !initializer || !ts.isCallExpression(initializer)
             || !modeledStateFactories.has(initializer.expression.getText(file));
         });
@@ -892,6 +897,7 @@ function analyzeTypeScript(
     || (ts.isFunctionDeclaration(node) && node.asteriskToken !== undefined);
   const directlyModeledCalls = new Set([
     "Page", "Component", "import", "fetch", "ref", "reactive", "computed", "useState", "useReducer", "createSignal",
+    "useMemo", "useCallback",
     "defineStore", "createStore", "configureStore", "create", "createRouter", "createBrowserRouter", "useRoutes",
     "useEffect", "watch", "watchEffect", "onMounted", "onUnmounted", "onBeforeUnmount", "createApp",
   ]);
@@ -1383,11 +1389,20 @@ function analyzeTypeScript(
           ));
         }
       }
+      if ((ts.isArrowFunction(node.initializer) || ts.isFunctionExpression(node.initializer)) && !/^[A-Z]/.test(node.name.text) && ts.isBlock(node.initializer.body)) {
+        collectActionFact(node.name.text, node.initializer.parameters, node.initializer.body, node);
+      }
       if (ts.isCallExpression(node.initializer)) {
         const callee = node.initializer.expression.getText(file);
         const importedFactory = imports.get(callee);
         if (importedFactory?.module.startsWith(".")) storeInstances.set(node.name.text, importedFactory.module);
-        if (["ref", "reactive", "computed", "useState", "useReducer", "createSignal"].includes(callee)) {
+        if (callee === "useCallback") {
+          const fn = node.initializer.arguments[0];
+          if (fn && (ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) && ts.isBlock(fn.body)) {
+            collectActionFact(node.name.text, fn.parameters, fn.body, node);
+          }
+        }
+        if (["ref", "reactive", "computed", "useState", "useReducer", "createSignal", "useMemo"].includes(callee)) {
           const initial = exactInitial(node.initializer.arguments[0]);
           recordState(node.name.text, "component", node, callee === "reactive" ? "object" : initial.type, initial.value);
         }

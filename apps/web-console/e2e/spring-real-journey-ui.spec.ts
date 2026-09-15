@@ -368,7 +368,7 @@ async function fulfillJson(route: Route, value: unknown, status = 200) {
   });
 }
 
-async function fillSpringCredentials(page: Page) {
+async function fillSpringCredentials(page: Page, waitForCapabilities = true) {
   if (productionOidcEnabled) {
     await expect(page.getByText("企业 OIDC · spring:execute", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Spring 租户标识")).toHaveValue("spring-production-e2e");
@@ -378,9 +378,21 @@ async function fillSpringCredentials(page: Page) {
     await expect(page.getByLabel("Spring 代理短期令牌")).toHaveCount(0);
     return;
   }
+  // Wait for the capability request and hydration to settle before editing
+  // controlled fields. Slow WebKit startup can otherwise let the initial
+  // capability state replace an organization value that was filled too early.
+  if (waitForCapabilities) {
+    await expect(page.getByText(
+      "Runner 与独立验证器已配置，可以提交精确路线。",
+    )).toBeVisible({ timeout: 30_000 });
+  }
   await page.getByLabel("Spring 租户标识").fill("spring-e2e");
   await page.getByLabel("Spring 执行者标识").fill("user:spring-e2e");
   await page.getByLabel("Spring 代理短期令牌").fill("spring-e2e-short-lived-token-32-characters");
+  await expect(page.getByLabel("Spring 租户标识")).toHaveValue("spring-e2e");
+  await expect(page.getByLabel("Spring 执行者标识")).toHaveValue("user:spring-e2e");
+  await expect(page.getByLabel("Spring 代理短期令牌"))
+    .toHaveValue("spring-e2e-short-lived-token-32-characters");
 }
 
 async function configureJourneyApi(page: Page) {
@@ -493,6 +505,7 @@ test("Spring 路由目录公开两条新增可执行路线并保持实验性门�
 test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、健康检查与停止", async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   const api = await configureJourneyApi(page);
   const consoleErrors: string[] = [];
   page.on("console", (message) => {
@@ -656,8 +669,10 @@ test("页面刷新后使用会话内 Run ID 与显式租户身份恢复最近运
     fulfillJson(route, { status: "NOT_CONFIGURED", repositories: [] }));
 
   await page.goto("/spring");
-  await fillSpringCredentials(page);
   await expect(page.getByLabel("恢复 Run UUID")).toHaveValue(runId);
+  // This scenario intentionally keeps capabilities pending until the recovered
+  // run establishes its immutable historical target.
+  await fillSpringCredentials(page, false);
   await page.getByRole("button", { name: "恢复运行" }).click();
   await expect(page.getByText("已按 Run UUID 与当前租户身份恢复持久迁移运行。")).toBeVisible();
   await expect(page.getByText(`${runId.slice(0, 8)} · #1`)).toBeVisible();

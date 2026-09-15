@@ -2,21 +2,19 @@
   "capabilities": [
     {
       "evidence_refs": [
-        "certification/evidence.json",
-        "certification/external-admission.json"
+        "certification/evidence.json"
       ],
       "id": "web",
       "name": "Web and REST endpoints",
-      "status": "certified"
+      "status": "experimental"
     },
     {
       "evidence_refs": [
-        "certification/evidence.json",
-        "certification/external-admission.json"
+        "certification/evidence.json"
       ],
       "id": "gradle-build",
       "name": "Gradle build script modernization",
-      "status": "certified"
+      "status": "experimental"
     }
   ],
   "pack_key": "spring-boot-2-x-gradle-to-3-5-3",

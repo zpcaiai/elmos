@@ -3,12 +3,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import io
 import json
 import re
 import subprocess
 import sys
-import tarfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -813,25 +811,23 @@ def validate_local_evidence(
         errors.append("local qualification harness file inventory is incomplete")
     else:
         repository_head = str(harness.get("repository_head", ""))
-        archive = subprocess.run(
-            ["git", "archive", "--format=tar", repository_head, "--", *sorted(EXPECTED_HARNESS_FILES)],
-            cwd=ROOT,
-            capture_output=True,
-            check=False,
-        )
         recorded_blobs: dict[str, bytes] = {}
-        if archive.returncode:
-            errors.append("local qualification harness Git archive is unavailable")
-        else:
-            try:
-                with tarfile.open(fileobj=io.BytesIO(archive.stdout), mode="r:") as stream:
-                    for member in stream.getmembers():
-                        if member.isfile() and member.name in EXPECTED_HARNESS_FILES:
-                            extracted = stream.extractfile(member)
-                            if extracted is not None:
-                                recorded_blobs[member.name] = extracted.read()
-            except tarfile.TarError:
-                errors.append("local qualification harness Git archive is invalid")
+        # Git for Windows may apply CRLF conversion while streaming a tar archive.
+        # Read each allowlisted blob directly so evidence hashes stay repository-byte
+        # exact on every host.
+        for relative in sorted(EXPECTED_HARNESS_FILES):
+            blob = subprocess.run(
+                ["git", "cat-file", "blob", f"{repository_head}:{relative}"],
+                cwd=ROOT,
+                capture_output=True,
+                check=False,
+            )
+            if blob.returncode:
+                errors.append(
+                    f"local qualification harness Git blob is unavailable: {relative}"
+                )
+            else:
+                recorded_blobs[relative] = blob.stdout
         for relative, item in harness_by_path.items():
             candidate = ROOT / relative
             if not candidate.is_file() or candidate.is_symlink():
@@ -1149,7 +1145,7 @@ def main() -> int:
             item.get("id") in LOCAL_FCM_STATUSES
             and (
                 local_evidence_index is None
-                or item.get("evidence_refs") != [str(local_evidence_index)]
+                or item.get("evidence_refs") != [local_evidence_index.as_posix()]
             )
         ):
             errors.append(f"locally exercised FCM capability lacks exact evidence: {item.get('id')}")
