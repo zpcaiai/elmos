@@ -36,6 +36,8 @@ from elmos_proof_harness.sandbox import DisposableSandboxRunner, SandboxLimits
 
 def test_real_z3_solver_available() -> None:
     driver = Z3Driver()
+    binary_path = shutil.which("z3")
+    print(f"\n[PHYSICAL Z3] Discovered binary at: {binary_path}")
     assert driver.is_available() is True, "Z3 binary should be found in system PATH"
 
 
@@ -54,6 +56,7 @@ def test_real_z3_solver_unsat_valid_theorem() -> None:
         "(check-sat)\n"
     )
     res = driver.execute({"smt2_formula": formula})
+    print(f"\n[PHYSICAL Z3 PROOF] Tool: {res.tool_version}, ExitCode: {res.exit_code}, Verdict: {res.parsed_output.get('verdict')}, Duration: {res.elapsed_ms}ms")
     assert res.status == AdapterStatus.SUCCEEDED
     assert res.exit_code == 0
     assert "unsat" in res.stdout
@@ -79,6 +82,7 @@ def test_real_z3_solver_sat_counterexample() -> None:
         "(get-model)\n"
     )
     res = driver.execute({"smt2_formula": formula})
+    print(f"\n[PHYSICAL Z3 SAT] Raw Output:\n{res.stdout.strip()}")
     assert res.status == AdapterStatus.SUCCEEDED
     assert res.exit_code == 0
     assert "sat" in res.stdout
@@ -103,6 +107,8 @@ def test_real_formal_verifier_closed_loop() -> None:
     )
 
     cert = engine.verify_obligation(obligation, solver_name="z3")
+    print(f"\n[FORMAL VERIFIER SYNTHESIS] Refuted with model: {cert.counterexample.assignments if cert.counterexample else None}")
+    print(f"[GENERATED REGRESSION TEST CODE]:\n{cert.generated_test_code}")
     assert cert.verdict == VerificationVerdict.REFUTED
     assert cert.solver == "z3"
     assert cert.counterexample is not None
@@ -144,7 +150,7 @@ def test_real_postgres_connection_pool_concurrency() -> None:
         with pool.acquire() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT pg_backend_pid() AS pid, %s::int AS thread_id, current_database() AS db",
+                    "SELECT pg_backend_pid() AS pid, %s::int AS thread_id, current_database() AS db, version() AS version",
                     (thread_id,),
                 )
                 res = cur.fetchone()
@@ -157,8 +163,10 @@ def test_real_postgres_connection_pool_concurrency() -> None:
         results = [f.result() for f in futures]
 
     assert len(results) == 10
-    # Confirm multiple real backend process IDs (PIDs) were used
     pids = {r["pid"] for r in results}
+    version_str = results[0]["version"] if results else "unknown"
+    print(f"\n[PHYSICAL POSTGRES POOL] Server: {version_str}")
+    print(f"[PHYSICAL POSTGRES POOL] Distinct OS Backend PIDs served: {sorted(pids)}")
     assert len(pids) >= 2, f"Should have pooled across multiple real PG backends, got: {pids}"
 
     metrics = pool.metrics()
@@ -207,6 +215,7 @@ def test_real_postgres_advisory_lock_and_migrations(tmp_path: Path) -> None:
                     (test_schema,),
                 )
                 tables = [r[0] for r in cur.fetchall()]
+                print(f"\n[PHYSICAL POSTGRES MIGRATION] Tables physically created in schema '{test_schema}': {tables}")
                 assert "accounts" in tables
                 assert "audit_log" in tables
                 assert "harness_schema_history" in tables
@@ -216,6 +225,7 @@ def test_real_postgres_advisory_lock_and_migrations(tmp_path: Path) -> None:
         with psycopg.connect(REAL_PG_DSN, autocommit=True) as conn:
             with conn.cursor() as cur:
                 cur.execute(f"DROP SCHEMA IF EXISTS {test_schema} CASCADE")
+        print(f"[PHYSICAL POSTGRES CLEANUP] Dropped schema '{test_schema}' successfully.")
 
 
 # ==============================================================================
@@ -231,6 +241,7 @@ def test_real_sandbox_rlimit_cpu_enforcement() -> None:
     runner = DisposableSandboxRunner(SandboxLimits(max_cpu_seconds=1))
     # Infinite CPU busy loop
     res = runner.run(["python3", "-c", "while True: pass"], timeout_seconds=4.0)
+    print(f"\n[PHYSICAL OS SANDBOX] CPU Rogue Task: exit_code={res.exit_code}, timed_out={res.timed_out}, duration={res.duration_ms}ms, stderr={res.stderr.strip()}")
     # The process must be terminated by timeout or signal
     assert res.timed_out is True or res.exit_code != 0
     assert res.duration_ms >= 800  # Took around ~1 second of actual CPU before termination
