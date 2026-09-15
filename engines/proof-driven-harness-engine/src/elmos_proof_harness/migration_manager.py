@@ -68,16 +68,26 @@ class MigrationManager:
         dsn: str,
         migrations_dir: Path | str | None = None,
         installed_by: str = "elmos-migration-manager",
+        schema: str | None = None,
     ) -> None:
         self.dsn = dsn
         self.migrations_dir = Path(migrations_dir) if migrations_dir is not None else _DEFAULT_MIGRATIONS_DIR
         self.installed_by = installed_by
+        self.schema = schema
 
     def _get_driver(self) -> Any:
         try:
             return importlib.import_module("psycopg")
         except ImportError as exc:
             raise MigrationError("psycopg driver is required for database migrations; install 'psycopg'") from exc
+
+    def _setup_connection(self, conn: Any) -> None:
+        """Configures search_path if an isolated schema was provided."""
+        if self.schema:
+            clean_schema = "".join(c for c in self.schema if c.isalnum() or c == "_")
+            if clean_schema:
+                with conn.cursor() as cur:
+                    cur.execute(f"SET search_path TO {clean_schema}, public")
 
     def discover_migrations(self) -> list[MigrationScript]:
         """Discovers and deterministically orders all V*.sql scripts."""
@@ -161,6 +171,7 @@ class MigrationManager:
         """Inspects status of all discovered migrations against current database state."""
         driver = self._get_driver()
         with driver.connect(self.dsn) as conn:
+            self._setup_connection(conn)
             applied = self.get_applied_migrations(conn)
             discovered = self.discover_migrations()
 
@@ -200,6 +211,7 @@ class MigrationManager:
         applied_results: list[dict[str, Any]] = []
 
         with driver.connect(self.dsn) as conn:
+            self._setup_connection(conn)
             # Acquire Postgres advisory lock for safe distributed execution
             with conn.cursor() as cur:
                 cur.execute("SELECT pg_advisory_lock(hashtext('elmos_proof_harness_migration_lock'))")

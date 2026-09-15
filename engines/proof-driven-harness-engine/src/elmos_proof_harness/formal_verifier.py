@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from enum import Enum
@@ -108,7 +109,6 @@ class FormalVerificationEngine:
     def _parse_counterexample(self, raw_output: str) -> CounterexampleModel:
         """Extract assignments from SMT model output."""
         assignments: dict[str, Any] = {}
-        # Parse define-fun lines: (define-fun x () Int (- 1)) or (define-fun b () Bool true)
         lines = raw_output.splitlines()
         for i, line in enumerate(lines):
             line = line.strip()
@@ -118,19 +118,30 @@ class FormalVerificationEngine:
                     var_name = parts[1]
                     var_type = parts[3]
                     # Check if value is on same line or next line
-                    if len(parts) >= 5 and parts[4].endswith(")"):
-                        raw_val = parts[4].rstrip(")")
+                    if len(parts) >= 5:
+                        raw_val = " ".join(parts[4:]).rstrip(")")
                     elif i + 1 < len(lines):
                         raw_val = lines[i + 1].strip().rstrip(")")
                     else:
                         raw_val = ""
 
-                    if "Int" in var_type or "Real" in var_type:
-                        try:
-                            assignments[var_name] = int(raw_val)
-                        except ValueError:
-                            assignments[var_name] = raw_val
-                    elif "Bool" in var_type:
+                    # Check for negative numbers in S-expression format: (- 42) or direct -5
+                    neg_match = re.search(r"(?:\(\s*-\s*|-)(\d+(?:\.\d+)?)", raw_val)
+                    pos_match = re.search(r"^\(?(\d+(?:\.\d+)?)\)?", raw_val)
+
+                    if neg_match:
+                        num_str = neg_match.group(1)
+                        if "Real" in var_type or "." in num_str:
+                            assignments[var_name] = -float(num_str)
+                        else:
+                            assignments[var_name] = -int(num_str)
+                    elif pos_match and ("Int" in var_type or "Real" in var_type):
+                        num_str = pos_match.group(1)
+                        if "Real" in var_type or "." in num_str:
+                            assignments[var_name] = float(num_str)
+                        else:
+                            assignments[var_name] = int(num_str)
+                    elif "Bool" in var_type or raw_val.lower() in ("true", "false"):
                         assignments[var_name] = raw_val.lower() == "true"
                     else:
                         assignments[var_name] = raw_val
