@@ -17,6 +17,15 @@ test_cross_scope_expired_and_missing_resource_denied_before_provider (test_cloud
 test_dns_exact_record_readback_and_explicit_compensation (test_cloud_controllers.CloudControllersTests.test_dns_exact_record_readback_and_explicit_compensation) ... ok
 test_unknown_dispatch_never_resubmits_or_infers_success (test_cloud_controllers.CloudControllersTests.test_unknown_dispatch_never_resubmits_or_infers_success) ... ok
 test_wrong_before_image_prevents_mutation (test_cloud_controllers.CloudControllersTests.test_wrong_before_image_prevents_mutation) ... ok
+test_cleanup_never_removes_foreign_container (test_connected_native.ConnectedTests.test_cleanup_never_removes_foreign_container) ... ok
+test_durable_restart_cleanup_requires_fencing_and_exact_identity (test_connected_native.ConnectedTests.test_durable_restart_cleanup_requires_fencing_and_exact_identity) ... ok
+test_exact_network_proxy_and_policy_required (test_connected_native.ConnectedTests.test_exact_network_proxy_and_policy_required) ... ok
+test_network_and_credential_options_are_fixed_and_values_never_in_argv (test_connected_native.ConnectedTests.test_network_and_credential_options_are_fixed_and_values_never_in_argv) ... ok
+test_public_network_is_rejected (test_connected_native.ConnectedTests.test_public_network_is_rejected) ... ok
+test_writable_or_wrong_secret_mount_rejected (test_connected_native.ConnectedTests.test_writable_or_wrong_secret_mount_rejected) ... ok
+test_actual_loopback_proxy_denies_host_and_sni_before_upstream (test_connected_native.EgressTests.test_actual_loopback_proxy_denies_host_and_sni_before_upstream) ... ok
+test_private_metadata_endpoint_cannot_be_configured (test_connected_native.EgressTests.test_private_metadata_endpoint_cannot_be_configured) ... ok
+test_real_tls_client_hello_and_malformed_records (test_connected_native.EgressTests.test_real_tls_client_hello_and_malformed_records) ... ok
 test_actual_evidence_validates_original_package_schema (test_contracts.ContractsTest.test_actual_evidence_validates_original_package_schema) ... ok
 test_concurrent_same_request_is_one_deployment (test_contracts.ContractsTest.test_concurrent_same_request_is_one_deployment) ... ok
 test_pinned_archive_dual_root_and_immutable_mirror (test_contracts.ContractsTest.test_pinned_archive_dual_root_and_immutable_mirror) ... ok
@@ -122,6 +131,6 @@ test_security_policy_drift_blocks_write (test_tls_controller.TlsControllerTests.
 test_wrong_certificate_bytes_never_call_provider (test_tls_controller.TlsControllerTests.test_wrong_certificate_bytes_never_call_provider) ... ok
 
 ----------------------------------------------------------------------
-Ran 122 tests in 148.201s
+Ran 131 tests in 93.924s
 
 OK

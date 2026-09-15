@@ -17,7 +17,7 @@ from .native_worker import NativeHelmWorker, NativeTerraformWorker, PinnedNative
 
 
 class IsolatedNativeProcess(PinnedNativeProcess):
-    def __init__(self, client, image, tool, guard=None, capture=None):
+    def __init__(self, client, image, tool, guard=None, capture=None, lifecycle=None):
         require(sys.platform == 'linux', 'isolated_worker_linux_required')
         require(isinstance(client,PinnedNativeProcess), 'isolated_worker_pinned_client')
         require(client.guard is None, 'isolated_worker_cleanup_client_guard')
@@ -30,11 +30,23 @@ class IsolatedNativeProcess(PinnedNativeProcess):
         require(not any(c in str(client.workspace) for c in ',\n\r'), 'isolated_worker_mount_path')
         self.client,self.image,self.tool = client,image,tool
         self.workspace,self.guard,self.capture = client.workspace,guard,capture
+        self.lifecycle=lifecycle
 
     def _json(self, argv):
         result=self.client.run(argv,30)
         require(result.code == 0, 'isolated_worker_inspection_failed')
-        return strict_json(result.stdout)
+        return strict_json(result.stdout) if result.stdout.strip() else []
+
+    def network(self): return 'none'
+
+    def extra_options(self): return []
+
+    def verify_mounts(self, mounts):
+        binds=[mount for mount in mounts if mount.get('Type') == 'bind']
+        require(len(binds) == 1 and binds[0].get('Source') == str(self.workspace)
+            and binds[0].get('Destination') == '/workspace'
+            and all(mount in binds or (mount.get('Type') == 'tmpfs'
+                and mount.get('Destination') == '/tmp') for mount in mounts), 'isolated_worker_mount_policy')
 
     def preflight(self):
         info=self._json(['info','--format','{{json .}}'])
@@ -78,7 +90,7 @@ class IsolatedNativeProcess(PinnedNativeProcess):
         image_id=self.preflight()
         name='elmos-deployment-'+uuid4().hex
         command=['create','--name',name,'--label','io.elmos.deployment-worker=true',
-            '--pull=never','--network=none','--read-only','--cap-drop=ALL',
+            '--pull=never','--network='+self.network(),'--read-only','--cap-drop=ALL',
             '--security-opt=no-new-privileges','--user=65532:65532','--ipc=none',
             '--cpus=1','--memory=512m','--memory-swap=512m','--pids-limit=64',
             '--ulimit=nofile=1024:1024','--log-driver=none',
@@ -86,7 +98,10 @@ class IsolatedNativeProcess(PinnedNativeProcess):
             '--tmpfs=/tmp:rw,noexec,nosuid,nodev,size=64m','--workdir=/workspace',
             '--env=HOME=/tmp','--env=TF_IN_AUTOMATION=1','--env=CHECKPOINT_DISABLE=1',
             '--env=TF_CLI_CONFIG_FILE=/dev/null','--entrypoint=/opt/elmos/bin/'+self.tool,
+            *self.extra_options(),
+            *([item for key,value in self.lifecycle.labels.items() for item in ['--label',key+'='+value]] if self.lifecycle else []),
             self.image,*self._arguments(argv)]
+        if self.lifecycle: self.lifecycle.prepare(name,self.image)
         try:
             self.guard()
             created=self.client.run(command,30)
@@ -95,18 +110,14 @@ class IsolatedNativeProcess(PinnedNativeProcess):
             require(type(records) is list and len(records) == 1, 'isolated_worker_container_missing')
             container=records[0]; config=container['HostConfig']
             require(container['Image'] == image_id and config.get('ReadonlyRootfs') is True
-                and config.get('Privileged') is False and config.get('NetworkMode') == 'none'
+                and config.get('Privileged') is False and config.get('NetworkMode') == self.network()
                 and config.get('CapDrop') == ['ALL'] and not config.get('CapAdd')
                 and 'no-new-privileges' in config.get('SecurityOpt',[])
                 and config.get('Memory') == 536870912 and config.get('MemorySwap') == 536870912
                 and config.get('NanoCpus') == 1000000000 and config.get('PidsLimit') == 64
                 and container['Config'].get('User') == '65532:65532', 'isolated_worker_container_policy')
             mounts=container.get('Mounts',[])
-            binds=[mount for mount in mounts if mount.get('Type') == 'bind']
-            require(len(binds) == 1 and binds[0].get('Source') == str(self.workspace)
-                and binds[0].get('Destination') == '/workspace'
-                and all(mount in binds or (mount.get('Type') == 'tmpfs'
-                    and mount.get('Destination') == '/tmp') for mount in mounts), 'isolated_worker_mount_policy')
+            self.verify_mounts(mounts)
             attached=copy(self.client)
             attached.guard=self.guard
             result=attached.run(['start','--attach',name],timeout,limit)
@@ -122,6 +133,7 @@ class IsolatedNativeProcess(PinnedNativeProcess):
             # Cleanup uses no revoked workload credentials and cannot launch work.
             removed=self.client.run(['container','rm','--force',name],30)
             if removed.code != 0: raise Pending('isolated_worker_cleanup_requires_reconciliation') from None
+            if self.lifecycle: self.lifecycle.cleaned(name)
         if self.capture is not None: self.capture(argv,output)
         return output
 
@@ -149,9 +161,17 @@ class IsolatedWorkerRegistry:
         require(binding is not None, 'isolated_worker_not_installed')
         require(request['runtime_digest'] == binding.process.image.split('@')[1], 'isolated_worker_runtime_drift')
         process=copy(binding.process)
+        if process.lifecycle:
+            require(process.lifecycle.scope == scope and process.lifecycle.request_digest == digest(request),
+                    'isolated_worker_lifecycle_binding')
         if kind == 'terraform':
             return NativeTerraformWorker(process,process.workspace/'approved.tfplan',binding.configuration_files)
         return NativeHelmWorker(process,process.workspace/'chart',process.workspace/'values.json')
+
+    def reconcile_cleanup(self, scope, request, kind='terraform'):
+        process=self.resolve(scope,request,kind).process
+        require(process.lifecycle is not None, 'isolated_worker_lifecycle_required')
+        return {name:process.lifecycle.reconcile(process,name) for name in process.lifecycle.pending()}
 
 
 def main():

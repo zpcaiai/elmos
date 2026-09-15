@@ -38,6 +38,8 @@ class NativeRunnerHost:
                 self.authority.require(request,lease,action)
                 if prior_guard is not None: prior_guard()
             worker.process.guard = guard
+            if hasattr(worker.process,'bind_invocation'):
+                worker.process.bind_invocation(request,lease)
         return worker
 
     def admit(self, request, lease):

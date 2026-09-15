@@ -104,8 +104,52 @@ failed cleanup prevents success and requires reconciliation.
 This backend supports offline Helm and provider-free/local Terraform only.
 Cloud backend access, provider downloads, credential mounts and governed network
 egress are not implemented by this backend. No arbitrary network option is exposed.
-Actual isolated execution, crash/orphan recovery, host-service binding and cloud
+Actual isolated execution, crash/orphan recovery validation, host-service binding and cloud
 acceptance still require the environment in LIVE_ACCEPTANCE_REQUIREMENTS.md.
+
+## Connected Terraform host binding
+
+The optional `ConnectedTerraformProcess` uses the same rootless process boundary.
+Register it in `IsolatedWorkerRegistry` for the exact scope, request digest and image
+digest. Supply a `NativeCleanupJournal` backed by the existing deployment Journal,
+a host network authority, redacting evidence capture and an immutable `NetworkPolicy`.
+NativeRunnerHost binds the current request and lease before execution. Missing or
+revoked authority fails before launch and during execution.
+
+Provision a dedicated internal Docker bridge and a separately pinned gateway
+container running `EgressProxy`. Policy binds the exact network/container IDs,
+gateway image, private address, public hostname/IP pairs and versioned secret
+reference. The host authority must verify the installed gateway configuration,
+image attestation, network exclusivity and lease; the policy label alone is not
+authorization. The workload has no direct public network. Gateway forwarding
+permits only CONNECT to port 443 with matching cleartext SNI and pinned public IP;
+DNS, private/metadata addresses, ECH and fragmented ClientHello records are rejected.
+TLS server verification remains the native client's responsibility. The proxy
+limits connections, header/hello time, tunnel duration and transferred bytes.
+
+Mount one credential file at `/run/elmos/credentials.json`, mode 0400 on tmpfs, with
+an owner-checked 0700 parent and no symlinks or hardlinks. `credential_owner_uid`
+must be the host UID mapped to container UID 65532, verified by the host authority.
+The Java materializer's default process-owned file is not automatically readable
+by this rootless workload: the host must provision the approved mapped ownership
+or equivalent verified id-mapped mount. This mapping is not installed by this code.
+Only the fixed path and selected profile enter environment variables, through
+`ALIBABA_CLOUD_CREDENTIALS_FILE` and `ALIBABA_CLOUD_PROFILE`; credential values never
+enter Docker arguments. Validate the exact pinned provider and OSS backend versions
+against this credential format before admitting a cloud plan.
+
+After restart, call `IsolatedWorkerRegistry.reconcile_cleanup` for an exact request.
+Its mandatory `require_fenced_cleanup` service must fence the original worker and
+daemon dispatch before removing a matching container or recording confirmed absence.
+Lease expiry alone is insufficient. Inventory and cleanup receipts use the existing
+Journal; no new dispatch ledger is created. Failed/ambiguous cleanup remains pending,
+and Terraform outcomes still require canonical ToolCall/state reconciliation.
+
+The nine connected-worker tests include real loopback TLS ClientHello rejection and
+SQLite restart recovery, with Docker/host protocol fixtures. They do not prove real
+container networking, credential readability, cloud apply or service installation.
+The separate public HEAD probe currently records a failed DNS admission; see
+`qualification/egress-receipt.json`. All live acceptance remains NOT_RUN.
 
 Local checks found no Docker daemon on Windows and no Linux Docker daemon or
 rootless tooling in the existing ELMOS-Test-Lab WSL environment. Tests using a

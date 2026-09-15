@@ -17,6 +17,7 @@
 | GitOps | provider 实例与仓库 ID、测试分支、部署目录、分支保护规则、Argo CD/Flux 应用引用 | 受控提案、合并后的精确版本同步和回滚 |
 | 宿主服务 | 控制平面、PostgreSQL、Temporal、CAS、策略/签名、凭证/Secret 服务连接引用 | 真实服务接线、重启恢复、RLS、共享防重放与不可变证据 |
 | Runner | 可用的隔离 Runner、Terraform/Helm 固定工具链和镜像、允许的网络策略 | 原生工具执行与超时/进程中断恢复 |
+| 联网 Terraform | 专用 internal bridge 与出口代理 ID/镜像摘要、批准的域名与公网 IP、provider/OSS backend 版本；tmpfs 凭证引用、rootless UID 映射和旧 worker 派发隔离服务 | 验证不可绕过出口、凭证只读可读性、撤销、中断后清理及状态对账；本机 DNS 当前返回非公网地址，公网探测未通过 |
 | 可观测性 | OTel/SLS/CloudMonitor 连接引用、测试应用 SLO、指标查询范围 | 部署标记、连续观测、错误预算与回滚 |
 | 操作边界 | 允许创建/修改/重启/删除的资源清单；测试时段、费用上限、清理期限和负责人 | 防止误触非测试资源；验收后逐项清理确认 |
 

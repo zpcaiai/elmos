@@ -1,0 +1,17 @@
+{
+  "status": "FAILED",
+  "files": {
+    "engines/release-deployment-engine/src/elmos_release_deployment/egress_proxy.py": "6c37b2753ff583ad2d5435a783269bf5e754ae51c37611698faa549374426187",
+    "engines/release-deployment-engine/src/elmos_release_deployment/contracts.py": "1601f78b2c7752ee313e918668d122660acab64b55a4c43ab7114a21e19e6710",
+    "tooling/validate_release_egress.py": "77c3180530fdacf8c4e707e398dec3a10527a9c674bf04e5d08944b0b8a9a6ee"
+  },
+  "source_unchanged_during_test": true,
+  "logs": {
+    "docs/release-deployment/qualification/egress-native.json": "26880d8e61ffdee463f96a63df0d9c1ac27b06e7c91d314e62abaeda244b2d05"
+  },
+  "scope": "Public HEAD through real CONNECT proxy; normal TLS verification; no cloud credentials",
+  "container_execution": "NOT_RUN",
+  "cloud_resource_acceptance": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

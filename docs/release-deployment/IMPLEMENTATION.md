@@ -9,7 +9,7 @@ and unsigned certification/ticket assertions and are not accepted by the runtime
 ## Run local qualification
 
 ```powershell
-uv run --no-project --with cryptography==46.0.7 --with jsonschema==4.25.1 --with temporalio==1.32.0 python tooling/validate_release_deployment.py --opa .elmos/release-deployment-tools/opa_windows_amd64.exe
+uv run --no-project --with cryptography==46.0.7 --with jsonschema==4.25.1 --with temporalio==1.32.0 python tooling/validate_release_deployment.py --opa D:/elmos-release-native-tools/opa/opa_windows_amd64.exe
 ```
 
 The OPA option is optional. An omitted OPA binary records OPA execution as NOT_RUN.
@@ -45,9 +45,24 @@ artifact bindings and current verifier trust services are mandatory beans. It do
 not install a signer or manufacture independent verification. Live service binding
 and independent verification remain NOT_RUN.
 
-These additions do not complete networked Terraform: the isolated backend remains
-offline until a governed egress proxy/network, credential mount lifecycle and
-crash/orphan reconciliation are implemented and exercised. Other matrix gaps remain.
+`connected_native_worker.py` adds an exact host-bound Terraform process using an
+internal bridge, pinned gateway image/container/policy, public endpoint IP pins,
+and a read-only private tmpfs credential file. `egress_proxy.py` implements bounded
+CONNECT forwarding after checking the TLS ClientHello SNI against the allowed host.
+The existing offline backend remains the default. Network authorization, credential
+lease ownership and rootless UID mapping must be supplied by the canonical host.
+
+`native_cleanup.py` records container intent before creation in the existing Journal
+and reconciles exact scope/request/image labels after restart. Cleanup requires the
+host to fence the old worker first; missing containers only count as absent after
+that fence. Cleanup never replays Terraform or establishes that apply succeeded.
+Actual installation, mapped credential provisioning, cloud/backend acceptance and
+other matrix gaps remain. SQLite journal tests do not establish distributed recovery.
+
+The public HTTPS probe in `tooling/validate_release_egress.py` currently fails closed:
+local DNS returns the non-public address `198.18.0.125` for `www.alibabacloud.com`.
+`qualification/egress-*` records this failed attempt, not successful internet or
+cloud execution. No DNS/IP restriction was relaxed to make it pass.
 
 STS protocol and minimum lifetime reference:
 [Alibaba Cloud AssumeRole](https://www.alibabacloud.com/help/en/ram/user-guide/assume-a-ram-role).
@@ -58,7 +73,7 @@ live in `isolated_native_worker.py`, with an owner-checked installation probe
 for prerequisites, host binding and limits. The backend enforces rootless/cgroup
 controls, fixed images, no network, resource limits, container-policy readback and
 daemon-level forced cleanup. Its Docker protocol tests do not prove real isolated
-execution. Networked Terraform, credential mounts, host crash/orphan reconciliation,
+execution. The connected backend and crash cleanup have local protocol tests;
 actual installation and external authorization/evidence bindings remain outstanding.
 
 The Java dedicated service also has opt-in canonical secret lifecycle wiring and
@@ -177,7 +192,7 @@ No successful Docker start alone can satisfy deployment health or smoke gates.
 | RD-20 | Exact bounded rolling batches with batch verification | Live multi-ECS rollout execution |
 | RD-21 | ALB ECS backend weight execution, before-image checks, durable dispatch, asynchronous readback and separately approved compensation | SLB variants, trusted health gate integration and real traffic journeys |
 | RD-22 | DNS update/readback; ALB default-certificate rotation, invariant checks, live TLS probe and separately approved compensation | Certificate issuance/upload, configured host sessions and external resolver/cloud acceptance |
-| RD-23 | Saved-plan controller; native Terraform show/apply/refresh/state execution; canonical ToolCall HTTP ledger binding and lost-result reconciliation; real local apply/destroy qualification | Installed isolated worker resolver, attestation/authorization/evidence services, production state backend and live provider acceptance |
+| RD-23 | Saved-plan controller; native Terraform show/apply/refresh/state execution; canonical ToolCall ledger and lost-result reconciliation; internal-network/SNI proxy and read-only credential mount checks; journaled fenced container cleanup; real local apply/destroy qualification | Installed connected worker/gateway, mapped credential provisioning, fencing/authorization/evidence services, production state backend and live provider acceptance |
 | RD-24 | Signed exact scan/signature verdict checks | ACR scanner and signature provider |
 | RD-25 | Immutable TTL, resource reconciliation and retention selection | Provisioning/cleanup scheduler and provider effects |
 | RD-26 | Allowlisted deployment annotations | SLS/CloudMonitor/OTel exporter wiring |

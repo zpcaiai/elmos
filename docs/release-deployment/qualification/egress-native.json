@@ -1,0 +1,11 @@
+{
+  "host": "www.alibabacloud.com",
+  "method": "HEAD",
+  "path": "/",
+  "credentials_used": false,
+  "resolved_addresses": [
+    "198.18.0.125"
+  ],
+  "failure_reason": "DNS_RETURNED_NO_PUBLIC_ENDPOINT",
+  "failure_type": "RuntimeError"
+}
