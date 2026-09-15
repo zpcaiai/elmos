@@ -327,8 +327,8 @@ _REQUIRED_EXECUTOR_REPLACEMENT_EFFECT_KINDS = frozenset(
     }
 )
 _DELTA_RLS_CANONICAL_EXPRESSION = (
-    "tenant_id=proof_harness.current_tenant_keyAND"
-    "project_id=proof_harness.current_project_keyAND"
+    "tenant_id=current_tenant_keyAND"
+    "project_id=current_project_keyAND"
     "actor_id=current_setting'app.actor_id',trueAND"
     "run_id=current_setting'app.run_id',trueAND"
     "execution_epoch=current_setting'app.execution_epoch',trueAND"
@@ -673,14 +673,20 @@ def _control_catalog_fingerprint(cursor: Any) -> str:
         "runtime_assurance_migration_digest_ledger",
         *_DELTA_RELATION_NAMES,
     )
-    row = cursor.execute(
-        _CATALOG_FINGERPRINT_SQL,
-        (
-            list(relation_names),
-            list(_DELTA_CONTROL_FUNCTION_NAMES),
-            list(relation_names),
-        ),
-    ).fetchone()
+    cursor.execute('SET LOCAL search_path = "$user", public')
+    try:
+        row = cursor.execute(
+            _CATALOG_FINGERPRINT_SQL,
+            (
+                list(relation_names),
+                list(_DELTA_CONTROL_FUNCTION_NAMES),
+                list(relation_names),
+            ),
+        ).fetchone()
+    finally:
+        cursor.execute(
+            "SET LOCAL search_path = proof_harness_runtime, proof_harness, pg_catalog"
+        )
     if row is None:
         raise IntegrityError(
             "PostgreSQL returned no runtime-assurance control catalog",
@@ -1908,10 +1914,8 @@ class PostgresStore(SQLiteStore):
                     "policyname='runtime_assurance_trusted_scope_isolation' "
                     "AND permissive='PERMISSIVE' AND cmd='ALL' "
                     "AND roles=ARRAY['public']::name[] "
-                    "AND regexp_replace(regexp_replace(qual,'[[:space:]()]','','g'),"
-                    "'::text','','g')=? "
-                    "AND regexp_replace(regexp_replace(with_check,'[[:space:]()]','','g'),"
-                    "'::text','','g')=?"
+                    "AND regexp_replace(regexp_replace(regexp_replace(qual,'[[:space:]()]','','g'),'::text','','g'),'proof_harness\\.','','g')=? "
+                    "AND regexp_replace(regexp_replace(regexp_replace(with_check,'[[:space:]()]','','g'),'::text','','g'),'proof_harness\\.','','g')=?"
                     ",false)),false) AS exact "
                     "FROM pg_policies WHERE schemaname='proof_harness_runtime' "
                     "AND tablename=ANY(?)"
@@ -1927,17 +1931,17 @@ class PostgresStore(SQLiteStore):
                     "SELECT "
                     "bool_and("
                     "COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'SELECT'),false) "
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'SELECT'),false) "
                     "AND COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'INSERT'),false)="
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'INSERT'),false)="
                     "(name=ANY(?::text[])) "
                     "AND COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'UPDATE'),false)="
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'UPDATE'),false)="
                     "(name=ANY(?::text[])) "
                     "AND NOT COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'DELETE'),false) "
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'DELETE'),false) "
                     "AND NOT COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'TRUNCATE'),false)) AS exact "
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'TRUNCATE'),false)) AS exact "
                     "FROM unnest(?::text[]) AS name",
                     (
                         sorted(_APP_INSERT_RELATIONS),
@@ -2035,10 +2039,10 @@ class PostgresStore(SQLiteStore):
                 delta_metadata_security = cursor.execute(
                     "SELECT COUNT(*) AS count,"
                     "COALESCE(bool_or(has_table_privilege(current_user,"
-                    "format('%I.%I',n.nspname,c.relname),"
+                    "quote_ident(n.nspname) || '.' || quote_ident(c.relname),"
                     "'INSERT,UPDATE,DELETE,TRUNCATE') OR "
                     "has_any_column_privilege(current_user,"
-                    "format('%I.%I',n.nspname,c.relname),'INSERT,UPDATE')),false) AS writable,"
+                    "quote_ident(n.nspname) || '.' || quote_ident(c.relname),'INSERT,UPDATE')),false) AS writable,"
                     "COALESCE(bool_or(pg_get_userbyid(c.relowner)=current_user),false) AS owned "
                     "FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace "
                     "WHERE n.nspname='proof_harness_runtime' AND c.relkind IN ('r','p') "
@@ -2074,17 +2078,17 @@ class PostgresStore(SQLiteStore):
                 authority_acl = authority_cursor.execute(
                     "SELECT bool_and("
                     "COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'SELECT'),false)="
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'SELECT'),false)="
                     "(name=ANY(?::text[])) "
                     "AND COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'INSERT'),false)="
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'INSERT'),false)="
                     "(name=ANY(?::text[])) "
                     "AND NOT COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'UPDATE'),false) "
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'UPDATE'),false) "
                     "AND NOT COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'DELETE'),false) "
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'DELETE'),false) "
                     "AND NOT COALESCE(has_table_privilege(current_user,"
-                    "format('%I.%I','proof_harness_runtime',name),'TRUNCATE'),false)) "
+                    "quote_ident('proof_harness_runtime') || '.' || quote_ident(name),'TRUNCATE'),false)) "
                     "AS exact FROM unnest(?::text[]) AS name",
                     (
                         sorted(_AUTHORITY_SELECT_RELATIONS),
@@ -2262,7 +2266,7 @@ class PostgresStore(SQLiteStore):
                     "AND a.relname=ANY(?::text[])))) OR "
                     "(a.grantee=i.authority_oid AND ((a.privilege_type='SELECT' "
                     "AND a.relname=ANY(?::text[])) OR (a.privilege_type='INSERT' "
-                    "AND a.relname=ANY(?::text[]))))))) "
+                    "AND a.relname=ANY(?::text[])))))))) "
                     "AND NOT EXISTS (SELECT 1 FROM unnest(?::text[]) e(name) "
                     "CROSS JOIN identities i WHERE NOT EXISTS (SELECT 1 FROM relation_acl a "
                     "WHERE a.relname=e.name AND a.grantee=i.app_oid "

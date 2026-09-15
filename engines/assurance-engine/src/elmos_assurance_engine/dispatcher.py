@@ -18,10 +18,13 @@ from .mutation_auditor import MutationAuditor
 from .oracles import RequirementOracle
 from .planner import CoveragePlanner
 from .property_fuzz import PropertyVerifier
+from .repository_domain import RepositoryConversionRouteRunner
 from .router_budget import ResourceBudget
 from .scope import ScopeCompiler
 from .security_isolation import DurableExecutionSession, VerifiedSecurityContext
 from .smoke_gate import SmokeGateEvaluator
+from .spring_domain import SpringModernizationRouteRunner
+from .sql_domain import SqlConversionRouteRunner
 from .state_effects import RunLifecycleStateMachine
 
 
@@ -262,20 +265,32 @@ def handle_generation_domain(payload: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-# Handlers for B04 (Explicitly NOT_RUN until scheduled)
+# Handlers for B04
 @AssuranceSkillDispatcher.register("elmos-assurance-sql-domain")
 def handle_sql_domain(payload: Mapping[str, Any]) -> dict[str, Any]:
-    return {"status": "NOT_RUN", "reason": "SCHEDULED_FOR_B04"}
+    res = SqlConversionRouteRunner.run_all()
+    return {
+        "status": res["overall_decision"].value,
+        "results": res,
+    }
 
 
 @AssuranceSkillDispatcher.register("elmos-assurance-spring-domain")
 def handle_spring_domain(payload: Mapping[str, Any]) -> dict[str, Any]:
-    return {"status": "NOT_RUN", "reason": "SCHEDULED_FOR_B04"}
+    res = SpringModernizationRouteRunner.run_all()
+    return {
+        "status": res["overall_decision"].value,
+        "results": res,
+    }
 
 
 @AssuranceSkillDispatcher.register("elmos-assurance-repository-domain")
 def handle_repository_domain(payload: Mapping[str, Any]) -> dict[str, Any]:
-    return {"status": "NOT_RUN", "reason": "SCHEDULED_FOR_B04"}
+    res = RepositoryConversionRouteRunner.run_all()
+    return {
+        "status": res["overall_decision"].value,
+        "results": res,
+    }
 
 
 # Handlers for B05
