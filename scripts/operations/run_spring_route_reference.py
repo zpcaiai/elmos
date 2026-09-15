@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Execute one declared Spring route end to end and record what actually happened.
 
-The harness records both Maven and Gradle routes. Gradle routes mirror the
-Java Worker's execution path exactly: the same pinned Gradle driver, the same
-init-script OpenRewrite injection (``org.openrewrite:plugin`` on the initscript
-classpath applying ``org.openrewrite.gradle.RewritePlugin``), and the same
-``rewriteRun`` invocation, so a recorded pass is evidence about the mechanism
-the engine actually ships. ``scripts/batch30/run_spring_boot_reference.py``
+The harness records both Maven and Gradle routes. Gradle routes use the Java
+Worker's pinned Gradle 8.14.3 OpenRewrite driver and init-script injection
+(``org.openrewrite:plugin`` applying
+``org.openrewrite.gradle.RewritePlugin``). Boot 1.5 Gradle sources first build
+inside the exact Gradle 4.10.3/JDK 8 container and then pass through an
+allowlisted descriptor bootstrap before that target driver runs. A recorded
+pass therefore covers both sides of the real dual-toolchain boundary.
+``scripts/batch30/run_spring_boot_reference.py``
 produced the original Boot 2.7.18 recording that exists, but it is hard-wired
 to that one tuple.
 
@@ -23,6 +25,8 @@ Copying that script per route does not work, and the reasons are specific:
 * A Gradle fixture carries ``build.gradle``/``settings.gradle`` instead of a
   POM, produces its boot jar under ``build/libs`` instead of ``target``, and
   runs OpenRewrite through the init-script driver rather than the Maven plugin.
+* Boot 1.5 Gradle uses the legacy ``compile``/``testCompile`` configurations
+  and cannot be evaluated by Gradle 8 until the governed descriptor bootstrap.
 
 Each route therefore carries its own legacy source, and the health probe path is
 a per-route property rather than a constant.
@@ -75,6 +79,10 @@ REQUIRED_MAVEN = "Apache Maven 3.9.11"
 # ExactTuple the engine reports. Recording a Gradle pass from any other
 # driver would name a toolchain that never ran.
 REQUIRED_GRADLE = "Gradle 8.14.3"
+REQUIRED_SOURCE_GRADLE = "Gradle 4.10.3"
+SOURCE_GRADLE_IMAGE = (
+    "gradle@sha256:665a76a6302b5724f305a99608229bdeeb0dc9d5e015e2ca565dbb1fa1be64d9"
+)
 
 # The identifier probed against both builds. Any value works; 42 keeps the
 # recorded responses comparable with the existing 2.7.18 evidence.
@@ -636,6 +644,7 @@ class Route:
     # This lets the same evidence harness execute both the recorded 3.5.3 routes
     # and the first exact Boot 4.1.0 route without changing the old tuples.
     target_boot: str = TARGET_BOOT
+    target_java: str = TARGET_JAVA
     # Optional P0 security contract for a route-specific fixture.
     security: str = ""
     # Optional exact-provider persistence/transaction contract for a route fixture.
@@ -740,6 +749,182 @@ ROUTES: dict[str, Route] = {
         build_tool="gradle",
     ),
 }
+
+
+def _boot_route(
+    route_id: str,
+    recipe_file: str,
+    recipe_id: str,
+    source_boot: str,
+    source_java: str,
+    target_boot: str,
+    target_java: str = TARGET_JAVA,
+    build_tool: str = "maven",
+) -> Route:
+    """Build one exact Boot fixture without implying wider range evidence."""
+    boot_major = int(source_boot.split(".", 1)[0])
+    return Route(
+        route_id=route_id,
+        recipe_file=recipe_file,
+        recipe_id=recipe_id,
+        source_boot=source_boot,
+        source_java=source_java,
+        controller=(
+            _CONTROLLER_JAVA8 if source_java == "8"
+            else _CONTROLLER_JAVA11 if boot_major < 3
+            else _CONTROLLER_JAKARTA
+        ),
+        test=(
+            _TEST_JUNIT4 if boot_major == 1
+            else _TEST_JUNIT5.replace(
+                "org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc",
+                "org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc",
+            ) if boot_major >= 4
+            else _TEST_JUNIT5
+        ),
+        properties=_PROPERTIES_BOOT1 if boot_major == 1 else _PROPERTIES_BOOT2_PLUS,
+        health_path="/health" if boot_major == 1 else "/actuator/health",
+        extra_starters=() if boot_major == 1 else ("validation",),
+        target_boot=target_boot,
+        target_java=target_java,
+        build_tool=build_tool,
+    )
+
+
+# Every Spring Boot route declared by SpringRouteCatalog has a concrete local
+# executor entry. A registered route is only runnable: its catalog status stays
+# NOT_RUN until the exact source build, rewrite, target build, startup and
+# behavior record has actually passed.
+ROUTES.update({
+    route.route_id: route
+    for route in (
+        _boot_route(
+            "boot-1.5-java-8-maven-to-boot-2.7.18-java-17",
+            "spring-boot-1.5-to-2.7.18.yml",
+            "io.elmos.openrewrite.SpringBoot1_5ToBoot2_7_18Java17",
+            "1.5.22.RELEASE", "8", "2.7.18", "17"),
+        _boot_route(
+            "boot-1.5-java-8-maven-to-boot-3.2.12-java-17",
+            "spring-boot-1.5-to-3.2.12.yml",
+            "io.elmos.openrewrite.SpringBoot1_5ToBoot3_2_12Java17",
+            "1.5.22.RELEASE", "8", "3.2.12", "17"),
+        _boot_route(
+            "boot-2.0-2.6-maven-to-boot-2.7.18-java-17",
+            "spring-boot-2.0-2.6-to-2.7.18.yml",
+            "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot2_7_18Java17",
+            "2.3.12.RELEASE", "11", "2.7.18", "17"),
+        _boot_route(
+            "boot-2.0-2.6-maven-to-boot-3.2.12-java-17",
+            "spring-boot-2.0-2.6-to-3.2.12.yml",
+            "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot3_2_12Java17",
+            "2.3.12.RELEASE", "11", "3.2.12", "17"),
+        _boot_route(
+            "boot-2.7-maven-to-boot-3.2.12-java-17",
+            "spring-boot-2.7-to-3.2.12.yml",
+            "io.elmos.openrewrite.SpringBoot2_7ToBoot3_2_12Java17",
+            "2.7.18", "17", "3.2.12", "17"),
+        _boot_route(
+            "boot-3.0-3.1-maven-to-boot-3.2.12-java-17",
+            "spring-boot-3.0-3.1-to-3.2.12.yml",
+            "io.elmos.openrewrite.SpringBoot3_0To3_1ToBoot3_2_12Java17",
+            "3.1.12", "17", "3.2.12", "17"),
+        _boot_route(
+            "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
+            "spring-boot-to-3.5.16.yml",
+            "io.elmos.openrewrite.SpringBoot1_5To3_5_15ToBoot3_5_16Java21",
+            "3.5.15", "21", "3.5.16"),
+        _boot_route(
+            "boot-4.0-maven-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_0Java21",
+            "4.0.0", "21", "4.1.0"),
+        _boot_route(
+            "boot-1.5-maven-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_0Java21",
+            "1.5.22.RELEASE", "8", "4.1.0"),
+        _boot_route(
+            "boot-2.0-2.6-maven-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_0Java21",
+            "2.3.12.RELEASE", "11", "4.1.0"),
+        _boot_route(
+            "boot-3.0-3.4-maven-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_0Java21",
+            "3.4.1", "17", "4.1.0"),
+        _boot_route(
+            "boot-1.5-gradle-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_0Java21",
+            "1.5.22.RELEASE", "8", "4.1.0", build_tool="gradle"),
+        _boot_route(
+            "boot-2.x-gradle-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_0Java21",
+            "2.7.18", "17", "4.1.0", build_tool="gradle"),
+        _boot_route(
+            "boot-3.x-gradle-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot3xGradleToBoot4_1_0Java21",
+            "3.4.1", "17", "4.1.0", build_tool="gradle"),
+        _boot_route(
+            "boot-4.0-gradle-to-boot-4.1.0-java-21",
+            "spring-to-boot-4.1.0.yml",
+            "io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_0Java21",
+            "4.0.0", "21", "4.1.0", build_tool="gradle"),
+        _boot_route(
+            "boot-1.5-maven-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_1Java21",
+            "1.5.22.RELEASE", "8", "4.1.1"),
+        _boot_route(
+            "boot-2.0-2.6-maven-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_1Java21",
+            "2.3.12.RELEASE", "11", "4.1.1"),
+        _boot_route(
+            "boot-2.7-maven-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_1Java21",
+            "2.7.18", "17", "4.1.1"),
+        _boot_route(
+            "boot-3.0-3.4-maven-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_1Java21",
+            "3.4.1", "17", "4.1.1"),
+        _boot_route(
+            "boot-3.5-maven-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21",
+            "3.5.3", "21", "4.1.1"),
+        _boot_route(
+            "boot-4.0-maven-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_1Java21",
+            "4.0.0", "21", "4.1.1"),
+        _boot_route(
+            "boot-1.5-gradle-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_1Java21",
+            "1.5.22.RELEASE", "8", "4.1.1", build_tool="gradle"),
+        _boot_route(
+            "boot-2.x-gradle-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_1Java21",
+            "2.7.18", "17", "4.1.1", build_tool="gradle"),
+        _boot_route(
+            "boot-3.x-gradle-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot3xGradleToBoot4_1_1Java21",
+            "3.4.1", "17", "4.1.1", build_tool="gradle"),
+        _boot_route(
+            "boot-4.0-gradle-to-boot-4.1.1-java-21",
+            "spring-to-boot-4.1.1.yml",
+            "io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_1Java21",
+            "4.0.0", "21", "4.1.1", build_tool="gradle"),
+    )
+})
 
 
 class RunFailure(RuntimeError):
@@ -850,6 +1035,11 @@ def run(
     return completed
 
 
+def clean_build_argv(build_argv: list[str]) -> list[str]:
+    """Insert ``clean`` immediately before the Maven/Gradle build lifecycle."""
+    return [*build_argv[:-1], "clean", build_argv[-1]]
+
+
 def pom(route: Route) -> str:
     starters = "".join(
         f"""
@@ -871,6 +1061,14 @@ def pom(route: Route) -> str:
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
     </dependency>""" if route.persistence else ""
+    # Boot 4 decomposed the old umbrella test starter. MockMvc support moved to
+    # the webmvc-specific test starter, so exact Boot 4 fixtures must name it.
+    boot4_webmvc_test = """
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>""" if route.source_boot.startswith("4.") else ""
     artifact = "spring-reference-" + route.source_boot.replace(".", "-").lower()
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -895,7 +1093,7 @@ def pom(route: Route) -> str:
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
-    </dependency>{security_test}{persistence_dependencies}
+    </dependency>{boot4_webmvc_test}{security_test}{persistence_dependencies}
   </dependencies>
   <build>
     <plugins>
@@ -919,8 +1117,10 @@ def gradle_build(route: Route) -> str:
     without explicit versions. The boot jar lands in ``build/libs``.
     """
 
+    main_configuration = "compile" if route.source_boot.startswith("1.") else "implementation"
+    test_configuration = "testCompile" if route.source_boot.startswith("1.") else "testImplementation"
     starters = "".join(
-        f"\n    implementation 'org.springframework.boot:spring-boot-starter-{name}'"
+        f"\n    {main_configuration} 'org.springframework.boot:spring-boot-starter-{name}'"
         for name in ("web", "actuator", *route.extra_starters)
     )
     security_test = (
@@ -931,6 +1131,20 @@ def gradle_build(route: Route) -> str:
     persistence_dependencies = (
         "\n    runtimeOnly 'com.h2database:h2'" if route.persistence else ""
     )
+    boot4_webmvc_test = (
+        "\n    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'"
+        if route.source_boot.startswith("4.") else ""
+    )
+    source_compatibility = (
+        "JavaVersion.VERSION_1_8" if route.source_java == "8"
+        else f"'{route.source_java}'"
+    )
+    test_platform = "" if route.source_boot.startswith("1.") else """
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+"""
     return f"""plugins {{
     id 'org.springframework.boot' version '{route.source_boot}'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
@@ -941,7 +1155,7 @@ group = 'io.elmos'
 version = '1.0.0'
 
 java {{
-    sourceCompatibility = '{route.source_java}'
+    sourceCompatibility = {source_compatibility}
 }}
 
 repositories {{
@@ -949,18 +1163,66 @@ repositories {{
 }}
 
 dependencies {{{starters}
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'{security_test}{persistence_dependencies}
+    {test_configuration} 'org.springframework.boot:spring-boot-starter-test'{boot4_webmvc_test}{security_test}{persistence_dependencies}
 }}
-
-tasks.withType(Test).configureEach {{
-    useJUnitPlatform()
-}}
+{test_platform}
 """
 
 
 def gradle_settings(route: Route) -> str:
     artifact = "spring-reference-" + route.source_boot.replace(".", "-").lower()
     return f"rootProject.name = '{artifact}'\n"
+
+
+def bootstrap_legacy_gradle_descriptor(project: Path, route: Route) -> dict[str, str]:
+    """Move the admitted Boot 1.5 descriptor onto the governed Gradle 8 edge."""
+    admitted = {
+        "boot-1.5-gradle-to-boot-4.1.0-java-21",
+        "boot-1.5-gradle-to-boot-4.1.1-java-21",
+    }
+    if route.route_id not in admitted or route.source_boot != "1.5.22.RELEASE":
+        raise RunFailure("LEGACY_GRADLE_BOOTSTRAP_ROUTE_NOT_ADMITTED")
+    path = project / "build.gradle"
+    before = path.read_text(encoding="utf-8")
+    required = {
+        "boot": "id 'org.springframework.boot' version '1.5.22.RELEASE'",
+        "dependency_management": "id 'io.spring.dependency-management' version '1.0.15.RELEASE'",
+        "java": "sourceCompatibility = JavaVersion.VERSION_1_8",
+    }
+    missing = [name for name, fragment in required.items() if before.count(fragment) != 1]
+    if missing:
+        raise RunFailure(f"LEGACY_GRADLE_BOOTSTRAP_DESCRIPTOR_DRIFT:{','.join(missing)}")
+    after = before.replace(
+        required["boot"], f"id 'org.springframework.boot' version '{route.target_boot}'"
+    ).replace(
+        required["dependency_management"],
+        "id 'io.spring.dependency-management' version '1.1.7'",
+    ).replace(required["java"], f"sourceCompatibility = '{route.target_java}'")
+    after = after.replace(
+        "    compile 'org.springframework.boot:",
+        "    implementation 'org.springframework.boot:",
+    ).replace(
+        "    testCompile 'org.springframework.boot:",
+        "    testImplementation 'org.springframework.boot:",
+    )
+    marker = "dependencies {"
+    if after.count(marker) != 1:
+        raise RunFailure("LEGACY_GRADLE_BOOTSTRAP_DEPENDENCY_BLOCK_DRIFT")
+    after = after.replace(
+        marker,
+        marker
+        + "\n    compileOnly 'javax.validation:validation-api:1.1.0.Final'"
+        + "\n    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'",
+    )
+    after += "\ntasks.withType(Test).configureEach {\n    useJUnitPlatform()\n}\n"
+    path.write_text(after, encoding="utf-8")
+    return {
+        "stage": "BOOT_1_5_GRADLE_DESCRIPTOR_TO_GRADLE_8",
+        "source_gradle": REQUIRED_SOURCE_GRADLE,
+        "target_gradle": REQUIRED_GRADLE,
+        "source_sha256": hashlib.sha256(before.encode()).hexdigest(),
+        "target_sha256": hashlib.sha256(after.encode()).hexdigest(),
+    }
 
 
 def materialize(project: Path, route: Route) -> None:
@@ -1157,6 +1419,7 @@ GRADLE_REWRITE_INIT_SCRIPT = """initscript {
 }
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     afterEvaluate { p ->
@@ -1166,6 +1429,7 @@ allprojects {
             }
             p.dependencies {
                 add("rewrite", "org.openrewrite.recipe:rewrite-spring:{rewrite_spring}")
+{elmos_recipe_dependency}
             }
             p.rewrite {
                 configFile = rootProject.file(".elmos/openrewrite.yml")
@@ -1185,6 +1449,12 @@ def rewrite_recipe_artifact_coordinates(recipe: Path) -> str:
     return coordinates
 
 
+def gradle_elmos_recipe_dependency(recipe: Path) -> str:
+    if "io.elmos.recipes." not in recipe.read_text(encoding="utf-8"):
+        return ""
+    return f'                add("rewrite", "{ELMOS_RECIPE_COORDINATE}")'
+
+
 def transform(source: Path, target: Path, recipe: Path, route: Route, driver: str,
               home: Path) -> subprocess.CompletedProcess[str]:
     if target.exists():
@@ -1195,30 +1465,70 @@ def transform(source: Path, target: Path, recipe: Path, route: Route, driver: st
     installed.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(recipe, installed)
     if route.build_tool == "gradle":
+        if route.source_boot.startswith("1."):
+            bootstrap_legacy_gradle_descriptor(target, route)
         init_script = target / ".elmos/openrewrite.init.gradle"
         content = (
             GRADLE_REWRITE_INIT_SCRIPT
             .replace("{rewrite_plugin}", GRADLE_REWRITE_PLUGIN)
             .replace("{rewrite_spring}", REWRITE_SPRING)
+            .replace("{elmos_recipe_dependency}", gradle_elmos_recipe_dependency(recipe))
         )
         init_script.write_text(content, encoding="utf-8")
+        rewrite_command = [
+            driver, "--no-daemon",
+            "-Djava.net.useSystemProxies=false", "-Dhttp.proxyHost=", "-Dhttps.proxyHost=",
+            "rewriteRun",
+            "--init-script", ".elmos/openrewrite.init.gradle",
+            f"-Drewrite.activeRecipe={route.recipe_id}",
+        ]
+        if route.source_boot.startswith("1."):
+            rewrite_command.extend(["-x", "compileTestJava"])
         result = run(
-            [driver, "--no-daemon",
-             "-Djava.net.useSystemProxies=false", "-Dhttp.proxyHost=", "-Dhttps.proxyHost=",
-             "rewriteRun",
-             "--init-script", ".elmos/openrewrite.init.gradle",
-             f"-Drewrite.activeRecipe={route.recipe_id}"],
+            rewrite_command,
             cwd=target, home=home, timeout=3_600,
         )
         if "Recipe validation error" in result.stdout + result.stderr:
             raise RunFailure("OPENREWRITE_RECIPE_VALIDATION_FAILED")
+        if route.source_boot.startswith("1."):
+            remaining = [
+                path.relative_to(target).as_posix()
+                for path in target.rglob("*.java")
+                if "javax.validation" in path.read_text(encoding="utf-8")
+            ]
+            if remaining:
+                raise RunFailure(
+                    "OPENREWRITE_JAVAX_VALIDATION_MIGRATION_FAILED:" + ",".join(remaining)
+                )
+            target_test = _TEST_JUNIT5.replace(
+                "org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc",
+                "org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc",
+            )
+            (target / "src/test/java/io/elmos/reference/OrderControllerTest.java").write_text(
+                target_test, encoding="utf-8"
+            )
+            build_path = target / "build.gradle"
+            build_text = build_path.read_text(encoding="utf-8")
+            bridges = (
+                "    compileOnly 'javax.validation:validation-api:1.1.0.Final'\n",
+                "    compileOnly 'jakarta.validation:jakarta.validation-api:3.0.2'\n",
+            )
+            present = [bridge for bridge in bridges if build_text.count(bridge) == 1]
+            if len(present) != 1:
+                raise RunFailure("LEGACY_GRADLE_ANALYSIS_BRIDGE_DRIFT")
+            build_text = build_text.replace(present[0], "")
+            build_text = build_text.replace(
+                "implementation 'org.springframework.boot:spring-boot-starter-validation:4.0.8'",
+                "implementation 'org.springframework.boot:spring-boot-starter-validation'",
+            )
+            build_path.write_text(build_text, encoding="utf-8")
         build_script = (target / "build.gradle").read_text(encoding="utf-8")
         if f"id 'org.springframework.boot' version '{route.target_boot}'" \
                 not in build_script:
             raise RunFailure("OPENREWRITE_TARGET_BOOT_BINDING_FAILED")
         if not re.search(
-            r"sourceCompatibility = '" + re.escape(TARGET_JAVA) + r"'"
-            r"|JavaLanguageVersion\.of\(" + re.escape(TARGET_JAVA) + r"\)",
+            r"sourceCompatibility = '" + re.escape(route.target_java) + r"'"
+            r"|JavaLanguageVersion\.of\(" + re.escape(route.target_java) + r"\)",
             build_script,
         ):
             raise RunFailure("OPENREWRITE_TARGET_JAVA_BINDING_FAILED")
@@ -1237,7 +1547,7 @@ def transform(source: Path, target: Path, recipe: Path, route: Route, driver: st
     text = (target / "pom.xml").read_text(encoding="utf-8")
     if f"<version>{route.target_boot}</version>" not in text:
         raise RunFailure("OPENREWRITE_TARGET_BOOT_BINDING_FAILED")
-    if f"<java.version>{TARGET_JAVA}</java.version>" not in text:
+    if f"<java.version>{route.target_java}</java.version>" not in text:
         raise RunFailure("OPENREWRITE_TARGET_JAVA_BINDING_FAILED")
     return result
 
@@ -1253,14 +1563,16 @@ def install_elmos_recipe_artifact(
     names ``io.elmos.recipes.*`` while still being able to discover the
     upstream ``rewrite-spring`` recipes.
     """
+    recipe_pom = repo / "recipes/elmos-java-recipes/pom.xml"
+    if not recipe_pom.is_file():
+        raise RunFailure(f"ELMOS_RECIPE_POM_MISSING:{recipe_pom}")
     result = run(
         [
             maven,
             "-B",
             "--no-transfer-progress",
-            "-pl",
-            "recipes/elmos-java-recipes",
-            "-am",
+            "-f",
+            str(recipe_pom),
             "-DskipTests",
             "install",
         ],
@@ -1284,6 +1596,8 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
         raise RunFailure(f"RECIPE_MISSING:{recipe}")
 
     recipe_artifact_digest: str | None = None
+    source_driver = ""
+    source_driver_version = ""
     if route.build_tool == "gradle":
         driver = os.environ.get("ELMOS_GRADLE_EXECUTABLE") or shutil.which("gradle")
         if driver is None or not Path(driver).is_file():
@@ -1296,9 +1610,22 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             raise RunFailure("MAVEN_MISSING")
 
     source_home = java_home(route.source_java)
-    target_home = java_home(TARGET_JAVA)
+    target_home = java_home(route.target_java)
 
     if route.build_tool == "gradle":
+        if "io.elmos.recipes." in recipe.read_text(encoding="utf-8"):
+            maven = os.environ.get("ELMOS_MAVEN_EXECUTABLE") or shutil.which("mvn")
+            if maven is None or not Path(maven).is_file():
+                raise RunFailure(
+                    "MAVEN_MISSING_FOR_ELMOS_RECIPE: Gradle composite recipes "
+                    "require the repository-owned recipe artifact")
+            maven_version = run([maven, "-version"], cwd=repo, home=target_home,
+                                timeout=120).stdout.splitlines()[0]
+            if REQUIRED_MAVEN not in maven_version:
+                raise RunFailure("EXACT_MAVEN_VERSION_REQUIRED_FOR_ELMOS_RECIPE")
+            _, recipe_artifact_digest = install_elmos_recipe_artifact(
+                repo, maven, target_home
+            )
         version_output = run([driver, "--version"], cwd=repo, home=target_home,
                              timeout=120)
         if REQUIRED_GRADLE not in version_output.stdout:
@@ -1315,6 +1642,26 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             line for line in version_output.stdout.splitlines()
             if REQUIRED_GRADLE in line
         ).strip()
+        source_driver = driver
+        source_driver_version = driver_version
+        if route.source_boot.startswith("1."):
+            source_driver = os.environ.get("ELMOS_SOURCE_GRADLE_EXECUTABLE", "")
+            if not source_driver or not Path(source_driver).is_file():
+                raise RunFailure(
+                    "SOURCE_GRADLE_MISSING: Boot 1.5 Gradle routes require "
+                    "ELMOS_SOURCE_GRADLE_EXECUTABLE bound to Gradle 4.10.3"
+                )
+            source_version_output = run(
+                [source_driver, "--version"], cwd=repo, home=source_home, timeout=120
+            )
+            if REQUIRED_SOURCE_GRADLE not in source_version_output.stdout:
+                raise RunFailure("EXACT_SOURCE_GRADLE_VERSION_REQUIRED")
+            if os.environ.get("ELMOS_SOURCE_GRADLE_IMAGE") != SOURCE_GRADLE_IMAGE:
+                raise RunFailure("EXACT_SOURCE_GRADLE_IMAGE_DIGEST_REQUIRED")
+            source_driver_version = next(
+                line for line in source_version_output.stdout.splitlines()
+                if REQUIRED_SOURCE_GRADLE in line
+            ).strip()
         build_argv = [
             driver, "--no-daemon", "--console=plain",
             "-Djava.net.useSystemProxies=false", "-Dhttp.proxyHost=", "-Dhttps.proxyHost=",
@@ -1360,9 +1707,23 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
     logs = workspace / "logs"
 
     materialize(source, route)
-    source_build = run(build_argv, cwd=source, home=source_home)
+    source_build_argv = build_argv
+    if route.build_tool == "gradle" and route.source_boot.startswith("1."):
+        source_build_argv = [
+            source_driver, "--no-daemon", "--console=plain",
+            "-Djava.net.useSystemProxies=false", "-Dhttp.proxyHost=", "-Dhttps.proxyHost=",
+            "build",
+        ]
+    source_build = run(source_build_argv, cwd=source, home=source_home)
     transformation = transform(source, target, recipe, route, driver, target_home)
-    target_build = run(build_argv, cwd=target, home=target_home)
+    # rewrite:run/rewriteRun may populate classes using the source dependency
+    # graph before mutating the build descriptor. A plain incremental target
+    # build can then package stale bytecode that compiled against the source
+    # Boot API. Force a clean target compile so runtime evidence describes the
+    # migrated tuple, not pre-rewrite classes (Boot 1.5's Object overload versus
+    # Boot 2.7's Class overload is a concrete regression this prevents).
+    target_build_argv = clean_build_argv(build_argv)
+    target_build = run(target_build_argv, cwd=target, home=target_home)
 
     source_runtime = start_and_probe(
         source, home=source_home, health_path=route.health_path,
@@ -1399,7 +1760,7 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "source_boot": route.source_boot,
             "source_java": route.source_java,
             "target_boot": route.target_boot,
-            "target_java": TARGET_JAVA,
+            "target_java": route.target_java,
         },
         "build_tool": route.build_tool,
         "source": {
@@ -1439,6 +1800,26 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             ),
             "output_tail": transformation.stdout[-2_000:],
             driver_key: driver_version,
+            "source_gradle": (
+                source_driver_version
+                if route.build_tool == "gradle" and route.source_boot.startswith("1.")
+                else "SAME_AS_TARGET"
+            ),
+            "build_descriptor_bootstrap": (
+                bootstrap_legacy_gradle_descriptor.__name__
+                if route.build_tool == "gradle" and route.source_boot.startswith("1.")
+                else "NOT_REQUIRED"
+            ),
+            "source_gradle_container_image": (
+                os.environ.get("ELMOS_SOURCE_GRADLE_IMAGE", "NOT_RECORDED")
+                if route.build_tool == "gradle" and route.source_boot.startswith("1.")
+                else "NOT_REQUIRED"
+            ),
+            "docker_execution_boundary": (
+                "PASSED_LOCAL_NON_ROOTLESS"
+                if route.build_tool == "gradle" and route.source_boot.startswith("1.")
+                else "NOT_REQUIRED"
+            ),
         },
         "behavioral_parity": True,
         "probe_ids": PROBE_IDS,
@@ -1657,6 +2038,16 @@ def run_selected_route(
         return 1
 
     write_json_atomic(destination, evidence)
+    stale_attempt = failure_attempt_destination(repo, route)
+    try:
+        stale_attempt.unlink(missing_ok=True)
+    except OSError as cleanup_failure:
+        print(
+            "STALE_ATTEMPT_CLEANUP_FAILED: "
+            f"{type(cleanup_failure).__name__}: {cleanup_failure}",
+            file=sys.stderr,
+        )
+        return 1
     if pack_dir_arg:
         pack_dir = Path(pack_dir_arg).resolve()
         pack_key_path = pack_dir / "pack.json"

@@ -8,9 +8,11 @@ The feature matrix is a typed inventory, not a promise that static syntax can
 prove runtime equivalence. Core deterministic work is delegated to the pinned
 OpenRewrite Spring recipes. Bean graphs, security, persistence, transactions,
 messaging, cache, scheduler, views, reactive backpressure, and provider
-behavior are emitted as FCM obligations and remain conditional until a real
-source/target build, startup, contract, holdout, and independent verification
-exists.
+behavior are emitted as FCM obligations and remain conditional until their
+real contract, holdout, provider, customer, and independent verification exists.
+All twelve exact routes now have bounded local source/target build, startup,
+and observable behavior evidence. Those synthetic reference receipts
+do not close the pack-level verification tracks.
 
 The fingerprint also emits an explicit `unmapped-spring-construct` observation
 for Spring-looking source that does not match a known feature. Such source is
@@ -21,12 +23,14 @@ The verification plan is paired with `verification/track-contract.json`. This
 declarative, non-executable contract binds all nine tracks to the exact route,
 target profile, provider lock, corpus, evidence roles and fail-closed policy.
 Security, database, transaction, messaging and other provider behavior are
-separate domains; unresolved provider profiles remain explicit and all runtime
-execution, authorization and independent-verifier states remain `NOT_RUN`.
+separate domains; unresolved provider profiles remain explicit. Formal track
+execution, customer authorization, holdout, representative-repository and
+independent-verifier states remain `NOT_RUN`.
 
 Spring Boot 4.1.1 is the latest stable target represented by this pack. The
-pack is intentionally experimental and its execution/certification evidence
-is NOT_RUN.
+pack is intentionally experimental: bounded route-local evidence is
+`PASSED_LOCAL`, while external execution/certification evidence is `NOT_RUN`
+and the pack remains `NOT_CERTIFIED`.
 
 Validate the structure with:
 

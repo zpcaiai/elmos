@@ -12,15 +12,13 @@ class SpringRouteQualificationGateTest {
     private static final String COMMIT = "0123456789abcdef0123456789abcdef01234567";
     private static final String DIGEST = "sha256:" + "a".repeat(64);
 
-    @Test void accountsForAllTwentyFivePendingRoutesWithoutPromotingMissingEvidence() {
+    @Test void reportsAllRoutesLocallyRecordedWithoutInventingNewDecisions() {
         var decision = SpringRouteQualificationGate.evaluateMatrix(List.of());
         assertEquals(39, decision.catalogRoutes());
-        assertEquals(14, decision.alreadyPassedLocal());
-        assertEquals(25, decision.pendingRoutes());
+        assertEquals(39, decision.alreadyPassedLocal());
+        assertEquals(0, decision.pendingRoutes());
         assertEquals(0, decision.newlyQualifiedLocal());
-        assertEquals(25, decision.decisions().size());
-        assertTrue(decision.decisions().values().stream()
-                .allMatch(item -> item.localStatus() == SpringRouteQualificationGate.LocalStatus.NOT_RUN));
+        assertEquals(0, decision.decisions().size());
     }
 
     @Test void separatesLocalExecutionFromCustomerAndIndependentEvidence() {

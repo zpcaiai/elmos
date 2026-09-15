@@ -1,0 +1,135 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "build_tool": "maven",
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "5.2.25.RELEASE",
+    "source_java": "11",
+    "target_boot": "3.5.3",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21",
+  "schema_version": 1,
+  "source": {
+    "build": "PASSED",
+    "build_tail": "--- resources:3.3.1:resources (default-resources) @ nonboot-source ---\n[INFO] Copying 1 resource from src/main/resources to target/classes\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ nonboot-source ---\n[INFO] Nothing to compile - all classes are up to date.\n[WARNING] Overwriting artifact's file from /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/source/target/nonboot-source.war to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/source/target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ nonboot-source ---\n[INFO] skip non existing resourceDirectory /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/source/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ nonboot-source ---\n[INFO] No sources to compile\n[INFO] \n[INFO] --- surefire:3.2.5:test (default-test) @ nonboot-source ---\n[INFO] No tests to run.\n[INFO] Skipping execution of surefire because it has already been run for this configuration\n[INFO] \n[INFO] --- war:3.4.0:war (default-war) @ nonboot-source ---\n[INFO] Packaging webapp\n[INFO] Assembling webapp [nonboot-source] in [/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/source/target/nonboot-source]\n[INFO] Processing war project\n[INFO] Copying webapp resources [/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/source/src/main/webapp]\n[INFO] Building war: /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/source/target/nonboot-source.war\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  2.601 s\n[INFO] Finished at: 2026-09-14T13:02:45+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "runtime": {
+      "container_id": "3b134cb5a935fd3285a549db019aae4795a81fd0f83d84500127852d3dcbdba8",
+      "container_image": "tomcat@sha256:712120b4bca129c7ac3f433f58695db5550eff499c4d435b0f8a120b41b132c6",
+      "docker_boundary": "PASSED_LOCAL_NON_ROOTLESS",
+      "loopback_port": true,
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "currency": "CNY",
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "currency": "CNY",
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "currency": "CNY",
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    },
+    "spring_framework": "5.2.25.RELEASE"
+  },
+  "source_family": "spring-mvc",
+  "target": {
+    "boot": "3.5.3",
+    "build": "PASSED",
+    "build_tail": "1.0.0.jar to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/target/target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ fcm-target ---\n[INFO] skip non existing resourceDirectory /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/target/src/test/resources\n[INFO] \n[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ fcm-target ---\n[INFO] No sources to compile\n[INFO] \n[INFO] --- surefire:3.5.3:test (default-test) @ fcm-target ---\n[INFO] No tests to run.\n[INFO] Skipping execution of surefire because it has already been run for this configuration\n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ fcm-target ---\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (repackage) @ fcm-target ---\n[INFO] Replacing main artifact /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/target/target/fcm-target-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/target/target/fcm-target-1.0.0.jar.original\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (default) @ fcm-target ---\n[INFO] Replacing main artifact /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/target/target/fcm-target-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.mhlq_aks/target/target/fcm-target-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  4.033 s\n[INFO] Finished at: 2026-09-14T13:02:51+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "runtime": {
+      "health": {
+        "status": "UP"
+      },
+      "jar_sha256": "5b0dae8c25fa85fe4e11d2956288263c429f7033a518d00eeb8341fe11b3e141",
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "currency": "CNY",
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "currency": "CNY",
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "currency": "CNY",
+          "id": 7,
+          "status": "REVIEW"
+        }
+      }
+    }
+  },
+  "transformation": {
+    "engine": "ELMOS_FCM_TARGET_GENERATOR",
+    "fcm": {
+      "beans": [
+        {
+          "class": "io.elmos.reference.OrderService",
+          "id": "orderService",
+          "lifecycle": "application-context",
+          "properties": {
+            "currency": "CNY",
+            "multiplier": "125"
+          }
+        }
+      ],
+      "obligations": [
+        "bean-identity",
+        "constructor-wiring",
+        "property-values",
+        "context-startup",
+        "order-response-equivalence"
+      ],
+      "route_id": "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21",
+      "schema_version": 1,
+      "source": {
+        "build": "maven-3.9.11",
+        "family": "spring-mvc",
+        "java": "11",
+        "spring": "5.2.25.RELEASE"
+      },
+      "status": "FCM_EXTRACTED_LOCAL",
+      "target": {
+        "build": "maven-3.9.11",
+        "java": "21",
+        "spring_boot": "3.5.3"
+      },
+      "web": {
+        "dispatcher_mapping": "/"
+      }
+    },
+    "fcm_sha256": "0d78be53bc6df6b513f445536ab977d693b538acd88d9d0c477058fe003afd69",
+    "generator_sha256": "0b67ed84ac2f55c91a18bd1c1b3718003f6c2540e83e725307e8eeb912484281",
+    "source_tree": {
+      "pom.xml": "a073e4cf44fb231bf062b201351d8d159dba3cd2bf8817c711a568ccc4926ae7",
+      "src/main/java/io/elmos/reference/OrderController.java": "c5d59d9d9f3351d9b1aadeef08db51de14eec851e7e9e623071946480080f5e6",
+      "src/main/java/io/elmos/reference/OrderService.java": "884bb2be85fcd9a5435687c7a89a4c2e7d1699a6ceebe4314ab55e3394f9b3dc",
+      "src/main/resources/application-context.xml": "a0569ce94fe3f7c8b404e2f79030104aa9cac718a49d7e67eb4c99b1d5cc206a",
+      "src/main/webapp/WEB-INF/web.xml": "cd47f5ac5331087637d3547d45e5f181d51b45a45edfb0f82bcae9e8a38215e9"
+    }
+  }
+}
