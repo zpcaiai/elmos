@@ -79,6 +79,40 @@ from .independent_audit_gate import (
     GateViolationReason,
     IndependentAuditGateRunner,
 )
+from .host_broker import (
+    CapabilityLease,
+    CapabilityLeaseVerifier,
+    EffectSettlementReceipt,
+    HostBrokerChannel,
+    SettlementLedger,
+    SettlementStatus,
+)
+from .postgres_lifecycle import (
+    EphemeralPostgresCluster,
+    PostgresBinaryDiscovery,
+    PostgresVersionInfo,
+    ReversibleMigrationEngine,
+)
+from .tenant_scheduler import (
+    PriorityPreemptionQueue,
+    PriorityTier,
+    QueuedTask,
+    TenantConcurrencyPool,
+    TenantFairScheduler,
+    TenantQuotaExceededError,
+)
+from .crash_recovery import (
+    InFlightOrphanReconciler,
+    JournalEvent,
+    TaskExecutionJournal,
+    TaskLifecycleState,
+    TimeTravelReplayer,
+)
+from .tsa_notary import (
+    MerkleTransparencyLog,
+    TSANotaryAuthority,
+    TimeStampToken,
+)
 
 __version__ = SERVICE_VERSION
 
@@ -151,5 +185,29 @@ __all__ = [
     "GateDecision",
     "GateViolationReason",
     "IndependentAuditGateRunner",
+    "CapabilityLease",
+    "CapabilityLeaseVerifier",
+    "EffectSettlementReceipt",
+    "HostBrokerChannel",
+    "SettlementLedger",
+    "SettlementStatus",
+    "EphemeralPostgresCluster",
+    "PostgresBinaryDiscovery",
+    "PostgresVersionInfo",
+    "ReversibleMigrationEngine",
+    "PriorityPreemptionQueue",
+    "PriorityTier",
+    "QueuedTask",
+    "TenantConcurrencyPool",
+    "TenantFairScheduler",
+    "TenantQuotaExceededError",
+    "InFlightOrphanReconciler",
+    "JournalEvent",
+    "TaskExecutionJournal",
+    "TaskLifecycleState",
+    "TimeTravelReplayer",
+    "MerkleTransparencyLog",
+    "TSANotaryAuthority",
+    "TimeStampToken",
     "__version__",
 ]

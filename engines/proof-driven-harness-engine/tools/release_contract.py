@@ -112,6 +112,7 @@ RUNTIME_SOURCE_NAMES = (
     "connection_pool.py",
     "contracts.py",
     "control_plane.py",
+    "crash_recovery.py",
     "delta.py",
     "delta_storage.py",
     "delta_v32.py",
@@ -120,6 +121,7 @@ RUNTIME_SOURCE_NAMES = (
     "evidence.py",
     "formal_verifier.py",
     "hermetic_container.py",
+    "host_broker.py",
     "independent_audit_gate.py",
     "migration_manager.py",
     "network_egress.py",
@@ -128,6 +130,7 @@ RUNTIME_SOURCE_NAMES = (
     "outbox.py",
     "policy.py",
     "postgres.py",
+    "postgres_lifecycle.py",
     "proof_graph.py",
     "repository.py",
     "resilience_channel.py",
@@ -140,7 +143,9 @@ RUNTIME_SOURCE_NAMES = (
     "soak_auditor.py",
     "storage.py",
     "store.py",
+    "tenant_scheduler.py",
     "transformation.py",
+    "tsa_notary.py",
     "workflow.py",
 )
 DELTA_EXAMPLE_NAMES = tuple(
