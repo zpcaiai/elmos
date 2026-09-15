@@ -48,6 +48,38 @@ from .transformation import ChangeSet, FileChange, WorkspaceTransformer
 
 from . import delta_v32
 
+from .hermetic_container import (
+    EnvironmentFingerprint,
+    HermeticContainerSandbox,
+    HermeticExecutionReceipt,
+    IsolationLevel,
+)
+from .resilience_channel import (
+    ChaosConfig,
+    ChaosFaultInjector,
+    ChaosFaultType,
+    CircuitBreaker,
+    CircuitBreakerOpenError,
+    CircuitState,
+    NonRetryableError,
+    ResilientDatabaseChannel,
+    RetryMetrics,
+)
+from .soak_auditor import (
+    LeakReport,
+    ResourceAuditSnapshot,
+    ResourceLeakAuditor,
+    ResourceLeakError,
+    SoakTestRunner,
+)
+from .independent_audit_gate import (
+    AuthoritativeAuditReceipt,
+    CandidateEvidenceBundle,
+    GateDecision,
+    GateViolationReason,
+    IndependentAuditGateRunner,
+)
+
 __version__ = SERVICE_VERSION
 
 __all__ = [
@@ -96,5 +128,28 @@ __all__ = [
     "StaticTokenAuthenticator",
     "VERIFIER_ADAPTER_REGISTRY",
     "WorkspaceTransformer",
+    "EnvironmentFingerprint",
+    "HermeticContainerSandbox",
+    "HermeticExecutionReceipt",
+    "IsolationLevel",
+    "ChaosConfig",
+    "ChaosFaultInjector",
+    "ChaosFaultType",
+    "CircuitBreaker",
+    "CircuitBreakerOpenError",
+    "CircuitState",
+    "NonRetryableError",
+    "ResilientDatabaseChannel",
+    "RetryMetrics",
+    "LeakReport",
+    "ResourceAuditSnapshot",
+    "ResourceLeakAuditor",
+    "ResourceLeakError",
+    "SoakTestRunner",
+    "AuthoritativeAuditReceipt",
+    "CandidateEvidenceBundle",
+    "GateDecision",
+    "GateViolationReason",
+    "IndependentAuditGateRunner",
     "__version__",
 ]
