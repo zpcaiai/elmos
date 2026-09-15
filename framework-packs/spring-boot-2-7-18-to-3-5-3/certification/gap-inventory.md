@@ -25,6 +25,33 @@ Observed on 2026-09-14 against the task-scoped Spring modernization branch.
 - The enterprise audit now detects residual legacy security, SOAP/RPC, DWR,
   JSF, and Dubbo surfaces, preventing a green core score from hiding them.
 
+## Locally closed enterprise runtime slice
+
+- A source fixture on Spring Boot 2.7.18 / Java 17.0.11 and its target fixture
+  on Spring Boot 3.5.3 / Java 21.0.11 execute the same four enterprise contract
+  tests against real digest-pinned PostgreSQL 17.5 and RabbitMQ 4.1.4
+  containers. Both executions pass with zero failures, errors, or skips.
+- Security now proves unauthenticated denial, viewer/operator/admin role
+  separation, exact CSRF scope, required non-default credentials, public health,
+  administrator-only metrics, and hidden health details.
+- Data and transaction behavior now proves schema constraints, JPA validation,
+  atomic order/outbox rollback, a PostgreSQL pessimistic lock, and no oversell
+  under two simultaneous reservations.
+- Messaging now proves a durable exchange/queue, broker-confirmed outbox relay,
+  mandatory message IDs, and duplicate-delivery suppression through a durable
+  PostgreSQL consumer ledger.
+- `certification/local-enterprise-container-evidence.json` binds the exact
+  provider digests, toolchains, fixture bytes and results. This host is
+  Linux/ARM64 through OrbStack but its Docker daemon is not Rootless, so the
+  evidence remains `PASSED_LOCAL` and `NOT_CERTIFIED`.
+
+The protected staging contract is checked in at
+`.github/workflows/spring-enterprise-staging-qualification.yml`, but no matching
+dedicated Rootless Runner execution has occurred. Staging execution therefore
+remains `NOT_RUN`; customer acceptance, independent verification and external
+certification also remain `NOT_RUN`. These evidence roles cannot be filled by
+rerunning the local containers.
+
 ## Route-local execution closure
 
 The catalog's 39 directed routes now all carry one exact `PASSED_LOCAL` tuple:
