@@ -41,7 +41,6 @@ from .production_contract import (
     fixture_chain,
     production_contract,
     relation_parents,
-    uuid_relation_fields,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (

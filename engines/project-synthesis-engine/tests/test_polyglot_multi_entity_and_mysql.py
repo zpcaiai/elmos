@@ -8,8 +8,6 @@ Verifies:
 
 from __future__ import annotations
 
-import pytest
-
 from elmos_project_synthesis.enterprise_dotnet_target import generate_enterprise_dotnet_files
 from elmos_project_synthesis.enterprise_go_target import generate_enterprise_go_files
 from elmos_project_synthesis.enterprise_java_target import generate_enterprise_java_files

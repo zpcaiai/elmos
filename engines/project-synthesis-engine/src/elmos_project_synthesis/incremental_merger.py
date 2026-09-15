@@ -10,6 +10,7 @@ customer-authored business logic without loss:
 
 from __future__ import annotations
 
+import ast
 import datetime as dt
 import re
 from dataclasses import dataclass, field
@@ -161,22 +162,79 @@ def inject_custom_regions(
     return merged, preserved_ids, orphan_ids
 
 
-def merge_file_content(existing_content: str, new_generated_content: str) -> MergeResult:
-    """Merge newly generated content with existing file content, preserving custom regions."""
-    existing_regions = extract_custom_regions(existing_content)
-    if not existing_regions:
-        # No custom regions in existing file, new content takes precedence
-        return MergeResult(
-            merged_content=new_generated_content,
-            preserved_regions=[],
-            orphan_regions=[],
-            has_changes=(existing_content != new_generated_content),
-        )
+def merge_python_ast_augmentations(
+    existing_content: str,
+    new_generated_content: str,
+) -> tuple[str, list[str]]:
+    """Parse existing and new Python source code, identifying and preserving user-added definitions."""
+    try:
+        existing_tree = ast.parse(existing_content)
+        new_tree = ast.parse(new_generated_content)
+    except SyntaxError:
+        return new_generated_content, []
 
-    merged, preserved_ids, orphan_ids = inject_custom_regions(new_generated_content, existing_regions)
-    has_changes = (existing_content != merged)
+    existing_defs: dict[str, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef] = {}
+    for node in existing_tree.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+            existing_defs[node.name] = node
+
+    new_defs: set[str] = set()
+    for node in new_tree.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+            new_defs.add(node.name)
+
+    added_names = [name for name in existing_defs if name not in new_defs]
+    if not added_names:
+        return new_generated_content, []
+
+    preserved_blocks: list[str] = []
+    preserved_names: list[str] = []
+    for name in added_names:
+        node = existing_defs[name]
+        segment = ast.get_source_segment(existing_content, node)
+        if segment:
+            preserved_blocks.append(
+                f"\n# [ELMOS:AST_SEMANTIC_PRESERVED: {name}]\n{segment}\n"
+            )
+            preserved_names.append(name)
+
+    if not preserved_blocks:
+        return new_generated_content, []
+
+    merged = new_generated_content.rstrip() + "\n\n" + "".join(preserved_blocks)
+    return merged, preserved_names
+
+
+def merge_file_content(
+    existing_content: str,
+    new_generated_content: str,
+    filename: str | None = None,
+) -> MergeResult:
+    """Merge newly generated content with existing file content, preserving custom regions and AST augmentations."""
+    existing_regions = extract_custom_regions(existing_content)
+    preserved_ids: list[str] = []
+    orphan_ids: list[str] = []
+
+    if existing_regions:
+        current_merged, preserved_ids, orphan_ids = inject_custom_regions(new_generated_content, existing_regions)
+    else:
+        current_merged = new_generated_content
+
+    # If Python file, apply AST semantic code preservation for user-added definitions
+    is_python = filename.endswith(".py") if filename else False
+    if not is_python and not filename:
+        # Auto-detect if content looks like Python
+        is_python = "def " in existing_content or "class " in existing_content
+
+    if is_python:
+        ast_merged, ast_preserved = merge_python_ast_augmentations(existing_content, current_merged)
+        current_merged = ast_merged
+        for name in ast_preserved:
+            preserved_ids.append(f"ast:{name}")
+
+    has_changes = (existing_content != current_merged)
     return MergeResult(
-        merged_content=merged,
+        merged_content=current_merged,
         preserved_regions=preserved_ids,
         orphan_regions=orphan_ids,
         has_changes=has_changes,
@@ -203,7 +261,7 @@ def merge_workspace_files(
         file_path = root / relative_path
         if file_path.exists():
             existing_content = file_path.read_text(encoding="utf-8")
-            merge_res = merge_file_content(existing_content, new_content)
+            merge_res = merge_file_content(existing_content, new_content, filename=relative_path)
             if merge_res.has_changes:
                 if backup_dir:
                     backup_file = backup_dir / relative_path

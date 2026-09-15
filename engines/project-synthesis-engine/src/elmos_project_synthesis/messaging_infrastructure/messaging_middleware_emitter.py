@@ -81,10 +81,10 @@ def idempotent_consumer_insert_sql(dialect: str = "postgres", placeholder: str =
     dialect_lower = dialect.lower()
     p = placeholder
     if dialect_lower == "mysql":
-        return f"INSERT IGNORE INTO `idempotent_consumer_log` (`consumer_group`, `message_id`, `payload_sha256`) VALUES ({p}, {p}, {p});"
+        return f"INSERT IGNORE INTO `idempotent_consumer_log` (`consumer_group`, `message_id`, `payload_sha256`) VALUES ({p}, {p}, {p});"  # noqa: S608
     if dialect_lower == "sqlite":
-        return f'INSERT OR IGNORE INTO "idempotent_consumer_log" ("consumer_group", "message_id", "payload_sha256") VALUES ({p}, {p}, {p});'
-    return f'INSERT INTO "idempotent_consumer_log" ("consumer_group", "message_id", "payload_sha256") VALUES ({p}, {p}, {p}) ON CONFLICT ("consumer_group", "message_id") DO NOTHING;'
+        return f'INSERT OR IGNORE INTO "idempotent_consumer_log" ("consumer_group", "message_id", "payload_sha256") VALUES ({p}, {p}, {p});'  # noqa: S608
+    return f'INSERT INTO "idempotent_consumer_log" ("consumer_group", "message_id", "payload_sha256") VALUES ({p}, {p}, {p}) ON CONFLICT ("consumer_group", "message_id") DO NOTHING;'  # noqa: S608
 
 
 class IdempotentDeduplicationStore:
@@ -104,7 +104,7 @@ class IdempotentDeduplicationStore:
             grp_col = "`consumer_group`" if self.dialect == "mysql" else '"consumer_group"'
             msg_col = "`message_id`" if self.dialect == "mysql" else '"message_id"'
             param = "%s" if self.dialect == "postgres" else "?"
-            query = f"SELECT 1 FROM {tbl} WHERE {grp_col} = {param} AND {msg_col} = {param}"
+            query = f"SELECT 1 FROM {tbl} WHERE {grp_col} = {param} AND {msg_col} = {param}"  # noqa: S608
             cursor.execute(query, (consumer_group, message_id))
             row = cursor.fetchone()
             return row is not None

@@ -21,9 +21,7 @@ from uuid import uuid4
 import pytest
 
 from elmos_project_synthesis.domain_models import (
-    Address,
     DomainInvariantViolationError,
-    Money,
 )
 from elmos_project_synthesis.enterprise_order_aggregate import (
     OrderAggregate,

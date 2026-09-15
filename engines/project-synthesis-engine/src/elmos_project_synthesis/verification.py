@@ -1660,7 +1660,7 @@ def verify_production_security_guardrail(
     blueprint_file = root / "project-blueprint.json"
     if blueprint_file.is_file():
         try:
-            with open(blueprint_file, "r", encoding="utf-8") as f:
+            with open(blueprint_file, encoding="utf-8") as f:
                 bp = json.load(f)
                 if not data:
                     data = bp
@@ -1720,7 +1720,7 @@ def verify_production_security_guardrail(
 
     if not is_compliant and fail_closed:
         raise RuntimeError(
-            f"SECURITY_GATE_FAILED: INSECURE_STARTER_IN_PRODUCTION (RISK-SYNTHESIS-001): "
+            "SECURITY_GATE_FAILED: INSECURE_STARTER_IN_PRODUCTION (RISK-SYNTHESIS-001): "
             + "; ".join(violations)
         )
 

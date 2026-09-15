@@ -34,6 +34,8 @@ from .project_graphs import (
 from .python_target import render_python
 from .rendering import clean, pretty_json
 from .rust_target import render_rust
+from .scientific_sandbox import generate_reproducibility_receipt
+from .scientific_target import render_scientific
 from .typescript_target import render_typescript
 
 ENGINE_VERSION = "1.4.0"
@@ -76,7 +78,7 @@ def _target_directory(language: str) -> str:
 
 def _render_psir(request: SynthesisRequest) -> dict[str, Any]:
     payload = request_payload(request.raw)
-    return {
+    psir: dict[str, Any] = {
         "schema_version": "1.1.0",
         "project": payload["project"],
         "entities": payload["entities"],
@@ -90,7 +92,59 @@ def _render_psir(request: SynthesisRequest) -> dict[str, Any]:
         "assumptions": payload.get("assumptions", []),
         "quality_attributes": payload.get("quality_attributes", []),
         "open_questions": payload.get("open_questions", []),
+        "business_view": {
+            "topology": "microservices" if len(request.targets) > 1 else "service",
+            "persistence_tier": request.persistence,
+            "auth_tier": request.auth_mode,
+            "worker_enabled": request.is_worker,
+            "fullstack_enabled": request.is_fullstack,
+        },
     }
+    if request.is_scientific or request.research_spec is not None:
+        rs = request.research_spec
+        psir["research_view"] = {
+            "task_type": rs.task_type if rs else "classification",
+            "framework": rs.framework if rs else "pytorch",
+            "modality": rs.modality if rs else "tabular",
+            "tracking": rs.tracking if rs else "offline",
+            "reproducibility_seed": rs.reproducibility_seed if rs else 42,
+            "tensor_spec": {
+                "input_shape": [None, 12],
+                "target_shape": [None, 1],
+                "dtype": "float32",
+            },
+            "architecture": {
+                "model_family": "ScientificNet",
+                "features_dim": 12,
+                "hidden_dim": 64,
+                "num_layers": 3,
+                "attention_heads": 4,
+                "dropout": 0.1,
+            },
+            "ablation_matrix": [
+                {"name": "baseline", "attention": True, "residual": True, "dropout": True},
+                {"name": "no_attention", "attention": False, "residual": True, "dropout": True},
+                {"name": "no_residual", "attention": True, "residual": False, "dropout": True},
+                {"name": "no_dropout", "attention": True, "residual": True, "dropout": False},
+            ],
+            "evaluation_metrics": ["loss", "accuracy", "f1_score", "p_value"],
+            "distributed_training": {
+                "supported_launchers": ["torchrun", "slurm"],
+                "parallel_strategy": "DDP",
+                "mixed_precision": ["fp32", "fp16", "bf16"],
+                "compiled_mode": True,
+            },
+            "data_pipeline": {
+                "streaming": True,
+                "sharded": True,
+                "cursor_checkpointing": True,
+            },
+            "containerization": {
+                "cuda_containerfile": "hpc/Containerfile.cuda",
+                "apptainer_def": "hpc/Apptainer.def",
+            },
+        }
+    return psir
 
 
 def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
@@ -174,6 +228,19 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
                     }
                 ]
                 if request.is_fullstack
+                else []
+            ),
+            *(
+                [
+                    {
+                        "id": "GEN-SCIENTIFIC",
+                        "kind": "scientific-computing",
+                        "target_path": ".",
+                        "ownership": "managed",
+                        "source_refs": ["REQ-SCI-001", "REQ-SCI-002", "REQ-SCI-003", "REQ-SCI-004"],
+                    }
+                ]
+                if request.is_scientific
                 else []
             ),
             *[
@@ -302,6 +369,44 @@ def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
             }
         )
         edges.append({"from": "project-blueprint", "to": "frontend-source", "relation": "emits"})
+    if request.is_scientific:
+        nodes.extend(
+            [
+                {
+                    "id": "scientific-source",
+                    "kind": "generated-scientific-project",
+                    "path": ".",
+                    "status": "GENERATED",
+                    "source_skill": "PG450-PG455",
+                },
+                {
+                    "id": "scientific-notebooks",
+                    "kind": "jupyter-notebooks",
+                    "path": "notebooks",
+                    "status": "GENERATED",
+                },
+                {
+                    "id": "scientific-reproducibility",
+                    "kind": "reproducibility-receipt",
+                    "path": ".elmos/reproducibility-receipt.json",
+                    "status": "GENERATED",
+                },
+                {
+                    "id": "scientific-hpc",
+                    "kind": "hpc-distributed-containers",
+                    "path": "hpc",
+                    "status": "GENERATED",
+                },
+            ]
+        )
+        edges.extend(
+            [
+                {"from": "project-blueprint", "to": "scientific-source", "relation": "emits"},
+                {"from": "scientific-source", "to": "scientific-notebooks", "relation": "provides-interactive-analysis"},
+                {"from": "scientific-source", "to": "scientific-reproducibility", "relation": "produces-receipt"},
+                {"from": "scientific-source", "to": "scientific-hpc", "relation": "packages-for-cluster"},
+            ]
+        )
     return {
         "schema_version": "1.0.0",
         "graph_kind": "project-synthesis-asset-graph",
@@ -320,6 +425,30 @@ def _render_build_graph(request: SynthesisRequest) -> dict[str, Any]:
         }
     ]
     edges: list[dict[str, str]] = []
+    if request.is_scientific:
+        sci_phases = (
+            ("scientific-generate", "generation", "GENERATED"),
+            ("scientific-smoke", "deterministic-smoke", "LOCAL_EXECUTED"),
+            ("scientific-train", "native-training", "NOT_RUN"),
+            ("scientific-distributed-train", "distributed-training", "NOT_RUN"),
+            ("scientific-eval", "evaluation", "NOT_RUN"),
+            ("scientific-ablation", "ablation-matrix", "NOT_RUN"),
+            ("scientific-container-build", "container-packaging", "NOT_RUN"),
+        )
+        previous_sci = "approved-request"
+        for phase_id, kind, status in sci_phases:
+            nodes.append(
+                {
+                    "id": phase_id,
+                    "language": "python",
+                    "kind": kind,
+                    "status": status,
+                    "required_runtime": "3.12",
+                    "required_framework": "pytorch",
+                }
+            )
+            edges.append({"from": previous_sci, "to": phase_id, "relation": "must-complete-before"})
+            previous_sci = phase_id
     if request.is_fullstack:
         nodes.extend(
             [
@@ -485,6 +614,19 @@ def _root_makefile(request: SynthesisRequest) -> str:
     ]
     if request.is_fullstack:
         phony_list.extend(["run-frontend", "verify-frontend"])
+    if request.is_scientific:
+        phony_list.extend(
+            [
+                "scientific-train",
+                "scientific-train-ddp",
+                "scientific-eval",
+                "scientific-ablation",
+                "scientific-figures",
+                "scientific-paper",
+                "reproduce",
+                "container-build",
+            ]
+        )
     phony_targets = " ".join(phony_list)
     lines = [
         f".PHONY: {phony_targets}",
@@ -532,6 +674,35 @@ def _root_makefile(request: SynthesisRequest) -> str:
                 "",
                 "verify-frontend:",
                 "\t(cd frontend && npm run build)",
+            ]
+        )
+    if request.is_scientific:
+        lines.extend(
+            [
+                "",
+                "scientific-train:",
+                "\tpython3 train.py --epochs 10 --seed 42",
+                "",
+                "scientific-train-ddp:",
+                "\ttorchrun --standalone --nnodes=1 --nproc_per_node=auto distributed_train.py --epochs 10 --seed 42",
+                "",
+                "scientific-eval:",
+                "\tpython3 eval.py",
+                "",
+                "scientific-ablation:",
+                "\tpython3 experiments/ablation.py",
+                "",
+                "scientific-figures:",
+                "\tpython3 scripts/plot_results.py",
+                "",
+                "scientific-paper:",
+                "\tpython3 scripts/export_latex.py",
+                "",
+                "reproduce:",
+                "\tbash reproduce.sh",
+                "",
+                "container-build:",
+                "\tdocker build -f hpc/Containerfile.cuda -t $(PROJECT_NAME):cuda .",
             ]
         )
     return "\n".join(lines) + "\n"
@@ -607,6 +778,21 @@ def _root_readme(request: SynthesisRequest) -> str:
     if request.is_fullstack:
         build_commands.append("(cd frontend && npm install && npm run build)")
     commands = "\n".join(build_commands)
+    sci_section = ""
+    if request.is_scientific:
+        sci_section = """
+        ## Scientific Deep Learning & Reproducibility Pipeline
+
+        This project includes a fully reproducible scientific deep learning workflow:
+        - **Reproducibility**: Global seed locking via `reproducibility.py` across Python, NumPy, PyTorch CPU/CUDA, and cuDNN.
+        - **Training**: `python3 train.py --epochs 10 --seed 42`
+        - **Evaluation**: `python3 eval.py`
+        - **Ablation Study**: `python3 experiments/ablation.py`
+        - **Publication Figures & Tables**: `python3 scripts/plot_results.py` and `python3 scripts/export_latex.py`
+        - **One-Click Reproduction**: `bash reproduce.sh`
+        - **Interactive EDA & Training**: Jupyter Notebooks in `notebooks/`
+        - **Artifact Evaluation**: See `docs/REPRODUCIBILITY.md` for full Artifact Evaluation instructions.
+        """
     return clean(
         f"""
         # {request.project_name}
@@ -643,7 +829,7 @@ def _root_readme(request: SynthesisRequest) -> str:
         target-owned harness provisions disposable PostgreSQL, ephemeral local identity
         material, migrations, tenant-isolation checks and cleanup. The simpler Compose
         development path refuses those profiles instead of starting a misleading partial stack.
-
+{sci_section}
         ## Generated contracts
 
         - `requirements/approved-request.json`: immutable approved input.
@@ -789,6 +975,24 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             if path in files:
                 raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
             files[path] = content
+
+    if request.is_scientific:
+        for relative, content in render_scientific(request).items():
+            if relative == "README.md":
+                path = "docs/REPRODUCIBILITY.md"
+            elif relative == "Makefile":
+                continue
+            else:
+                path = relative
+            if path in files:
+                raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+            files[path] = content
+
+        receipt = generate_reproducibility_receipt(request, files)
+        receipt_path = ".elmos/reproducibility-receipt.json"
+        if receipt_path in files:
+            raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{receipt_path}")
+        files[receipt_path] = pretty_json(receipt)
 
     insight_path = "requirements/project-insights.json"
     insight_report_path = "docs/PROJECT_INSIGHTS.md"

@@ -6,7 +6,6 @@ import os
 import sqlite3
 import subprocess
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -181,7 +180,7 @@ def test_sqlite_backup_and_restore_real_process_execution(tmp_path: Path):
         "ELMOS_BACKUP_OUTPUT": str(backup_output),
     }
 
-    res_backup = subprocess.run(["/bin/sh", str(backup_script)], env=backup_env, capture_output=True, text=True)
+    res_backup = subprocess.run(["/bin/sh", str(backup_script)], env=backup_env, capture_output=True, text=True)  # noqa: S603
     assert res_backup.returncode == 0, f"backup.sh failed: {res_backup.stderr}"
     assert backup_output.is_file()
     checksum_file = Path(f"{backup_output}.sha256")
@@ -206,7 +205,7 @@ def test_sqlite_backup_and_restore_real_process_execution(tmp_path: Path):
         "ELMOS_BACKUP_INPUT": str(backup_output),
     }
 
-    res_restore = subprocess.run(["/bin/sh", str(restore_script)], env=restore_env, capture_output=True, text=True)
+    res_restore = subprocess.run(["/bin/sh", str(restore_script)], env=restore_env, capture_output=True, text=True)  # noqa: S603
     assert res_restore.returncode == 0, f"restore.sh failed: {res_restore.stderr}"
     assert restored_db.is_file()
 
@@ -240,7 +239,7 @@ def test_backup_restore_checksum_tamper_detection(tmp_path: Path):
     db_url_file.write_text(f"sqlite://{db}", encoding="utf-8")
 
     backup_output = tmp_path / "tamper_backup.db"
-    res_backup = subprocess.run(
+    res_backup = subprocess.run(  # noqa: S603
         ["/bin/sh", str(backup_script)],
         env={**os.environ, "ELMOS_DATABASE_URL_FILE": str(db_url_file), "ELMOS_BACKUP_OUTPUT": str(backup_output)},
         capture_output=True,
@@ -256,7 +255,7 @@ def test_backup_restore_checksum_tamper_detection(tmp_path: Path):
     restore_url_file.write_text(f"sqlite://{restored_db}", encoding="utf-8")
 
     # Restore MUST fail
-    res_restore = subprocess.run(
+    res_restore = subprocess.run(  # noqa: S603
         ["/bin/sh", str(restore_script)],
         env={
             **os.environ,

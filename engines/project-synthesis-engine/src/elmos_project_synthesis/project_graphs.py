@@ -33,20 +33,32 @@ _ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9:._-]{0,199}$")
 _DIGEST_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 _SHARED_ROOT_KINDS = {
+    ".elmos": "workspace-metadata",
     ".github": "continuous-integration",
     "ai": "ai-services",
+    "checkpoints": "scientific-checkpoints",
     "database": "database",
+    "datasets": "scientific-datasets",
     "deploy": "deployment",
     "docs": "documentation",
+    "experiments": "scientific-experiments",
+    "figures": "scientific-figures",
     "frontend": "frontend",
+    "hpc": "scientific-hpc",
+    "losses": "scientific-losses",
+    "metrics": "scientific-metrics",
+    "models": "scientific-models",
+    "notebooks": "scientific-notebooks",
     "observability": "observability",
     "operations": "operations",
+    "paper": "scientific-paper",
     "requirements": "requirements",
     # scripts/projectctl.py is emitted for every request and is one of the
     # four files cli.py requires an archive to contain; scripts/ was simply
     # never classified, which failed every render_workspace closed.
     "scripts": "operations",
     "security": "security",
+    "trackers": "scientific-trackers",
 }
 _BUILD_MANIFESTS = {
     "Cargo.lock",

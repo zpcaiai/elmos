@@ -14,14 +14,11 @@ from __future__ import annotations
 import sqlite3
 import time
 
-import pytest
-
 from elmos_project_synthesis.enterprise_production_target import generate_enterprise_target_files
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.messaging_infrastructure import (
     ConsumedMessage,
     DeadLetterQueueManager,
-    DistributedLockHandle,
     ExponentialBackoffWithJitter,
     IdempotentDeduplicationStore,
     LockHeartbeatDaemon,
