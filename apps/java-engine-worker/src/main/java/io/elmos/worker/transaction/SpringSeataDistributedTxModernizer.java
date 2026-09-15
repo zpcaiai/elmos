@@ -71,10 +71,14 @@ public final class SpringSeataDistributedTxModernizer {
             Pattern.DOTALL
     );
 
+    public SeataModernizationResult modernize(Path projectRoot) throws IOException {
+        return modernize(projectRoot, true);
+    }
+
     /**
      * Executes complete Seata distributed transaction modernization on the workspace.
      */
-    public SeataModernizationResult modernize(Path projectRoot) throws IOException {
+    public SeataModernizationResult modernize(Path projectRoot, boolean updatePom) throws IOException {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return SeataModernizationResult.empty();
@@ -86,18 +90,20 @@ public final class SpringSeataDistributedTxModernizer {
         List<String> rulesApplied = new ArrayList<>();
         List<String> generatedArtifacts = new ArrayList<>();
 
-        // 1. Modernize pom.xml dependencies
-        Path pomFile = projectRoot.resolve("pom.xml");
-        if (Files.isRegularFile(pomFile)) {
-            String pomContent = Files.readString(pomFile, StandardCharsets.UTF_8);
-            Matcher pomMatcher = LEGACY_SEATA_POM.matcher(pomContent);
-            if (pomMatcher.find()) {
-                String modernizedPom = pomMatcher.replaceAll(APACHE_SEATA_DEPENDENCY);
-                Files.writeString(pomFile, modernizedPom, StandardCharsets.UTF_8);
-                anyModified = true;
-                totalChanges++;
-                modifiedFiles.add(pomFile.toString());
-                rulesApplied.add("UPGRADE_SEATA_STARTER_TO_APACHE_2_2");
+        // 1. Modernize pom.xml dependencies if requested
+        if (updatePom) {
+            Path pomFile = projectRoot.resolve("pom.xml");
+            if (Files.isRegularFile(pomFile)) {
+                String pomContent = Files.readString(pomFile, StandardCharsets.UTF_8);
+                Matcher pomMatcher = LEGACY_SEATA_POM.matcher(pomContent);
+                if (pomMatcher.find()) {
+                    String modernizedPom = pomMatcher.replaceAll(APACHE_SEATA_DEPENDENCY);
+                    Files.writeString(pomFile, modernizedPom, StandardCharsets.UTF_8);
+                    anyModified = true;
+                    totalChanges++;
+                    modifiedFiles.add(projectRoot.relativize(pomFile).toString().replace('\\', '/'));
+                    rulesApplied.add("UPGRADE_SEATA_STARTER_TO_APACHE_2_2");
+                }
             }
         }
 
@@ -139,7 +145,7 @@ public final class SpringSeataDistributedTxModernizer {
                 if (fileChanged) {
                     Files.writeString(javaFile, source, StandardCharsets.UTF_8);
                     anyModified = true;
-                    modifiedFiles.add(javaFile.toString());
+                    modifiedFiles.add(projectRoot.relativize(javaFile).toString().replace('\\', '/'));
                 }
             }
         }
@@ -165,7 +171,7 @@ public final class SpringSeataDistributedTxModernizer {
                 Files.writeString(ymlPath, ymlContent + seataConfig, StandardCharsets.UTF_8);
                 anyModified = true;
                 totalChanges++;
-                modifiedFiles.add(ymlPath.toString());
+                modifiedFiles.add(projectRoot.relativize(ymlPath).toString().replace('\\', '/'));
                 rulesApplied.add("INJECT_SEATA_AUTO_DATASOURCE_PROXY_CONFIG");
             }
         }
@@ -179,8 +185,9 @@ public final class SpringSeataDistributedTxModernizer {
             Files.writeString(decoratorFile, decoratorSource, StandardCharsets.UTF_8);
             anyModified = true;
             totalChanges++;
-            modifiedFiles.add(decoratorFile.toString());
-            generatedArtifacts.add(decoratorFile.toString());
+            String relDecorator = projectRoot.relativize(decoratorFile).toString().replace('\\', '/');
+            modifiedFiles.add(relDecorator);
+            generatedArtifacts.add(relDecorator);
             rulesApplied.add("GENERATE_SEATA_XID_TASK_DECORATOR");
         }
 

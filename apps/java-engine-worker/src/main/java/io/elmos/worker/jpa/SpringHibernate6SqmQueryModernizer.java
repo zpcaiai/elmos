@@ -67,10 +67,14 @@ public final class SpringHibernate6SqmQueryModernizer {
             "(?<!@Modifying\\s*)@Query\\s*\\(\\s*\"\\s*(?:UPDATE|DELETE)\\s+[^)]+\\)"
     );
 
+    public SqmModernizationResult modernize(Path projectRoot) throws IOException {
+        return modernize(projectRoot, true);
+    }
+
     /**
      * Executes complete Hibernate 6 SQM and naming strategy modernization across the workspace.
      */
-    public SqmModernizationResult modernize(Path projectRoot) throws IOException {
+    public SqmModernizationResult modernize(Path projectRoot, boolean updateYml) throws IOException {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return SqmModernizationResult.empty();
@@ -109,10 +113,19 @@ public final class SpringHibernate6SqmQueryModernizer {
                     }
                 }
 
+                // Strip legacy @TypeDef / @TypeDefs annotations and imports
+                Matcher typeDefMatcher = LEGACY_TYPEDEF.matcher(source);
+                if (typeDefMatcher.find()) {
+                    source = typeDefMatcher.replaceAll("");
+                    fileChanged = true;
+                    totalChanges++;
+                    rulesApplied.add("STRIP_DEPRECATED_HIBERNATE_TYPEDEF");
+                }
+
                 // Remove legacy @Type and @TypeDef imports
                 Matcher typeImportMatcher = LEGACY_TYPE_IMPORT.matcher(source);
                 if (typeImportMatcher.find()) {
-                    source = typeImportMatcher.replaceAll("// [ELMOS-CLEANUP] Deprecated Hibernate 5 @Type removed");
+                    source = typeImportMatcher.replaceAll("// [ELMOS-CLEANUP] Deprecated Hibernate 5 @Type import removed");
                     fileChanged = true;
                     totalChanges++;
                 }
@@ -142,31 +155,33 @@ public final class SpringHibernate6SqmQueryModernizer {
                 if (fileChanged) {
                     Files.writeString(javaFile, source, StandardCharsets.UTF_8);
                     anyModified = true;
-                    modifiedFiles.add(javaFile.toString());
+                    modifiedFiles.add(projectRoot.relativize(javaFile).toString().replace('\\', '/'));
                 }
             }
         }
 
-        // 2. Lock Naming Strategy in application.yml to prevent table/column name drift
-        Path ymlPath = projectRoot.resolve("src/main/resources/application.yml");
-        if (Files.isRegularFile(ymlPath)) {
-            String ymlContent = Files.readString(ymlPath, StandardCharsets.UTF_8);
-            if (!ymlContent.contains("physical-strategy:")) {
-                String namingConfig =
-                        """
+        // 2. Lock Naming Strategy in application.yml to prevent table/column name drift if requested
+        if (updateYml) {
+            Path ymlPath = projectRoot.resolve("src/main/resources/application.yml");
+            if (Files.isRegularFile(ymlPath)) {
+                String ymlContent = Files.readString(ymlPath, StandardCharsets.UTF_8);
+                if (!ymlContent.contains("physical-strategy:")) {
+                    String namingConfig =
+                            """
 
-                        spring:
-                          jpa:
-                            hibernate:
-                              naming:
-                                physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-                                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-                        """;
-                Files.writeString(ymlPath, ymlContent + namingConfig, StandardCharsets.UTF_8);
-                anyModified = true;
-                totalChanges++;
-                modifiedFiles.add(ymlPath.toString());
-                rulesApplied.add("FREEZE_HIBERNATE_6_NAMING_STRATEGY");
+                            spring:
+                              jpa:
+                                hibernate:
+                                  naming:
+                                    physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+                                    implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+                            """;
+                    Files.writeString(ymlPath, ymlContent + namingConfig, StandardCharsets.UTF_8);
+                    anyModified = true;
+                    totalChanges++;
+                    modifiedFiles.add(projectRoot.relativize(ymlPath).toString().replace('\\', '/'));
+                    rulesApplied.add("FREEZE_HIBERNATE_6_NAMING_STRATEGY");
+                }
             }
         }
 

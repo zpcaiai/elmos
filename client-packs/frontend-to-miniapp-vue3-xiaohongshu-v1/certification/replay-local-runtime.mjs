@@ -185,7 +185,7 @@ const targetProfileDigest = `sha256:${createHash("sha256").update(targetProfileR
 const targetProfile = JSON.parse(targetProfileRaw.toString("utf8"));
 const requestedTarget = {
   platform: "xiaohongshu",
-  platformVersion: "2026-08-20.1",
+  platformVersion: "2.10.2",
   toolchainVersion: "1.0.0",
 };
 assert.equal(targetProfile.profile_key, "frontend-to-miniapp-vue3-xiaohongshu-v1-target", "target profile identity drift");
