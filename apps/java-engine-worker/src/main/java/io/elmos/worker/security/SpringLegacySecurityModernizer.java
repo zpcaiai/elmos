@@ -149,6 +149,81 @@ public final class SpringLegacySecurityModernizer {
         return true;
     }
 
+    /**
+     * Modernizes in-memory Java source for legacy OAuth2 and Apache Shiro.
+     */
+    public static String modernizeJavaSource(String source, List<String> rules, List<String> blockers) {
+        if (source == null || source.isBlank()) return source;
+        String current = source;
+
+        if (current.contains("@EnableAuthorizationServer") || current.contains("@EnableResourceServer")) {
+            if (hasCustomOauthConfiguration(current)) {
+                if (blockers != null) blockers.add("legacy OAuth2 project contains custom or mixed server configuration; all legacy sources and dependency are retained atomically");
+            } else {
+                boolean authorizationServer = current.contains("@EnableAuthorizationServer");
+                Matcher packageMatcher = PACKAGE.matcher(current);
+                Matcher classMatcher = CLASS_NAME.matcher(current);
+                if (classMatcher.find()) {
+                    String packageLine = packageMatcher.find() ? "package " + packageMatcher.group(1) + ";\n\n" : "";
+                    String className = classMatcher.group(1);
+                    if (authorizationServer) {
+                        current = packageLine + """
+                                import org.springframework.context.annotation.Bean;
+                                import org.springframework.context.annotation.Configuration;
+                                import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+
+                                @Configuration
+                                public class %s {
+                                    @Bean
+                                    AuthorizationServerSettings authorizationServerSettings() {
+                                        return AuthorizationServerSettings.builder().build();
+                                    }
+                                }
+                                """.formatted(className);
+                        if (rules != null) rules.add("LEGACY_OAUTH2_AUTHORIZATION_SERVER_TO_BOOT_STARTER");
+                        if (blockers != null) blockers.add("bind issuer, registered clients, consent, JWK/key rotation, token lifetimes and legacy token migration before startup");
+                    } else {
+                        current = packageLine + """
+                                import org.springframework.context.annotation.Bean;
+                                import org.springframework.context.annotation.Configuration;
+                                import org.springframework.security.config.Customizer;
+                                import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+                                import org.springframework.security.web.SecurityFilterChain;
+
+                                @Configuration
+                                public class %s {
+                                    @Bean
+                                    SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http) throws Exception {
+                                        http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
+                                        http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
+                                        return http.build();
+                                    }
+                                }
+                                """.formatted(className);
+                        if (rules != null) rules.add("LEGACY_OAUTH2_RESOURCE_SERVER_TO_SECURITY_FILTER_CHAIN");
+                        if (blockers != null) blockers.add("bind trusted issuer/JWK set and replay scopes, authorities, audience and bearer-token failures");
+                    }
+                }
+            }
+        }
+
+        if (current.contains("org.apache.shiro")) {
+            String after = current
+                    .replace("import javax.servlet.", "import jakarta.servlet.")
+                    .replace("import javax.annotation.", "import jakarta.annotation.");
+            if (!after.equals(current)) {
+                current = after;
+                if (rules != null) rules.add("SHIRO_JAKARTA_SOURCE_NAMESPACE");
+            }
+            if (containsAny(current, " extends AuthorizingRealm", " extends AuthenticatingRealm",
+                    "SessionDAO", "RememberMeManager", "ShiroFilterFactoryBean", "filterChainDefinitionMap")) {
+                if (blockers != null) blockers.add("Shiro realm credentials, permission matching, sessions, remember-me and URL-chain ordering require security differential replay");
+            }
+        }
+
+        return current;
+    }
+
     private static boolean hasCustomOauthConfiguration(String source) {
         return (source.contains("@EnableAuthorizationServer") && source.contains("@EnableResourceServer"))
                 || source.contains("ClientDetailsServiceConfigurer")

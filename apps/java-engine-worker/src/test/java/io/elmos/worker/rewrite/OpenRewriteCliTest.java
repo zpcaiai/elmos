@@ -186,4 +186,146 @@ class OpenRewriteCliTest {
         assertFalse(response.get("modified").asBoolean());
         assertTrue(response.get("recipesApplied").isEmpty());
     }
+
+    @Test
+    @DisplayName("OpenRewriteCli: Successfully processes SECURITY_FILTER_LIFECYCLE recipe family")
+    void testCliProcessesSecurityFilterLifecycle() throws Exception {
+        String securityConfig = """
+                package com.example.security;
+
+                import org.springframework.context.annotation.Bean;
+                import org.springframework.context.annotation.Configuration;
+                import org.springframework.security.web.SecurityFilterChain;
+                import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+                @Configuration
+                public class SecurityConfig {
+                    @Bean
+                    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+                        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                        return http.build();
+                    }
+                }
+                """;
+
+        String inputJson = MAPPER.createObjectNode()
+                .put("action", "rewrite")
+                .put("recipeFamily", "SECURITY_FILTER_LIFECYCLE")
+                .put("filterTypeName", "JwtAuthenticationFilter")
+                .put("sourceCode", securityConfig)
+                .toString();
+
+        String outputJson = OpenRewriteCli.processJson(inputJson);
+        JsonNode response = MAPPER.readTree(outputJson);
+
+        assertEquals("SUCCESS", response.get("status").asText());
+        assertTrue(response.get("modified").asBoolean());
+        String code = response.get("sourceCode").asText();
+        assertTrue(code.contains("FilterRegistrationBean<JwtAuthenticationFilter>"));
+        assertTrue(code.contains("registration.setEnabled(false);"));
+    }
+
+    @Test
+    @DisplayName("OpenRewriteCli: Successfully processes SPA_CSRF_HANDSHAKE recipe family")
+    void testCliProcessesSpaCsrfHandshake() throws Exception {
+        String configCode = """
+                package com.example.security;
+
+                import org.springframework.context.annotation.Bean;
+                import org.springframework.context.annotation.Configuration;
+                import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+                import org.springframework.security.web.SecurityFilterChain;
+                import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+                @Configuration
+                public class SecurityConfig {
+                    @Bean
+                    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                        http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+                        return http.build();
+                    }
+                }
+                """;
+
+        String inputJson = MAPPER.createObjectNode()
+                .put("action", "rewrite")
+                .put("recipeFamily", "SPA_CSRF_HANDSHAKE")
+                .put("sourceCode", configCode)
+                .toString();
+
+        String outputJson = OpenRewriteCli.processJson(inputJson);
+        JsonNode response = MAPPER.readTree(outputJson);
+
+        assertEquals("SUCCESS", response.get("status").asText());
+        assertTrue(response.get("modified").asBoolean());
+        String code = response.get("sourceCode").asText();
+        assertTrue(code.contains("CsrfCookieFilter"));
+        assertTrue(code.contains("csrfToken.getToken()"));
+    }
+
+    @Test
+    @DisplayName("OpenRewriteCli: Successfully processes DUBBO_3 recipe family")
+    void testCliProcessesDubbo3() throws Exception {
+        String dubboService = """
+                package com.example.service;
+
+                import com.alibaba.dubbo.config.annotation.Service;
+                import com.alibaba.dubbo.config.annotation.Reference;
+
+                @Service(version = "1.0.0")
+                public class OrderServiceImpl implements OrderService {
+                    @Reference
+                    private UserService userService;
+                }
+                """;
+
+        String inputJson = MAPPER.createObjectNode()
+                .put("action", "rewrite")
+                .put("recipeFamily", "DUBBO_3")
+                .put("sourceCode", dubboService)
+                .toString();
+
+        String outputJson = OpenRewriteCli.processJson(inputJson);
+        JsonNode response = MAPPER.readTree(outputJson);
+
+        assertEquals("SUCCESS", response.get("status").asText());
+        assertTrue(response.get("modified").asBoolean());
+        String code = response.get("sourceCode").asText();
+        assertTrue(code.contains("import org.apache.dubbo.config.annotation.DubboService;"));
+        assertTrue(code.contains("import org.apache.dubbo.config.annotation.DubboReference;"));
+        assertTrue(code.contains("@DubboService(version = \"1.0.0\")"));
+        assertTrue(code.contains("@DubboReference"));
+    }
+
+    @Test
+    @DisplayName("OpenRewriteCli: Successfully processes ENTERPRISE_INTEGRATION recipe family")
+    void testCliProcessesEnterpriseIntegration() throws Exception {
+        String jaxwsService = """
+                package com.example.ws;
+
+                import javax.jws.WebService;
+                import javax.jws.WebMethod;
+
+                @WebService
+                public class WeatherWs {
+                    @WebMethod
+                    public String getWeather(String city) { return "Sunny"; }
+                }
+                """;
+
+        String inputJson = MAPPER.createObjectNode()
+                .put("action", "rewrite")
+                .put("recipeFamily", "ENTERPRISE_INTEGRATION")
+                .put("sourceCode", jaxwsService)
+                .toString();
+
+        String outputJson = OpenRewriteCli.processJson(inputJson);
+        JsonNode response = MAPPER.readTree(outputJson);
+
+        assertEquals("SUCCESS", response.get("status").asText());
+        assertTrue(response.get("modified").asBoolean());
+        String code = response.get("sourceCode").asText();
+        assertTrue(code.contains("import jakarta.jws.WebService;"));
+        assertTrue(code.contains("import jakarta.jws.WebMethod;"));
+    }
 }

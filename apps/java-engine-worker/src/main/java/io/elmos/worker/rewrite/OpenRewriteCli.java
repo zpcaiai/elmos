@@ -5,6 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.elmos.worker.analysis.OpenRewriteAstAnalyzer;
+import io.elmos.worker.cloud.SpringAlibabaDubboModernizer;
+import io.elmos.worker.integration.SpringLegacyEnterpriseIntegrationModernizer;
+import io.elmos.worker.security.SpringLegacySecurityModernizer;
+import io.elmos.worker.security.SpringSecurityCorsCsrfAdvancedModernizer;
+import io.elmos.worker.security.SpringSecurityFilterLifecycleModernizer;
 import io.elmos.worker.testing.SpringJUnitModernizer;
 import io.elmos.worker.transaction.SpringTransactionAndDataIsolationModernizer;
 
@@ -156,11 +161,94 @@ public class OpenRewriteCli {
                 anyModified = true;
             }
 
+            // 6. Dubbo 3 Modernization
+            List<String> dubboRules = new ArrayList<>();
+            String dubboCode = SpringAlibabaDubboModernizer.modernizeJavaSource(currentCode, dubboRules);
+            if (!dubboCode.equals(currentCode)) {
+                currentCode = dubboCode;
+                allApplied.addAll(dubboRules);
+                anyModified = true;
+            }
+
+            // 7. Enterprise Integrations (JAX-WS, DWR, JSF)
+            List<String> eiRules = new ArrayList<>();
+            List<String> eiBlockers = new ArrayList<>();
+            String eiCode = SpringLegacyEnterpriseIntegrationModernizer.modernizeJavaSource(currentCode, eiRules, eiBlockers);
+            if (!eiCode.equals(currentCode)) {
+                currentCode = eiCode;
+                allApplied.addAll(eiRules);
+                anyModified = true;
+            }
+
+            // 8. Legacy Security (OAuth2, Shiro)
+            List<String> secRules = new ArrayList<>();
+            List<String> secBlockers = new ArrayList<>();
+            String secCode = SpringLegacySecurityModernizer.modernizeJavaSource(currentCode, secRules, secBlockers);
+            if (!secCode.equals(currentCode)) {
+                currentCode = secCode;
+                allApplied.addAll(secRules);
+                anyModified = true;
+            }
+
+            // 9. SPA CSRF Handshake
+            var csrfRes = SpringSecurityCorsCsrfAdvancedModernizer.modernizeContent(currentCode);
+            if (csrfRes.modified() && !csrfRes.rulesApplied().isEmpty()) {
+                currentCode = csrfRes.rulesApplied().get(0);
+                allApplied.addAll(csrfRes.rulesApplied().subList(1, csrfRes.rulesApplied().size()));
+                anyModified = true;
+            }
+
         } else if ("SPRING_SECURITY_6".equalsIgnoreCase(recipeFamily)) {
             var res = OpenRewriteAstCompiler.modernizeSecurity(currentCode);
             currentCode = res.source();
             allApplied.addAll(res.recipesApplied());
             anyModified = res.modified();
+
+        } else if ("SECURITY_FILTER_LIFECYCLE".equalsIgnoreCase(recipeFamily)) {
+            String filterName = request.has("filterTypeName") ? request.get("filterTypeName").asText("JwtAuthenticationFilter") : "JwtAuthenticationFilter";
+            String updated = SpringSecurityFilterLifecycleModernizer.modernizeContent(currentCode, filterName);
+            if (!updated.equals(currentCode)) {
+                currentCode = updated;
+                allApplied.add("SEC-050: Generated FilterRegistrationBean with setEnabled(false) for " + filterName);
+                anyModified = true;
+            }
+
+        } else if ("SPA_CSRF_HANDSHAKE".equalsIgnoreCase(recipeFamily) || "CORS_CSRF".equalsIgnoreCase(recipeFamily)) {
+            var csrfRes = SpringSecurityCorsCsrfAdvancedModernizer.modernizeContent(currentCode);
+            if (csrfRes.modified() && !csrfRes.rulesApplied().isEmpty()) {
+                currentCode = csrfRes.rulesApplied().get(0);
+                allApplied.addAll(csrfRes.rulesApplied().subList(1, csrfRes.rulesApplied().size()));
+                anyModified = true;
+            }
+
+        } else if ("DUBBO_3".equalsIgnoreCase(recipeFamily) || "DUBBO".equalsIgnoreCase(recipeFamily)) {
+            List<String> dubboRules = new ArrayList<>();
+            String updated = SpringAlibabaDubboModernizer.modernizeJavaSource(currentCode, dubboRules);
+            if (!updated.equals(currentCode)) {
+                currentCode = updated;
+                allApplied.addAll(dubboRules);
+                anyModified = true;
+            }
+
+        } else if ("ENTERPRISE_INTEGRATION".equalsIgnoreCase(recipeFamily) || "SOAP_DWR_JSF".equalsIgnoreCase(recipeFamily)) {
+            List<String> eiRules = new ArrayList<>();
+            List<String> eiBlockers = new ArrayList<>();
+            String updated = SpringLegacyEnterpriseIntegrationModernizer.modernizeJavaSource(currentCode, eiRules, eiBlockers);
+            if (!updated.equals(currentCode)) {
+                currentCode = updated;
+                allApplied.addAll(eiRules);
+                anyModified = true;
+            }
+
+        } else if ("LEGACY_SECURITY".equalsIgnoreCase(recipeFamily) || "SHIRO_OAUTH2".equalsIgnoreCase(recipeFamily)) {
+            List<String> secRules = new ArrayList<>();
+            List<String> secBlockers = new ArrayList<>();
+            String updated = SpringLegacySecurityModernizer.modernizeJavaSource(currentCode, secRules, secBlockers);
+            if (!updated.equals(currentCode)) {
+                currentCode = updated;
+                allApplied.addAll(secRules);
+                anyModified = true;
+            }
 
         } else if ("JPA_HIBERNATE_6".equalsIgnoreCase(recipeFamily) || "HIBERNATE_6".equalsIgnoreCase(recipeFamily)) {
             var res = OpenRewriteAstCompiler.modernizeJpaHibernate(currentCode);

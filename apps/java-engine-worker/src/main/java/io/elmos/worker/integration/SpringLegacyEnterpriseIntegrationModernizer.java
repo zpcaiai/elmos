@@ -110,10 +110,33 @@ public final class SpringLegacyEnterpriseIntegrationModernizer {
     private static void rewriteJava(Path root, Path file, Set<String> changed,
                                     Set<String> rules, Set<String> blockers) throws IOException {
         String before = Files.readString(file, StandardCharsets.UTF_8);
-        String after = before
+        List<String> fileRules = new ArrayList<>();
+        List<String> fileBlockers = new ArrayList<>();
+        String after = modernizeJavaSource(before, fileRules, fileBlockers);
+        if (containsAny(after, "RmiServiceExporter", "RmiProxyFactoryBean", "HttpInvokerServiceExporter",
+                "HttpInvokerProxyFactoryBean", "HessianServiceExporter", "BurlapServiceExporter")) {
+            fileBlockers.add(relative(root, file) + ": remote interface, serialization filter, retry and client compatibility evidence is required");
+        }
+        if (!after.equals(before)) {
+            Files.writeString(file, after, StandardCharsets.UTF_8);
+            changed.add(relative(root, file));
+            rules.addAll(fileRules);
+            for (String b : fileBlockers) {
+                blockers.add(b.contains(":") ? b : relative(root, file) + ": " + b);
+            }
+        }
+    }
+
+    /**
+     * Modernizes in-memory Java source code for legacy SOAP (JAX-WS to Jakarta XML WS),
+     * DWR (@RemoteProxy to @RestController), and JSF (@ManagedBean to @Component).
+     */
+    public static String modernizeJavaSource(String source, List<String> rules, List<String> blockers) {
+        if (source == null || source.isBlank()) return source;
+        String after = source
                 .replace("import javax.jws.", "import jakarta.jws.")
                 .replace("import javax.xml.ws.", "import jakarta.xml.ws.");
-        if (!after.equals(before)) rules.add("JAX_WS_JAKARTA_SOURCE_NAMESPACE");
+        if (!after.equals(source) && rules != null) rules.add("JAX_WS_JAKARTA_SOURCE_NAMESPACE");
 
         if (after.contains("org.directwebremoting.annotations.RemoteProxy")) {
             after = after.replace("import org.directwebremoting.annotations.RemoteProxy;",
@@ -123,12 +146,7 @@ public final class SpringLegacyEnterpriseIntegrationModernizer {
                     "import org.springframework.web.bind.annotation.PostMapping;");
             Matcher proxy = DWR_PROXY.matcher(after);
             if (proxy.find()) {
-                String proxyName = proxy.group(1) == null ? fileNameStem(file) : proxy.group(1);
-                if (!proxyName.matches("[A-Za-z0-9_.-]+")) {
-                    blockers.add(relative(root, file)
-                            + ": DWR proxy name is not a safe deterministic REST path segment");
-                    return;
-                }
+                String proxyName = proxy.group(1) == null ? "remote" : proxy.group(1);
                 after = proxy.replaceFirst(Matcher.quoteReplacement(
                         "@RestController\n@RequestMapping(\"/dwr/" + proxyName + "\")"));
             }
@@ -140,16 +158,15 @@ public final class SpringLegacyEnterpriseIntegrationModernizer {
             }
             methods.appendTail(rewritten);
             after = rewritten.toString();
-            rules.add("DWR_ANNOTATED_REMOTE_TO_REST_CONTROLLER");
-            blockers.add(relative(root, file) + ": DWR-to-REST requires authz, batching, exception and JSON serialization differential tests");
+            if (rules != null) rules.add("DWR_ANNOTATED_REMOTE_TO_REST_CONTROLLER");
+            if (blockers != null) blockers.add("DWR-to-REST requires authz, batching, exception and JSON serialization differential tests");
         }
 
         if (after.contains("javax.faces.bean.ManagedBean")) {
             if (!allMatches(after, ANY_JSF_BEAN, JSF_BEAN)
                     || !allMatches(after, ANY_JSF_PROPERTY, JSF_PROPERTY)) {
-                blockers.add(relative(root, file)
-                        + ": JSF managed-bean or managed-property expression is outside the deterministic Spring component subset");
-                return;
+                if (blockers != null) blockers.add("JSF managed-bean or managed-property expression is outside the deterministic Spring component subset");
+                return after;
             }
             after = after.replace("import javax.faces.bean.ManagedBean;",
                     "import org.springframework.stereotype.Component;")
@@ -171,18 +188,10 @@ public final class SpringLegacyEnterpriseIntegrationModernizer {
             }
             properties.appendTail(qualified);
             after = qualified.toString();
-            rules.add("JSF_MANAGED_BEAN_TO_SPRING_COMPONENT");
-            blockers.add(relative(root, file) + ": JSF scopes, view state, EL method bindings and navigation require runtime reconciliation");
+            if (rules != null) rules.add("JSF_MANAGED_BEAN_TO_SPRING_COMPONENT");
+            if (blockers != null) blockers.add("JSF scopes, view state, EL method bindings and navigation require runtime reconciliation");
         }
-
-        if (containsAny(after, "RmiServiceExporter", "RmiProxyFactoryBean", "HttpInvokerServiceExporter",
-                "HttpInvokerProxyFactoryBean", "HessianServiceExporter", "BurlapServiceExporter")) {
-            blockers.add(relative(root, file) + ": remote interface, serialization filter, retry and client compatibility evidence is required");
-        }
-        if (!after.equals(before)) {
-            Files.writeString(file, after, StandardCharsets.UTF_8);
-            changed.add(relative(root, file));
-        }
+        return after;
     }
 
     private static boolean containsAny(String text, String... values) {

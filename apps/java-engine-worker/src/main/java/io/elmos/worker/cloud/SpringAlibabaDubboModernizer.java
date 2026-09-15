@@ -119,6 +119,34 @@ public final class SpringAlibabaDubboModernizer {
         }
     }
 
+    /**
+     * Modernizes in-memory Dubbo Java source code from legacy 2.x annotations to Dubbo 3.x annotations.
+     */
+    public static String modernizeJavaSource(String source, List<String> rules) {
+        if (source == null || source.isBlank()) return source;
+        String after = source
+                .replace("import com.alibaba.dubbo.config.annotation.Service;",
+                        "import org.apache.dubbo.config.annotation.DubboService;")
+                .replace("import com.alibaba.dubbo.config.annotation.Reference;",
+                        "import org.apache.dubbo.config.annotation.DubboReference;")
+                .replace("import org.apache.dubbo.config.annotation.Service;",
+                        "import org.apache.dubbo.config.annotation.DubboService;")
+                .replace("import org.apache.dubbo.config.annotation.Reference;",
+                        "import org.apache.dubbo.config.annotation.DubboReference;");
+        if (!after.equals(source)) {
+            if (after.contains("import org.apache.dubbo.config.annotation.DubboService;")) {
+                after = replaceAnnotation(after, "Service", "DubboService");
+            }
+            if (after.contains("import org.apache.dubbo.config.annotation.DubboReference;")) {
+                after = replaceAnnotation(after, "Reference", "DubboReference");
+            }
+            if (rules != null) {
+                rules.add("DUBBO_LEGACY_ANNOTATIONS_TO_DUBBO_ANNOTATIONS");
+            }
+        }
+        return after;
+    }
+
     private static String replaceAnnotation(String source, String oldName, String newName) {
         StringBuilder result = new StringBuilder(source.length());
         boolean string = false;
