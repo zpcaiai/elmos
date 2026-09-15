@@ -46,6 +46,17 @@ from .service import (
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
 from .transformation import ChangeSet, FileChange, WorkspaceTransformer
 
+from .formal_verifier import (
+    CounterexampleModel,
+    FormalVerificationEngine,
+    ObligationKind,
+    ProofCertificate,
+    ProofObligation,
+    SExprParser,
+    SMTValueEvaluator,
+    VerificationVerdict,
+)
+
 from . import delta_v32
 
 from .hermetic_container import (
@@ -209,5 +220,13 @@ __all__ = [
     "MerkleTransparencyLog",
     "TSANotaryAuthority",
     "TimeStampToken",
+    "CounterexampleModel",
+    "FormalVerificationEngine",
+    "ObligationKind",
+    "ProofCertificate",
+    "ProofObligation",
+    "SExprParser",
+    "SMTValueEvaluator",
+    "VerificationVerdict",
     "__version__",
 ]

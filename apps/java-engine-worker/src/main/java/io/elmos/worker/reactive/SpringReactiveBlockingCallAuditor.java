@@ -90,6 +90,10 @@ public final class SpringReactiveBlockingCallAuditor {
      * Audits and remediates reactive blocking calls across the workspace.
      */
     public ReactiveAuditResult auditAndRemediate(Path projectRoot) throws IOException {
+        return auditAndRemediate(projectRoot, true);
+    }
+
+    public ReactiveAuditResult auditAndRemediate(Path projectRoot, boolean updatePom) throws IOException {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return ReactiveAuditResult.empty();
@@ -130,7 +134,7 @@ public final class SpringReactiveBlockingCallAuditor {
                     Matcher blockMatcher = EXPLICIT_BLOCK_PATTERN.matcher(line);
                     if (blockMatcher.find()) {
                         findings.add(new BlockingFinding(
-                                javaFile.toString(),
+                                projectRoot.relativize(javaFile).toString().replace('\\', '/'),
                                 lineNum,
                                 BlockingType.EXPLICIT_MONO_FLUX_BLOCK,
                                 "Direct .block() or terminal stream operation inside reactive component pins EventLoop thread",
@@ -142,7 +146,7 @@ public final class SpringReactiveBlockingCallAuditor {
                     Matcher sleepMatcher = THREAD_SLEEP_PATTERN.matcher(line);
                     if (sleepMatcher.find()) {
                         findings.add(new BlockingFinding(
-                                javaFile.toString(),
+                                projectRoot.relativize(javaFile).toString().replace('\\', '/'),
                                 lineNum,
                                 BlockingType.THREAD_SLEEP,
                                 "Thread.sleep blocks reactive Netty worker thread; should use Mono.delay or boundedElastic",
@@ -154,7 +158,7 @@ public final class SpringReactiveBlockingCallAuditor {
                     Matcher restMatcher = REST_TEMPLATE_PATTERN.matcher(line);
                     if (restMatcher.find()) {
                         findings.add(new BlockingFinding(
-                                javaFile.toString(),
+                                projectRoot.relativize(javaFile).toString().replace('\\', '/'),
                                 lineNum,
                                 BlockingType.REST_TEMPLATE_CALL,
                                 "Synchronous RestTemplate call inside reactive pipeline; should migrate to WebClient or isolate on boundedElastic",
@@ -166,7 +170,7 @@ public final class SpringReactiveBlockingCallAuditor {
                     Matcher jdbcMatcher = JDBC_TEMPLATE_PATTERN.matcher(line);
                     if (jdbcMatcher.find()) {
                         findings.add(new BlockingFinding(
-                                javaFile.toString(),
+                                projectRoot.relativize(javaFile).toString().replace('\\', '/'),
                                 lineNum,
                                 BlockingType.JDBC_BLOCKING_CALL,
                                 "Synchronous JdbcTemplate query pins EventLoop; wrap in Mono.fromCallable().subscribeOn(Schedulers.boundedElastic()) or migrate to R2DBC",
@@ -200,14 +204,14 @@ public final class SpringReactiveBlockingCallAuditor {
                 if (fileChanged) {
                     Files.writeString(javaFile, source, StandardCharsets.UTF_8);
                     anyModified = true;
-                    modifiedFiles.add(javaFile.toString());
+                    modifiedFiles.add(projectRoot.relativize(javaFile).toString().replace('\\', '/'));
                 }
             }
         }
 
-        // 2. Inject BlockHound test dependency in pom.xml if WebFlux project
+        // 2. Inject BlockHound test dependency in pom.xml if WebFlux project and permitted
         Path pomFile = projectRoot.resolve("pom.xml");
-        if (Files.isRegularFile(pomFile)) {
+        if (updatePom && Files.isRegularFile(pomFile)) {
             String pomContent = Files.readString(pomFile, StandardCharsets.UTF_8);
             if (pomContent.contains("spring-boot-starter-webflux") && !pomContent.contains("blockhound")) {
                 int depEnd = pomContent.indexOf("</dependencies>");
@@ -218,7 +222,7 @@ public final class SpringReactiveBlockingCallAuditor {
                     Files.writeString(pomFile, updatedPom, StandardCharsets.UTF_8);
                     anyModified = true;
                     totalChanges++;
-                    modifiedFiles.add(pomFile.toString());
+                    modifiedFiles.add(projectRoot.relativize(pomFile).toString().replace('\\', '/'));
                     rulesApplied.add("INJECT_BLOCKHOUND_TEST_DEPENDENCY");
                 }
             }
@@ -233,8 +237,9 @@ public final class SpringReactiveBlockingCallAuditor {
             Files.writeString(customizerFile, testHelper, StandardCharsets.UTF_8);
             anyModified = true;
             totalChanges++;
-            modifiedFiles.add(customizerFile.toString());
-            generatedArtifacts.add(customizerFile.toString());
+            String relCustomizer = projectRoot.relativize(customizerFile).toString().replace('\\', '/');
+            modifiedFiles.add(relCustomizer);
+            generatedArtifacts.add(relCustomizer);
             rulesApplied.add("GENERATE_BLOCKHOUND_TEST_CUSTOMIZER");
         }
 

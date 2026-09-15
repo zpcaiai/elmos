@@ -59,6 +59,10 @@ public final class SpringHibernate6SqmQueryModernizer {
             "import\\s+org\\.hibernate\\.annotations\\.TypeDef(?:s)?;"
     );
 
+    private static final Pattern LEGACY_TYPEDEF = Pattern.compile(
+            "@TypeDef(?:s)?\\s*\\([\\s\\S]*?\\)"
+    );
+
     private static final Pattern UNINDEXED_PARAM_IN_QUERY = Pattern.compile(
             "(@Query\\s*\\([^)]*\"[^\"]*)\\?(?!\\d+)([^)]*\\))"
     );

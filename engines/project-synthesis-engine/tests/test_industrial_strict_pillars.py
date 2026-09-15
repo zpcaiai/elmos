@@ -13,6 +13,8 @@ from __future__ import annotations
 import decimal
 import hashlib
 import struct
+from typing import Any
+
 import pytest
 
 from elmos_project_synthesis.chaos_resilience import (
@@ -46,7 +48,7 @@ from elmos_project_synthesis.third_party_audit_gate import (
 )
 
 
-def test_chaos_fault_injection_and_saga_compensation():
+def test_chaos_fault_injection_and_saga_compensation() -> None:
     injector = ChaosFaultInjector(seed=123)
     injector.add_rule(ChaosRule(
         fault_type=ChaosFaultType.CONNECTION_REFUSED,
@@ -61,17 +63,17 @@ def test_chaos_fault_injection_and_saga_compensation():
     saga = DistributedSagaRecoverySimulator()
     journal = []
 
-    def step1_fwd():
+    def step1_fwd() -> str:
         journal.append("order_created")
         return "order_123"
 
-    def step1_comp():
+    def step1_comp() -> None:
         journal.append("order_cancelled")
 
-    def step2_fwd():
+    def step2_fwd() -> None:
         raise RuntimeError("Inventory reservation failed: Out of stock")
 
-    def step2_comp():
+    def step2_comp() -> None:
         journal.append("inventory_released")
 
     saga.register_step("OrderCreation", step1_fwd, step1_comp)
@@ -85,7 +87,7 @@ def test_chaos_fault_injection_and_saga_compensation():
     assert "COMPENSATION_TRIGGERED" in result["journal"]
 
 
-def test_soak_leak_auditor_detection():
+def test_soak_leak_auditor_detection() -> None:
     auditor = SoakResourceLeakAuditor()
     auditor.record_snapshot(open_handles=10, active_connections=2, memory_bytes=1000)
     auditor.record_snapshot(open_handles=15, active_connections=4, memory_bytes=2000)
@@ -98,7 +100,7 @@ def test_soak_leak_auditor_detection():
     assert analysis["active_connections_delta"] == 6
 
 
-def test_modbus_tcp_emulator_read_write():
+def test_modbus_tcp_emulator_read_write() -> None:
     emulator = ModbusTcpEmulator(unit_id=1)
 
     # Write Single Register 0x06 to address 10 with value 1234
@@ -135,7 +137,7 @@ def test_modbus_tcp_emulator_read_write():
     assert err_code == ModbusExceptionCode.ILLEGAL_DATA_ADDRESS
 
 
-def test_hl7_v2_and_fhir_r4_with_cfr21_audit():
+def test_hl7_v2_and_fhir_r4_with_cfr21_audit() -> None:
     validator = Hl7FhirValidator()
 
     # 1. HL7 v2 parsing
@@ -171,10 +173,10 @@ def test_hl7_v2_and_fhir_r4_with_cfr21_audit():
     assert validator.verify_audit_chain() is False
 
 
-def test_merchant_payment_gateway_and_reconciliation():
+def test_merchant_payment_gateway_and_reconciliation() -> None:
     gateway = MerchantPaymentGatewaySandbox(secret_key="top-secret-key-2026")
 
-    payload = {
+    payload: dict[str, Any] = {
         "channel": "wechat_pay",
         "out_trade_no": "ORD-2026-9901",
         "channel_trade_no": "WX-99887766",
@@ -185,12 +187,12 @@ def test_merchant_payment_gateway_and_reconciliation():
     sig = gateway.sign_payload(payload)
 
     notification = PaymentNotification(
-        channel=payload["channel"],
-        out_trade_no=payload["out_trade_no"],
-        channel_trade_no=payload["channel_trade_no"],
-        amount_cents=payload["amount_cents"],
-        currency=payload["currency"],
-        timestamp=payload["timestamp"],
+        channel=str(payload["channel"]),
+        out_trade_no=str(payload["out_trade_no"]),
+        channel_trade_no=str(payload["channel_trade_no"]),
+        amount_cents=int(payload["amount_cents"]),
+        currency=str(payload["currency"]),
+        timestamp=str(payload["timestamp"]),
         signature=sig,
     )
 
@@ -224,7 +226,7 @@ def test_merchant_payment_gateway_and_reconciliation():
     assert len(diff["missing_in_channel"]) == 1
 
 
-def test_digital_tax_invoice_lifecycle():
+def test_digital_tax_invoice_lifecycle() -> None:
     engine = DigitalTaxInvoiceEngine()
 
     invoice = engine.issue_invoice(
@@ -248,7 +250,7 @@ def test_digital_tax_invoice_lifecycle():
     assert engine.issued_invoices[invoice.invoice_number].status == "REVERSED"
 
 
-def test_terraform_topology_emitter_and_cis_security_audit():
+def test_terraform_topology_emitter_and_cis_security_audit() -> None:
     emitter = TerraformTopologyEmitter()
     auditor = IacSecurityPolicyAuditor()
 
@@ -277,7 +279,7 @@ def test_terraform_topology_emitter_and_cis_security_audit():
     assert any("CIS-DB-001" in v for v in insecure_audit["violations"])
 
 
-def test_e4_e5_fail_closed_certification_gate():
+def test_e4_e5_fail_closed_certification_gate() -> None:
     gate = E4E5CertificationGate()
 
     merkle_hash = hashlib.sha256(b"workspace-merkle-root").hexdigest()

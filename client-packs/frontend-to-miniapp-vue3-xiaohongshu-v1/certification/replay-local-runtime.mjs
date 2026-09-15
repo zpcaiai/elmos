@@ -483,7 +483,7 @@ assert.ok(scriptEntry[1].includes('this.setData({ text: value, canSubmit0: value
 assert.equal(project.files["app.js"]?.includes('"items":[]'), true, "application-scoped todo state drift");
 assert.equal(adapterSource, [
   '"use strict";',
-  'const platformApi = typeof xhs === "object" ? tt : null;',
+  'const platformApi = typeof xhs === "object" ? xhs : null;',
   "module.exports = Object.freeze({",
   '  platform: "xiaohongshu",',
   "});",

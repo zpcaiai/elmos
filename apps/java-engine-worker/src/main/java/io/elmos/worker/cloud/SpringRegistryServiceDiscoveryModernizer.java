@@ -50,6 +50,10 @@ public final class SpringRegistryServiceDiscoveryModernizer {
     private SpringRegistryServiceDiscoveryModernizer() {}
 
     public static RegistryModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true);
+    }
+
+    public static RegistryModernizationResult modernize(Path projectRoot, boolean updatePom) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return RegistryModernizationResult.empty();
@@ -79,7 +83,7 @@ public final class SpringRegistryServiceDiscoveryModernizer {
                         updated = EUREKA_ANNOTATION_PATTERN.matcher(updated).replaceAll("");
                         if (!updated.equals(content)) {
                             Files.writeString(javaFile, updated, StandardCharsets.UTF_8);
-                            modifiedFiles.add(projectRoot.relativize(javaFile).toString());
+                            modifiedFiles.add(projectRoot.relativize(javaFile).toString().replace('\\', '/'));
                             rulesApplied.add("ENABLE_EUREKA_CLIENT_ANNOTATION_REMOVED");
                             changes++;
                         }
@@ -88,7 +92,7 @@ public final class SpringRegistryServiceDiscoveryModernizer {
             }
         } catch (IOException ignored) {}
 
-        // 2. Modernize pom.xml dependencies
+        // 2. Modernize pom.xml dependencies if permitted
         Path pomFile = projectRoot.resolve("pom.xml");
         if (Files.isRegularFile(pomFile)) {
             try {
@@ -98,22 +102,24 @@ public final class SpringRegistryServiceDiscoveryModernizer {
                 if (EUREKA_DEP_PATTERN.matcher(updated).find()) {
                     hasEureka = true;
                     hasNacos = true;
-                    String nacosDep = """
-                                <dependency>
-                                  <groupId>com.alibaba.cloud</groupId>
-                                  <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-                                  <version>2023.0.1.0</version>
-                                </dependency>""";
-                    updated = EUREKA_DEP_PATTERN.matcher(updated).replaceAll(Matcher.quoteReplacement(nacosDep));
-                    rulesApplied.add("EUREKA_CLIENT_REPLACED_WITH_NACOS_DISCOVERY");
-                    changes++;
+                    if (updatePom) {
+                        String nacosDep = """
+                                    <dependency>
+                                      <groupId>com.alibaba.cloud</groupId>
+                                      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                                      <version>2023.0.1.0</version>
+                                    </dependency>""";
+                        updated = EUREKA_DEP_PATTERN.matcher(updated).replaceAll(Matcher.quoteReplacement(nacosDep));
+                        rulesApplied.add("EUREKA_CLIENT_REPLACED_WITH_NACOS_DISCOVERY");
+                        changes++;
+                    }
                 } else if (updated.contains("spring-cloud-starter-alibaba-nacos-discovery")) {
                     hasNacos = true;
                 }
 
-                if (!updated.equals(pomContent)) {
+                if (updatePom && !updated.equals(pomContent)) {
                     Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
-                    modifiedFiles.add(projectRoot.relativize(pomFile).toString());
+                    modifiedFiles.add(projectRoot.relativize(pomFile).toString().replace('\\', '/'));
                 }
             } catch (IOException e) {
                 warnings.add("Failed to modernize pom.xml: " + e.getMessage());
@@ -194,7 +200,7 @@ public final class SpringRegistryServiceDiscoveryModernizer {
 
                     if (!updated.equals(content)) {
                         Files.writeString(config, updated, StandardCharsets.UTF_8);
-                        files.add(projectRoot.relativize(config).toString());
+                        files.add(projectRoot.relativize(config).toString().replace('\\', '/'));
                     }
                 } catch (IOException ignored) {}
             }
@@ -232,7 +238,7 @@ public final class SpringRegistryServiceDiscoveryModernizer {
                         String updated = content.replaceFirst("(?m)^(\\s*-\\s*containerPort:\\s*\\d+.*)$", "$1\n            " + portSnippet.trim());
                         if (!updated.equals(content)) {
                             Files.writeString(path, updated, StandardCharsets.UTF_8);
-                            files.add(projectRoot.relativize(path).toString());
+                            files.add(projectRoot.relativize(path).toString().replace('\\', '/'));
                             rules.add("NACOS_GRPC_PORT_9848_EXPOSED_IN_K8S");
                             changes++;
                         }
@@ -250,7 +256,7 @@ public final class SpringRegistryServiceDiscoveryModernizer {
                     String updated = content.replaceFirst("(?m)^EXPOSE\\s+.*$", "$0 9848");
                     if (!updated.equals(content)) {
                         Files.writeString(dockerfile, updated, StandardCharsets.UTF_8);
-                        files.add(projectRoot.relativize(dockerfile).toString());
+                        files.add(projectRoot.relativize(dockerfile).toString().replace('\\', '/'));
                         rules.add("NACOS_GRPC_PORT_9848_EXPOSED_IN_DOCKERFILE");
                         changes++;
                     }

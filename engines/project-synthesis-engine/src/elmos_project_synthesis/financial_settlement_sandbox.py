@@ -28,7 +28,7 @@ class PaymentNotification:
 class MerchantPaymentGatewaySandbox:
     """Simulates enterprise merchant gateways with cryptographic signature verification and idempotent settlement."""
 
-    def __init__(self, secret_key: str = "elmos-prod-settlement-secret-2026") -> None:
+    def __init__(self, secret_key: str = "elmos-prod-settlement-secret-2026") -> None:  # noqa: S107
         self.secret_key = secret_key
         self.settled_orders: dict[str, dict[str, Any]] = {}
 

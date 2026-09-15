@@ -56,6 +56,10 @@ public final class SpringAdminClientModernizer {
     private SpringAdminClientModernizer() {}
 
     public static AdminClientModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true);
+    }
+
+    public static AdminClientModernizationResult modernize(Path projectRoot, boolean updatePom) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return AdminClientModernizationResult.empty();
@@ -67,7 +71,7 @@ public final class SpringAdminClientModernizer {
         int changes = 0;
         boolean adminClientDetected = false;
 
-        // 1. Scan and modernize pom.xml dependencies
+        // 1. Scan and modernize pom.xml dependencies if permitted
         Path pomFile = projectRoot.resolve("pom.xml");
         if (Files.isRegularFile(pomFile)) {
             try {
@@ -75,11 +79,13 @@ public final class SpringAdminClientModernizer {
                 Matcher matcher = OLD_ADMIN_CLIENT_DEP_PATTERN.matcher(pomContent);
                 if (matcher.find()) {
                     adminClientDetected = true;
-                    String updated = matcher.replaceAll(Matcher.quoteReplacement(MODERN_ADMIN_CLIENT_DEP));
-                    Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
-                    modifiedFiles.add("pom.xml");
-                    rulesApplied.add("UPGRADE_SPRING_BOOT_ADMIN_CLIENT_DEPENDENCY_3_2_3");
-                    changes++;
+                    if (updatePom) {
+                        String updated = matcher.replaceAll(Matcher.quoteReplacement(MODERN_ADMIN_CLIENT_DEP));
+                        Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
+                        modifiedFiles.add("pom.xml");
+                        rulesApplied.add("UPGRADE_SPRING_BOOT_ADMIN_CLIENT_DEPENDENCY_3_2_3");
+                        changes++;
+                    }
                 } else if (pomContent.contains("spring-boot-admin-starter-client")) {
                     adminClientDetected = true;
                 }

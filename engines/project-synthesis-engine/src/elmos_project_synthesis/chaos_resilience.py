@@ -5,13 +5,13 @@ Pillar 1: Bridges the gap between single-machine green tests and real-world dist
 
 from __future__ import annotations
 
-import collections
 import dataclasses
 import enum
 import logging
 import random
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger("elmos_project_synthesis.chaos_resilience")
 
@@ -37,7 +37,7 @@ class ChaosFaultInjector:
 
     def __init__(self, seed: int | None = 42) -> None:
         self.rules: list[ChaosRule] = []
-        self._rng = random.Random(seed)
+        self._rng = random.Random(seed)  # noqa: S311
         self.faults_injected_count: int = 0
 
     def add_rule(self, rule: ChaosRule) -> None:

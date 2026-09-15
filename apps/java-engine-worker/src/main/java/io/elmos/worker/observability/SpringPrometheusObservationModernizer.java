@@ -57,6 +57,10 @@ public final class SpringPrometheusObservationModernizer {
      * Executes Prometheus and Micrometer observation modernization across the workspace.
      */
     public PrometheusModernizationResult modernize(Path projectRoot) throws IOException {
+        return modernize(projectRoot, true, true);
+    }
+
+    public PrometheusModernizationResult modernize(Path projectRoot, boolean updatePom, boolean updateConfig) throws IOException {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return PrometheusModernizationResult.empty();
@@ -68,9 +72,9 @@ public final class SpringPrometheusObservationModernizer {
         List<String> rulesApplied = new ArrayList<>();
         List<String> generatedArtifacts = new ArrayList<>();
 
-        // 1. Check & Inject micrometer-registry-prometheus into pom.xml
+        // 1. Check & Inject micrometer-registry-prometheus into pom.xml if permitted
         Path pomPath = projectRoot.resolve("pom.xml");
-        if (Files.isRegularFile(pomPath)) {
+        if (updatePom && Files.isRegularFile(pomPath)) {
             String pomContent = Files.readString(pomPath, StandardCharsets.UTF_8);
             if (!pomContent.contains("micrometer-registry-prometheus")) {
                 int depEnd = pomContent.indexOf("</dependencies>");
@@ -81,15 +85,15 @@ public final class SpringPrometheusObservationModernizer {
                     Files.writeString(pomPath, updatedPom, StandardCharsets.UTF_8);
                     anyModified = true;
                     totalChanges++;
-                    modifiedFiles.add(pomPath.toString());
+                    modifiedFiles.add(projectRoot.relativize(pomPath).toString().replace('\\', '/'));
                     rulesApplied.add("INJECT_MICROMETER_PROMETHEUS_DEPENDENCY");
                 }
             }
         }
 
-        // 2. Ensure Actuator Prometheus & Histogram in application.yml
+        // 2. Ensure Actuator Prometheus & Histogram in application.yml if permitted
         Path ymlPath = projectRoot.resolve("src/main/resources/application.yml");
-        if (Files.isRegularFile(ymlPath)) {
+        if (updateConfig && Files.isRegularFile(ymlPath)) {
             String ymlContent = Files.readString(ymlPath, StandardCharsets.UTF_8);
             if (!ymlContent.contains("prometheus:")) {
                 String prometheusConfig =
@@ -112,7 +116,7 @@ public final class SpringPrometheusObservationModernizer {
                 Files.writeString(ymlPath, ymlContent + prometheusConfig, StandardCharsets.UTF_8);
                 anyModified = true;
                 totalChanges++;
-                modifiedFiles.add(ymlPath.toString());
+                modifiedFiles.add(projectRoot.relativize(ymlPath).toString().replace('\\', '/'));
                 rulesApplied.add("CONFIGURE_ACTUATOR_PROMETHEUS_METRICS");
             }
         }
@@ -126,8 +130,9 @@ public final class SpringPrometheusObservationModernizer {
             Files.writeString(filterFile, filterSource, StandardCharsets.UTF_8);
             anyModified = true;
             totalChanges++;
-            modifiedFiles.add(filterFile.toString());
-            generatedArtifacts.add(filterFile.toString());
+            String relFilter = projectRoot.relativize(filterFile).toString().replace('\\', '/');
+            modifiedFiles.add(relFilter);
+            generatedArtifacts.add(relFilter);
             rulesApplied.add("GENERATE_PROMETHEUS_METRIC_ALIAS_FILTER");
         }
 
@@ -141,8 +146,9 @@ public final class SpringPrometheusObservationModernizer {
             Files.writeString(dashboardFile, dashboardJson, StandardCharsets.UTF_8);
             anyModified = true;
             totalChanges++;
-            modifiedFiles.add(dashboardFile.toString());
-            generatedArtifacts.add(dashboardFile.toString());
+            String relDashboard = projectRoot.relativize(dashboardFile).toString().replace('\\', '/');
+            modifiedFiles.add(relDashboard);
+            generatedArtifacts.add(relDashboard);
             rulesApplied.add("GENERATE_GRAFANA_DASHBOARD_JSON");
         }
 
@@ -152,8 +158,9 @@ public final class SpringPrometheusObservationModernizer {
             Files.writeString(alertFile, alertsYaml, StandardCharsets.UTF_8);
             anyModified = true;
             totalChanges++;
-            modifiedFiles.add(alertFile.toString());
-            generatedArtifacts.add(alertFile.toString());
+            String relAlert = projectRoot.relativize(alertFile).toString().replace('\\', '/');
+            modifiedFiles.add(relAlert);
+            generatedArtifacts.add(relAlert);
             rulesApplied.add("GENERATE_ALERTMANAGER_PROMETHEUS_RULES");
         }
 
