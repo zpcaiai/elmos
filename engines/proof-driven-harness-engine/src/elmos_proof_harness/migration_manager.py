@@ -10,14 +10,13 @@ Enforces:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 import hashlib
 import importlib
-import os
 from pathlib import Path
 import re
 import time
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 
 _MIGRATION_PATTERN = re.compile(r"^V([0-9]+(?:_[0-9]+)*)__(.*)\.sql$")

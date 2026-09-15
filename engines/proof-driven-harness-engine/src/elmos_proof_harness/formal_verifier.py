@@ -7,9 +7,9 @@ import json
 import logging
 import re
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 from .adapter_drivers import AdapterDriverRegistry, DriverExecutionResult
 from .adapters import AdapterStatus

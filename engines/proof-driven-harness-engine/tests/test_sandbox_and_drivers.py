@@ -9,7 +9,6 @@ from elmos_proof_harness.adapter_drivers import (
     AdapterDriverRegistry,
     AdapterStatus,
     McpA2aDriver,
-    Z3Driver,
 )
 from elmos_proof_harness.network_egress import (
     EgressPolicy,

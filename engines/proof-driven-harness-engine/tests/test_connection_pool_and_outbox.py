@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 import json
-import sqlite3
 import time
-from unittest.mock import MagicMock
 
 import pytest
 
 from elmos_proof_harness.connection_pool import (
-    PoolError,
     PoolExhaustedError,
     PostgresConnectionPool,
 )

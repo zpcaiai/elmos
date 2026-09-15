@@ -10,9 +10,7 @@ from unittest.mock import MagicMock, patch
 
 from elmos_proof_harness.migration_manager import (
     MigrationDriftError,
-    MigrationError,
     MigrationManager,
-    MigrationScript,
     _parse_version_key,
 )
 

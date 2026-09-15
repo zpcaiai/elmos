@@ -16,7 +16,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Sequence
 
 logger = logging.getLogger("elmos_proof_harness.postgres_lifecycle")
 

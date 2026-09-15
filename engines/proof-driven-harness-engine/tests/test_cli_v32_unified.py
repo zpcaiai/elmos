@@ -7,7 +7,6 @@ import json
 from contextlib import redirect_stdout
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from elmos_proof_harness.cli import main
 

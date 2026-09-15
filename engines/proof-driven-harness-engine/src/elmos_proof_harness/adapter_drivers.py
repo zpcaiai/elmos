@@ -5,8 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
-import re
 import shutil
 import subprocess
 import time
@@ -139,7 +137,6 @@ class Z3Driver(BaseAdapterDriver):
 
             # Parse SMT solver verdict
             verdict = "UNKNOWN"
-            model: dict[str, Any] = {}
             if "unsat" in stdout:
                 verdict = "UNSAT"
             elif "sat" in stdout:

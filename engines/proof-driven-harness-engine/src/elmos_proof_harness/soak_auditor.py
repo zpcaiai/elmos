@@ -7,7 +7,6 @@ import logging
 import os
 import platform
 import resource
-import sys
 import threading
 import time
 from dataclasses import dataclass

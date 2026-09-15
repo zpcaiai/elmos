@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-import pytest
 
 from elmos_proof_harness.adapter_drivers import AdapterDriverRegistry, DriverExecutionResult
 from elmos_proof_harness.adapters import AdapterStatus

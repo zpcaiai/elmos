@@ -6,7 +6,6 @@ import ipaddress
 import re
 import urllib.parse
 from dataclasses import dataclass
-from typing import Sequence
 
 
 class EgressViolationError(Exception):

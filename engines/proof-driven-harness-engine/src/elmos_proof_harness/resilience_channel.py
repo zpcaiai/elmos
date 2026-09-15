@@ -6,9 +6,9 @@ import logging
 import random
 import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar
 
 logger = logging.getLogger("elmos_proof_harness.resilience_channel")
 

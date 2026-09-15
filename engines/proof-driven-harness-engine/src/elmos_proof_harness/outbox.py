@@ -7,10 +7,9 @@ import logging
 import threading
 import time
 from dataclasses import dataclass
-from typing import Any, Callable, Mapping, Protocol
+from typing import Any, Protocol
 
 from .contracts import SecurityContext
-from .storage import ControlPlaneStore
 
 logger = logging.getLogger("elmos_proof_harness.outbox")
 

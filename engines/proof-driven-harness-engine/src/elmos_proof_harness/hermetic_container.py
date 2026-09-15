@@ -2,19 +2,17 @@
 
 from __future__ import annotations
 
-import json
 import logging
-import os
 import platform
 import shutil
 import subprocess
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from .sandbox import DisposableSandboxRunner, SandboxLimits, SandboxExecutionResult
+from .sandbox import DisposableSandboxRunner, SandboxLimits
 
 logger = logging.getLogger("elmos_proof_harness.hermetic_container")
 
@@ -251,7 +249,6 @@ class HermeticContainerSandbox:
         cmd.append(self.container_image)
         cmd.extend(args)
 
-        timed_out = False
         try:
             p = subprocess.run(
                 cmd,
