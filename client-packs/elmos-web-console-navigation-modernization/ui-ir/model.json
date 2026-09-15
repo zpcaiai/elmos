@@ -8,7 +8,7 @@
     {"id":"route.commercialization","kind":"route","name":"商业化控制面","path":"/commercialization","references":["view.trust-chain"],"source_refs":["apps/web-console/app/commercialization/page.tsx"]},
     {"id":"route.generation","kind":"route","name":"多语言项目生成","path":"/generation","references":["view.project-generation"],"source_refs":["apps/web-console/app/generation/page.tsx"]},
     {"id":"route.skills","kind":"route","name":"Skills 与验证","path":"/skills","references":["view.skills-qualification"],"source_refs":["apps/web-console/app/skills/page.tsx"]},
-    {"id":"route.spring","kind":"route","name":"Spring 老项目一键迁移","path":"/spring","references":["view.spring-upgrade"],"source_refs":["apps/web-console/app/spring/page.tsx"]}
+    {"id":"route.spring","kind":"route","name":"Spring 现代化升级","path":"/spring","references":["view.spring-upgrade"],"source_refs":["apps/web-console/app/spring/page.tsx"]}
   ],
   "views": [
     {"id":"view.overview","kind":"view","name":"工作空间总览","references":["component.app-shell","component.status-chip"],"source_refs":["apps/web-console/app/page.tsx"]},

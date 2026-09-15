@@ -122,7 +122,7 @@ export function CapabilityCenter() {
         <div>
           <span className="overline">功能能力中心 · 用户端</span>
           <h1>平台已实现的功能</h1>
-          <p>按业务域列出平台真正能做的事：老项目翻新、跨语言转换、数据库迁移、前端改造、交付验证。每一项都标注实现范围与当前验证状态，未运行的部分不会被写成已通过。</p>
+          <p>按业务域列出平台真正能做的事：Spring 现代化升级、跨语言转换、数据库迁移、前端改造、交付验证。每一项都标注实现范围与当前验证状态，未运行的部分不会被写成已通过。</p>
         </div>
         <div className="header-actions">
           <Link className="button button-secondary" href="/translation"><Icon name="code" size={16} />跨语言转换</Link>

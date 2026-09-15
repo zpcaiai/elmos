@@ -122,7 +122,7 @@ engines/sql-dialect-engine         1,249
 
 ### B 档 — 可做 POC / 按项目收费，不能按订阅承诺
 
-**Spring 老项目翻新 `/spring`**
+**Spring 现代化升级 `/spring`**
 - **Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、
   3.4.1 / Java 17** 四个精确 Maven 元组有 `PASSED_LOCAL` 端到端工程证据
 - 对应版本区间内的其他元组均为 `NOT_RUN`，需显式开

@@ -125,7 +125,7 @@
   <view class="mobile-bottom-nav" aria-label="{{english ? &quot;Mobile primary navigation&quot; : &quot;移动端主导航&quot;}}">
     <navigator wx:for="{{mobileNavigation}}" wx:key="item.id" href="{{item.href}}" class="{{active ? &quot;active&quot; : &quot;&quot;}}" aria-current="{{active ? &quot;page&quot; : undefined}}" key="{{item.href}}">
       <Icon name="{{item.icon}}" size="{{19}}" />
-      <text>{{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}}</text>
+      <text>{{english ? label : label.replace("Spring 现代化升级", "Spring").replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}}</text>
     </navigator>
   </view>
   <button wx:if="{{showBackToTop}}" class="back-to-top" type="button" aria-label="返回页面顶部" bindtap="scrollToTop">

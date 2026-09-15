@@ -8,11 +8,11 @@
         四类核心工作空间，一套可验证的交付闭环。
       </view>
       <view class="cc-p">
-        Spring 老项目翻新、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
+        Spring 现代化升级、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
       </view>
       <view class="welcome-actions">
         <navigator class="button button-primary" url="/spring">
-          评估 Spring 老项目
+          评估 Spring 现代化升级
           <icon name="{{ &quot;arrow&quot; }}" size="{{ 16 }}" />
         </navigator>
         <navigator class="button button-secondary" url="/translation">
