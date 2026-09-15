@@ -25,10 +25,24 @@ from .dm8_dialect import (
     lower_dm8_sequence,
     lower_dm8_upsert,
 )
+from .kingbase_dialect import (
+    KingbaseMode,
+    lower_kingbase_ddl,
+    lower_kingbase_query,
+    lower_kingbase_sequence,
+    lower_kingbase_upsert,
+)
 from .models import (
     ChinaDbDialect,
     Dialect,
     RouteError,
+)
+from .oceanbase_dialect import (
+    OceanBaseMode,
+    lower_oceanbase_ddl,
+    lower_oceanbase_query,
+    lower_oceanbase_sequence,
+    lower_oceanbase_upsert,
 )
 from .opengauss_dialect import (
     OpenGaussDialectLowerer,
@@ -77,7 +91,15 @@ _MYSQL = MappingProxyType(
         "mysql": Dialect.MYSQL,
     }
 )
-_KINGBASE = MappingProxyType({**_POSTGRES, **_ORACLE})
+_KINGBASE = MappingProxyType(
+    {
+        **_POSTGRES,
+        **_ORACLE,
+        "native": Dialect.POSTGRES,
+        "kingbase-native": Dialect.POSTGRES,
+        "pg-compatible": Dialect.POSTGRES,
+    }
+)
 _GAUSSDB_M = MappingProxyType({**_MYSQL, **_POSTGRES})
 _GBASE_8S = MappingProxyType(
     {
@@ -448,6 +470,125 @@ def translate_chinadb_ddl(
                 ),
             }
 
+    # Handle native lowering for KingbaseES
+    if target_id in ("kingbase", "kingbasees") and compatibility_mode in (
+        "native",
+        "kingbase-native",
+        "pg-compatible",
+        "oracle-compatible",
+        "pg-compatible-explicit",
+        "oracle-compatible-explicit",
+    ):
+        try:
+            mode_str = kwargs.get("mode", "PG").upper()
+            if "ORACLE" in compatibility_mode.upper() or "ORACLE" in mode_str:
+                kb_mode = KingbaseMode.ORACLE
+            else:
+                kb_mode = KingbaseMode.PG
+            emitted = lower_kingbase_ddl(sql, mode=kb_mode, source_dialect=source_dialect)
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "PASSED",
+                "state": "LOCAL_EMITTED",
+                "profile": "kingbase-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": "kingbasees",
+                "namespaceProfile": None,
+                "reasonCode": None,
+                "reason": None,
+                "emitted": emitted,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect="kingbasees",
+                ),
+            }
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "BLOCKED",
+                "state": "BLOCKED",
+                "profile": "kingbase-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": "kingbasees",
+                "namespaceProfile": None,
+                "reasonCode": "KINGBASE_LOWERING_FAILED",
+                "reason": str(exc),
+                "emitted": None,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect="kingbasees",
+                ),
+            }
+
+    # Handle native lowering for OceanBase
+    if target_id in ("oceanbase", "oceanbase-mysql", "oceanbase-oracle") and compatibility_mode in (
+        "native",
+        "oceanbase-native",
+        "mysql",
+        "mysql-compatible",
+        "oracle",
+        "oracle-compatible",
+        "mysql-compatible-explicit",
+        "oracle-compatible-explicit",
+    ):
+        try:
+            if "oracle" in target_id or "ORACLE" in compatibility_mode.upper() or "ORACLE" in kwargs.get("mode", "").upper():
+                ob_mode = OceanBaseMode.ORACLE
+            else:
+                ob_mode = OceanBaseMode.MYSQL
+            add_hash_partition = kwargs.get("add_hash_partition", False)
+            emitted = lower_oceanbase_ddl(
+                sql,
+                mode=ob_mode,
+                source_dialect=source_dialect,
+                add_hash_partition=add_hash_partition,
+            )
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "PASSED",
+                "state": "LOCAL_EMITTED",
+                "profile": "oceanbase-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": target_id,
+                "namespaceProfile": None,
+                "reasonCode": None,
+                "reason": None,
+                "emitted": emitted,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect=target_id,
+                ),
+            }
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "schemaVersion": "1.0",
+                "kind": "elmos.sql-dialect-translation",
+                "status": "BLOCKED",
+                "state": "BLOCKED",
+                "profile": "oceanbase-native-ddl",
+                "sourceDialect": source_dialect,
+                "targetDialect": target_id,
+                "namespaceProfile": None,
+                "reasonCode": "OCEANBASE_LOWERING_FAILED",
+                "reason": str(exc),
+                "emitted": None,
+                "validation": None,
+                **_honesty_fields(
+                    target_id=target_id,
+                    compatibility_mode=compatibility_mode,
+                    mapped_dialect=target_id,
+                ),
+            }
+
     report = translate_ddl(sql, source_dialect, mapped.value, **kwargs)
     report.update(
         _honesty_fields(
@@ -551,6 +692,68 @@ def lower_to_opengauss(
     )
 
 
+def lower_to_kingbase(
+    sql: str,
+    source_dialect: str = "oracle",
+    kind: str = "ddl",
+    mode: KingbaseMode = KingbaseMode.PG,
+) -> str:
+    """Lower SQL to KingbaseES depending on statement kind ('ddl', 'query', 'sequence', 'upsert', 'auto')."""
+    kind_lower = kind.lower().strip()
+    if kind_lower == "auto":
+        upper = sql.strip().upper()
+        if upper.startswith("SELECT") or upper.startswith("WITH"):
+            kind_lower = "query"
+        elif upper.startswith("CREATE SEQUENCE") or "NEXTVAL" in upper:
+            kind_lower = "sequence"
+        elif "ON CONFLICT" in upper or upper.startswith("MERGE"):
+            kind_lower = "upsert"
+        else:
+            kind_lower = "ddl"
+
+    if kind_lower == "query":
+        return lower_kingbase_query(sql, mode=mode, source_dialect=source_dialect)
+    if kind_lower == "sequence":
+        return lower_kingbase_sequence(sql, mode=mode)
+    if kind_lower == "upsert":
+        return lower_kingbase_upsert(sql, mode=mode)
+    return lower_kingbase_ddl(sql, mode=mode, source_dialect=source_dialect)
+
+
+def lower_to_oceanbase(
+    sql: str,
+    source_dialect: str = "oracle",
+    kind: str = "ddl",
+    mode: OceanBaseMode = OceanBaseMode.MYSQL,
+    add_hash_partition: bool = False,
+) -> str:
+    """Lower SQL to OceanBase depending on statement kind ('ddl', 'query', 'sequence', 'upsert', 'auto')."""
+    kind_lower = kind.lower().strip()
+    if kind_lower == "auto":
+        upper = sql.strip().upper()
+        if upper.startswith("SELECT") or upper.startswith("WITH"):
+            kind_lower = "query"
+        elif upper.startswith("CREATE SEQUENCE") or "NEXTVAL" in upper:
+            kind_lower = "sequence"
+        elif "ON DUPLICATE KEY" in upper or upper.startswith("MERGE"):
+            kind_lower = "upsert"
+        else:
+            kind_lower = "ddl"
+
+    if kind_lower == "query":
+        return lower_oceanbase_query(sql, mode=mode, source_dialect=source_dialect)
+    if kind_lower == "sequence":
+        return lower_oceanbase_sequence(sql, mode=mode)
+    if kind_lower == "upsert":
+        return lower_oceanbase_upsert(sql, mode=mode)
+    return lower_oceanbase_ddl(
+        sql,
+        mode=mode,
+        source_dialect=source_dialect,
+        add_hash_partition=add_hash_partition,
+    )
+
+
 _CHINADB_LOWERER_MAP: dict[str, str] = {
     "dm8": "dm8",
     "opengauss": "opengauss",
@@ -624,6 +827,23 @@ def lower_chinadb_sql(
             mode=mode,
             orientation=orientation,
             distribute_by=distribute_by,
+        )
+    if target_key in ("kingbase", "kingbasees"):
+        mode_str = kwargs.get("mode", "PG").upper()
+        kb_mode = KingbaseMode.ORACLE if "ORACLE" in mode_str else KingbaseMode.PG
+        return lower_to_kingbase(sql, source_dialect=source_dialect, kind=kind, mode=kb_mode)
+    if target_key in ("oceanbase", "oceanbase-mysql", "oceanbase-oracle"):
+        if "oracle" in target_key or "ORACLE" in kwargs.get("mode", "").upper():
+            ob_mode = OceanBaseMode.ORACLE
+        else:
+            ob_mode = OceanBaseMode.MYSQL
+        add_hash_partition = kwargs.get("add_hash_partition", False)
+        return lower_to_oceanbase(
+            sql,
+            source_dialect=source_dialect,
+            kind=kind,
+            mode=ob_mode,
+            add_hash_partition=add_hash_partition,
         )
 
     # Use dedicated ChinaDB lowerer
@@ -848,7 +1068,8 @@ __all__ = [
     "DM8DialectLowerer",
     "OPENGAUSS_CAPABILITIES",
     "OpenGaussDialectLowerer",
-    "OpenGaussMode",
+    "KingbaseMode",
+    "OceanBaseMode",
     "chinadb_capabilities",
     "chinadb_target_by_id",
     "lower_chinadb_sql",
@@ -856,10 +1077,20 @@ __all__ = [
     "lower_dm8_query",
     "lower_dm8_sequence",
     "lower_dm8_upsert",
+    "lower_kingbase_ddl",
+    "lower_kingbase_query",
+    "lower_kingbase_sequence",
+    "lower_kingbase_upsert",
+    "lower_oceanbase_ddl",
+    "lower_oceanbase_query",
+    "lower_oceanbase_sequence",
+    "lower_oceanbase_upsert",
     "lower_opengauss_ddl",
     "lower_opengauss_query",
     "lower_opengauss_routine",
     "lower_to_dm8",
+    "lower_to_kingbase",
+    "lower_to_oceanbase",
     "lower_to_opengauss",
     "translate_chinadb_ddl",
     "translate_chinadb_query",
