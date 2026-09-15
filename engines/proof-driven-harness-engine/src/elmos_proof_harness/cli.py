@@ -26,9 +26,16 @@ from .service import (
     HarnessService,
     serve,
 )
+from .delta import DELTA_SKILL_REGISTRY
+from .delta_v32 import DELTA_V32_SKILL_REGISTRY, execute_v32_skill
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
 from .storage import ControlPlaneStore
 from .store import SQLiteStore
+
+
+ALL_SKILL_NAMES: tuple[str, ...] = tuple(
+    sorted(set(SKILL_REGISTRY) | set(DELTA_SKILL_REGISTRY) | set(DELTA_V32_SKILL_REGISTRY))
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -53,16 +60,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_snapshot_limits(compile_parser)
 
-    subparsers.add_parser("list-skills", help="list the 16 exact routable Skills")
+    list_skills = subparsers.add_parser("list-skills", help="list exact routable and delta Skills")
+    list_skills.add_argument(
+        "--version",
+        choices=("all", "v3.0", "v3.1", "v3.2"),
+        default="all",
+        help="filter skills by harness version",
+    )
     subparsers.add_parser("list-components", help="list the 96 exact kernel components")
 
     invoke = subparsers.add_parser("invoke", help="invoke one exact Skill locally")
-    invoke.add_argument("skill", choices=tuple(sorted(SKILL_REGISTRY)))
+    invoke.add_argument("skill", choices=ALL_SKILL_NAMES)
     payload_group = invoke.add_mutually_exclusive_group(required=True)
     payload_group.add_argument("--payload", help="JSON object")
     payload_group.add_argument("--payload-file", help="path to a JSON object")
     invoke.add_argument("--workspace-root", action="append", default=[])
     invoke.add_argument("--authority", action="append", default=[])
+
+    gate = subparsers.add_parser("gate", help="evaluate release assurance gates")
+    gate.add_argument("subcommand", choices=("evaluate",))
+    gate_payload_group = gate.add_mutually_exclusive_group(required=True)
+    gate_payload_group.add_argument("--payload", help="JSON object")
+    gate_payload_group.add_argument("--payload-file", help="path to a JSON object")
+
+    db = subparsers.add_parser("db", help="database management and migration tools")
+    db.add_argument("subcommand", choices=("check", "migrate"))
+    db.add_argument("--dsn", default=os.environ.get("ELMOS_POSTGRES_DSN"))
 
     server = subparsers.add_parser("serve", help="serve authenticated v3 HTTP APIs")
     server.add_argument("--host", default="127.0.0.1")
@@ -290,14 +313,37 @@ def main(argv: Sequence[str] | None = None) -> int:
                 }
             )
         elif arguments.command == "list-skills":
-            _print_json(
-                {
-                    "skills": [
-                        SKILL_REGISTRY[name].to_dict()
-                        for name in sorted(SKILL_REGISTRY)
-                    ]
-                }
-            )
+            ver = getattr(arguments, "version", "all")
+            skills_out: list[dict[str, Any]] = []
+            if ver in {"all", "v3.0"}:
+                for name in sorted(SKILL_REGISTRY):
+                    d = SKILL_REGISTRY[name].to_dict()
+                    d["version"] = "v3.0"
+                    skills_out.append(d)
+            if ver in {"all", "v3.1"}:
+                for name in sorted(DELTA_SKILL_REGISTRY):
+                    desc = DELTA_SKILL_REGISTRY[name]
+                    skills_out.append({
+                        "skill": name,
+                        "skill_id": desc.skill_id,
+                        "priority": desc.priority,
+                        "owner_kernels": list(desc.owner_kernels),
+                        "version": "v3.1",
+                        "routable": desc.routable,
+                        "description": f"Delta extension skill {name} for {','.join(desc.owner_kernels)}",
+                    })
+            if ver in {"all", "v3.2"}:
+                for name in sorted(DELTA_V32_SKILL_REGISTRY):
+                    desc_v32 = DELTA_V32_SKILL_REGISTRY[name]
+                    skills_out.append({
+                        "skill": name,
+                        "kernel": desc_v32.kernel,
+                        "batch": desc_v32.batch,
+                        "version": "v3.2",
+                        "routable": True,
+                        "description": desc_v32.description,
+                    })
+            _print_json({"skills": skills_out, "count": len(skills_out), "version": ver})
         elif arguments.command == "list-components":
             _print_json(
                 {
@@ -308,14 +354,60 @@ def main(argv: Sequence[str] | None = None) -> int:
                 }
             )
         elif arguments.command == "invoke":
-            runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
-            result = runtime.execute(
-                arguments.skill,
-                _load_payload(arguments),
-                context={"authority": arguments.authority},
-            )
-            _print_json(result.to_dict())
-            return 0 if result.status not in {"BLOCKED", "FAILED", "DENIED"} else 2
+            skill_name = arguments.skill
+            payload = _load_payload(arguments)
+            if skill_name in DELTA_V32_SKILL_REGISTRY:
+                result_v32 = execute_v32_skill(skill_name, payload)
+                _print_json(result_v32)
+                return 0 if result_v32.get("status") == "SUCCESS" else 2
+            elif skill_name in SKILL_REGISTRY:
+                runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
+                result = runtime.execute(
+                    skill_name,
+                    payload,
+                    context={"authority": arguments.authority},
+                )
+                _print_json(result.to_dict())
+                return 0 if result.status not in {"BLOCKED", "FAILED", "DENIED"} else 2
+            elif skill_name in DELTA_SKILL_REGISTRY:
+                _print_json({
+                    "skill": skill_name,
+                    "version": "v3.1",
+                    "status": "NON_ROUTABLE_INTERNAL",
+                    "message": f"Skill {skill_name} is an internal non-routable v3.1 extension requiring host-injected security context.",
+                })
+                return 0
+        elif arguments.command == "gate":
+            payload = _load_payload(arguments)
+            res = execute_v32_skill("release-evidence-exact-artifact", payload)
+            _print_json(res)
+            return 0 if res.get("gate_decision") == "PASS" else 2
+        elif arguments.command == "db":
+            dsn = arguments.dsn
+            if not dsn:
+                _print_json({"status": "ERROR", "message": "Missing PostgreSQL DSN. Pass --dsn or set ELMOS_POSTGRES_DSN"})
+                return 1
+            if arguments.subcommand == "check":
+                pg_store = PostgresStore(dsn)
+                readiness = pg_store.readiness()
+                _print_json({
+                    "status": "SUCCESS" if readiness.ready else "NOT_READY",
+                    "readiness": {
+                        "status": readiness.status.value,
+                        "ready": readiness.ready,
+                        "reason": readiness.reason,
+                        "backend": readiness.backend,
+                        "schema_version": readiness.schema_version,
+                        "server_version": readiness.server_version,
+                    },
+                })
+                return 0 if readiness.ready else 1
+            elif arguments.subcommand == "migrate":
+                from .migration_manager import MigrationManager
+                manager = MigrationManager(dsn)
+                applied = manager.apply_pending()
+                _print_json({"status": "SUCCESS", "migrations_applied": applied})
+                return 0
         elif arguments.command == "serve":
             runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
             store: ControlPlaneStore
