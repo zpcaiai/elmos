@@ -1,0 +1,50 @@
+name: Runner lane preflight (local observations only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: Provision and bind this protected lane before dispatch
+        required: true
+        type: choice
+        options:
+          - linux-rootless-x64
+          - windows-native-x64
+          - linux-database-x64
+          - macos-arm64
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runner-preflight-${{ inputs.lane }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    # A caller-selected branch must not execute code on a privileged self-hosted worker.
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    environment: ${{ fromJSON('{"linux-rootless-x64":"runner-linux-rootless","windows-native-x64":"runner-windows-native","linux-database-x64":"runner-linux-database","macos-arm64":"runner-macos-arm64"}')[inputs.lane] }}
+    runs-on: ${{ fromJSON('{"linux-rootless-x64":["self-hosted","Linux","X64","elmos-linux-rootless"],"windows-native-x64":["self-hosted","Windows","X64","elmos-windows-native"],"linux-database-x64":["self-hosted","Linux","X64","elmos-linux-database"],"macos-arm64":["self-hosted","macOS","ARM64","elmos-macos-arm64"]}')[inputs.lane] }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Validate contracts and negative cases
+        shell: pwsh
+        run: |
+          python scripts/operations/runner_lanes.py validate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s scripts/operations -p test_runner_lanes.py -v
+          exit $LASTEXITCODE
+      - name: Collect local observations
+        shell: pwsh
+        env:
+          ELMOS_SELECTED_LANE: ${{ inputs.lane }}
+        run: |
+          $laneOutput = Join-Path $env:RUNNER_TEMP ('elmos-lane-' + $env:GITHUB_RUN_ID + '-' + $env:GITHUB_RUN_ATTEMPT)
+          python scripts/operations/runner_lanes.py collect --lane $env:ELMOS_SELECTED_LANE --output $laneOutput
+          exit $LASTEXITCODE
+      # Raw host data stays on the worker. An authenticated Ethan receiver is required
+      # for external submission; uploading a CI artifact cannot grant certification.

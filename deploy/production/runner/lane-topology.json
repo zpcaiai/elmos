@@ -1,0 +1,47 @@
+{
+  "schema": "elmos.runner-lanes.v1",
+  "certification": "NOT_CERTIFIED",
+  "rollout_order": ["linux-rootless-x64", "windows-native-x64", "linux-database-x64", "macos-arm64"],
+  "evidence_authority": {
+    "owner": "Ethan",
+    "endpoint": null,
+    "host": null,
+    "kms_key_reference": null,
+    "external_verification": "NOT_RUN"
+  },
+  "lanes": {
+    "linux-rootless-x64": {
+      "os": "Linux", "arch": "x86_64", "dedicated": true,
+      "execution": "linux-rootless-docker", "host_binding": null,
+      "environment": "runner-linux-rootless", "labels": ["self-hosted", "Linux", "X64", "elmos-linux-rootless"],
+      "workloads": ["spring-rootless", "project-synthesis-production", "qa-foundry-isolation", "b38-b45-dr-slo"],
+      "requirements": ["independent-linux-host", "non-root-identity", "local-rootless-docker", "tenant-isolation", "default-deny-network", "postgres-redis-kafka", "backup-restore", "independent-verifier"],
+      "existing_entrypoints": ["deploy/production/compose/docker-compose.spring-runner.yml", "scripts/operations/rootless_project_runner.py"],
+      "external_evidence": "NOT_RUN"
+    },
+    "windows-native-x64": {
+      "os": "Windows", "arch": "x86_64", "dedicated": true,
+      "execution": "windows-native", "host_binding": null,
+      "environment": "runner-windows-native", "labels": ["self-hosted", "Windows", "X64", "elmos-windows-native"],
+      "workloads": ["spring-windows-compat", "sqlserver-windows-auth", "chinadb-windows-drivers", "frontend-windows", "miniapp-windows", "qa-foundry-windows", "dotnet-framework"],
+      "requirements": ["ntfs-case-longpath-crlf-lock", "powershell-cmd", "ad-ldap-kerberos", "windows-ca-proxy", "sqlserver-jdbc-odbc-oledb-dsn", "gbk-gb18030-zh-locale", "edge-dpi-font-ime", "visual-studio-msbuild", "windows-service-gui-sandbox", "hyperv", "server-2022-or-2025-vm", "exact-container-host-image-isolation-tuple"],
+      "existing_entrypoints": [], "external_evidence": "NOT_RUN"
+    },
+    "linux-database-x64": {
+      "os": "Linux", "arch": "x86_64", "dedicated": true,
+      "execution": "linux-database-native", "host_binding": null,
+      "environment": "runner-linux-database", "labels": ["self-hosted", "Linux", "X64", "elmos-linux-database"],
+      "workloads": ["dm8-chinadb-performance", "database-cdc-rollback"],
+      "requirements": ["independent-linux-host", "isolated-performance-host", "exact-database-driver-versions", "disposable-data", "detail-reconciliation", "75ms-gate", "cdc", "rollback-restore", "independent-holdout"],
+      "existing_entrypoints": [], "external_evidence": "NOT_RUN"
+    },
+    "macos-arm64": {
+      "os": "Darwin", "arch": "arm64", "dedicated": false,
+      "execution": "macos-native", "host_binding": null,
+      "environment": "runner-macos-arm64", "labels": ["self-hosted", "macOS", "ARM64", "elmos-macos-arm64"],
+      "workloads": ["apple-native", "arm64-compat", "miniapp-apple", "frontend-macos"],
+      "requirements": ["exact-apple-toolchains", "native-arm64-no-rosetta", "browser-device-journeys"],
+      "existing_entrypoints": [], "external_evidence": "NOT_RUN"
+    }
+  }
+}
