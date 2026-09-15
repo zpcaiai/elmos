@@ -3,10 +3,10 @@
     {
       "evidence_bindings": [
         {
-          "bytes": 6520,
+          "bytes": 6518,
           "path": "certification/local-reference-evidence.json",
           "role": "runtime-equivalence",
-          "sha256": "b54254823c518310e5f806acf776e52871ea666f69eb69e5207fb911090cca50"
+          "sha256": "2f9a84a71556883a00ca710610d7339549d125d675254dce5040522f9aff480d"
         }
       ],
       "evidence_refs": [
@@ -33,10 +33,10 @@
     {
       "evidence_bindings": [
         {
-          "bytes": 6520,
+          "bytes": 6518,
           "path": "certification/local-reference-evidence.json",
           "role": "runtime-equivalence",
-          "sha256": "b54254823c518310e5f806acf776e52871ea666f69eb69e5207fb911090cca50"
+          "sha256": "2f9a84a71556883a00ca710610d7339549d125d675254dce5040522f9aff480d"
         },
         {
           "bytes": 120,
@@ -152,10 +152,10 @@
     {
       "evidence_bindings": [
         {
-          "bytes": 6520,
+          "bytes": 6518,
           "path": "certification/local-reference-evidence.json",
           "role": "runtime-equivalence",
-          "sha256": "b54254823c518310e5f806acf776e52871ea666f69eb69e5207fb911090cca50"
+          "sha256": "2f9a84a71556883a00ca710610d7339549d125d675254dce5040522f9aff480d"
         }
       ],
       "evidence_refs": [
