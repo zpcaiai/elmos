@@ -305,7 +305,8 @@ class TestAdvancedHarnessPillars(unittest.TestCase):
             for i in range(8)
         ]
 
-        indices = [log.append(r) for r in receipts]
+        for r in receipts:
+            log.append(r)
         self.assertEqual(len(log), 8)
         root = log.root_hash()
         self.assertEqual(len(root), 64)
