@@ -232,7 +232,7 @@ def generate_curl_test_suite(request: SynthesisRequest, port: int = 8080) -> str
             f'echo "--> Testing [GET /api/v1/{p}]..."',
             f'curl -s -f -H "${{AUTH_HEADER}}" -H "${{TENANT_HEADER}}" "${{BASE_URL}}/api/v1/{p}" || true',
             f'echo "--> Testing [POST /api/v1/{p}]..."',
-            f'curl -s -X POST -H "${{AUTH_HEADER}}" -H "${{TENANT_HEADER}}" -H "${{CONTENT_TYPE}}" \\',
+            'curl -s -X POST -H "${AUTH_HEADER}" -H "${TENANT_HEADER}" -H "${CONTENT_TYPE}" \\',
             f'  -d \'{{"id": "{s}-smoke-99", "name": "Smoke Test {s.capitalize()}"}}\' \\',
             f'  "${{BASE_URL}}/api/v1/{p}" || true',
             "",

@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
 from typing import Any
 
 import pytest
@@ -31,13 +30,12 @@ from elmos_project_synthesis.domain_archetypes import (
     EncounterAggregate,
     EncounterStatus,
     HipaaConsentViolationError,
-    InvalidDeviceTransitionError,
     InvalidEncounterTransitionError,
     PatientRecordAggregate,
     TelemetrySample,
 )
-from elmos_project_synthesis.models import SynthesisRequest
 from elmos_project_synthesis.intake import approve_request, create_draft
+from elmos_project_synthesis.models import SynthesisRequest
 from elmos_project_synthesis.workspace import render_workspace
 
 
