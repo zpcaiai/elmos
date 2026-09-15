@@ -101,6 +101,12 @@ public final class SpringEcosystemDependencyModernizer {
         blockingObligations.addAll(myBatisPlus.blockingObligations());
         changes += myBatisPlus.modifiedFiles().size();
 
+        var pageHelper = SpringPageHelperModernizer.modernize(projectRoot);
+        modifiedFiles.addAll(pageHelper.modifiedFiles());
+        rulesApplied.addAll(pageHelper.rulesApplied());
+        blockingObligations.addAll(pageHelper.blockingObligations());
+        changes += pageHelper.modifiedFiles().size();
+
         return new EcosystemModernizationResult(!modifiedFiles.isEmpty(), changes, modifiedFiles, rulesApplied, blockingObligations);
     }
 

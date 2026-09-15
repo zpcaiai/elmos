@@ -92,6 +92,11 @@ public final class SpringJUnitModernizer {
             return TestModernizationResult.empty();
         }
 
+        var powerMockRes = SpringPowerMockEliminator.eliminate(projectRoot);
+        modifiedFiles.addAll(powerMockRes.modifiedFiles());
+        rulesApplied.addAll(powerMockRes.rulesApplied());
+        changes += powerMockRes.changesCount();
+
         return new TestModernizationResult(!modifiedFiles.isEmpty(), changes, modifiedFiles, rulesApplied);
     }
 
@@ -108,6 +113,7 @@ public final class SpringJUnitModernizer {
                 || content.contains("SpringJUnit4ClassRunner")
                 || content.contains("MockitoJUnitRunner")
                 || content.contains("@RunWith")
+                || SpringPowerMockEliminator.isPowerMockTest(content)
                 || (content.contains("@Test") && (content.contains("expected") || content.contains("timeout")));
     }
 
@@ -121,6 +127,11 @@ public final class SpringJUnitModernizer {
         }
 
         String code = content;
+
+        // 0. Eliminate PowerMock and migrate to Mockito 5 MockedStatic
+        if (SpringPowerMockEliminator.isPowerMockTest(code)) {
+            code = SpringPowerMockEliminator.modernizeJavaTest(code, rules, new ArrayList<>());
+        }
 
         // 1. Modernize Imports with whitespace-tolerant regex
         code = modernizeImports(code, rules);
