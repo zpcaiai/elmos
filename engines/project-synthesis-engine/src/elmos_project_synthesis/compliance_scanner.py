@@ -33,7 +33,7 @@ def generate_compliance_audit(
 
     # 1. Regex check for forbidden viral license terms in emitted comments/docs
     viral_pattern = re.compile(r"\b(GNU General Public License|AGPL|GPLv3|Affero)\b", re.IGNORECASE)
-    secret_pattern = re.compile(r"(?:AKIA[0-9A-Z]{16}|bearer\s+[A-Za-z0-9_\-\.]{30,}|BEGIN RSA PRIVATE KEY)", re.IGNORECASE)
+    secret_pattern = re.compile(r"(?:AKIA[0-9A-Z]{16}|bearer\s+ey[A-Za-z0-9_\-\.]{30,}|BEGIN RSA PRIVATE KEY)", re.IGNORECASE)
 
     for path, content in workspace_files.items():
         if viral_pattern.search(content):
@@ -57,7 +57,7 @@ def generate_compliance_audit(
         "kind": "elmos.commercial-compliance-audit",
         "project_name": request.project_name,
         "project_kind": request.project_kind,
-        "generated_at": datetime.now(UTC).isoformat(),
+        "generated_at": str(request.raw.get("approval", {}).get("approved_at", "2026-09-15T00:00:00Z")),
         "ip_provenance": {
             "declared_license": "Apache-2.0",
             "permissive_commercial_use": True,

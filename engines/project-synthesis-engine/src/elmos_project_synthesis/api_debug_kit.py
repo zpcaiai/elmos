@@ -40,7 +40,7 @@ def generate_synthetic_seed_data(request: SynthesisRequest) -> dict[str, list[di
                         item[fname] = f"Sample {singular.capitalize()} {i}"
                     elif "email" in fname:
                         item[fname] = f"user_{i}@enterprise.corp"
-                    elif "code" in fname or "sku" in fname or "no" in fname:
+                    elif "code" in fname or "sku" in fname or "no" in fname or "num" in fname:
                         item[fname] = f"{singular.upper()}-CODE-{i:04d}"
                     elif "phone" in fname:
                         item[fname] = f"+1-555-010{i}"

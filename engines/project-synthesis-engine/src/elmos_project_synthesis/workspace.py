@@ -10,6 +10,12 @@ from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 from .ai_agent_scaffold import render_ai_agent_scaffold
+from .api_debug_kit import (
+    generate_curl_test_suite,
+    generate_postman_collection,
+    generate_synthetic_seed_data,
+)
+from .compliance_scanner import generate_compliance_audit
 from .deployment_guidance import render_deployment_guidance
 from .dotnet_target import render_dotnet
 from .frontend_target import render_frontend
@@ -993,6 +999,18 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         if receipt_path in files:
             raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{receipt_path}")
         files[receipt_path] = pretty_json(receipt)
+
+    # API Debug Kit & Synthetic Mock Seed Data
+    seed_data_path = "requirements/seed-data.json"
+    postman_path = "requirements/api-collection.postman.json"
+    curl_path = "scripts/curl_test_suite.sh"
+    files[seed_data_path] = pretty_json(generate_synthetic_seed_data(request))
+    files[postman_path] = pretty_json(generate_postman_collection(request))
+    files[curl_path] = generate_curl_test_suite(request)
+
+    # Enterprise License & Security Compliance Audit
+    compliance_path = ".elmos/compliance-audit.json"
+    files[compliance_path] = pretty_json(generate_compliance_audit(request, files))
 
     insight_path = "requirements/project-insights.json"
     insight_report_path = "docs/PROJECT_INSIGHTS.md"
