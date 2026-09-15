@@ -19,7 +19,7 @@ test.describe("Spring production OIDC authorization boundary", () => {
     await expect(page.getByRole("heading", { name: "选择合成测试身份" })).toBeVisible();
     await page.getByRole("button", { name: identity }).click();
     await expect(page).toHaveURL(/\/spring$/);
-    await expect(page.getByRole("heading", { name: "Java / Spring 老项目一键迁移" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Java / Spring 现代化升级" })).toBeVisible();
   }
 
   async function beginLogin(page: Page) {

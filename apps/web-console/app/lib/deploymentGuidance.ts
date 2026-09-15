@@ -153,7 +153,7 @@ const localProfiles: Record<GenerationTargetId, LocalRuntimeProfile> = {
 
 const recommendation: DeploymentGuidance["recommendation"] = {
   platform: "Google Cloud Run",
-  reason: "八类生成目标和 Spring 翻新结果都是容器化 HTTP 服务；Cloud Run 可降低单服务的集群运维，但不会替代数据库、身份、容量和恢复验收。",
+  reason: "八类生成目标和 Spring 现代化升级结果都是容器化 HTTP 服务；Cloud Run 可降低单服务的集群运维，但不会替代数据库、身份、容量和恢复验收。",
   requiredInputs: [
     "已批准的 Cloud 项目、区域、计费与数据驻留负责人",
     "专用最小权限运行时 Service Account",
@@ -221,7 +221,7 @@ export const springDeploymentGuidance: DeploymentGuidance = {
     toolchain: "JDK 17 + JDK 21 / Maven 3.9.11 / OpenRewrite 6.35.0",
     minimum: { cpu: 4, memoryGb: 8, diskGb: 20 },
     recommended: { cpu: 8, memoryGb: 16, diskGb: 40 },
-    scope: "完整翻新、双工具链构建和独立验证；仅运行目标项目可降至 2 vCPU / 2 GB RAM / 5 GB",
+    scope: "完整现代化升级、双工具链构建和独立验证；仅运行目标项目可降至 2 vCPU / 2 GB RAM / 5 GB",
     directory: "迁移后项目根目录",
     port: 8080,
     healthPath: "/actuator/health 或 /health",
