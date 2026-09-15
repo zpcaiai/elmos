@@ -344,6 +344,22 @@ public final class SpringEcosystemDependencyModernizer {
         result = result.replaceAll("import\\s+io\\.swagger\\.annotations\\.[^;]+;\n?", "");
         result = result.replaceAll("import\\s+io\\.springfox\\.[^;]+;\n?", "");
 
+        // Explicit Controller parameter names for Spring 6 reflection safety
+        Pattern paramPattern = Pattern.compile("@(PathVariable|RequestParam|RequestHeader)(?!\\s*\\()\\s+(?:@[A-Za-z0-9_]+\\s+)*([A-Za-z0-9_<>\\[\\]]+)\\s+([a-zA-Z0-9_]+)(?=[,)])");
+        Matcher m = paramPattern.matcher(result);
+        if (m.find()) {
+            StringBuffer sb = new StringBuffer();
+            do {
+                String ann = m.group(1);
+                String type = m.group(2);
+                String name = m.group(3);
+                m.appendReplacement(sb, Matcher.quoteReplacement("@" + ann + "(\"" + name + "\") " + type + " " + name));
+                rules.add("RULE-EXPLICIT-CONTROLLER-PARAM-NAME-" + ann.toUpperCase());
+            } while (m.find());
+            m.appendTail(sb);
+            result = sb.toString();
+        }
+
         return result;
     }
 }

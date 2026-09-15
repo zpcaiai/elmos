@@ -3,6 +3,8 @@ package io.elmos.worker.rewrite;
 import io.elmos.recipes.cloud.*;
 import io.elmos.recipes.jpa.*;
 import io.elmos.recipes.security.*;
+import io.elmos.recipes.transaction.*;
+import io.elmos.recipes.web.*;
 import io.elmos.recipes.xml.*;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.InMemoryExecutionContext;
@@ -111,7 +113,7 @@ public final class OpenRewriteAstCompiler {
     }
 
     /**
-     * Modernizes Hibernate 3/4/5 legacy Criteria, TypeDefs, and named queries to
+     * Modernizes Hibernate 3/4/5 legacy Criteria, TypeDefs, named queries, and MySQL ID generation to
      * Jakarta Persistence 3.x / Hibernate 6 using OpenRewrite typed AST recipes.
      */
     public static AstRewriteResult modernizeJpaHibernate(String sourceCode) {
@@ -120,7 +122,8 @@ public final class OpenRewriteAstCompiler {
                 && !sourceCode.contains("Restrictions")
                 && !sourceCode.contains("Projections")
                 && !sourceCode.contains("@TypeDef")
-                && !sourceCode.contains("TypeDefinition")) {
+                && !sourceCode.contains("TypeDefinition")
+                && !sourceCode.contains("GenerationType.AUTO")) {
             return AstRewriteResult.unmodified(sourceCode);
         }
 
@@ -129,7 +132,37 @@ public final class OpenRewriteAstCompiler {
                 new Hibernate6TypeMappingRecipe(),
                 new Hibernate6DialectFunctionRecipe(),
                 new Hibernate6EnversAuditRecipe(),
-                new SpringDataJpaNamedQueryModernizationRecipe()
+                new SpringDataJpaNamedQueryModernizationRecipe(),
+                new Hibernate6MySQLIdGenerationRecipe()
+        ));
+    }
+
+    /**
+     * Modernizes Spring Web MVC deprecated classes (WebMvcConfigurerAdapter, HandlerInterceptorAdapter)
+     * to modern interface implementations.
+     */
+    public static AstRewriteResult modernizeWebMvc(String sourceCode) {
+        if (!sourceCode.contains("WebMvcConfigurerAdapter")
+                && !sourceCode.contains("HandlerInterceptorAdapter")) {
+            return AstRewriteResult.unmodified(sourceCode);
+        }
+
+        return rewrite(sourceCode, List.of(
+                new SpringWebMvcConfigurerAdapterRecipe(),
+                new SpringHandlerInterceptorAdapterRecipe()
+        ));
+    }
+
+    /**
+     * Remediates Spring @Transactional intra-class self-invocations to avoid proxy bypass.
+     */
+    public static AstRewriteResult modernizeTransactionSelfInvocation(String sourceCode) {
+        if (!sourceCode.contains("Transactional")) {
+            return AstRewriteResult.unmodified(sourceCode);
+        }
+
+        return rewrite(sourceCode, List.of(
+                new SpringTransactionSelfInvocationRecipe()
         ));
     }
 

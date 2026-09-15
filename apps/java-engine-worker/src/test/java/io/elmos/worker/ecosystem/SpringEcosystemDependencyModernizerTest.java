@@ -102,4 +102,37 @@ class SpringEcosystemDependencyModernizerTest {
         assertTrue(updatedDto.contains("@Schema(description = \"Order Details\")"));
         assertTrue(updatedDto.contains("@Schema(description = \"Order number\", example = \"ORD-12345\")"));
     }
+
+    @Test
+    void modernizesControllerParameterNamesMissingExplicitName() throws IOException {
+        Path srcDir = tempDir.resolve("src/main/java/com/example");
+        Files.createDirectories(srcDir);
+        Path controller = srcDir.resolve("UserController.java");
+        Files.writeString(controller, """
+                package com.example;
+
+                import org.springframework.web.bind.annotation.*;
+
+                @RestController
+                @RequestMapping("/api/users")
+                public class UserController {
+
+                    @GetMapping("/{id}")
+                    public String getUser(@PathVariable Long id, @RequestParam String query, @RequestHeader String auth) {
+                        return id + query + auth;
+                    }
+                }
+                """);
+
+        var result = SpringEcosystemDependencyModernizer.modernize(tempDir);
+        assertTrue(result.modified());
+        assertTrue(result.rulesApplied().contains("RULE-EXPLICIT-CONTROLLER-PARAM-NAME-PATHVARIABLE"));
+        assertTrue(result.rulesApplied().contains("RULE-EXPLICIT-CONTROLLER-PARAM-NAME-REQUESTPARAM"));
+        assertTrue(result.rulesApplied().contains("RULE-EXPLICIT-CONTROLLER-PARAM-NAME-REQUESTHEADER"));
+
+        String code = Files.readString(controller);
+        assertTrue(code.contains("@PathVariable(\"id\") Long id"));
+        assertTrue(code.contains("@RequestParam(\"query\") String query"));
+        assertTrue(code.contains("@RequestHeader(\"auth\") String auth"));
+    }
 }

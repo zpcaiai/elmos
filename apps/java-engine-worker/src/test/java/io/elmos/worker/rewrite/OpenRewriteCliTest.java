@@ -328,4 +328,71 @@ class OpenRewriteCliTest {
         assertTrue(code.contains("import jakarta.jws.WebService;"));
         assertTrue(code.contains("import jakarta.jws.WebMethod;"));
     }
+
+    @Test
+    @DisplayName("OpenRewriteCli: Successfully processes WEB_MVC recipe family")
+    void testCliProcessesWebMvc() throws Exception {
+        String webMvcCode = """
+                package com.example.web;
+
+                import org.springframework.context.annotation.Configuration;
+                import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+                @Configuration
+                public class WebConfig extends WebMvcConfigurerAdapter {
+                }
+                """;
+
+        String inputJson = MAPPER.createObjectNode()
+                .put("action", "rewrite")
+                .put("recipeFamily", "WEB_MVC")
+                .put("sourceCode", webMvcCode)
+                .toString();
+
+        String outputJson = OpenRewriteCli.processJson(inputJson);
+        JsonNode response = MAPPER.readTree(outputJson);
+
+        assertEquals("SUCCESS", response.get("status").asText());
+        assertTrue(response.get("modified").asBoolean());
+        String code = response.get("sourceCode").asText();
+        assertTrue(code.contains("implements WebMvcConfigurer"));
+        assertFalse(code.contains("extends WebMvcConfigurerAdapter"));
+    }
+
+    @Test
+    @DisplayName("OpenRewriteCli: Successfully processes TRANSACTION_SELF_INVOCATION recipe family")
+    void testCliProcessesTransactionSelfInvocation() throws Exception {
+        String txCode = """
+                package com.example.service;
+
+                import org.springframework.stereotype.Service;
+                import org.springframework.transaction.annotation.Transactional;
+
+                @Service
+                public class PaymentService {
+                    public void pay(Long orderId) {
+                        doInternal(orderId);
+                    }
+
+                    @Transactional
+                    public void doInternal(Long orderId) {
+                    }
+                }
+                """;
+
+        String inputJson = MAPPER.createObjectNode()
+                .put("action", "rewrite")
+                .put("recipeFamily", "TRANSACTION_SELF_INVOCATION")
+                .put("sourceCode", txCode)
+                .toString();
+
+        String outputJson = OpenRewriteCli.processJson(inputJson);
+        JsonNode response = MAPPER.readTree(outputJson);
+
+        assertEquals("SUCCESS", response.get("status").asText());
+        assertTrue(response.get("modified").asBoolean());
+        String code = response.get("sourceCode").asText();
+        assertTrue(code.contains("self.doInternal(orderId)"));
+        assertTrue(code.contains("private PaymentService self;"));
+    }
 }

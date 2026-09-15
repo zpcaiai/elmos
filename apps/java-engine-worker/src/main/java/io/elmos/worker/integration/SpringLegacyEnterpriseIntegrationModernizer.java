@@ -121,9 +121,9 @@ public final class SpringLegacyEnterpriseIntegrationModernizer {
             Files.writeString(file, after, StandardCharsets.UTF_8);
             changed.add(relative(root, file));
             rules.addAll(fileRules);
-            for (String b : fileBlockers) {
-                blockers.add(b.contains(":") ? b : relative(root, file) + ": " + b);
-            }
+        }
+        for (String b : fileBlockers) {
+            blockers.add(b.contains(":") ? b : relative(root, file) + ": " + b);
         }
     }
 

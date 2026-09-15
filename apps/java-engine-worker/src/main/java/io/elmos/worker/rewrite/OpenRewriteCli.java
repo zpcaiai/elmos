@@ -198,6 +198,22 @@ public class OpenRewriteCli {
                 anyModified = true;
             }
 
+            // 10. Web MVC modernizer (WebMvcConfigurerAdapter, HandlerInterceptorAdapter)
+            var webRes = OpenRewriteAstCompiler.modernizeWebMvc(currentCode);
+            if (webRes.modified()) {
+                currentCode = webRes.source();
+                allApplied.addAll(webRes.recipesApplied());
+                anyModified = true;
+            }
+
+            // 11. Transaction self-invocation remediation
+            var txSelfRes = OpenRewriteAstCompiler.modernizeTransactionSelfInvocation(currentCode);
+            if (txSelfRes.modified()) {
+                currentCode = txSelfRes.source();
+                allApplied.addAll(txSelfRes.recipesApplied());
+                anyModified = true;
+            }
+
         } else if ("SPRING_SECURITY_6".equalsIgnoreCase(recipeFamily)) {
             var res = OpenRewriteAstCompiler.modernizeSecurity(currentCode);
             currentCode = res.source();
@@ -278,6 +294,18 @@ public class OpenRewriteCli {
                 allApplied.addAll(txRes.rulesApplied().subList(1, txRes.rulesApplied().size()));
                 anyModified = true;
             }
+
+        } else if ("WEB_MVC".equalsIgnoreCase(recipeFamily)) {
+            var res = OpenRewriteAstCompiler.modernizeWebMvc(currentCode);
+            currentCode = res.source();
+            allApplied.addAll(res.recipesApplied());
+            anyModified = res.modified();
+
+        } else if ("TRANSACTION_SELF_INVOCATION".equalsIgnoreCase(recipeFamily)) {
+            var res = OpenRewriteAstCompiler.modernizeTransactionSelfInvocation(currentCode);
+            currentCode = res.source();
+            allApplied.addAll(res.recipesApplied());
+            anyModified = res.modified();
 
         } else {
             // Default to Security

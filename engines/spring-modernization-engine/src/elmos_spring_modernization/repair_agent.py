@@ -221,14 +221,34 @@ class RepairVerificationLoop:
                 ):
                     recipe_family = "SPRING_SECURITY_6"
                 elif (
+                    "webmvcconfigureradapter" in lower_err
+                    or "handlerinterceptoradapter" in lower_err
+                    or "webmvcconfigureradapter" in lower_code
+                    or "handlerinterceptoradapter" in lower_code
+                ):
+                    recipe_family = "WEB_MVC"
+                elif (
+                    "self-invocation" in lower_err
+                    or "selfinvocation" in lower_err
+                    or "proxy bypass" in lower_err
+                    or "transactional" in lower_err
+                ):
+                    recipe_family = "TRANSACTION_SELF_INVOCATION"
+                elif (
                     "criteria" in lower_err
                     or "hibernate" in lower_err
                     or "getone" in lower_err
                     or "javax.persistence" in lower_err
                     or ".getone(" in lower_code
                     or "javax.persistence." in code
+                    or "generationtype.auto" in lower_code
                 ):
                     recipe_family = "JPA_HIBERNATE_6"
+                elif (
+                    "dubbo" in lower_err
+                    or "com.alibaba.dubbo" in lower_code
+                ):
+                    recipe_family = "DUBBO_3"
                 elif (
                     "junit" in lower_err
                     or "test" in lower_err
