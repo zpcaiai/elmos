@@ -288,7 +288,7 @@ class DddStateMachineSmtProver:
             )
 
         try:
-            res = subprocess.run(
+            res = subprocess.run(  # noqa: S603
                 [self.z3_path, "-in"],
                 input=smt2_script,
                 capture_output=True,
