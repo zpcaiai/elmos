@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, List
+from typing import Dict
 from .base import ProjectGenerator
 from ..models import PSIR, GeneratedProject, EntitySpec, EndpointSpec, ServiceSpec, FieldType
 from ..type_mapper import TypeMapper, Language

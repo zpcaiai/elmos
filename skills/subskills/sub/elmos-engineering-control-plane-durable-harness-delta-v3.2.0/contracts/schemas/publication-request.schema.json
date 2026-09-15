@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PublicationRequest",
+  "type": "object",
+  "required": [
+    "request_id",
+    "certified_checkpoint_id",
+    "action",
+    "status"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "certified_checkpoint_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "action": {
+      "enum": [
+        "CREATE_PR",
+        "MERGE",
+        "TAG",
+        "RELEASE",
+        "DEPLOY"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PENDING",
+        "APPROVED",
+        "DENIED",
+        "EXECUTING",
+        "SUCCEEDED",
+        "FAILED"
+      ]
+    },
+    "approval_binding_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

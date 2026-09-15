@@ -1,0 +1,11 @@
+skill: elmos-execution-timeline-artifacts
+required:
+  - contract mapping documented
+  - positive path tested
+  - negative/fail-closed path tested
+  - replay or recovery semantics tested where stateful
+  - provenance retained across material transformations
+forbidden:
+  - silent permission widening
+  - model self-attestation accepted as proof
+  - adapter-specific enum leaked into core domain model without mapping

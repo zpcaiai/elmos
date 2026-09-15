@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import importlib.util
 import io
 import json
@@ -165,6 +166,9 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             "external_evidence_status": "NOT_RUN",
             "certification_status": "NOT_CERTIFIED",
         }
+        stale_attempt = REFERENCE.failure_attempt_destination(self.repo, self.route)
+        stale_attempt.parent.mkdir(parents=True)
+        stale_attempt.write_text('{"execution_status":"FAILED"}\n', encoding="utf-8")
         real_replace = os.replace
         with (
             mock.patch.object(REFERENCE, "execute", return_value=success),
@@ -262,8 +266,10 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             "boot-2.7-maven-to-boot-4.1.0-java-21": ("2.7.18", "17"),
             "boot-3.0-3.4-maven-to-boot-4.1.0-java-21": ("3.4.1", "17"),
             "boot-3.5-maven-to-boot-4.1.0-java-21": ("3.5.3", "21"),
+            "boot-1.5-gradle-to-boot-4.1.0-java-21": ("1.5.22.RELEASE", "8"),
             "boot-2.x-gradle-to-boot-4.1.0-java-21": ("2.7.18", "17"),
             "spring-mvc-3.2-7.0-maven-to-boot-4.1.0-java-21": ("5.3.39", "11"),
+            "spring-framework-3.2-7.0-maven-to-boot-4.1.0-java-21": ("5.3.39", "11"),
         }
         for route_id, (source_boot, source_java) in expected.items():
             record = json.loads(
@@ -295,6 +301,33 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_boot_4_1_1_local_records_are_exact(self) -> None:
+        expected = {
+            "boot-1.5-gradle-to-boot-4.1.1-java-21": ("1.5.22.RELEASE", "8"),
+            "spring-mvc-3.2-7.0-maven-to-boot-4.1.1-java-21": ("5.3.39", "11"),
+            "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21": ("5.3.39", "11"),
+        }
+        for route_id, (source_boot, source_java) in expected.items():
+            record = json.loads(
+                (ROOT / "evidence/spring-routes" / f"{route_id}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(record["execution_status"], "PASSED_LOCAL")
+            self.assertTrue(record["behavioral_parity"])
+            self.assertEqual(
+                record["recorded_tuple"],
+                {
+                    "source_boot": source_boot,
+                    "source_java": source_java,
+                    "target_boot": "4.1.1",
+                    "target_java": "21",
+                },
+            )
+            self.assertEqual(record["external_evidence_status"], "NOT_RUN")
+            self.assertEqual(record["independent_verification"], "NOT_RUN")
+            self.assertEqual(record["certification_status"], "NOT_CERTIFIED")
+
     def test_tampered_boot_3_5_evidence_fails_contract_validator(self) -> None:
         target_evidence = ROOT / "evidence/spring-routes/boot-2.7-maven-to-boot-3.5.3-java-21.json"
         original = target_evidence.read_text(encoding="utf-8")
@@ -310,7 +343,7 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
                 check=False,
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("BOOT_3_5_LOCAL_EVIDENCE", result.stdout + result.stderr)
+            self.assertIn("BOOT_LOCAL_EVIDENCE", result.stdout + result.stderr)
         finally:
             target_evidence.write_text(original, encoding="utf-8")
 
@@ -343,6 +376,102 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
         self.assertEqual(
             REFERENCE.gradle_settings(route),
             "rootProject.name = 'spring-reference-2-7-18'\n",
+        )
+
+    def test_boot_1_5_gradle_fixture_and_bootstrap_bind_both_toolchains(self) -> None:
+        route = REFERENCE.ROUTES["boot-1.5-gradle-to-boot-4.1.1-java-21"]
+        source_build = REFERENCE.gradle_build(route)
+        self.assertNotIn("useJUnitPlatform()", source_build)
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            (project / "build.gradle").write_text(source_build, encoding="utf-8")
+            receipt = REFERENCE.bootstrap_legacy_gradle_descriptor(project, route)
+            target_build = (project / "build.gradle").read_text(encoding="utf-8")
+        self.assertEqual(receipt["source_gradle"], "Gradle 4.10.3")
+        self.assertEqual(receipt["target_gradle"], "Gradle 8.14.3")
+        self.assertIn("version '4.1.1'", target_build)
+        self.assertIn("version '1.1.7'", target_build)
+        self.assertIn("sourceCompatibility = '21'", target_build)
+        self.assertIn("useJUnitPlatform()", target_build)
+
+    def test_boot_1_5_gradle_bootstrap_rejects_non_admitted_route(self) -> None:
+        route = REFERENCE.ROUTES["boot-2.x-gradle-to-boot-4.1.1-java-21"]
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            (project / "build.gradle").write_text(
+                REFERENCE.gradle_build(route), encoding="utf-8"
+            )
+            with self.assertRaises(REFERENCE.RunFailure):
+                REFERENCE.bootstrap_legacy_gradle_descriptor(project, route)
+
+    def test_all_catalogued_boot_routes_have_exact_local_executor_entries(self) -> None:
+        expected = {
+            "boot-1.5-java-8-maven-to-boot-2.7.18-java-17",
+            "boot-1.5-java-8-maven-to-boot-3.2.12-java-17",
+            "boot-1.5-java-8-maven-to-boot-3.5.3-java-21",
+            "boot-2.0-2.6-maven-to-boot-2.7.18-java-17",
+            "boot-2.0-2.6-maven-to-boot-3.2.12-java-17",
+            "boot-2.0-2.6-maven-to-boot-3.5.3-java-21",
+            "boot-2.7-maven-to-boot-3.2.12-java-17",
+            "boot-2.7-maven-to-boot-3.5.3-java-21",
+            "boot-3.0-3.1-maven-to-boot-3.2.12-java-17",
+            "boot-3.0-3.4-maven-to-boot-3.5.3-java-21",
+            "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
+            "boot-1.5-maven-to-boot-4.1.0-java-21",
+            "boot-2.0-2.6-maven-to-boot-4.1.0-java-21",
+            "boot-2.7-maven-to-boot-4.1.0-java-21",
+            "boot-3.0-3.4-maven-to-boot-4.1.0-java-21",
+            "boot-3.5-maven-to-boot-4.1.0-java-21",
+            "boot-4.0-maven-to-boot-4.1.0-java-21",
+            "boot-2.x-gradle-to-boot-3.5.3-java-21",
+            "boot-1.5-gradle-to-boot-4.1.0-java-21",
+            "boot-2.x-gradle-to-boot-4.1.0-java-21",
+            "boot-3.x-gradle-to-boot-4.1.0-java-21",
+            "boot-4.0-gradle-to-boot-4.1.0-java-21",
+            "boot-1.5-maven-to-boot-4.1.1-java-21",
+            "boot-2.0-2.6-maven-to-boot-4.1.1-java-21",
+            "boot-2.7-maven-to-boot-4.1.1-java-21",
+            "boot-3.0-3.4-maven-to-boot-4.1.1-java-21",
+            "boot-3.5-maven-to-boot-4.1.1-java-21",
+            "boot-4.0-maven-to-boot-4.1.1-java-21",
+            "boot-1.5-gradle-to-boot-4.1.1-java-21",
+            "boot-2.x-gradle-to-boot-4.1.1-java-21",
+            "boot-3.x-gradle-to-boot-4.1.1-java-21",
+            "boot-4.0-gradle-to-boot-4.1.1-java-21",
+        }
+        self.assertEqual(set(REFERENCE.ROUTES), expected)
+
+    def test_target_java_is_route_bound_for_java_17_edges(self) -> None:
+        route = REFERENCE.ROUTES[
+            "boot-1.5-java-8-maven-to-boot-2.7.18-java-17"
+        ]
+        self.assertEqual(route.source_java, "8")
+        self.assertEqual(route.target_java, "17")
+        self.assertEqual(route.target_boot, "2.7.18")
+
+    def test_target_build_forces_post_rewrite_clean_recompile(self) -> None:
+        self.assertEqual(
+            REFERENCE.clean_build_argv(["mvn", "-B", "verify"]),
+            ["mvn", "-B", "clean", "verify"],
+        )
+        self.assertEqual(
+            REFERENCE.clean_build_argv(["gradle", "--no-daemon", "build"]),
+            ["gradle", "--no-daemon", "clean", "build"],
+        )
+
+    def test_boot_4_source_fixture_names_split_webmvc_test_starter(self) -> None:
+        route = REFERENCE.ROUTES["boot-4.0-maven-to-boot-4.1.1-java-21"]
+        self.assertIn("spring-boot-starter-webmvc-test", REFERENCE.pom(route))
+        self.assertIn(
+            "org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc",
+            route.test,
+        )
+        gradle_route = REFERENCE.ROUTES[
+            "boot-4.0-gradle-to-boot-4.1.1-java-21"
+        ]
+        self.assertIn(
+            "testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'",
+            REFERENCE.gradle_build(gradle_route),
         )
 
     def test_gradle_route_recipe_matches_the_catalog_route_id(self) -> None:
@@ -405,6 +534,42 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             REFERENCE.ELMOS_RECIPE_COORDINATE,
             REFERENCE.rewrite_recipe_artifact_coordinates(boot_4_recipe),
         )
+        self.assertIn(
+            REFERENCE.ELMOS_RECIPE_COORDINATE,
+            REFERENCE.gradle_elmos_recipe_dependency(boot_4_recipe),
+        )
+        self.assertIn("mavenLocal()", REFERENCE.GRADLE_REWRITE_INIT_SCRIPT)
+        self.assertEqual(
+            REFERENCE.gradle_elmos_recipe_dependency(boot_3_recipe), ""
+        )
+
+    def test_recipe_seed_builds_the_leaf_pom_in_sparse_workspaces(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            recipe_root = repo / "recipes/elmos-java-recipes"
+            artifact = recipe_root / "target/elmos-java-recipes-0.1.0-SNAPSHOT.jar"
+            recipe_root.mkdir(parents=True)
+            (recipe_root / "pom.xml").write_text("<project/>\n", encoding="utf-8")
+            artifact.parent.mkdir(parents=True)
+            artifact.write_bytes(b"repository-owned-recipe")
+            completed = subprocess.CompletedProcess([], 0, stdout="", stderr="")
+
+            with mock.patch.object(REFERENCE, "run", return_value=completed) as run:
+                result, digest = REFERENCE.install_elmos_recipe_artifact(
+                    repo, "/exact/maven-3.9.11/bin/mvn", Path("/exact/java-21")
+                )
+
+            self.assertIs(result, completed)
+            command = run.call_args.args[0]
+            self.assertEqual(command[0], "/exact/maven-3.9.11/bin/mvn")
+            self.assertIn("-f", command)
+            self.assertIn(str(recipe_root / "pom.xml"), command)
+            self.assertNotIn("-pl", command)
+            self.assertNotIn("-am", command)
+            self.assertEqual(
+                digest,
+                hashlib.sha256(b"repository-owned-recipe").hexdigest(),
+            )
 
     def test_built_boot_jar_rejects_missing_and_plain_jars(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -1,0 +1,13 @@
+{
+  "runtime_id": "codex-runtime",
+  "result": "SUPPORTED_WITH_NARROWER_SCOPE",
+  "requested": [
+    "repo.read",
+    "repo.write.worktree",
+    "network.github.com"
+  ],
+  "effective": [
+    "repo.read",
+    "repo.write.worktree"
+  ]
+}

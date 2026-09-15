@@ -1,9 +1,12 @@
 {
   "batch": 42,
   "packKey": "elmos-platform-agent-factory",
-  "eligible": true,
-  "status": "CERTIFIED",
-  "failures": [],
+  "eligible": false,
+  "status": "BLOCKED",
+  "failures": [
+    "externalOperationExecuted=false",
+    "repository-held certification keys revoked; field evidence and independent certification NOT_RUN"
+  ],
   "evidenceRefs": [
     "batch42-execution",
     "batch42-provenance",

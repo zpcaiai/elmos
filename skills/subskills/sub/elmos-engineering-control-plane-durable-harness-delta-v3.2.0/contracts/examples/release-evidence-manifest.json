@@ -1,0 +1,28 @@
+{
+  "release_id": "rel-1",
+  "repository_commit": "abc123",
+  "execution_plan_digest": "sha256:plan",
+  "policy_version": "p7",
+  "skill_set_digest": "sha256:skills",
+  "runner_image_digest": "sha256:runner",
+  "dependency_lock_digest": "sha256:deps",
+  "verification": [
+    {
+      "check_id": "unit",
+      "status": "PASS",
+      "evidence_id": "ev-1"
+    },
+    {
+      "check_id": "perf",
+      "status": "PENDING"
+    }
+  ],
+  "publication": {
+    "registry": "internal",
+    "expected_digest": "sha256:a",
+    "published_digest": "sha256:a",
+    "exact_bytes_verified": true
+  },
+  "status": "PENDING",
+  "signatures": []
+}

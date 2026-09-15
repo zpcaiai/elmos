@@ -384,15 +384,31 @@ def create_draft(
     normalized_entities = _normalize_entities(entities, description=normalized_description, entity=entity)
     questions: list[dict[str, str]] = []
     if not normalized_entities:
-        fallback = identifier(project_name.split("-")[0])
-        normalized_entities = [{"singular": fallback, "plural": _pluralize(fallback), "fields": _default_fields()}]
-        questions.append(
-            {
-                "id": "Q-ENTITY-001",
-                "question": f"未能从描述中可靠识别业务实体。请确认 {fallback} 并补充字段。",
-                "impact": "high",
-            }
-        )
+        if project_kind == "scientific":
+            fallback = "experiment"
+            normalized_entities = [
+                {
+                    "singular": fallback,
+                    "plural": "experiments",
+                    "fields": [
+                        {"name": "name", "type": "string", "required": True},
+                        {"name": "model", "type": "string", "required": True},
+                        {"name": "accuracy", "type": "number", "required": False},
+                        {"name": "loss", "type": "number", "required": False},
+                        {"name": "seed", "type": "integer", "required": True},
+                    ],
+                }
+            ]
+        else:
+            fallback = identifier(project_name.split("-")[0])
+            normalized_entities = [{"singular": fallback, "plural": _pluralize(fallback), "fields": _default_fields()}]
+            questions.append(
+                {
+                    "id": "Q-ENTITY-001",
+                    "question": f"未能从描述中可靠识别业务实体。请确认 {fallback} 并补充字段。",
+                    "impact": "high",
+                }
+            )
     entity_names = {str(item["singular"]) for item in normalized_entities}
     entity_fields = {
         str(item["singular"]): {
@@ -653,6 +669,109 @@ def create_draft(
                 "verification_type": "test",
             }
         )
+
+    if project_kind == "fullstack":
+        fullstack_req_id = "REQ-FULLSTACK-001"
+        requirements.append(
+            {
+                "id": fullstack_req_id,
+                "kind": "functional",
+                "statement": (
+                    "The fullstack application delivers an integrated modern Web frontend with navigation, "
+                    "dashboard metrics, entity CRUD management, and typed backend API integration."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG350", "location": "web-frontend"}],
+            }
+        )
+        criteria.append(
+            {
+                "id": "AC-FULLSTACK-001",
+                "requirement_ids": [fullstack_req_id],
+                "statement": "The web frontend builds cleanly, exports typed API clients, and renders entity management views.",
+                "verification_type": "build",
+            }
+        )
+
+    if project_kind == "scientific":
+        requirements.extend([
+            {
+                "id": "REQ-SCI-001",
+                "kind": "functional",
+                "statement": (
+                    "The scientific project implements a deep learning and scientific computing pipeline "
+                    "with modular datasets, neural network architectures, custom loss functions, and train/eval loops."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG450", "location": "scientific-stack"}],
+            },
+            {
+                "id": "REQ-SCI-002",
+                "kind": "quality-derived",
+                "statement": (
+                    "The project guarantees 100% experiment reproducibility through full-stack seed locking "
+                    "(Python, NumPy, PyTorch CPU/CUDA, cuDNN deterministic flag) and hermetic environment specification."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "high",
+                "source_refs": [{"source_id": "PG451", "location": "reproducibility-lock"}],
+            },
+            {
+                "id": "REQ-SCI-003",
+                "kind": "functional",
+                "statement": (
+                    "The project includes MLOps experiment tracking (WandB/TensorBoard/Offline), "
+                    "hyperparameter ablation study matrices, and statistical significance hypothesis testing."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG452", "location": "mlops-ablation"}],
+            },
+            {
+                "id": "REQ-SCI-004",
+                "kind": "functional",
+                "statement": (
+                    "The project exports academic publication artifacts including 300+ DPI vector plots, "
+                    "LaTeX Booktabs tables, BibTeX references, and an Artifact Evaluation compliant reproduction script."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG453", "location": "publication-artifacts"}],
+            },
+        ])
+        criteria.extend([
+            {
+                "id": "AC-SCI-001",
+                "requirement_ids": ["REQ-SCI-001"],
+                "statement": "The scientific deep learning pipeline executes training for at least 1 epoch with forward/backward passes and evaluation.",
+                "verification_type": "test",
+            },
+            {
+                "id": "AC-SCI-002",
+                "requirement_ids": ["REQ-SCI-002"],
+                "statement": "Repeated runs with the same seed yield bitwise identical initial weights and deterministic execution telemetry.",
+                "verification_type": "test",
+            },
+            {
+                "id": "AC-SCI-003",
+                "requirement_ids": ["REQ-SCI-003"],
+                "statement": "The ablation matrix executes multiple component variants and reports statistical significance metrics.",
+                "verification_type": "test",
+            },
+            {
+                "id": "AC-SCI-004",
+                "requirement_ids": ["REQ-SCI-004"],
+                "statement": "The publication artifact pipeline generates vector figures, table_results.tex, and executes ./reproduce.sh cleanly.",
+                "verification_type": "build",
+            },
+        ])
 
     draft: dict[str, Any] = {
         "schema_version": "1.1.0",

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MigrationReceipt",
+  "type": "object",
+  "required": [
+    "migration_id",
+    "from_version",
+    "to_version",
+    "status",
+    "executed_at"
+  ],
+  "properties": {
+    "migration_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "to_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PLANNED",
+        "APPLIED",
+        "ROLLED_BACK",
+        "FAILED"
+      ]
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pre_state_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "post_state_digest": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

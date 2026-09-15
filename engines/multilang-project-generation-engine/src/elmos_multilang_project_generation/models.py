@@ -16,6 +16,8 @@ class Language(Enum):
     PHP = "PHP"
     DART = "DART"
 
+LanguageTarget = Language
+
 class Framework(Enum):
     SPRING_BOOT = "SPRING_BOOT"
     DJANGO = "DJANGO"

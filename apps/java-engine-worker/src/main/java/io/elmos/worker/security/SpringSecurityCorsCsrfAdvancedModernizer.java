@@ -142,6 +142,49 @@ public final class SpringSecurityCorsCsrfAdvancedModernizer {
             rules.add("SEC-046: Modernized sessionManagement() to lambda DSL");
         }
 
+        // 6. Modernize deferred CSRF for SPA / REST handshake (resolve 403 Forbidden with Spring Security 6)
+        if (code.contains("CookieCsrfTokenRepository") && !code.contains("CsrfCookieFilter")) {
+            if (code.contains("http.build()") || code.contains("return http")) {
+                // Add CsrfCookieFilter class definition if not present
+                String csrfCookieFilterClass = """
+
+    static final class CsrfCookieFilter extends org.springframework.web.filter.OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
+                                        jakarta.servlet.http.HttpServletResponse response,
+                                        jakarta.servlet.FilterChain filterChain)
+                throws jakarta.servlet.ServletException, java.io.IOException {
+            org.springframework.security.web.csrf.CsrfToken csrfToken =
+                    (org.springframework.security.web.csrf.CsrfToken) request.getAttribute("_csrf");
+            if (csrfToken != null) {
+                csrfToken.getToken();
+            }
+            filterChain.doFilter(request, response);
+        }
+    }
+""";
+                int lastBrace = code.lastIndexOf('}');
+                if (lastBrace != -1) {
+                    code = code.substring(0, lastBrace) + csrfCookieFilterClass + code.substring(lastBrace);
+                    // Add .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                    if (code.contains("return http.build();")) {
+                        code = code.replace(
+                                "return http.build();",
+                                "http.addFilterAfter(new CsrfCookieFilter(), org.springframework.security.web.authentication.www.BasicAuthenticationFilter.class);\n        return http.build();"
+                        );
+                    }
+                    if (!code.contains("import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;")) {
+                        code = insertImport(code, "org.springframework.security.web.authentication.www.BasicAuthenticationFilter");
+                    }
+                    if (!code.contains("import org.springframework.security.web.csrf.CsrfToken;")) {
+                        code = insertImport(code, "org.springframework.security.web.csrf.CsrfToken");
+                    }
+                    changes++;
+                    rules.add("SEC-047: Configured SPA CSRF token handshake with CsrfCookieFilter to resolve deferred CSRF token 403 errors");
+                }
+            }
+        }
+
         if (changes > 0) {
             List<String> payload = new ArrayList<>();
             payload.add(code);

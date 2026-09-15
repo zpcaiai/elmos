@@ -1,0 +1,100 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "build_tool": "maven",
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "5.3.39",
+    "source_java": "11",
+    "target_boot": "4.1.1",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21",
+  "schema_version": 1,
+  "source": {
+    "build": "PASSED",
+    "build_tail": "A-INF/MANIFEST.MF\n[WARNING]   - META-INF/license.txt\n[WARNING]   - META-INF/notice.txt\n[WARNING] nonboot-source.jar, spring-beans-5.3.39.jar define 400 overlapping classes and resources: \n[WARNING]   - META-INF/spring-beans.kotlin_module\n[WARNING]   - META-INF/spring.factories\n[WARNING]   - org.springframework.beans.AbstractNestablePropertyAccessor\n[WARNING]   - org.springframework.beans.AbstractNestablePropertyAccessor$PropertyHandler\n[WARNING]   - org.springframework.beans.AbstractNestablePropertyAccessor$PropertyTokenHolder\n[WARNING]   - org.springframework.beans.AbstractPropertyAccessor\n[WARNING]   - org.springframework.beans.BeanInfoFactory\n[WARNING]   - org.springframework.beans.BeanInstantiationException\n[WARNING]   - org.springframework.beans.BeanMetadataAttribute\n[WARNING]   - org.springframework.beans.BeanMetadataAttributeAccessor\n[WARNING]   - 390 more...\n[WARNING] maven-shade-plugin has detected that some files are\n[WARNING] present in two or more JARs. When this happens, only one\n[WARNING] single version of the file is copied to the uber jar.\n[WARNING] Usually this is not harmful and you can skip these warnings,\n[WARNING] otherwise try to manually exclude artifacts based on\n[WARNING] mvn dependency:tree -Ddetail=true and the above output.\n[WARNING] See https://maven.apache.org/plugins/maven-shade-plugin/\n[INFO] Replacing original artifact with shaded artifact.\n[INFO] Replacing /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/source/target/nonboot-source.jar with /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/source/target/nonboot-source-1.0.0-shaded.jar\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  2.608 s\n[INFO] Finished at: 2026-09-14T13:02:44+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "runtime": {
+      "container_image": "tomcat@sha256:712120b4bca129c7ac3f433f58695db5550eff499c4d435b0f8a120b41b132c6",
+      "docker_boundary": "PASSED_LOCAL_NON_ROOTLESS",
+      "network": "none",
+      "results": {
+        "1001": "{id=1001, status=REVIEW, amountCents=125125, currency=CNY}",
+        "42": "{id=42, status=READY, amountCents=5250, currency=CNY}",
+        "7": "{id=7, status=REVIEW, amountCents=875, currency=CNY}"
+      }
+    },
+    "spring_framework": "5.3.39"
+  },
+  "source_family": "spring-framework",
+  "target": {
+    "boot": "4.1.1",
+    "build": "PASSED",
+    "build_tail": "1.0.0.jar to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/target/target/classes\n[INFO] \n[INFO] --- resources:3.5.0:testResources (default-testResources) @ fcm-target ---\n[INFO] skip non existing resourceDirectory /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/target/src/test/resources\n[INFO] \n[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ fcm-target ---\n[INFO] No sources to compile\n[INFO] \n[INFO] --- surefire:3.5.6:test (default-test) @ fcm-target ---\n[INFO] No tests to run.\n[INFO] Skipping execution of surefire because it has already been run for this configuration\n[INFO] \n[INFO] --- jar:3.5.1:jar (default-jar) @ fcm-target ---\n[INFO] \n[INFO] --- spring-boot:4.1.1:repackage (repackage) @ fcm-target ---\n[INFO] Replacing main artifact /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/target/target/fcm-target-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/target/target/fcm-target-1.0.0.jar.original\n[INFO] \n[INFO] --- spring-boot:4.1.1:repackage (default) @ fcm-target ---\n[INFO] Replacing main artifact /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/target/target/fcm-target-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-nonboot-fcm.xmstwbfg/target/target/fcm-target-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  3.375 s\n[INFO] Finished at: 2026-09-14T13:02:49+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "runtime": {
+      "jar_sha256": "670241d2f8aaac56435b2f8911c1b5b53361f3ba61a704bd0dc7c77c2c7ac75b",
+      "results": {
+        "1001": "{id=1001, status=REVIEW, amountCents=125125, currency=CNY}",
+        "42": "{id=42, status=READY, amountCents=5250, currency=CNY}",
+        "7": "{id=7, status=REVIEW, amountCents=875, currency=CNY}"
+      }
+    }
+  },
+  "transformation": {
+    "engine": "ELMOS_FCM_TARGET_GENERATOR",
+    "fcm": {
+      "beans": [
+        {
+          "class": "io.elmos.reference.OrderService",
+          "id": "orderService",
+          "lifecycle": "application-context",
+          "properties": {
+            "currency": "CNY",
+            "multiplier": "125"
+          }
+        }
+      ],
+      "obligations": [
+        "bean-identity",
+        "constructor-wiring",
+        "property-values",
+        "context-startup",
+        "order-response-equivalence"
+      ],
+      "route_id": "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21",
+      "schema_version": 1,
+      "source": {
+        "build": "maven-3.9.11",
+        "family": "spring-framework",
+        "java": "11",
+        "spring": "5.3.39"
+      },
+      "status": "FCM_EXTRACTED_LOCAL",
+      "target": {
+        "build": "maven-3.9.11",
+        "java": "21",
+        "spring_boot": "4.1.1"
+      },
+      "web": {
+        "mode": "non-web-context"
+      }
+    },
+    "fcm_sha256": "ded3d76a3c8322f89e851a5d32974681afc42f678f34f01f2f3307e34f1ea5ab",
+    "generator_sha256": "0b67ed84ac2f55c91a18bd1c1b3718003f6c2540e83e725307e8eeb912484281",
+    "source_tree": {
+      "pom.xml": "dc425ae88562a58e26cc1edf1a7935faab542aeff6de338d7bcbcc82c93ed776",
+      "src/main/java/io/elmos/reference/OrderService.java": "884bb2be85fcd9a5435687c7a89a4c2e7d1699a6ceebe4314ab55e3394f9b3dc",
+      "src/main/java/io/elmos/reference/SourceApplication.java": "86e2dce57f976aacf0ccf8ee4fcb5fc4854c0755f64a5d63dbc951420649b678",
+      "src/main/resources/application-context.xml": "7fe65d1d4c979ca0e4a50693f43f5f18a044e6931a648a4a0186c4380b7c59bf"
+    }
+  }
+}

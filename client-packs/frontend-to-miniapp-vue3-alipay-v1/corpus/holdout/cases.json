@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "corpus_key": "vue3-wechat-independent-holdout-v1",
+  "independence_class": "holdout",
+  "may_author_transformation_rules": false,
+  "transformation_authors_have_not_inspected_inputs": true,
+  "cases": [
+    {
+      "case_id": "HOLDOUT-VUE3-WECHAT-001",
+      "input_contract": "independently authored Vue 3 single-route list fixture with form state and stable keys",
+      "input_availability": "NOT_PROVIDED",
+      "executor": "UNASSIGNED_EXTERNAL",
+      "independent_verifier": "UNASSIGNED_EXTERNAL",
+      "runtime_state": "NOT_RUN",
+      "reason": "No independent holdout artifact or authorized executor/verifier was supplied."
+    }
+  ],
+  "certification": "NOT_CERTIFIED"
+}

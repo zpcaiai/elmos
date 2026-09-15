@@ -9,8 +9,16 @@ from importlib.resources import files as package_files
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
+from .ai_agent_scaffold import render_ai_agent_scaffold
+from .api_debug_kit import (
+    generate_curl_test_suite,
+    generate_postman_collection,
+    generate_synthetic_seed_data,
+)
+from .compliance_scanner import generate_compliance_audit
 from .deployment_guidance import render_deployment_guidance
 from .dotnet_target import render_dotnet
+from .frontend_target import render_frontend
 from .go_target import render_go
 from .insights import render_generation_insights, render_insights_markdown
 from .java_target import render_java
@@ -32,6 +40,8 @@ from .project_graphs import (
 from .python_target import render_python
 from .rendering import clean, pretty_json
 from .rust_target import render_rust
+from .scientific_sandbox import generate_reproducibility_receipt
+from .scientific_target import render_scientific
 from .typescript_target import render_typescript
 
 ENGINE_VERSION = "1.4.0"
@@ -74,7 +84,7 @@ def _target_directory(language: str) -> str:
 
 def _render_psir(request: SynthesisRequest) -> dict[str, Any]:
     payload = request_payload(request.raw)
-    return {
+    psir: dict[str, Any] = {
         "schema_version": "1.1.0",
         "project": payload["project"],
         "entities": payload["entities"],
@@ -88,7 +98,59 @@ def _render_psir(request: SynthesisRequest) -> dict[str, Any]:
         "assumptions": payload.get("assumptions", []),
         "quality_attributes": payload.get("quality_attributes", []),
         "open_questions": payload.get("open_questions", []),
+        "business_view": {
+            "topology": "microservices" if len(request.targets) > 1 else "service",
+            "persistence_tier": request.persistence,
+            "auth_tier": request.auth_mode,
+            "worker_enabled": request.is_worker,
+            "fullstack_enabled": request.is_fullstack,
+        },
     }
+    if request.is_scientific or request.research_spec is not None:
+        rs = request.research_spec
+        psir["research_view"] = {
+            "task_type": rs.task_type if rs else "classification",
+            "framework": rs.framework if rs else "pytorch",
+            "modality": rs.modality if rs else "tabular",
+            "tracking": rs.tracking if rs else "offline",
+            "reproducibility_seed": rs.reproducibility_seed if rs else 42,
+            "tensor_spec": {
+                "input_shape": [None, 12],
+                "target_shape": [None, 1],
+                "dtype": "float32",
+            },
+            "architecture": {
+                "model_family": "ScientificNet",
+                "features_dim": 12,
+                "hidden_dim": 64,
+                "num_layers": 3,
+                "attention_heads": 4,
+                "dropout": 0.1,
+            },
+            "ablation_matrix": [
+                {"name": "baseline", "attention": True, "residual": True, "dropout": True},
+                {"name": "no_attention", "attention": False, "residual": True, "dropout": True},
+                {"name": "no_residual", "attention": True, "residual": False, "dropout": True},
+                {"name": "no_dropout", "attention": True, "residual": True, "dropout": False},
+            ],
+            "evaluation_metrics": ["loss", "accuracy", "f1_score", "p_value"],
+            "distributed_training": {
+                "supported_launchers": ["torchrun", "slurm"],
+                "parallel_strategy": "DDP",
+                "mixed_precision": ["fp32", "fp16", "bf16"],
+                "compiled_mode": True,
+            },
+            "data_pipeline": {
+                "streaming": True,
+                "sharded": True,
+                "cursor_checkpointing": True,
+            },
+            "containerization": {
+                "cuda_containerfile": "hpc/Containerfile.cuda",
+                "apptainer_def": "hpc/Apptainer.def",
+            },
+        }
+    return psir
 
 
 def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
@@ -161,24 +223,52 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
         ],
         "quality": {"unit_tests": True, "lint": True, "type_check": True, "startup_probe": True},
         "generation_units": [
-            {
-                "id": f"GEN-{target.language.upper()}",
-                "kind": "project",
-                "target_path": _target_directory(target.language),
-                "ownership": "managed",
-                "source_refs": [
-                    *[f"REQ-CRUD-{index:03d}" for index in range(1, len(request.entities) + 1)],
-                    *(
-                        ["REQ-WORKER-001"]
-                        if request.is_worker
-                        and any(r.get("id") == "REQ-WORKER-001" for r in request.raw.get("requirements", []))
-                        else []
-                    ),
-                    "REQ-HEALTH-001",
-                    "REQ-DELIVERY-001",
-                ],
-            }
-            for target in request.targets
+            *(
+                [
+                    {
+                        "id": "GEN-FRONTEND",
+                        "kind": "frontend",
+                        "target_path": "frontend",
+                        "ownership": "managed",
+                        "source_refs": ["REQ-FULLSTACK-001", "REQ-HEALTH-001", "REQ-DELIVERY-001"],
+                    }
+                ]
+                if request.is_fullstack
+                else []
+            ),
+            *(
+                [
+                    {
+                        "id": "GEN-SCIENTIFIC",
+                        "kind": "scientific-computing",
+                        "target_path": ".",
+                        "ownership": "managed",
+                        "source_refs": ["REQ-SCI-001", "REQ-SCI-002", "REQ-SCI-003", "REQ-SCI-004"],
+                    }
+                ]
+                if request.is_scientific
+                else []
+            ),
+            *[
+                {
+                    "id": f"GEN-{target.language.upper()}",
+                    "kind": "project",
+                    "target_path": _target_directory(target.language),
+                    "ownership": "managed",
+                    "source_refs": [
+                        *[f"REQ-CRUD-{index:03d}" for index in range(1, len(request.entities) + 1)],
+                        *(
+                            ["REQ-WORKER-001"]
+                            if request.is_worker
+                            and any(r.get("id") == "REQ-WORKER-001" for r in request.raw.get("requirements", []))
+                            else []
+                        ),
+                        "REQ-HEALTH-001",
+                        "REQ-DELIVERY-001",
+                    ],
+                }
+                for target in request.targets
+            ],
         ],
     }
 
@@ -274,6 +364,55 @@ def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
                 {"from": source_id, "to": evidence_id, "relation": "requires-verification"},
             ]
         )
+    if request.is_fullstack:
+        nodes.append(
+            {
+                "id": "frontend-source",
+                "kind": "generated-frontend",
+                "path": "frontend",
+                "status": "GENERATED",
+                "source_skill": "elmos-frontend-ui-migrator",
+            }
+        )
+        edges.append({"from": "project-blueprint", "to": "frontend-source", "relation": "emits"})
+    if request.is_scientific:
+        nodes.extend(
+            [
+                {
+                    "id": "scientific-source",
+                    "kind": "generated-scientific-project",
+                    "path": ".",
+                    "status": "GENERATED",
+                    "source_skill": "PG450-PG455",
+                },
+                {
+                    "id": "scientific-notebooks",
+                    "kind": "jupyter-notebooks",
+                    "path": "notebooks",
+                    "status": "GENERATED",
+                },
+                {
+                    "id": "scientific-reproducibility",
+                    "kind": "reproducibility-receipt",
+                    "path": ".elmos/reproducibility-receipt.json",
+                    "status": "GENERATED",
+                },
+                {
+                    "id": "scientific-hpc",
+                    "kind": "hpc-distributed-containers",
+                    "path": "hpc",
+                    "status": "GENERATED",
+                },
+            ]
+        )
+        edges.extend(
+            [
+                {"from": "project-blueprint", "to": "scientific-source", "relation": "emits"},
+                {"from": "scientific-source", "to": "scientific-notebooks", "relation": "provides-interactive-analysis"},
+                {"from": "scientific-source", "to": "scientific-reproducibility", "relation": "produces-receipt"},
+                {"from": "scientific-source", "to": "scientific-hpc", "relation": "packages-for-cluster"},
+            ]
+        )
     return {
         "schema_version": "1.0.0",
         "graph_kind": "project-synthesis-asset-graph",
@@ -292,6 +431,53 @@ def _render_build_graph(request: SynthesisRequest) -> dict[str, Any]:
         }
     ]
     edges: list[dict[str, str]] = []
+    if request.is_scientific:
+        sci_phases = (
+            ("scientific-generate", "generation", "GENERATED"),
+            ("scientific-smoke", "deterministic-smoke", "LOCAL_EXECUTED"),
+            ("scientific-train", "native-training", "NOT_RUN"),
+            ("scientific-distributed-train", "distributed-training", "NOT_RUN"),
+            ("scientific-eval", "evaluation", "NOT_RUN"),
+            ("scientific-ablation", "ablation-matrix", "NOT_RUN"),
+            ("scientific-container-build", "container-packaging", "NOT_RUN"),
+        )
+        previous_sci = "approved-request"
+        for phase_id, kind, status in sci_phases:
+            nodes.append(
+                {
+                    "id": phase_id,
+                    "language": "python",
+                    "kind": kind,
+                    "status": status,
+                    "required_runtime": "3.12",
+                    "required_framework": "pytorch",
+                }
+            )
+            edges.append({"from": previous_sci, "to": phase_id, "relation": "must-complete-before"})
+            previous_sci = phase_id
+    if request.is_fullstack:
+        nodes.extend(
+            [
+                {
+                    "id": "frontend-generate",
+                    "language": "typescript",
+                    "kind": "generation",
+                    "status": "GENERATED",
+                    "source_skill": "elmos-frontend-ui-migrator",
+                },
+                {
+                    "id": "frontend-build",
+                    "language": "typescript",
+                    "kind": "native-build",
+                    "status": "NOT_RUN",
+                    "required_runtime": "node22",
+                    "required_framework": "react19",
+                    "required_toolchain": "npm",
+                },
+            ]
+        )
+        edges.append({"from": "approved-request", "to": "frontend-generate", "relation": "must-complete-before"})
+        edges.append({"from": "frontend-generate", "to": "frontend-build", "relation": "must-complete-before"})
     for target in request.targets:
         profile = TARGET_PROFILES[target.language]
         phases = (
@@ -363,26 +549,91 @@ def _compose(request: SynthesisRequest) -> str:
                 "      io.elmos.runtime-scope: local-development",
             ]
         )
+    if request.is_fullstack:
+        blocks.extend(
+            [
+                "  frontend:",
+                "    build:",
+                "      context: ./frontend",
+                "      dockerfile: Dockerfile",
+                "    environment:",
+                f"      APP_NAME: {request.project_name}-frontend",
+                "      APP_ENV: development",
+                '    ports: ["127.0.0.1:3000:80"]',
+                "    init: true",
+                "    networks: [runtime]",
+                "    labels:",
+                '      io.elmos.generated: "true"',
+                "      io.elmos.runtime-scope: local-development",
+            ]
+        )
+    middleware = request.raw.get("middleware", [])
+    if "redis" in middleware or request.raw.get("enable_redis"):
+        blocks.extend(
+            [
+                "  redis:",
+                "    image: redis:7.4-alpine",
+                '    ports: ["127.0.0.1:6379:6379"]',
+                "    networks: [runtime]",
+                "    labels:",
+                '      io.elmos.generated: "true"',
+            ]
+        )
+    if "kafka" in middleware or request.raw.get("enable_kafka"):
+        blocks.extend(
+            [
+                "  kafka:",
+                "    image: confluentinc/cp-kafka:7.7.0",
+                '    ports: ["127.0.0.1:9092:9092"]',
+                "    environment:",
+                "      KAFKA_NODE_ID: 1",
+                "      KAFKA_PROCESS_ROLES: broker,controller",
+                "      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093",
+                "      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092",
+                "      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER",
+                "      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT",
+                "      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093",
+                "      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1",
+                "      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk",
+                "    networks: [runtime]",
+                "    labels:",
+                '      io.elmos.generated: "true"',
+            ]
+        )
     blocks.extend(["networks:", "  runtime:", "    internal: true"])
     return "\n".join(blocks) + "\n"
 
 
 def _root_makefile(request: SynthesisRequest) -> str:
     first = request.targets[0].language
-    phony_targets = " ".join(
-        [
-            "doctor",
-            "verify",
-            "run",
-            "plan",
-            "up",
-            "down",
-            "status",
-            "smoke",
-            *[f"run-{target.language}" for target in request.targets],
-            *[f"verify-{target.language}" for target in request.targets],
-        ]
-    )
+    phony_list = [
+        "doctor",
+        "verify",
+        "run",
+        "plan",
+        "up",
+        "down",
+        "status",
+        "smoke",
+        *[f"run-{target.language}" for target in request.targets],
+        *[f"verify-{target.language}" for target in request.targets],
+    ]
+    if request.is_fullstack:
+        phony_list.extend(["run-frontend", "verify-frontend"])
+    if request.is_scientific:
+        phony_list.extend(
+            [
+                "scientific-train",
+                "scientific-train-ddp",
+                "scientific-eval",
+                "scientific-ablation",
+                "scientific-figures",
+                "scientific-paper",
+                "reproduce",
+                "container-build",
+            ]
+        )
+    phony_targets = " ".join(phony_list)
     lines = [
         f".PHONY: {phony_targets}",
         "",
@@ -418,6 +669,46 @@ def _root_makefile(request: SynthesisRequest) -> str:
                 "",
                 f"verify-{target.language}:",
                 f"\tpython3 scripts/projectctl.py verify --target {target.language}",
+            ]
+        )
+    if request.is_fullstack:
+        lines.extend(
+            [
+                "",
+                "run-frontend:",
+                "\t(cd frontend && npm install && npm run dev)",
+                "",
+                "verify-frontend:",
+                "\t(cd frontend && npm run build)",
+            ]
+        )
+    if request.is_scientific:
+        lines.extend(
+            [
+                "",
+                "scientific-train:",
+                "\tpython3 train.py --epochs 10 --seed 42",
+                "",
+                "scientific-train-ddp:",
+                "\ttorchrun --standalone --nnodes=1 --nproc_per_node=auto distributed_train.py --epochs 10 --seed 42",
+                "",
+                "scientific-eval:",
+                "\tpython3 eval.py",
+                "",
+                "scientific-ablation:",
+                "\tpython3 experiments/ablation.py",
+                "",
+                "scientific-figures:",
+                "\tpython3 scripts/plot_results.py",
+                "",
+                "scientific-paper:",
+                "\tpython3 scripts/export_latex.py",
+                "",
+                "reproduce:",
+                "\tbash reproduce.sh",
+                "",
+                "container-build:",
+                "\tdocker build -f hpc/Containerfile.cuda -t $(PROJECT_NAME):cuda .",
             ]
         )
     return "\n".join(lines) + "\n"
@@ -490,7 +781,24 @@ def _root_readme(request: SynthesisRequest) -> str:
             "&& cargo clippy --locked --all-targets --all-features -- -D warnings "
             "&& cargo test --locked --all-features)"
         )
+    if request.is_fullstack:
+        build_commands.append("(cd frontend && npm install && npm run build)")
     commands = "\n".join(build_commands)
+    sci_section = ""
+    if request.is_scientific:
+        sci_section = """
+        ## Scientific Deep Learning & Reproducibility Pipeline
+
+        This project includes a fully reproducible scientific deep learning workflow:
+        - **Reproducibility**: Global seed locking via `reproducibility.py` across Python, NumPy, PyTorch CPU/CUDA, and cuDNN.
+        - **Training**: `python3 train.py --epochs 10 --seed 42`
+        - **Evaluation**: `python3 eval.py`
+        - **Ablation Study**: `python3 experiments/ablation.py`
+        - **Publication Figures & Tables**: `python3 scripts/plot_results.py` and `python3 scripts/export_latex.py`
+        - **One-Click Reproduction**: `bash reproduce.sh`
+        - **Interactive EDA & Training**: Jupyter Notebooks in `notebooks/`
+        - **Artifact Evaluation**: See `docs/REPRODUCIBILITY.md` for full Artifact Evaluation instructions.
+        """
     return clean(
         f"""
         # {request.project_name}
@@ -527,7 +835,7 @@ def _root_readme(request: SynthesisRequest) -> str:
         target-owned harness provisions disposable PostgreSQL, ephemeral local identity
         material, migrations, tenant-isolation checks and cleanup. The simpler Compose
         development path refuses those profiles instead of starting a misleading partial stack.
-
+{sci_section}
         ## Generated contracts
 
         - `requirements/approved-request.json`: immutable approved input.
@@ -658,6 +966,51 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         if path in files:
             raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
         files[path] = content
+
+    if request.is_fullstack:
+        backend_port = request.targets[0].port if request.targets else 8080
+        for relative, content in render_frontend(request, backend_port).items():
+            path = f"frontend/{relative}"
+            if path in files:
+                raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+            files[path] = content
+
+    if request.raw.get("ai_integration") or "ai" in request.raw.get("features", []):
+        for relative, content in render_ai_agent_scaffold(request).items():
+            path = f"ai/{relative}"
+            if path in files:
+                raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+            files[path] = content
+
+    if request.is_scientific:
+        for relative, content in render_scientific(request).items():
+            if relative == "README.md":
+                path = "docs/REPRODUCIBILITY.md"
+            elif relative == "Makefile":
+                continue
+            else:
+                path = relative
+            if path in files:
+                raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+            files[path] = content
+
+        receipt = generate_reproducibility_receipt(request, files)
+        receipt_path = ".elmos/reproducibility-receipt.json"
+        if receipt_path in files:
+            raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{receipt_path}")
+        files[receipt_path] = pretty_json(receipt)
+
+    # API Debug Kit & Synthetic Mock Seed Data
+    seed_data_path = "requirements/seed-data.json"
+    postman_path = "requirements/api-collection.postman.json"
+    curl_path = "scripts/curl_test_suite.sh"
+    files[seed_data_path] = pretty_json(generate_synthetic_seed_data(request))
+    files[postman_path] = pretty_json(generate_postman_collection(request))
+    files[curl_path] = generate_curl_test_suite(request)
+
+    # Enterprise License & Security Compliance Audit
+    compliance_path = ".elmos/compliance-audit.json"
+    files[compliance_path] = pretty_json(generate_compliance_audit(request, files))
 
     insight_path = "requirements/project-insights.json"
     insight_report_path = "docs/PROJECT_INSIGHTS.md"

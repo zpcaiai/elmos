@@ -29,7 +29,7 @@ test.describe("本地运行与云部署指导", () => {
     await expect(guide.locator("pre").filter({ hasText: "--no-allow-unauthenticated" })).toBeVisible();
   });
 
-  test("Spring 翻新展示双工具链硬件与迁移后运行步骤", async ({ page }, testInfo) => {
+  test("Spring 现代化升级展示双工具链硬件与迁移后运行步骤", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "部署指导契约在 Chromium 执行一次");
     const capabilityResponse = await page.request.get("/api/capabilities/spring");
     expect(capabilityResponse.ok()).toBeTruthy();

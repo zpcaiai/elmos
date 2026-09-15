@@ -3,6 +3,8 @@ package io.elmos.recipes;
 import io.elmos.recipes.cloud.*;
 import io.elmos.recipes.jpa.*;
 import io.elmos.recipes.security.*;
+import io.elmos.recipes.transaction.*;
+import io.elmos.recipes.web.*;
 import io.elmos.recipes.xml.*;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.InMemoryExecutionContext;
@@ -534,5 +536,116 @@ class ModernizationRecipesTest {
 
         assertFalse(res.contains("ClassPathXmlApplicationContext"));
         assertTrue(res.contains("AnnotationConfigApplicationContext"));
+    }
+
+    @Test
+    void testSpringWebMvcConfigurerAdapterRecipe() {
+        String sourceText = """
+                package com.example.web;
+
+                import org.springframework.context.annotation.Configuration;
+                import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+                import org.springframework.web.servlet.config.annotation.CorsRegistry;
+
+                @Configuration
+                public class WebMvcConfig extends WebMvcConfigurerAdapter {
+                    @Override
+                    public void addCorsMappings(CorsRegistry registry) {
+                        registry.addMapping("/**");
+                    }
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringWebMvcConfigurerAdapterRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("extends WebMvcConfigurerAdapter"));
+        assertTrue(res.contains("implements WebMvcConfigurer"));
+        assertFalse(res.contains("import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;"));
+    }
+
+    @Test
+    void testSpringHandlerInterceptorAdapterRecipe() {
+        String sourceText = """
+                package com.example.web;
+
+                import org.springframework.stereotype.Component;
+                import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+                import jakarta.servlet.http.HttpServletRequest;
+                import jakarta.servlet.http.HttpServletResponse;
+
+                @Component
+                public class LoggingInterceptor extends HandlerInterceptorAdapter {
+                    @Override
+                    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                        return true;
+                    }
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringHandlerInterceptorAdapterRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("extends HandlerInterceptorAdapter"));
+        assertTrue(res.contains("implements HandlerInterceptor"));
+        assertFalse(res.contains("import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;"));
+    }
+
+    @Test
+    void testHibernate6MySQLIdGenerationRecipe() {
+        String sourceText = """
+                package com.example.domain;
+
+                import jakarta.persistence.Entity;
+                import jakarta.persistence.Id;
+                import jakarta.persistence.GeneratedValue;
+                import jakarta.persistence.GenerationType;
+
+                @Entity
+                public class UserEntity {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.AUTO)
+                    private Long id;
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new Hibernate6MySQLIdGenerationRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertFalse(res.contains("GenerationType.AUTO"));
+        assertTrue(res.contains("IDENTITY"));
+    }
+
+    @Test
+    void testSpringTransactionSelfInvocationRecipe() {
+        String sourceText = """
+                package com.example.service;
+
+                import org.springframework.stereotype.Service;
+                import org.springframework.transaction.annotation.Transactional;
+
+                @Service
+                public class OrderService {
+                    public void processOrder(Long id) {
+                        doPayment(id);
+                        this.doPayment(id);
+                    }
+
+                    @Transactional
+                    public void doPayment(Long id) {
+                    }
+                }
+                """;
+        SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
+        SourceFile transformed = (SourceFile) new SpringTransactionSelfInvocationRecipe().getVisitor()
+                .visit(source, new InMemoryExecutionContext());
+        String res = transformed.printAll();
+
+        assertTrue(res.contains("self.doPayment(id)"));
+        assertTrue(res.contains("private OrderService self;"));
+        assertFalse(res.contains("this.doPayment(id)"));
     }
 }

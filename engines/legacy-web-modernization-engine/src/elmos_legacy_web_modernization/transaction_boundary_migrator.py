@@ -56,6 +56,15 @@ class TransactionBoundaryMigrator:
                 has_transaction_config=False,
             )
 
+        # Route A: Prioritize Java Worker OpenRewrite compiler engine
+        from elmos_legacy_web_modernization.java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.rewrite_with_openrewrite(config_source, recipe_family="TRANSACTION_ISOLATION")
+            if res.status == "SUCCESS" and res.source_code and res.source_code != config_source:
+                changes.extend([f"Route A OpenRewrite: {r}" for r in res.recipes_applied])
+                config_source = res.source_code
+
         parser = JavaAstParser(config_source)
         unit = parser.parse()
 
@@ -129,6 +138,15 @@ class TransactionBoundaryMigrator:
                 ],
                 has_transaction_config=False,
             )
+
+        # Route A: Prioritize Java Worker OpenRewrite compiler engine
+        from elmos_legacy_web_modernization.java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.rewrite_with_openrewrite(service_source, recipe_family="TRANSACTION_ISOLATION")
+            if res.status == "SUCCESS" and res.source_code and res.source_code != service_source:
+                changes.extend([f"Route A OpenRewrite: {r}" for r in res.recipes_applied])
+                service_source = res.source_code
 
         lexer = JavaLexer(service_source)
         tokens = lexer.tokenize(include_trivia=True)

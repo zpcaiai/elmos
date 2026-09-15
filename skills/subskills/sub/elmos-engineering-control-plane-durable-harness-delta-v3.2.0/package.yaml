@@ -1,0 +1,51 @@
+{
+  "apiVersion": "elmos.ai/v3alpha2",
+  "kind": "HarnessDeltaSkillsPackage",
+  "metadata": {
+    "name": "elmos-engineering-control-plane-durable-harness-delta",
+    "version": "3.2.0",
+    "generatedAt": "2026-09-15",
+    "packageId": "elmos-engineering-control-plane-durable-harness-delta-v3.2.0"
+  },
+  "spec": {
+    "architecture": "Elmos Proof-Driven Agentic Harness / Repository Semantic Compiler v3",
+    "requires": {
+      "harnessDelta": ">=3.1.0,<3.3.0"
+    },
+    "preservesKernels": "K1-K8",
+    "routableEntryDelta": 0,
+    "executionCore": "Identity + Ownership + TypedContext + Timeline + Artifacts + Policy + Lifecycle + Effects",
+    "defaults": {
+      "failureMode": "fail-closed",
+      "networkPolicy": "deny",
+      "unknownToolDecision": "deny",
+      "unknownProofDecision": "block-critical",
+      "etaUnit": "machine-wall-clock-seconds"
+    },
+    "runtimeRequirements": {
+      "python": ">=3.11",
+      "postgresql": "17",
+      "jsonSchema": "2020-12",
+      "policy": "OPA/Rego or equivalent",
+      "objectStorage": "content-addressed/WORM",
+      "workflowEngine": "Temporal or equivalent durable workflow runtime"
+    },
+    "counts": {
+      "skills": 18,
+      "skillFiles": 90,
+      "schemas": 27,
+      "examples": 4,
+      "regoPolicies": 6,
+      "workflows": 7,
+      "migrations": 4,
+      "implementationBatches": 12,
+      "implementationTasks": 60,
+      "agentWorkflowSkills": 2
+    },
+    "nonClaims": [
+      "Package validation is not native product implementation or production certification.",
+      "No upstream harness/provider capability is trusted without exact-version adapter conformance.",
+      "No E5/P05 completion may be inferred from package structure or model self-report."
+    ]
+  }
+}

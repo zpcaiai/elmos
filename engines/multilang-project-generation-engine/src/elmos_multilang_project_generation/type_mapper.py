@@ -19,20 +19,29 @@ class TypeMapper:
 
     def map_collection_type(self, element_type: str, collection_kind: str, language: Language) -> str:
         if language == Language.JAVA:
-            if collection_kind == "LIST": return f"List<{element_type}>"
+            if collection_kind == "LIST":
+                return f"List<{element_type}>"
         elif language == Language.PYTHON:
-            if collection_kind == "LIST": return f"list[{element_type}]"
+            if collection_kind == "LIST":
+                return f"list[{element_type}]"
         elif language == Language.TYPESCRIPT:
-            if collection_kind == "LIST": return f"{element_type}[]"
+            if collection_kind == "LIST":
+                return f"{element_type}[]"
         elif language == Language.CSHARP:
-            if collection_kind == "LIST": return f"List<{element_type}>"
+            if collection_kind == "LIST":
+                return f"List<{element_type}>"
         elif language == Language.GO:
-            if collection_kind == "LIST": return f"[]{element_type}"
+            if collection_kind == "LIST":
+                return f"[]{element_type}"
         return f"List<{element_type}>"
 
     def map_nullable(self, type_str: str, language: Language) -> str:
-        if language == Language.PYTHON: return f"Optional[{type_str}]"
-        if language == Language.TYPESCRIPT: return f"{type_str} | null"
-        if language == Language.CSHARP: return f"{type_str}?"
-        if language == Language.GO: return f"*{type_str}"
+        if language == Language.PYTHON:
+            return f"Optional[{type_str}]"
+        if language == Language.TYPESCRIPT:
+            return f"{type_str} | null"
+        if language == Language.CSHARP:
+            return f"{type_str}?"
+        if language == Language.GO:
+            return f"*{type_str}"
         return type_str

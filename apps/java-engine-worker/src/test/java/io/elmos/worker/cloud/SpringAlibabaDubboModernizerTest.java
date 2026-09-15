@@ -58,4 +58,35 @@ class SpringAlibabaDubboModernizerTest {
         var result = SpringAlibabaDubboModernizer.modernize(root);
         assertFalse(result.blockingObligations().isEmpty());
     }
+
+    @Test void convertsSupportedDubboXmlToTypedJavaConfiguration() throws Exception {
+        Path xml = root.resolve("dubbo-services.xml");
+        Files.writeString(xml, """
+                <beans xmlns="http://www.springframework.org/schema/beans"
+                       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo">
+                  <dubbo:application id="application" name="orders"/>
+                  <dubbo:registry id="registry" address="nacos://127.0.0.1:8848" check="false"/>
+                  <dubbo:protocol id="protocol" name="dubbo" port="20880"/>
+                  <dubbo:service id="orderServiceExport" interface="com.acme.OrderService"
+                                 ref="orderService" version="2.0" timeout="3000" retries="0"/>
+                  <dubbo:reference id="inventoryClient" interface="com.acme.InventoryService"
+                                   version="1.0" check="false"/>
+                </beans>
+                """);
+
+        var result = SpringAlibabaDubboModernizer.modernize(root);
+
+        assertTrue(result.modified());
+        assertTrue(result.blockingObligations().isEmpty());
+        Path generated = root.resolve("src/main/java/io/elmos/generated/dubbo/Dubbo_servicesDubboConfiguration.java");
+        assertTrue(Files.isRegularFile(generated));
+        String source = Files.readString(generated);
+        assertTrue(source.contains("ServiceConfig<Object> orderServiceExport"));
+        assertTrue(source.contains("@Qualifier(\"orderService\")"));
+        assertTrue(source.contains("ReferenceConfig<Object> inventoryClient"));
+        assertTrue(source.contains("config.setRetries(0)"));
+        String migratedXml = Files.readString(xml);
+        assertFalse(migratedXml.contains("<dubbo:service"));
+        assertTrue(migratedXml.contains("migrated by ELMOS"));
+    }
 }

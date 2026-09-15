@@ -56,6 +56,85 @@ describe('Cross-Platform Native SDK & Hardware API Engine (M32)', () => {
       await ble.closeAdapter();
       expect(ble.isConnected(targetDev.deviceId)).toBe(false);
     });
+
+    it('should support MTU negotiation and industrial chunked slicing transmission', async () => {
+      const ble = new CrossPlatformBleEngine(true);
+      await ble.openAdapter();
+      await ble.connect('DEV_PRINTER_01');
+
+      // Test MTU negotiation
+      const effectivePayload = await ble.setMtu('DEV_PRINTER_01', 128);
+      expect(effectivePayload).toBe(125);
+      expect(ble.getNegotiatedMtu('DEV_PRINTER_01')).toBe(125);
+
+      // Create a 105-byte buffer payload
+      const rawBytes = new Uint8Array(105);
+      for (let i = 0; i < rawBytes.length; i++) rawBytes[i] = (i % 256);
+
+      const progressSnapshots: any[] = [];
+      const transferRes = await ble.writeChunked({
+        deviceId: 'DEV_PRINTER_01',
+        serviceId: '0000ffe0-0000-1000-8000-00805f9b34fb',
+        characteristicId: '0000ffe1-0000-1000-8000-00805f9b34fb',
+        data: rawBytes.buffer,
+        chunkSize: 20, // force 20-byte safe chunks
+        packetDelayMs: 2, // low delay for fast tests
+        onProgress: (p) => progressSnapshots.push({ ...p }),
+      });
+
+      expect(transferRes.success).toBe(true);
+      expect(transferRes.totalBytes).toBe(105);
+      expect(transferRes.chunksSent).toBe(6); // 20 * 5 + 5 = 105 bytes -> 6 chunks
+      expect(progressSnapshots.length).toBe(6);
+      expect(progressSnapshots[0].sentBytes).toBe(20);
+      expect(progressSnapshots[0].totalChunks).toBe(6);
+      expect(progressSnapshots[5].sentBytes).toBe(105);
+      expect(progressSnapshots[5].percentage).toBe(100);
+
+      await ble.closeAdapter();
+    });
+
+    it('should manage connection lifecycle state machine with exponential backoff reconnection', async () => {
+      const ble = new CrossPlatformBleEngine(true);
+      await ble.openAdapter();
+
+      const statusHistory: string[] = [];
+      ble.setEventListeners({
+        onConnectionStatusChange: (_devId, status) => {
+          statusHistory.push(status);
+        },
+      });
+
+      // Connect with autoReconnect policy
+      await ble.connect('DEV_SENSOR_01', {
+        autoReconnect: true,
+        maxAttempts: 2,
+        initialDelayMs: 40,
+        factor: 1.5,
+        jitter: false,
+      });
+
+      expect(ble.getConnectionStatus('DEV_SENSOR_01')).toBe('CONNECTED');
+      expect(statusHistory).toContain('CONNECTING');
+      expect(statusHistory).toContain('CONNECTED');
+
+      // Simulate unexpected disconnection
+      ble.simulateDisconnection('DEV_SENSOR_01', true);
+      expect(ble.getConnectionStatus('DEV_SENSOR_01')).toBe('RECONNECTING');
+      expect(statusHistory).toContain('RECONNECTING');
+
+      // Wait for backoff timer to fire and reconnect
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      expect(ble.getConnectionStatus('DEV_SENSOR_01')).toBe('CONNECTED');
+
+      // Test explicit disconnect cancels loop
+      await ble.disconnect('DEV_SENSOR_01');
+      expect(ble.getConnectionStatus('DEV_SENSOR_01')).toBe('DISCONNECTED');
+      expect(statusHistory).toContain('DISCONNECTING');
+      expect(statusHistory[statusHistory.length - 1]).toBe('DISCONNECTED');
+
+      await ble.closeAdapter();
+    });
   });
 
   describe('Camera Stream & Barcode Scanner Engine', () => {

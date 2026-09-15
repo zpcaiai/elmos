@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import json
 import os
@@ -1633,3 +1634,95 @@ def verify_workspace(
     }
     evidence["insights"] = verified_generation_insights(root, evidence)
     return evidence
+
+
+def verify_production_security_guardrail(
+    workspace_path: Path,
+    request_data: dict[str, Any] | None = None,
+    *,
+    fail_closed: bool = True,
+) -> dict[str, Any]:
+    """Enforces RISK-SYNTHESIS-001 deployment and production readiness guardrails.
+
+    Contract:
+    1. 'Generated starters intentionally use in-memory storage and omit identity
+       until an approved production profile is selected.' (RISK-SYNTHESIS-001)
+    2. Any attempt to promote, deploy, or certify a starter profile into a production
+       environment with in-memory persistence or omitted identity MUST fail-closed.
+    3. Production-ready workspaces must contain all required operational and security
+       artifacts: policy contract, secret contract, slo contract, runbook, backup.sh, restore.sh.
+    """
+    root = workspace_path.resolve()
+    violations: list[str] = []
+
+    # 1. Resolve configuration metadata
+    data = dict(request_data or {})
+    blueprint_file = root / "project-blueprint.json"
+    if blueprint_file.is_file():
+        try:
+            with open(blueprint_file, encoding="utf-8") as f:
+                bp = json.load(f)
+                if not data:
+                    data = bp
+                else:
+                    for k, v in bp.items():
+                        if k not in data:
+                            data[k] = v
+        except Exception as e:
+            violations.append(f"MALFORMED_BLUEPRINT: {e}")
+
+    profile = str(data.get("profile", "")).lower()
+    target_env = str(data.get("target_environment", data.get("environment", ""))).lower()
+    is_production_context = (target_env in ("production", "prod", "staging")) or (profile == "production")
+
+    # Check storage and auth
+    storage = str(data.get("storage", "")).lower()
+    auth = str(data.get("authentication", data.get("auth", ""))).lower()
+
+    if is_production_context:
+        # RISK-SYNTHESIS-001 Guard 1: In-memory storage prohibited in production
+        if storage in ("memory", "in-memory", "in_memory", "none", ""):
+            violations.append(
+                "INSECURE_STORAGE: In-memory storage is prohibited in production (RISK-SYNTHESIS-001). "
+                "Must use an approved durable storage engine (PostgreSQL, MySQL, or persistent SQLite)."
+            )
+
+        # RISK-SYNTHESIS-001 Guard 2: Omitted or dummy authentication prohibited in production
+        if auth in ("none", "omitted", "dummy", ""):
+            violations.append(
+                "OMITTED_IDENTITY: Unauthenticated/omitted identity is prohibited in production (RISK-SYNTHESIS-001). "
+                "Must configure an approved identity provider (OIDC, JWT, or Dual-Token Auth)."
+            )
+
+        # Operational readiness & SRE artifacts verification
+        required_artifacts = [
+            ("security/policy-contract.json", "SECURITY_POLICY_CONTRACT_MISSING"),
+            ("security/secret-contract.json", "SECURITY_SECRET_CONTRACT_MISSING"),
+            ("operations/slo-contract.json", "OPERATIONS_SLO_CONTRACT_MISSING"),
+            ("operations/runbook.md", "OPERATIONS_RUNBOOK_MISSING"),
+            ("operations/backup.sh", "OPERATIONS_BACKUP_SCRIPT_MISSING"),
+            ("operations/restore.sh", "OPERATIONS_RESTORE_SCRIPT_MISSING"),
+        ]
+        for rel_path, err_code in required_artifacts:
+            art_file = root / rel_path
+            if not art_file.is_file() or art_file.stat().st_size == 0:
+                violations.append(f"{err_code}: Required production artifact '{rel_path}' is missing or empty.")
+
+    is_compliant = len(violations) == 0
+    outcome = {
+        "status": "PASSED" if is_compliant else "FAILED",
+        "gate": "RISK-SYNTHESIS-001",
+        "is_production_context": is_production_context,
+        "violations": violations,
+        "workspace": str(root),
+        "timestamp": dt.datetime.now(dt.UTC).isoformat(),
+    }
+
+    if not is_compliant and fail_closed:
+        raise RuntimeError(
+            "SECURITY_GATE_FAILED: INSECURE_STARTER_IN_PRODUCTION (RISK-SYNTHESIS-001): "
+            + "; ".join(violations)
+        )
+
+    return outcome
+

@@ -339,6 +339,16 @@ class SqlTranspilerGateway:
                 reason_code="SOURCE_AND_TARGET_PROFILE_MUST_DIFFER",
                 reason="Source and target SQL profiles must differ.",
             )
+        if target_profile and "unbound" in target_profile.lower():
+            return self._blocked(
+                **common,
+                reason_code="EXACT_TARGET_ADAPTER_REQUIRED",
+                reason=(
+                    "This dialect is catalog-only in the gateway. A versioned typed target adapter and "
+                    "provider evidence are required before target SQL may be emitted."
+                ),
+            )
+
         from .chinadb import _CHINADB_LOWERER_MAP, lower_chinadb_sql
 
         if tgt in _CHINADB_LOWERER_MAP or src in _CHINADB_LOWERER_MAP:

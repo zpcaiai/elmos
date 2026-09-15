@@ -38,5 +38,6 @@ export * from "./miniapp-package-contract.js";
 export * from "./miniapp-output-contracts.js";
 export * from "./miniapp-validation.js";
 export * from "./vue3-react-route.js";
+export * from "./miniapp-unified-polyfill.js";
 export { frtCatalog } from "./frt-catalog.generated.js";
 export { frtHandlerRegistry } from "./frt-handler-registry.generated.js";

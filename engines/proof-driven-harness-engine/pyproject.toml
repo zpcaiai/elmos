@@ -97,6 +97,7 @@ packages = ["elmos_proof_harness"]
 "share/elmos-proof-harness/migrations" = [
   "migrations/V001__proof_harness_core.sql",
   "migrations/V304__harness_runtime_assurance_delta.sql",
+  "migrations/V305__engineering_control_plane_durable_harness_delta.sql",
 ]
 "share/elmos-proof-harness/observability" = ["observability/metrics.yaml", "observability/alerts.yaml"]
 "share/elmos-proof-harness/observability/delta-v3.1" = [

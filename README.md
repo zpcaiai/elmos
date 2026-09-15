@@ -3,7 +3,7 @@
 ## 能力边界速览
 
 五条核心业务线已全部完成工业级交付与权威独立验证闭环：
-- **Spring 老项目现代化 (M30) & Spring Boot 4.x 升级**：完成 Spring Boot 3.5.3 目标（全部 6 条生产路线）以及 Spring Boot 4.x 目标（全部 7 条生产路线：5 Maven、1 Gradle、1 Spring MVC）的 100% 工业级生产系统认证（全部通过 Batch 30 Framework Gate 外部认证并获权威独立验证人 Ethan 真实密码学签名与认证报告，`CERTIFIED`）。
+- **Spring 现代化升级 (M30) & Spring Boot 4.x 升级**：完成 Spring Boot 3.5.3 目标（全部 6 条生产路线）以及 Spring Boot 4.x 目标（全部 7 条生产路线：5 Maven、1 Gradle、1 Spring MVC）的 100% 工业级生产系统认证（全部通过 Batch 30 Framework Gate 外部认证并获权威独立验证人 Ethan 真实密码学签名与认证报告，`CERTIFIED`）。
 - **全库跨语言转换 (M29)**：全部 210 条活动路线在 `typed-pure-function-v1` 语义契约与四大安全阻断机制下达成 100% 工业级认证（获 Ethan 独立验证签发，`CERTIFIED`）。
 - **多语言项目生成 (B46-B95)**：8 种语言目标支持多实体/关系生成、真实工具链构建与启动探针，16 个 PostgreSQL 生产 Profile 经 RLS 隔离验证（获 Ethan 独立验证，`CERTIFIED_INDEPENDENT` / `limited`）。
 - **数据库与 SQL 方言迁移 (M31)**：3 个生产 Database Pack 与 13 款国产数据库（ChinaDB）全部完成 100% 工业级生产资格 DoD 认证；白盒 1739 个 SQL 语句实现 100% 处置闭环（1302 核心 DDL/DML 自动直出 + 435 项复杂语句在 Backlog 中全部解决/审批豁免，open=0）；黑盒代码确立目标定制化路线组合（PostgreSQL 直出达 1302/1302 = 100.0%）；全量 16 个目标（3 Pack + 13 ChinaDB）已纳入集中式独立认证 Dossier，获权威独立验证人 Ethan 出具 RSA-SHA256 签名认证（`CERTIFIED`）。
@@ -11,7 +11,7 @@
 
 | 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
 | --- | --- | --- | --- |
-| Spring 老项目现代化 (Boot 3.5.3) | 全部 6 条生产路线（4 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17；1 条 Gradle 2.x 元组；1 条 Spring MVC 5.3 元组）→ Boot 3.5.3/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 行为探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证 | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 6 条生产元组 100% 工业级认证） |
+| Spring 现代化升级 (Boot 3.5.3) | 全部 6 条生产路线（4 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17；1 条 Gradle 2.x 元组；1 条 Spring MVC 5.3 元组）→ Boot 3.5.3/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 行为探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证 | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 6 条生产元组 100% 工业级认证） |
 | 低版本 Spring 向 Spring Boot 4.x 升级路线 | 全部 7 条生产路线（5 条 Maven 元组：Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17、3.5.3/Java 21；1 条 Gradle 元组：Boot 2.7.18/Java 17/Gradle 8.14.3；1 条 Spring MVC 元组：Spring Framework 5.3.39/Java 11）→ Boot 4.1.0/Java 21，端到端真实源构建 + OpenRewrite + 目标构建 + 启动探针 + P0-P11 全 13 类外部证据与零容忍检验，通过 Batch 30 Gate 验证并获 Ethan 独立认证（Dossier 与 `spring-boot-4-modernization-v1-certification-report.json`） | 元组以外的未授权区间版本（需显式 experimental 开关） | `CERTIFIED`（全部 7 条生产元组 100% 工业级认证） |
 | 跨语言转换 | 15 种活动语言、210 个有向 Route Pack 在 `typed-pure-function-v1` 下全部完成认证并由 Ethan 出具数字签名 Dossier | 对象图生命周期、异步并发、异常展开、复杂框架与 UI 等高危语义显式阻断（由 AST 守卫拦截）；超出纯函数范围的复杂场景由专有业务线承接 | `CERTIFIED`（210 条活动路线全部获得工业级认证） |
 | 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口，已获独立验证人 Ethan 出具报告 | 本地原生检查不等于跨目标语义/行为等价，真实托管云部署、完整 SBOM 签名保持 NOT_RUN | `PASSED_LOCAL` / `limited`（已获 Ethan 独立验证） |
@@ -86,7 +86,7 @@ Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条�
 
 ## Coding Agent 模型目录
 
-一键生成项目（`engines/project-synthesis-engine`）、Spring 老项目现代化（`rewrite-spring` 底座的长尾修复步骤）与多语言/跨语言项目生成（Batch 5 `core-language-lowering` 的惯用化步骤）共用同一份候选模型登记表 `engines/ai-platform-engine/policies/model-catalog-v1.json`，不再各自维护模型名单，详见 [`docs/adr/ADR-0059-coding-agent-model-catalog.md`](docs/adr/ADR-0059-coding-agent-model-catalog.md)。目录只是声明层：每条模型都锁定为 `status: NOT_CONFIGURED`，由 `schemas/ai-platform/model-catalog-v1.schema.json` 与 `scripts/operations/validate_model_catalog.py`（`make model-catalog-check`，已并入 `make business-line-contracts`）失败关闭校验，禁止任何门禁把它折算为可用。真正调用仍必须先在 `EnterpriseModels.ModelPolicy` 放行、产生已批准且健康的 `ModelEndpoint`，再经 `engines/ai-platform-engine/policies/adapters-v1.json` 中同样 `NOT_CONFIGURED` 的 `INFERENCE_GATEWAY`/`CLOUD_AI` Adapter 转发。
+一键生成项目（`engines/project-synthesis-engine`）、Spring 现代化升级（`rewrite-spring` 底座的长尾修复步骤）与多语言/跨语言项目生成（Batch 5 `core-language-lowering` 的惯用化步骤）共用同一份候选模型登记表 `engines/ai-platform-engine/policies/model-catalog-v1.json`，不再各自维护模型名单，详见 [`docs/adr/ADR-0059-coding-agent-model-catalog.md`](docs/adr/ADR-0059-coding-agent-model-catalog.md)。目录只是声明层：每条模型都锁定为 `status: NOT_CONFIGURED`，由 `schemas/ai-platform/model-catalog-v1.schema.json` 与 `scripts/operations/validate_model_catalog.py`（`make model-catalog-check`，已并入 `make business-line-contracts`）失败关闭校验，禁止任何门禁把它折算为可用。真正调用仍必须先在 `EnterpriseModels.ModelPolicy` 放行、产生已批准且健康的 `ModelEndpoint`，再经 `engines/ai-platform-engine/policies/adapters-v1.json` 中同样 `NOT_CONFIGURED` 的 `INFERENCE_GATEWAY`/`CLOUD_AI` Adapter 转发。
 
 ## 验证
 

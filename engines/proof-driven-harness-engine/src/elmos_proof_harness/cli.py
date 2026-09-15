@@ -26,9 +26,20 @@ from .service import (
     HarnessService,
     serve,
 )
+from .delta import DELTA_SKILL_REGISTRY
+from .delta_v32 import DELTA_V32_SKILL_REGISTRY, execute_v32_skill
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
 from .storage import ControlPlaneStore
 from .store import SQLiteStore
+from .formal_verifier import FormalVerificationEngine, ObligationKind, ProofObligation
+from .hermetic_container import EnvironmentFingerprint
+from .network_egress import EgressPolicy, EgressViolationError, NetworkEgressGuard
+from .sandbox import DisposableSandboxRunner, SandboxLimits
+
+
+ALL_SKILL_NAMES: tuple[str, ...] = tuple(
+    sorted(set(SKILL_REGISTRY) | set(DELTA_SKILL_REGISTRY) | set(DELTA_V32_SKILL_REGISTRY))
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -53,16 +64,87 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_snapshot_limits(compile_parser)
 
-    subparsers.add_parser("list-skills", help="list the 16 exact routable Skills")
+    list_skills = subparsers.add_parser("list-skills", help="list exact routable and delta Skills")
+    list_skills.add_argument(
+        "--version",
+        choices=("all", "v3.0", "v3.1", "v3.2"),
+        default="all",
+        help="filter skills by harness version",
+    )
     subparsers.add_parser("list-components", help="list the 96 exact kernel components")
 
     invoke = subparsers.add_parser("invoke", help="invoke one exact Skill locally")
-    invoke.add_argument("skill", choices=tuple(sorted(SKILL_REGISTRY)))
+    invoke.add_argument("skill", choices=ALL_SKILL_NAMES)
     payload_group = invoke.add_mutually_exclusive_group(required=True)
     payload_group.add_argument("--payload", help="JSON object")
     payload_group.add_argument("--payload-file", help="path to a JSON object")
     invoke.add_argument("--workspace-root", action="append", default=[])
     invoke.add_argument("--authority", action="append", default=[])
+
+    gate = subparsers.add_parser("gate", help="evaluate release assurance gates")
+    gate.add_argument("subcommand", choices=("evaluate",))
+    gate_payload_group = gate.add_mutually_exclusive_group(required=True)
+    gate_payload_group.add_argument("--payload", help="JSON object")
+    gate_payload_group.add_argument("--payload-file", help="path to a JSON object")
+
+    db = subparsers.add_parser("db", help="database management and migration tools")
+    db.add_argument("subcommand", choices=("check", "migrate"))
+    db.add_argument("--dsn", default=os.environ.get("ELMOS_POSTGRES_DSN"))
+
+    # Environment fingerprint
+    subparsers.add_parser(
+        "fingerprint", help="detect host OS, architecture, and container isolation capabilities"
+    )
+
+    # Formal SMT Verification
+    verify_smt = subparsers.add_parser(
+        "verify-smt", help="run formal SMT solver on proof obligations"
+    )
+    verify_smt_group = verify_smt.add_mutually_exclusive_group(required=True)
+    verify_smt_group.add_argument("--formula", help="SMT-LIB2 formula string")
+    verify_smt_group.add_argument("--formula-file", help="path to SMT-LIB2 formula file")
+    verify_smt.add_argument("--obligation-id", default="obl-cli-001", help="identifier for obligation")
+    verify_smt.add_argument("--symbol", default="", help="symbol or function being verified")
+    verify_smt.add_argument(
+        "--kind",
+        choices=(
+            "NULL_SAFETY",
+            "BOUNDS_CHECK",
+            "TYPE_PRESERVATION",
+            "STATE_EQUIVALENCE",
+            "TRANSACTION_INVARIANT",
+            "ARITHMETIC_OVERFLOW",
+            "GENERIC_CONTRACT",
+            "SAFETY",
+            "LIVENESS",
+            "EQUIVALENCE",
+            "INVARIANT",
+            "REFINEMENT",
+        ),
+        default="GENERIC_CONTRACT",
+        help="kind of obligation",
+    )
+    verify_smt.add_argument("--solver", choices=("z3", "cvc5"), default="z3")
+    verify_smt.add_argument("--timeout-seconds", type=float, default=10.0)
+
+    # Disposable Sandbox Execution
+    sandbox_run = subparsers.add_parser(
+        "sandbox-run", help="run command safely in disposable process sandbox with POSIX limits"
+    )
+    sandbox_run.add_argument("--timeout-seconds", type=float, default=30.0)
+    sandbox_run.add_argument("--max-cpu-seconds", type=int, default=30)
+    sandbox_run.add_argument("--max-memory-mb", type=int, default=512)
+    sandbox_run.add_argument("cmd_args", nargs=argparse.REMAINDER, help="command line arguments to execute")
+
+    # Network Egress & Secret Leak Guard
+    egress_check = subparsers.add_parser(
+        "egress-check", help="evaluate target destination against egress policy and secret leak patterns"
+    )
+    egress_check.add_argument("--target", required=True, help="destination URL or host:port")
+    egress_check.add_argument("--allow-domain", action="append", default=[])
+    egress_check.add_argument("--allow-port", type=int, action="append", default=[])
+    egress_check.add_argument("--payload", help="string payload to scan for credentials")
+    egress_check.add_argument("--payload-file", help="file to scan for credentials")
 
     server = subparsers.add_parser("serve", help="serve authenticated v3 HTTP APIs")
     server.add_argument("--host", default="127.0.0.1")
@@ -290,14 +372,37 @@ def main(argv: Sequence[str] | None = None) -> int:
                 }
             )
         elif arguments.command == "list-skills":
-            _print_json(
-                {
-                    "skills": [
-                        SKILL_REGISTRY[name].to_dict()
-                        for name in sorted(SKILL_REGISTRY)
-                    ]
-                }
-            )
+            ver = getattr(arguments, "version", "all")
+            skills_out: list[dict[str, Any]] = []
+            if ver in {"all", "v3.0"}:
+                for name in sorted(SKILL_REGISTRY):
+                    d = SKILL_REGISTRY[name].to_dict()
+                    d["version"] = "v3.0"
+                    skills_out.append(d)
+            if ver in {"all", "v3.1"}:
+                for name in sorted(DELTA_SKILL_REGISTRY):
+                    desc = DELTA_SKILL_REGISTRY[name]
+                    skills_out.append({
+                        "skill": name,
+                        "skill_id": desc.skill_id,
+                        "priority": desc.priority,
+                        "owner_kernels": list(desc.owner_kernels),
+                        "version": "v3.1",
+                        "routable": desc.routable,
+                        "description": f"Delta extension skill {name} for {','.join(desc.owner_kernels)}",
+                    })
+            if ver in {"all", "v3.2"}:
+                for name in sorted(DELTA_V32_SKILL_REGISTRY):
+                    desc_v32 = DELTA_V32_SKILL_REGISTRY[name]
+                    skills_out.append({
+                        "skill": name,
+                        "kernel": desc_v32.kernel,
+                        "batch": desc_v32.batch,
+                        "version": "v3.2",
+                        "routable": True,
+                        "description": desc_v32.description,
+                    })
+            _print_json({"skills": skills_out, "count": len(skills_out), "version": ver})
         elif arguments.command == "list-components":
             _print_json(
                 {
@@ -308,14 +413,140 @@ def main(argv: Sequence[str] | None = None) -> int:
                 }
             )
         elif arguments.command == "invoke":
-            runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
-            result = runtime.execute(
-                arguments.skill,
-                _load_payload(arguments),
-                context={"authority": arguments.authority},
+            skill_name = arguments.skill
+            payload = _load_payload(arguments)
+            if skill_name in DELTA_V32_SKILL_REGISTRY:
+                result_v32 = execute_v32_skill(skill_name, payload)
+                _print_json(result_v32)
+                return 0 if result_v32.get("status") == "SUCCESS" else 2
+            elif skill_name in SKILL_REGISTRY:
+                runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
+                result = runtime.execute(
+                    skill_name,
+                    payload,
+                    context={"authority": arguments.authority},
+                )
+                _print_json(result.to_dict())
+                return 0 if result.status not in {"BLOCKED", "FAILED", "DENIED"} else 2
+            elif skill_name in DELTA_SKILL_REGISTRY:
+                _print_json({
+                    "skill": skill_name,
+                    "version": "v3.1",
+                    "status": "NON_ROUTABLE_INTERNAL",
+                    "message": f"Skill {skill_name} is an internal non-routable v3.1 extension requiring host-injected security context.",
+                })
+                return 0
+        elif arguments.command == "gate":
+            payload = _load_payload(arguments)
+            res = execute_v32_skill("release-evidence-exact-artifact", payload)
+            _print_json(res)
+            return 0 if res.get("gate_decision") == "PASS" else 2
+        elif arguments.command == "db":
+            dsn = arguments.dsn
+            if not dsn:
+                _print_json({"status": "ERROR", "message": "Missing PostgreSQL DSN. Pass --dsn or set ELMOS_POSTGRES_DSN"})
+                return 1
+            if arguments.subcommand == "check":
+                pg_store = PostgresStore(dsn)
+                readiness = pg_store.readiness()
+                _print_json({
+                    "status": "SUCCESS" if readiness.ready else "NOT_READY",
+                    "readiness": {
+                        "status": readiness.status.value,
+                        "ready": readiness.ready,
+                        "reason": readiness.reason,
+                        "backend": readiness.backend,
+                        "schema_version": readiness.schema_version,
+                        "server_version": readiness.server_version,
+                    },
+                })
+                return 0 if readiness.ready else 1
+            elif arguments.subcommand == "migrate":
+                from .migration_manager import MigrationManager
+                manager = MigrationManager(dsn)
+                applied = manager.apply_pending()
+                _print_json({"status": "SUCCESS", "migrations_applied": applied})
+                return 0
+        elif arguments.command == "fingerprint":
+            fp = EnvironmentFingerprint.detect()
+            _print_json(fp.to_dict())
+            return 0
+        elif arguments.command == "verify-smt":
+            if arguments.formula:
+                formula_text = arguments.formula
+            else:
+                formula_text = Path(arguments.formula_file).read_text(encoding="utf-8")
+            engine = FormalVerificationEngine()
+            kind_str = arguments.kind
+            kind_map = {
+                "SAFETY": ObligationKind.STATE_EQUIVALENCE,
+                "LIVENESS": ObligationKind.STATE_EQUIVALENCE,
+                "EQUIVALENCE": ObligationKind.STATE_EQUIVALENCE,
+                "INVARIANT": ObligationKind.TRANSACTION_INVARIANT,
+                "REFINEMENT": ObligationKind.TYPE_PRESERVATION,
+            }
+            kind = kind_map.get(
+                kind_str,
+                ObligationKind(kind_str)
+                if kind_str in ObligationKind.__members__
+                else ObligationKind.GENERIC_CONTRACT,
             )
-            _print_json(result.to_dict())
-            return 0 if result.status not in {"BLOCKED", "FAILED", "DENIED"} else 2
+            obligation = ProofObligation(
+                obligation_id=arguments.obligation_id,
+                kind=kind,
+                symbol=arguments.symbol or arguments.obligation_id,
+                preconditions=(),
+                postconditions=(),
+                negated_goal_smt2=formula_text,
+                timeout_seconds=arguments.timeout_seconds,
+            )
+            cert = engine.verify_obligation(obligation, solver_name=arguments.solver)
+            out = cert.to_dict()
+            if cert.generated_test_code:
+                out["generated_test_code"] = cert.generated_test_code
+            _print_json(out)
+            return 0 if cert.verdict.value == "PROVED" else (1 if cert.verdict.value == "REFUTED" else 2)
+        elif arguments.command == "sandbox-run":
+            limits = SandboxLimits(
+                max_cpu_seconds=arguments.max_cpu_seconds,
+                max_memory_mb=arguments.max_memory_mb,
+            )
+            runner = DisposableSandboxRunner(limits=limits)
+            res = runner.run(arguments.cmd_args, timeout_seconds=arguments.timeout_seconds)
+            _print_json({
+                "exit_code": res.exit_code,
+                "stdout": res.stdout,
+                "stderr": res.stderr,
+                "duration_ms": res.duration_ms,
+                "timed_out": res.timed_out,
+                "rlimit_enforced": res.rlimit_enforced,
+            })
+            return 0 if res.exit_code == 0 and not res.timed_out else 2
+        elif arguments.command == "egress-check":
+            allowed_ports = tuple(arguments.allow_port) if arguments.allow_port else (443, 8080)
+            policy = EgressPolicy(
+                allow_egress=True,
+                allowed_domains=tuple(arguments.allow_domain),
+                allowed_ports=allowed_ports,
+            )
+            guard = NetworkEgressGuard(policy)
+            try:
+                guard.validate_destination(arguments.target)
+                payload_content = ""
+                if arguments.payload:
+                    payload_content = arguments.payload
+                elif arguments.payload_file:
+                    payload_content = Path(arguments.payload_file).read_text(encoding="utf-8")
+                if payload_content:
+                    secrets = guard.inspect_content_for_secrets(payload_content)
+                    if secrets:
+                        _print_json({"status": "REJECTED", "reason": f"detected secrets: {secrets}", "secrets": secrets})
+                        return 2
+                _print_json({"status": "ALLOWED", "destination": arguments.target})
+                return 0
+            except EgressViolationError as exc:
+                _print_json({"status": "BLOCKED", "reason": str(exc)})
+                return 2
         elif arguments.command == "serve":
             runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
             store: ControlPlaneStore

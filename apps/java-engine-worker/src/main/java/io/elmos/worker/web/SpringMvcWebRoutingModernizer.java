@@ -15,8 +15,9 @@ import java.util.*;
  *       Spring Boot 3 replaced {@code AntPathMatcher} with {@code PathPatternParser}, rejecting trailing
  *       slashes by default (e.g. /api/users/ -> 404). Generates {@code LegacyWebMvcTrailingSlashConfiguration}
  *       to restore seamless enterprise client route compatibility.</li>
- *   <li><b>Global Exception Handling (RFC 7807):</b>
- *       Normalizes legacy {@code ResponseEntityExceptionHandler} to Spring 6 {@code ProblemDetail} specifications.</li>
+ *   <li><b>Global Servlet & Exception Handling Modernization:</b>
+ *       Normalizes legacy {@code javax.servlet.*} references across controllers and exception handlers
+ *       to Jakarta Servlet 6 specifications ({@code jakarta.servlet.*}).</li>
  * </ol>
  */
 public final class SpringMvcWebRoutingModernizer {
@@ -39,6 +40,10 @@ public final class SpringMvcWebRoutingModernizer {
         if (!Files.isDirectory(projectRoot)) {
             return WebModernizationResult.empty();
         }
+
+        String effectivePackage = (baseConfigPackage != null && !baseConfigPackage.isBlank())
+                ? baseConfigPackage
+                : "io.elmos.benchmark.config";
 
         Set<String> modifiedFiles = new LinkedHashSet<>();
         List<String> rulesApplied = new ArrayList<>();
@@ -72,7 +77,7 @@ public final class SpringMvcWebRoutingModernizer {
                 }
 
                 if (code.contains("ResponseEntityExceptionHandler") || code.contains("@ControllerAdvice")
-                        || code.contains("javax.servlet.http.HttpServletRequest")) {
+                        || code.contains("javax.servlet.")) {
                     String updated = modernizeExceptionHandlers(code, rulesApplied);
                     if (!updated.equals(code)) {
                         Files.writeString(javaFile, updated, StandardCharsets.UTF_8);
@@ -85,7 +90,7 @@ public final class SpringMvcWebRoutingModernizer {
 
             // Generate LegacyWebMvcTrailingSlashConfiguration only if controllers exist and config is missing
             if (hasControllers && !hasTrailingSlashConfig) {
-                Path configDir = projectRoot.resolve("src/main/java/" + baseConfigPackage.replace('.', '/'));
+                Path configDir = projectRoot.resolve("src/main/java/" + effectivePackage.replace('.', '/'));
                 Files.createDirectories(configDir);
                 Path configFile = configDir.resolve("LegacyWebMvcTrailingSlashConfiguration.java");
 
@@ -108,7 +113,7 @@ public final class SpringMvcWebRoutingModernizer {
                                 configurer.setUseTrailingSlashMatch(true);
                             }
                         }
-                        """, baseConfigPackage);
+                        """, effectivePackage);
 
                 Files.writeString(configFile, configSource, StandardCharsets.UTF_8);
                 String relConfig = projectRoot.relativize(configFile).toString().replace("\\", "/");
@@ -126,9 +131,9 @@ public final class SpringMvcWebRoutingModernizer {
 
     private static String modernizeExceptionHandlers(String code, List<String> rules) {
         String result = code;
-        if (result.contains("javax.servlet.http.HttpServletRequest")) {
-            result = result.replaceAll("javax\\.servlet\\.http\\.HttpServletRequest", "jakarta.servlet.http.HttpServletRequest");
-            rules.add("RULE-JAKARTA-SERVLET-EXCEPTION-HANDLER");
+        if (result.contains("javax.servlet.")) {
+            result = result.replaceAll("javax\\.servlet\\.", "jakarta.servlet.");
+            rules.add("RULE-JAKARTA-SERVLET-MODERNIZATION");
         }
         return result;
     }

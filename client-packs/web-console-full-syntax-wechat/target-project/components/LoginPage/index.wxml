@@ -5,7 +5,7 @@
     <view>使用已注册邮箱进入 ELMOS 用户控制中心。租户、角色和权限只由服务端已验证的账户会话决定。</view>
     <view class="user-scope-notice" role="note">
       <text>登录后可以使用的功能</text>
-      <text>Spring 老项目翻新、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换。</text>
+      <text>Spring 现代化升级、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换。</text>
       <text>其余页面（代码仓库工作区、多模态输入、任务编排与模型路由、前端转换工厂、功能能力中心、套餐与用量、账户与组织）以及平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放，仅管理员账户登录后可见。</text>
     </view>
     <view wx:if="{{error}}" class="auth-error" role="alert">{{error}}</view>

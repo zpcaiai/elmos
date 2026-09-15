@@ -462,7 +462,7 @@ def _postgres17_preflight(repository_root: Path) -> tuple[dict[str, Any], dict[s
     version_output = (completed.stdout + completed.stderr).decode(
         "utf-8", errors="replace"
     ).strip()
-    match = re.fullmatch(r"initdb \(PostgreSQL\) ([0-9]+\.[0-9]+)(?:\.[0-9]+)?", version_output)
+    match = re.fullmatch(r"initdb \(PostgreSQL\) ([0-9]+\.[0-9]+)(?:\.[0-9]+)?(?:\s+.*)?", version_output)
     if completed.returncode != 0 or match is None or match.group(1) != POSTGRES_VERSION:
         raise QualificationError(
             f"qualification requires exact PostgreSQL {POSTGRES_VERSION}; observed {version_output!r}"

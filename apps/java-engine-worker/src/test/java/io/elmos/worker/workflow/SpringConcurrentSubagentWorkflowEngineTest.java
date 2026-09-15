@@ -107,7 +107,7 @@ class SpringConcurrentSubagentWorkflowEngineTest {
                 }
                 """);
 
-        // 3. Subagent-B Target: Legacy JPA Entity
+        // 3. Subagent-B Target: Legacy JPA Entity, SQM query, and Seata distributed transaction
         sourceFiles.put("src/main/java/com/enterprise/legacy/OrderEntity.java", """
                 package com.enterprise.legacy;
 
@@ -131,6 +131,34 @@ class SpringConcurrentSubagentWorkflowEngineTest {
                     public void setId(Long id) { this.id = id; }
                     public String getOrderPayload() { return orderPayload; }
                     public void setOrderPayload(String orderPayload) { this.orderPayload = orderPayload; }
+                }
+                """);
+
+        sourceFiles.put("src/main/java/com/enterprise/legacy/OrderRepository.java", """
+                package com.enterprise.legacy;
+
+                import org.springframework.data.jpa.repository.JpaRepository;
+                import org.springframework.data.jpa.repository.Query;
+
+                public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
+                    @Query("SELECT o FROM OrderEntity o WHERE o.id = ?")
+                    OrderEntity findOrderById(Long id);
+                }
+                """);
+
+        sourceFiles.put("src/main/java/com/enterprise/legacy/AccountTransactionService.java", """
+                package com.enterprise.legacy;
+
+                import io.seata.spring.annotation.GlobalTransactional;
+                import org.springframework.stereotype.Service;
+
+                @Service
+                public class AccountTransactionService {
+
+                    @GlobalTransactional(name = "create-order", rollbackFor = Exception.class)
+                    public void executeDistributedTx(String orderId) {
+                        // distributed tx logic
+                    }
                 }
                 """);
 
@@ -179,6 +207,18 @@ class SpringConcurrentSubagentWorkflowEngineTest {
                       uri: http://config-server:8888
                 """);
 
+        sourceFiles.put("src/main/java/com/enterprise/legacy/EurekaApplication.java", """
+                package com.enterprise.legacy;
+
+                import org.springframework.boot.autoconfigure.SpringBootApplication;
+                import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+
+                @SpringBootApplication
+                @EnableEurekaClient
+                public class EurekaApplication {
+                }
+                """);
+
         // 6. Subagent-E Target: Controller with Swagger 2 annotations
         sourceFiles.put("src/main/java/com/enterprise/legacy/UserController.java", """
                 package com.enterprise.legacy;
@@ -203,7 +243,7 @@ class SpringConcurrentSubagentWorkflowEngineTest {
                 }
                 """);
 
-        // 7. Subagent-F Target: Global Exception Handler with javax.servlet
+        // 7. Subagent-F Target: Global Exception Handler with javax.servlet and File Upload Controller
         sourceFiles.put("src/main/java/com/enterprise/legacy/GlobalExceptionHandler.java", """
                 package com.enterprise.legacy;
 
@@ -219,6 +259,24 @@ class SpringConcurrentSubagentWorkflowEngineTest {
                     @ExceptionHandler(Exception.class)
                     public ResponseEntity<String> handleGeneric(Exception ex, HttpServletRequest req) {
                         return ResponseEntity.internalServerError().body("An internal error occurred");
+                    }
+                }
+                """);
+
+        sourceFiles.put("src/main/java/com/enterprise/legacy/FileUploadController.java", """
+                package com.enterprise.legacy;
+
+                import org.springframework.web.bind.annotation.PostMapping;
+                import org.springframework.web.bind.annotation.RequestParam;
+                import org.springframework.web.bind.annotation.RestController;
+                import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+                @RestController
+                public class FileUploadController {
+
+                    @PostMapping("/upload")
+                    public String uploadFile(@RequestParam("file") CommonsMultipartFile file) {
+                        return file.getOriginalFilename();
                     }
                 }
                 """);
@@ -384,5 +442,37 @@ class SpringConcurrentSubagentWorkflowEngineTest {
         assertFalse(pomCode.contains("springfox-swagger2"));
         assertTrue(pomCode.contains("-parameters"));
         assertTrue(pomCode.contains("3.0.3"));
+
+        // 8. SQM and Seata Distributed Transaction merged verification (Subagent-B)
+        String orderRepoCode = merged.get("src/main/java/com/enterprise/legacy/OrderRepository.java");
+        assertNotNull(orderRepoCode);
+        assertTrue(orderRepoCode.contains("WHERE o.id = ?1"), "SQM unindexed param ? must be migrated to ?1");
+
+        String seataTxCode = merged.get("src/main/java/com/enterprise/legacy/AccountTransactionService.java");
+        assertNotNull(seataTxCode);
+        assertTrue(seataTxCode.contains("org.apache.seata.spring.annotation.GlobalTransactional"), "Seata import must be migrated to org.apache.seata");
+
+        // 9. Eureka removal and Cloud observability merged verification (Subagent-D)
+        String eurekaCode = merged.get("src/main/java/com/enterprise/legacy/EurekaApplication.java");
+        assertNotNull(eurekaCode);
+        assertFalse(eurekaCode.contains("@EnableEurekaClient"), "Legacy @EnableEurekaClient must be removed");
+
+        String prometheusFilterCode = merged.get("src/main/java/io/elmos/generated/config/PrometheusMetricAliasFilterConfig.java");
+        assertNotNull(prometheusFilterCode, "PrometheusMetricAliasFilterConfig.java must be generated by Subagent-D");
+        assertTrue(prometheusFilterCode.contains("legacyMetricRenameFilter"));
+
+        String grafanaDashboard = merged.get("deploy/observability/grafana-dashboard-spring-boot-3.json");
+        assertNotNull(grafanaDashboard, "Grafana dashboard json must be generated by Subagent-D");
+        assertTrue(grafanaDashboard.contains("Spring Boot 3 Enterprise Production Observability"));
+
+        // 10. File upload modernization and security helper merged verification (Subagent-F)
+        String fileUploadCode = merged.get("src/main/java/com/enterprise/legacy/FileUploadController.java");
+        assertNotNull(fileUploadCode);
+        assertFalse(fileUploadCode.contains("CommonsMultipartFile"), "CommonsMultipartFile must be replaced with MultipartFile");
+        assertTrue(fileUploadCode.contains("MultipartFile"));
+
+        String secureUploadHelperCode = merged.get("src/main/java/io/elmos/generated/upload/SecureFileUploadHelper.java");
+        assertNotNull(secureUploadHelperCode, "SecureFileUploadHelper.java must be generated by Subagent-F");
+        assertTrue(secureUploadHelperCode.contains("DEFAULT_SAFE_EXTENSIONS"));
     }
 }

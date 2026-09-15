@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExecutionSource",
+  "type": "object",
+  "required": [
+    "source",
+    "root_execution_id"
+  ],
+  "properties": {
+    "source": {
+      "enum": [
+        "USER",
+        "ROOT_AGENT",
+        "SUBAGENT",
+        "REVIEWER",
+        "VERIFIER",
+        "GUARDIAN",
+        "SYSTEM_INTERNAL",
+        "REPLAY",
+        "RECOVERY",
+        "EXTERNAL_EVENT"
+      ]
+    },
+    "root_execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

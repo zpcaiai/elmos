@@ -56,7 +56,7 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 ## 2. 按项目报价（B 档）
 
-### 2.1 Spring 老项目翻新 (Boot 3.5.3 与 Boot 4.x 升级)
+### 2.1 Spring 现代化升级 (Boot 3.5.3 与 Boot 4.x 升级)
 
 **可以说**：
 1. **Spring Boot 3.5.3 目标**：覆盖 6 条核心生产路线（4 条 Maven 元组、1 条 Gradle 2.x 元组、1 条 Spring MVC 5.3 元组）升级到 Boot 3.5.3 / Java 21。

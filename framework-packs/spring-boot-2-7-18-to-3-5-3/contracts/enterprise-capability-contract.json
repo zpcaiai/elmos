@@ -1,0 +1,77 @@
+{
+  "schema_version": "elmos.batch30.spring-enterprise-capability-contract.v1",
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "direction": {
+    "source": {
+      "spring_boot": "2.7.18",
+      "java": "17.0.11"
+    },
+    "target": {
+      "spring_boot": "3.5.3",
+      "java": "21.0.11"
+    }
+  },
+  "capabilities": [
+    {
+      "id": "enterprise-security",
+      "obligations": [
+        "all application routes deny unauthenticated access",
+        "operator, viewer, and admin roles retain least-privilege route access",
+        "CSRF exclusion is limited to the exact stateless order creation route",
+        "credentials have no application default and are encoded before use",
+        "health is public, metrics is administrator-only, and health details stay hidden"
+      ],
+      "test": "webSecurityValidationAndActuatorBoundariesHold"
+    },
+    {
+      "id": "enterprise-data",
+      "obligations": [
+        "PostgreSQL 17.5 schema constraints preserve positive money and nonnegative inventory",
+        "request identity and message identity remain unique",
+        "JPA schema validation runs at startup",
+        "open-in-view remains disabled"
+      ],
+      "test": "pessimisticInventoryLockPreventsOversell"
+    },
+    {
+      "id": "enterprise-transaction",
+      "obligations": [
+        "order and outbox writes commit atomically",
+        "a failure after outbox creation rolls both records back",
+        "concurrent inventory reservation uses a database pessimistic write lock",
+        "two competing reservations cannot oversell"
+      ],
+      "tests": [
+        "transactionRollbackRemovesOrderAndOutboxTogether",
+        "pessimisticInventoryLockPreventsOversell"
+      ]
+    },
+    {
+      "id": "enterprise-messaging",
+      "obligations": [
+        "RabbitMQ exchange and queue are durable",
+        "outbox records are marked published only after broker confirmation",
+        "message identity is mandatory",
+        "duplicate at-least-once deliveries are consumed once through the PostgreSQL ledger"
+      ],
+      "test": "confirmedOutboxDeliveryIsIdempotentAtConsumer"
+    }
+  ],
+  "provider_profile": {
+    "postgres": "postgres:17.5-alpine",
+    "rabbitmq": "rabbitmq:4.1.4-management-alpine",
+    "container_identity": "digest-pinned-multi-architecture",
+    "supported_architectures": [
+      "linux/amd64",
+      "linux/arm64"
+    ]
+  },
+  "evidence": {
+    "local": "certification/local-enterprise-container-evidence.json",
+    "protected_staging_workflow": ".github/workflows/spring-enterprise-staging-qualification.yml",
+    "staging_execution": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

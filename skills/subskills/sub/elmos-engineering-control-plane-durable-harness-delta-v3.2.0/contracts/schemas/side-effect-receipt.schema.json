@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SideEffectReceipt",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "effect_kind",
+    "idempotency_key",
+    "status",
+    "occurred_at"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effect_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PLANNED",
+        "APPLIED",
+        "CONFIRMED",
+        "COMPENSATED",
+        "UNKNOWN"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resource_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compensation_plan": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

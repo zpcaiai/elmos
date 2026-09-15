@@ -182,8 +182,25 @@
       ]
     },
     "composite-engine": {
-      "description": "Composite fixtures delegated to the executable composite-modernization domain",
+      "description": "Composite engine topology, cutover, and domain verification tests",
       "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/composite-engine",
+          "tests": [
+            "engines/composite-engine/tests"
+          ],
+          "uv_args": [
+            "--with",
+            "pytest==8.4.2"
+          ],
+          "pythonpath": [
+            "engines/composite-engine/src"
+          ],
+          "environment": {}
+        },
         {
           "name": "composite-domain-verify",
           "kind": "maven",

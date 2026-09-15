@@ -1,0 +1,831 @@
+{
+  "version": "3.2.0",
+  "batches": [
+    {
+      "id": "B01",
+      "title": "Core execution identity and ownership",
+      "depends_on": [],
+      "tasks": [
+        {
+          "id": "WP-001",
+          "title": "Define ExecutionSource",
+          "priority": "P0",
+          "state": "READY",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-002",
+          "title": "Define RuntimeOwner",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-003",
+          "title": "Add lineage/root ids",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-004",
+          "title": "Add owner epoch fencing",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-005",
+          "title": "Add ownership persistence",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B02",
+      "title": "Durable timeline and artifacts",
+      "depends_on": [
+        "B01"
+      ],
+      "tasks": [
+        {
+          "id": "WP-006",
+          "title": "Create ExecutionTimeline schema",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-007",
+          "title": "Create typed ArtifactStore",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-008",
+          "title": "Projection rebuild API",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-009",
+          "title": "Pagination/replay equivalence tests",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-010",
+          "title": "Artifact identity idempotency",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B03",
+      "title": "Typed context and provenance",
+      "depends_on": [
+        "B02"
+      ],
+      "tasks": [
+        {
+          "id": "WP-011",
+          "title": "ContextEnvelope schema",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-012",
+          "title": "Adapter context-kind mapping",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-013",
+          "title": "Compaction provenance preservation",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-014",
+          "title": "Fork/model-switch propagation tests",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-015",
+          "title": "Root authorization provenance tests",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B04",
+      "title": "Policy and capability admission",
+      "depends_on": [
+        "B03"
+      ],
+      "tasks": [
+        {
+          "id": "WP-016",
+          "title": "EffectivePolicy intersection",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-017",
+          "title": "Hard-deny monotonic tests",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-018",
+          "title": "CapabilityInventory SPI",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-019",
+          "title": "RuntimeConnectionState SPI",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-020",
+          "title": "Fail-closed policy mapping",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B05",
+      "title": "Lifecycle and handoff",
+      "depends_on": [
+        "B04"
+      ],
+      "tasks": [
+        {
+          "id": "WP-021",
+          "title": "SUSPENDED/HANDOFF_READY states",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-022",
+          "title": "Quiesce/checkpoint/writer-close barrier",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-023",
+          "title": "Same execution id handoff",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-024",
+          "title": "Interrupt lifecycle",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-025",
+          "title": "Subtree closure invariants",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B06",
+      "title": "Subagent/internal session safety",
+      "depends_on": [
+        "B05"
+      ],
+      "tasks": [
+        {
+          "id": "WP-026",
+          "title": "InternalSessionSource",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-027",
+          "title": "SessionInheritancePolicy",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-028",
+          "title": "Parent-authoritative child recovery",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-029",
+          "title": "Permission intersection on resume",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-030",
+          "title": "Environment drift rejection",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B07",
+      "title": "Tool/plugin/effect journal",
+      "depends_on": [
+        "B06"
+      ],
+      "tasks": [
+        {
+          "id": "WP-031",
+          "title": "ToolCallJournal",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-032",
+          "title": "Failed call durable replay",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-033",
+          "title": "Plugin lifecycle provenance",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-034",
+          "title": "ApprovalActionKind",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-035",
+          "title": "write-stdin child approval semantics",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B08",
+      "title": "Result transaction plane",
+      "depends_on": [
+        "B07"
+      ],
+      "tasks": [
+        {
+          "id": "WP-036",
+          "title": "RepositoryCheckpoint path kinds",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-037",
+          "title": "ResultFence",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-038",
+          "title": "Exactly-once ReconcileTransaction",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-039",
+          "title": "SideEffectReceipt",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-040",
+          "title": "Builder publication denial",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B09",
+      "title": "Worker fabric hardening",
+      "depends_on": [
+        "B08"
+      ],
+      "tasks": [
+        {
+          "id": "WP-041",
+          "title": "WorkerAuthority",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-042",
+          "title": "CapabilityLease propagation",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-043",
+          "title": "Fence epoch/heartbeat",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-044",
+          "title": "Secret references only",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-045",
+          "title": "Remote executor conformance",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B10",
+      "title": "Release assurance",
+      "depends_on": [
+        "B09"
+      ],
+      "tasks": [
+        {
+          "id": "WP-046",
+          "title": "ReleaseEvidenceManifest",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-047",
+          "title": "PASS/FAIL/WAIVED/PENDING semantics",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-048",
+          "title": "Exact artifact digest verification",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-049",
+          "title": "Post-publication verification",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-050",
+          "title": "PublicationBroker",
+          "priority": "P0",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B11",
+      "title": "Prepared execution and protocols",
+      "depends_on": [
+        "B10"
+      ],
+      "tasks": [
+        {
+          "id": "WP-051",
+          "title": "EnvironmentFingerprint",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-052",
+          "title": "PreparedEnvironment snapshot",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-053",
+          "title": "Warm worker pool",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-054",
+          "title": "PeerBinding",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-055",
+          "title": "MCP/ACP/A2A routing conformance",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B12",
+      "title": "Integration/observability/migration",
+      "depends_on": [
+        "B11"
+      ],
+      "tasks": [
+        {
+          "id": "WP-056",
+          "title": "OTel correlation fields",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-057",
+          "title": "Audit ledger events",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-058",
+          "title": "Postgres migrations",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-059",
+          "title": "v3.1 compatibility facade",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        },
+        {
+          "id": "WP-060",
+          "title": "Golden Route E2E conformance",
+          "priority": "P1",
+          "state": "BLOCKED",
+          "done_when": [
+            "contract implemented",
+            "negative tests pass",
+            "replay/recovery invariant covered",
+            "traceability updated"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+name: result-fence-certification
+steps:
+  - intercept_raw_result
+  - create_candidate_checkpoint
+  - freeze_candidate
+  - issue_verification_ticket
+  - truth_runner_execute
+  - validate_provenance
+  - opa_gate
+  - certify_or_reject
+  - reconcile_exactly_once
+  - request_publication

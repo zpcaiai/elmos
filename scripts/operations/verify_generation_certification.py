@@ -52,13 +52,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--simulate-sign",
         action="store_true",
-        help="Generate a valid certification request and sign it with --private-key before verification",
+        help="Deprecated and always blocked; certification signing must occur outside the repository",
     )
     parser.add_argument(
         "--private-key",
         type=Path,
-        default=ROOT / "certification" / "ethan-certifier" / "certifier-private.pem",
-        help="Private key to use when --simulate-sign is enabled",
+        default=None,
+        help="Deprecated; private signing keys are never accepted by this repository-side verifier",
     )
     parser.add_argument(
         "--signer-id",
@@ -88,56 +88,6 @@ def parse_iso(value: Any) -> datetime:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt
-
-
-def create_and_sign_request(
-    request_path: Path,
-    signature_path: Path,
-    private_key: Path,
-    signer_id: str,
-    dossier_manifest: dict[str, Any],
-) -> dict[str, Any]:
-    now = datetime.now(timezone.utc)
-    expires = now + timedelta(days=90)
-
-    request_payload: dict[str, Any] = {
-        "request_version": 1,
-        "scope": "elmos.project-synthesis",
-        "dossier_id": dossier_manifest.get("dossier_id"),
-        "dossier_sha256": dossier_manifest.get("dossier_sha256"),
-        "signer_id": signer_id,
-        "role": "independent-certifier",
-        "requested_at": now.isoformat(),
-        "expires_at": expires.isoformat(),
-        "attestation": (
-            "I, Ethan, as the independent certifier, have reviewed the Project Synthesis "
-            "reproducible replay evidence, source manifests, and native execution records, "
-            "and hereby attest to the verification results within the declared claim boundary."
-        ),
-        "target_languages": [t["language"] for t in dossier_manifest.get("targets", [])],
-    }
-
-    request_content = json.dumps(request_payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
-    request_path.parent.mkdir(parents=True, exist_ok=True)
-    request_path.write_text(request_content, encoding="utf-8")
-
-    # Sign the request using openssl dgst -sha256 -sign
-    subprocess.run(
-        [
-            "openssl",
-            "dgst",
-            "-sha256",
-            "-sign",
-            str(private_key),
-            "-out",
-            str(signature_path),
-            str(request_path),
-        ],
-        check=True,
-        capture_output=True,
-    )
-    print(f"Signed certification request with {private_key} -> {signature_path}")
-    return request_payload
 
 
 def verify_certification(
@@ -257,17 +207,12 @@ def main() -> int:
     args = parse_args()
 
     if args.simulate_sign:
-        if not args.private_key.exists():
-            print(f"Error: Private key {args.private_key} not found for signing", file=sys.stderr)
-            return 1
-        dossier = json.loads(args.dossier_manifest.read_text(encoding="utf-8"))
-        create_and_sign_request(
-            args.certification_request,
-            args.signature,
-            args.private_key,
-            args.signer_id,
-            dossier,
+        print(
+            "BLOCKED / NOT_CERTIFIED: repository-side signing is prohibited; "
+            "Ethan must sign the immutable request outside the repository",
+            file=sys.stderr,
         )
+        return 2
 
     result = verify_certification(
         args.dossier_manifest,

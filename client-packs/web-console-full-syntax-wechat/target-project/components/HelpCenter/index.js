@@ -16,7 +16,7 @@ try { var businessLines = [
     },
     {
         href: "/spring",
-        zh: "Spring 老项目翻新",
+        zh: "Spring 现代化升级",
         en: "Spring modernization",
         zhDescription: "对不可变仓库快照做指纹、计划、执行、验证和交付，不把本地成功当生产认证。",
         enDescription: "Fingerprint, plan, execute, verify, and deliver an immutable repository snapshot without treating local success as production certification.",

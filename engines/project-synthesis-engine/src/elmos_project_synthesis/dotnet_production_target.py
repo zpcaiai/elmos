@@ -25,10 +25,14 @@ from .production_contract import (
     TENANT_CLAIM,
     TENANT_SETTING,
     all_entity_sql,
+    fixture_chain,
     production_contract,
+    relation_parents,
+    uuid_relation_fields,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (
+    camel,
     clean,
     dockerignore,
     env_example,
@@ -52,7 +56,9 @@ def _csharp_type(field: FieldSpec) -> str:
     }[field.type]
 
 
-def _reader(field: FieldSpec, index: int) -> str:
+def _reader(field: FieldSpec, index: int, is_uuid: bool = False) -> str:
+    if is_uuid:
+        return f"reader.GetGuid({index}).ToString()"
     return {
         "string": f"reader.GetString({index})",
         "integer": f"reader.GetInt64({index})",
@@ -181,6 +187,7 @@ def _security_source(request: SynthesisRequest) -> str:
 
 def _store_source(request: SynthesisRequest) -> str:
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
+    uuids = uuid_relation_fields(request)
     classes: list[str] = []
     for entity in request.entities:
         entity_class = pascal(entity.singular)
@@ -192,10 +199,16 @@ def _store_source(request: SynthesisRequest) -> str:
         )
         read_arguments = ",\n                    ".join(
             ["Id = reader.GetGuid(0).ToString()"]
-            + [f"{pascal(field.name)} = {_reader(field, index + 1)}" for index, field in enumerate(entity.fields)]
+            + [
+                f"{pascal(field.name)} = {_reader(field, index + 1, (entity.singular, field.name) in uuids)}"
+                for index, field in enumerate(entity.fields)
+            ]
         )
         upsert_parameters = "\n                    ".join(
-            f"command.Parameters.AddWithValue(payload.{pascal(field.name)});" for field in entity.fields
+            f"command.Parameters.AddWithValue(Guid.Parse(payload.{pascal(field.name)}));"
+            if (entity.singular, field.name) in uuids
+            else f"command.Parameters.AddWithValue(payload.{pascal(field.name)});"
+            for field in entity.fields
         )
         classes.append(
             f"""
@@ -452,10 +465,88 @@ def _program_source(request: SynthesisRequest, port: int) -> str:
     )
 
 
+def _dotnet_body_expression(request: SynthesisRequest, entity: object, parent_variables: dict[str, str]) -> str:
+    parents = dict(relation_parents(request, entity.singular))  # type: ignore[attr-defined]
+    pieces: list[str] = []
+    for field in entity.fields:  # type: ignore[attr-defined]
+        key = camel(field.name)
+        if field.name in parents:
+            variable = parent_variables[parents[field.name]]
+            pieces.append(f'"\\"{key}\\": \\"" + {variable} + "\\""')
+        else:
+            literal = json.dumps(_sample_json(field))
+            escaped = literal.replace("\\", "\\\\").replace('"', '\\"')
+            pieces.append(f'"\\"{key}\\": {escaped}"')
+    joined = ' + ", " + '.join(pieces) if pieces else '""'
+    return '"{" + ' + joined + ' + "}"'
+
+
+def _entity_scenario_methods(request: SynthesisRequest) -> str:
+    by_name = {entity.singular: entity for entity in request.entities}
+    blocks: list[str] = []
+    for entity in request.entities:
+        parent_variables: dict[str, str] = {}
+        fixture_lines: list[str] = []
+        for parent in fixture_chain(request, entity.singular):
+            variable = f"{camel(parent)}Id"
+            parent_variables[parent] = variable
+            parent_body = _dotnet_body_expression(request, by_name[parent], parent_variables)
+            fixture_lines.extend(
+                (
+                    f"var {variable} = Guid.NewGuid().ToString();",
+                    f'var created{pascal(parent)} = await SendAsync(client, HttpMethod.Put, $"/{by_name[parent].plural}/{{{variable}}}", tenantA, {parent_body});',
+                    f"Assert.Equal(HttpStatusCode.OK, created{pascal(parent)}.StatusCode);",
+                )
+            )
+        dotnet_body = _dotnet_body_expression(request, entity, parent_variables)
+        fixtures = ("\n".join(fixture_lines) + "\n").replace("\n", "\n                ") if fixture_lines else ""
+        blocks.append(
+            clean(
+                f"""
+                [Fact]
+                public async Task IsolatesTenantsFor{pascal(entity.singular)}()
+                {{
+                    var issuer = Environment.GetEnvironmentVariable("{ENV_AUTH_ISSUER}");
+                    var audience = Environment.GetEnvironmentVariable("{ENV_AUTH_AUDIENCE}");
+                    Assert.False(string.IsNullOrWhiteSpace(issuer), "integration environment is not provisioned");
+                    Assert.False(string.IsNullOrWhiteSpace(audience), "integration environment is not provisioned");
+
+                    var port = Environment.GetEnvironmentVariable("PORT") ?? "0";
+                    using var client = new HttpClient {{ BaseAddress = new Uri($"http://127.0.0.1:{{port}}") }};
+
+                    var tenantA = Token("tenant-a", issuer!, audience!, true);
+                    var tenantB = Token("tenant-b", issuer!, audience!, true);
+                    {fixtures}// upsert-and-read
+                    var recordId = Guid.NewGuid().ToString();
+                    var created = await SendAsync(client, HttpMethod.Put, $"/{entity.plural}/{{recordId}}", tenantA, {dotnet_body});
+                    Assert.Equal(HttpStatusCode.OK, created.StatusCode);
+                    var read = await SendAsync(client, HttpMethod.Get, $"/{entity.plural}/{{recordId}}", tenantA, null);
+                    Assert.Equal(HttpStatusCode.OK, read.StatusCode);
+                    Assert.Contains(recordId, await read.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+
+                    // list-scoped-to-tenant
+                    var listed = await SendAsync(client, HttpMethod.Get, "/{entity.plural}", tenantA, null);
+                    Assert.Equal(HttpStatusCode.OK, listed.StatusCode);
+                    Assert.Contains(recordId, await listed.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+
+                    // cross-tenant-read-blocked
+                    Assert.Equal(HttpStatusCode.NotFound, (await SendAsync(client, HttpMethod.Get, $"/{entity.plural}/{{recordId}}", tenantB, null)).StatusCode);
+                    var otherList = await SendAsync(client, HttpMethod.Get, "/{entity.plural}", tenantB, null);
+                    Assert.DoesNotContain(recordId, await otherList.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+
+                    // delete-removes-record
+                    Assert.Equal(HttpStatusCode.NoContent, (await SendAsync(client, HttpMethod.Delete, $"/{entity.plural}/{{recordId}}", tenantA, null)).StatusCode);
+                    Assert.Equal(HttpStatusCode.NotFound, (await SendAsync(client, HttpMethod.Get, $"/{entity.plural}/{{recordId}}", tenantA, null)).StatusCode);
+                }}
+                """
+            ).rstrip()
+        )
+    return "\n\n".join(blocks)
+
+
 def _integration_test_source(request: SynthesisRequest) -> str:
     entity = request.entities[0]
-    body_json = json.dumps({field.name: _sample_json(field) for field in entity.fields})
-    csharp_body = body_json.replace("\\", "\\\\").replace('"', '\\"')
+    entity_scenarios = _entity_scenario_methods(request).replace("\n", "\n            ")
     if request.auth_mode == "jwt":
         signer = f"""
         private static SigningCredentials Credentials(bool valid)
@@ -565,7 +656,6 @@ def _integration_test_source(request: SynthesisRequest) -> str:
                 using var client = new HttpClient {{ BaseAddress = new Uri($"http://127.0.0.1:{{port}}") }};
 
                 var tenantA = Token("tenant-a", issuer!, audience!, true);
-                var tenantB = Token("tenant-b", issuer!, audience!, true);
 
                 // health-unauthenticated
                 Assert.Equal(HttpStatusCode.OK, (await SendAsync(client, HttpMethod.Get, "/health", null, null)).StatusCode);
@@ -584,29 +674,9 @@ def _integration_test_source(request: SynthesisRequest) -> str:
 
                 // missing-tenant-claim-rejected
                 Assert.Equal(HttpStatusCode.Unauthorized, (await SendAsync(client, HttpMethod.Get, "/{entity.plural}", Token(null, issuer!, audience!, true), null)).StatusCode);
-
-                // upsert-and-read
-                var recordId = Guid.NewGuid().ToString();
-                var created = await SendAsync(client, HttpMethod.Put, $"/{entity.plural}/{{recordId}}", tenantA, "{csharp_body}");
-                Assert.Equal(HttpStatusCode.OK, created.StatusCode);
-                var read = await SendAsync(client, HttpMethod.Get, $"/{entity.plural}/{{recordId}}", tenantA, null);
-                Assert.Equal(HttpStatusCode.OK, read.StatusCode);
-                Assert.Contains(recordId, await read.Content.ReadAsStringAsync(), StringComparison.Ordinal);
-
-                // list-scoped-to-tenant
-                var listed = await SendAsync(client, HttpMethod.Get, "/{entity.plural}", tenantA, null);
-                Assert.Equal(HttpStatusCode.OK, listed.StatusCode);
-                Assert.Contains(recordId, await listed.Content.ReadAsStringAsync(), StringComparison.Ordinal);
-
-                // cross-tenant-read-blocked
-                Assert.Equal(HttpStatusCode.NotFound, (await SendAsync(client, HttpMethod.Get, $"/{entity.plural}/{{recordId}}", tenantB, null)).StatusCode);
-                var otherList = await SendAsync(client, HttpMethod.Get, "/{entity.plural}", tenantB, null);
-                Assert.DoesNotContain(recordId, await otherList.Content.ReadAsStringAsync(), StringComparison.Ordinal);
-
-                // delete-removes-record
-                Assert.Equal(HttpStatusCode.NoContent, (await SendAsync(client, HttpMethod.Delete, $"/{entity.plural}/{{recordId}}", tenantA, null)).StatusCode);
-                Assert.Equal(HttpStatusCode.NotFound, (await SendAsync(client, HttpMethod.Get, $"/{entity.plural}/{{recordId}}", tenantA, null)).StatusCode);
             }}
+
+            {entity_scenarios}
         }}
         """
     )

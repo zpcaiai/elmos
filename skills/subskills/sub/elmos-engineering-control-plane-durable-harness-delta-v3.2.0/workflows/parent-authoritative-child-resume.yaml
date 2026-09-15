@@ -1,0 +1,12 @@
+name: parent-authoritative-child-resume
+steps:
+  - load_lineage
+  - resolve_immediate_runtime_owner
+  - fail_if_owner_unavailable
+  - revalidate_environment
+  - intersect_permissions
+  - restore_child_model_provider_reasoning_role
+  - attach_child
+invariants:
+  - child_snapshot_cannot_self_authorize
+  - parent_policy_changes_apply_on_resume

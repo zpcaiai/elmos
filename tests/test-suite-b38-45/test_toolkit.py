@@ -296,15 +296,15 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(400, gate["metrics"]["counts"]["passed"])
             self.assertIn("externally trusted signed certification request", " ".join(gate["blockers"]))
 
-    def test_repository_suite_certified_with_request(self) -> None:
+    def test_repository_suite_rejects_revoked_request(self) -> None:
         cert_req = SUITE / "certification-request.json"
         sig = SUITE / "certification-request.sig"
         trust = ROOT / "certification/batch38-45-trust-store.json"
         if cert_req.is_file() and sig.is_file() and trust.is_file():
             completed, gate = run_gate(SUITE, cert_req, sig, trust)
-            self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
-            self.assertEqual("CERTIFIED", gate["decision"])
-            self.assertEqual("PASSED", gate["field_evidence_status"])
+            self.assertEqual(2, completed.returncode, completed.stdout + completed.stderr)
+            self.assertEqual("BLOCKED", gate["decision"])
+            self.assertIn("trust anchor is revoked", " ".join(gate["blockers"]))
             self.assertEqual(400, gate["metrics"]["counts"]["passed"])
 
     def test_complete_synthetic_signed_fixture_exercises_certified_path(self) -> None:

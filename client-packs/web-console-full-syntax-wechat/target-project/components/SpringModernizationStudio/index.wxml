@@ -2,7 +2,7 @@
   <view class="page-header business-hero">
     <view>
       <text class="overline">SPRING MODERNIZATION · REAL JOURNEY</text>
-      <view>Java / Spring 老项目一键迁移</view>
+      <view>Java / Spring 现代化升级</view>
       <view>从不可变 Git Commit 到 FCM、真实 OpenRewrite、双工具链构建、独立验证、下载与隔离启动。每一步都显示真实状态，未运行绝不显示通过。</view>
     </view>
     <view class="header-actions">

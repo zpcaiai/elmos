@@ -2,7 +2,7 @@ from __future__ import annotations
 import yaml
 import json
 from typing import Any, Dict, List
-from .models import PSIR, Language, Framework, ProjectType, DatabaseType, DatabaseSpec, AuthSpec, ConfigSpec, EntitySpec, FieldSpec, FieldType
+from .models import PSIR, Language, Framework, ProjectType, EntitySpec, FieldSpec, FieldType
 
 class PSIRParser:
     def parse_yaml(self, yaml_content: str) -> PSIR:

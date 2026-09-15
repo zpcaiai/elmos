@@ -403,6 +403,10 @@ class RealMigrationPipelineOrchestrator:
                     rows,
                 )
             with tgt_conn.cursor() as cur:
+                cur.execute("SELECT version();")
+                ver_str = cur.fetchone()[0].lower()
+                is_og = "opengauss" in ver_str or "gaussdb" in ver_str
+                with_clause = " WITH (ORIENTATION = ROW)" if is_og else ""
                 cur.execute(f"DROP SCHEMA IF EXISTS {schema_pump_tgt} CASCADE;")
                 cur.execute(f"CREATE SCHEMA {schema_pump_tgt};")
                 cur.execute(f"""
@@ -413,7 +417,7 @@ class RealMigrationPipelineOrchestrator:
                         is_active BOOLEAN NOT NULL,
                         note TEXT,
                         created_at TIMESTAMPTZ NOT NULL
-                    ) WITH (ORIENTATION = ROW);
+                    ){with_clause};
                 """)
             pump = PhysicalDataPump(
                 source_connection=conn,

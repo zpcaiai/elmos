@@ -2,9 +2,9 @@
 """Validate the evidence-preparation contract for the Spring Boot 4.1.1 Pack.
 
 The plan is deliberately not an execution receipt. It binds every required
-runtime/holdout/provider track to the exact target tuple while requiring all
-execution, authorization, and independent-verifier states to remain NOT_RUN
-until real evidence is supplied through the appropriate workflow.
+runtime/holdout/provider track to the exact target tuple. Exact route fixtures
+may carry bounded PASSED_LOCAL receipts; provider, customer, authorization and
+independent-verifier states remain NOT_RUN until their governed workflows run.
 """
 from __future__ import annotations
 
@@ -471,8 +471,41 @@ def validate(pack: Path) -> list[str]:
                 errors.append(f"version matrix target drift: {row.get('id')}")
             if row.get("target_java", "21") != "21":
                 errors.append(f"version matrix Java target drift: {row.get('id')}")
-            if row.get("execution_status") != "NOT_RUN":
-                errors.append(f"version matrix execution must remain NOT_RUN: {row.get('id')}")
+            status = row.get("execution_status")
+            if status not in {"NOT_RUN", "PASSED_LOCAL"}:
+                errors.append(f"version matrix execution status invalid: {row.get('id')}")
+            if status == "NOT_RUN":
+                if "verified_tuple" in row or "evidence" in row:
+                    errors.append(f"unrun version matrix row overclaims evidence: {row.get('id')}")
+                continue
+            verified = row.get("verified_tuple")
+            evidence_relative = row.get("evidence")
+            if not isinstance(verified, dict) or verified.get("target_spring_boot") != "4.1.1" or verified.get("target_java") != "21":
+                errors.append(f"local version matrix tuple invalid: {row.get('id')}")
+                continue
+            if not isinstance(evidence_relative, str):
+                errors.append(f"local version matrix evidence path missing: {row.get('id')}")
+                continue
+            evidence_path = ROOT / evidence_relative
+            try:
+                local_evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                errors.append(f"local version matrix evidence invalid: {row.get('id')}")
+                continue
+            if (
+                local_evidence.get("route_id") != row.get("id")
+                or local_evidence.get("execution_status") != "PASSED_LOCAL"
+                or local_evidence.get("recorded_tuple") != {
+                    "source_boot": verified.get("source_spring_boot"),
+                    "source_java": verified.get("source_java"),
+                    "target_boot": "4.1.1",
+                    "target_java": "21",
+                }
+                or local_evidence.get("external_evidence_status") != "NOT_RUN"
+                or local_evidence.get("independent_verification") != "NOT_RUN"
+                or local_evidence.get("certification_status") != "NOT_CERTIFIED"
+            ):
+                errors.append(f"local version matrix evidence drift: {row.get('id')}")
     if ROUTE_CATALOG.is_file():
         catalog_text = ROUTE_CATALOG.read_text(encoding="utf-8")
         for route_id in route_ids if isinstance(route_ids, list) else []:

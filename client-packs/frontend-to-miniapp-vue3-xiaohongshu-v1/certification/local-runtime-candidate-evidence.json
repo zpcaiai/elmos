@@ -1,0 +1,1171 @@
+{
+  "schema_version": 1,
+  "evidence_key": "vue3-todo-xiaohongshu-local-runtime-2026-08-20",
+  "scope": "bounded local conversion runtime and generated-candidate static validation",
+  "source": {
+    "archive_path": "skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip",
+    "archive_sha256": "sha256:e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82",
+    "archive_bytes": 281829,
+    "manifest_sha256": "sha256:19c337bdad5b1cdc81eb92106710c203ee4515dedef89416a4dd7042eb55f608",
+    "manifest_bytes": 2278,
+    "snapshot_id": "vue3-todo-source-snapshot-1.0.1",
+    "privacy": "public synthetic fixture; no credentials or personal data",
+    "manifest_aggregate_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "runtime_file_set_digest": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "file_count": 12,
+    "byte_count": 30476,
+    "source_scripts_executed": false
+  },
+  "runtime_implementation": {
+    "digest": "sha256:8c05298285e0b9a3c5548f60dedac21f521beb5bad88ae3bddbbf238987d4c98",
+    "file_count": 24,
+    "node_version": "26.0.0",
+    "typescript_version": "5.9.2",
+    "vue_compiler_sfc_version": "3.5.39"
+  },
+  "evidence_root": {
+    "digest": "sha256:24f704f139de0c434fe73616b13ec813a95b58be99f49e3440f9df93e24d8250",
+    "entry_count": 38,
+    "entries": [
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/acceptance/acceptance-profile.json",
+        "bytes": 2458,
+        "sha256": "sha256:ed86bab9bd5144976f05d9a81151cbd999a08c0420707f17514443511c4aa562"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/certification/certification.json",
+        "bytes": 2877,
+        "sha256": "sha256:91184ee709ca2695416f864889987ba1cc20f501d7967b8667eb77bacfd64153"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/certification/external-evidence-status.json",
+        "bytes": 713,
+        "sha256": "sha256:ed03f61d943791e7a12c79862c2c6708dece8f5d6824f77f3689a673ebb9cad0"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/certification/replay-local-runtime.mjs",
+        "bytes": 44945,
+        "sha256": "sha256:727d9fc8921570dc01572e1401ab086eb74e18b458f3219efc9341b5d25c7141"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/certification/source-build-evidence.json",
+        "bytes": 3335,
+        "sha256": "sha256:11821773fb0cbca7f880723d882e4667164059a955e75a55479124ddfa8e8c40"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/pack.json",
+        "bytes": 4775,
+        "sha256": "sha256:f63fee87e9b5951b06bed804f62ee0bb3d56f5879210dc268929fb51a47c4eb6"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/route-matrix.json",
+        "bytes": 1528,
+        "sha256": "sha256:33a200ae5518fd903441ed967fd5e7d8a7cdbb2c068e6a202da93ac334909f81"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/source-snapshots/manifest.json",
+        "bytes": 2278,
+        "sha256": "sha256:19c337bdad5b1cdc81eb92106710c203ee4515dedef89416a4dd7042eb55f608"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/target-profile/profile.json",
+        "bytes": 2931,
+        "sha256": "sha256:1c279c99e5364a0d3d903414f8ee96de2222271bcd778aaf2297351b1bd30028"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/transformations/vue3-todo-to-xiaohongshu-native.json",
+        "bytes": 3514,
+        "sha256": "sha256:5d361a883323291633552093d24c16a51620d35d5e670bf6a8347e20716a4edd"
+      },
+      {
+        "path": "client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/ui-ir/model.json",
+        "bytes": 9762,
+        "sha256": "sha256:033405d078549e999e1628342105714ab59dc0df1dc299457303dcc6a86ca7fb"
+      },
+      {
+        "path": "dist/src/miniapp-contract-validation.js",
+        "bytes": 12721,
+        "sha256": "sha256:e1fcd85fa37da8ca6c3d50d4a86957b1335e140c6031f4fe28c370ca06ad278f"
+      },
+      {
+        "path": "dist/src/miniapp-inventory.js",
+        "bytes": 55803,
+        "sha256": "sha256:0951dcabf42cfe8cb55b8d2d0b9ffda00bdf92d871307b63ed21dc114719eadf"
+      },
+      {
+        "path": "dist/src/miniapp-output-contracts.js",
+        "bytes": 99127,
+        "sha256": "sha256:a69c114400a5c2675454f12696b2722abfb72440d9f49a1eae05ca05d42684e6"
+      },
+      {
+        "path": "dist/src/miniapp-package-contract.js",
+        "bytes": 36950,
+        "sha256": "sha256:02af7af2682cc781dcf5c2df4e78a62997a528f0eca4386e6133e49142687728"
+      },
+      {
+        "path": "dist/src/miniapp-planning.js",
+        "bytes": 61436,
+        "sha256": "sha256:b8bef0f7be72b4dba906194297b29aa3b926f2bca2ed1f1135dc8dbc97ab1c0c"
+      },
+      {
+        "path": "dist/src/miniapp-semantic-ir.js",
+        "bytes": 157957,
+        "sha256": "sha256:fb19bf8fcd82efd8f279922f75ca8d086bfc2fc02c3fd87fe7332a4cd2f3d0fb"
+      },
+      {
+        "path": "dist/src/miniapp-skill-runtime.js",
+        "bytes": 34954,
+        "sha256": "sha256:c0c841efdf22cff36a0f3abf89fffdd1cc25344cab06d7256e5136cf3a2685d1"
+      },
+      {
+        "path": "dist/src/miniapp-target-generation.js",
+        "bytes": 36384,
+        "sha256": "sha256:cac6379cd7ef818653fcf1d878d4a417dd7043b39ef6c053ec8058aad4231b26"
+      },
+      {
+        "path": "dist/src/miniapp-types.js",
+        "bytes": 1106,
+        "sha256": "sha256:c85fd4b6304ff5966b205493879db2784e31b50a87b90fe065947ba1b8df27a3"
+      },
+      {
+        "path": "dist/src/miniapp-validation.js",
+        "bytes": 43128,
+        "sha256": "sha256:5ebb4110eb3e76d74815ef5306f33f097b9508b83f09f533fe66d444955b26fb"
+      },
+      {
+        "path": "package.json",
+        "bytes": 988,
+        "sha256": "sha256:afee6fb3a196ccb241db87cc45e8a12cb5150394c52f6bbaed61c21b710c64fe"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "bytes": 7036,
+        "sha256": "sha256:6332bb41562d1a33fe282b05c451cac07ecd1bc686d2fd8b474c26445b3c1748"
+      },
+      {
+        "path": "scripts/batch32/run_client_gate.py",
+        "bytes": 45509,
+        "sha256": "sha256:9481bc56be6f60a8dec6908ca7ee71b2715040830c552b525c8b743707033ae5"
+      },
+      {
+        "path": "scripts/batch32/validate_client_pack.py",
+        "bytes": 9568,
+        "sha256": "sha256:57b36c5e2efb313b2aa41e9e5d9141ced7fba2439c023685ff80bba4c72ddcf6"
+      },
+      {
+        "path": "scripts/batch32/validate_ui_ir.py",
+        "bytes": 2701,
+        "sha256": "sha256:144a63839f24820490b3fb5a594032b10bc8d33f8762bdaf659ac95e15b04413"
+      },
+      {
+        "path": "skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip",
+        "bytes": 281829,
+        "sha256": "sha256:e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82"
+      },
+      {
+        "path": "src/miniapp-contract-validation.ts",
+        "bytes": 13442,
+        "sha256": "sha256:8756dd145fa4c88c51d0270818cf88bd336237900980799064bc5a05a8c87fc4"
+      },
+      {
+        "path": "src/miniapp-inventory.ts",
+        "bytes": 54784,
+        "sha256": "sha256:f8d697e092d1b7be8a09140e19785183fcd824aef925674e78d51d7f308f46db"
+      },
+      {
+        "path": "src/miniapp-output-contracts.ts",
+        "bytes": 95692,
+        "sha256": "sha256:aba64390442b46260afc2ffc84c2f96b4e4e3089647725c8dbb0b013fc6875df"
+      },
+      {
+        "path": "src/miniapp-package-contract.ts",
+        "bytes": 43849,
+        "sha256": "sha256:00203999d7dfd6bfbaf32d7b0f5fbcf1ee1edeeee35c8d06b3d44d71fd3f9fcf"
+      },
+      {
+        "path": "src/miniapp-planning.ts",
+        "bytes": 66447,
+        "sha256": "sha256:96068e28216f023f70824a61927bccd5a6af22d0fd406845d8f66bfc1c25912e"
+      },
+      {
+        "path": "src/miniapp-semantic-ir.ts",
+        "bytes": 161728,
+        "sha256": "sha256:0c181bb41aeac5a672fed39a2c4e4dcbc94946c01fc711a97732bf1311217af8"
+      },
+      {
+        "path": "src/miniapp-skill-runtime.ts",
+        "bytes": 42586,
+        "sha256": "sha256:15af94b507882ce25fe95cd37fc88ba9d78a90d1cd20cddc91d7e149c7adb39b"
+      },
+      {
+        "path": "src/miniapp-target-generation.ts",
+        "bytes": 38206,
+        "sha256": "sha256:a9dc656989beee1a5fbe08b1ccfdec1f1b0ac7883ec6bd31d3635e91d7b77168"
+      },
+      {
+        "path": "src/miniapp-types.ts",
+        "bytes": 8119,
+        "sha256": "sha256:50994ce2045a857cf409c394513f7b47d73417f54eb8de06347257df16900182"
+      },
+      {
+        "path": "src/miniapp-validation.ts",
+        "bytes": 48502,
+        "sha256": "sha256:2a3b2b1abc580b756415539a60e640fe96fd994c0913d090ab2cfe55d2606eed"
+      },
+      {
+        "path": "tsconfig.json",
+        "bytes": 373,
+        "sha256": "sha256:445643bccad04d5cb5aeae088bd9430b462b260e524412d4d19897484f73f273"
+      }
+    ]
+  },
+  "request": {
+    "request_id": "conv-vue3-todo-xiaohongshu",
+    "request_digest": "sha256:33cc9351be7d914e11421ce50b066da906955f02576a57d1c03189a35fe0e33a",
+    "source_revision": "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184",
+    "target": {
+      "platform": "xiaohongshu",
+      "platformVersion": "2.10.2",
+      "toolchainVersion": "1.0.0"
+    },
+    "target_profile_digest": "sha256:1c279c99e5364a0d3d903414f8ee96de2222271bcd778aaf2297351b1bd30028",
+    "target_profile": {
+      "profile_key": "frontend-to-miniapp-vue3-xiaohongshu-v1-target",
+      "framework": "xiaohongshu-native-miniapp-candidate",
+      "versions": [
+        "2.10.2"
+      ],
+      "runtime_versions": [
+        "2.10.2"
+      ],
+      "generator_profile_version": "2026-08-20.1",
+      "official_toolchain_version": "1.0.0",
+      "authorization": {
+        "official_build": false,
+        "preview": false,
+        "upload": false,
+        "review": false,
+        "release": false
+      },
+      "file_model": {
+        "application_config": "app.json",
+        "page_config": "<page>.json",
+        "template_extension": ".xhsml",
+        "style_extension": ".css",
+        "script_extension": ".js"
+      }
+    }
+  },
+  "conversion": {
+    "run_id": "miniapp-run-conv-vue3-todo-xiaohongshu-987ec260c6605271",
+    "deterministic_digest": "sha256:83bf82719458d50de0ac5580d1a39330973f4cc649602241d0163cb6a5bd7a3c",
+    "analysis_digest": "sha256:474a0dbe13b1ce6f9f6555206b3706c5d0a9c0afcd55ad4dfc99635ad63c7de6",
+    "semantic_ir_digest": "sha256:dc20cc658fe87f6149255a989067c1c867fd3747c47b031ce598086c94e4a2c5",
+    "plan_digest": "sha256:3379268e74a6b2e2c88c02479c69445f719ded69599b46695240c9105f822ef2",
+    "checkpoint_digest": "sha256:727d6f30fe64ff29958350a2e98365d534c99a409ed8c7163961ddc97ba6ae45"
+  },
+  "analysis": {
+    "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+deterministic-css-parser+router-ast+source-build-config-inventory-only+source-build-entrypoint+typescript-compiler-api+vue-router-ast",
+    "coverage": 1,
+    "parsed_files": [
+      "index.html",
+      "src/App.vue",
+      "src/env.d.ts",
+      "src/main.ts",
+      "src/router.ts",
+      "src/stores/todo.ts",
+      "src/views/HomeView.vue",
+      "vite.config.ts"
+    ],
+    "failed_files": [],
+    "component_count": 8,
+    "route_count": 1,
+    "state_count": 2,
+    "findings": []
+  },
+  "semantic_ir": {
+    "profile": "miniapp-ui-interaction-v1",
+    "node_count": 21,
+    "trace_coverage": 1,
+    "batch32_pack_model": "ui-ir/model.json is a separate 20-node review model, not this runtime IR"
+  },
+  "review_model_binding": {
+    "ui_ir_digest": "sha256:033405d078549e999e1628342105714ab59dc0df1dc299457303dcc6a86ca7fb",
+    "transformation_digest": "sha256:5d361a883323291633552093d24c16a51620d35d5e670bf6a8347e20716a4edd",
+    "review_node_count": 20,
+    "review_node_mapping_coverage": 1,
+    "declared_transformation_mapping_count": 8,
+    "declared_transformation_mapping_coverage": 1,
+    "directional_scope": "one-way review UI IR to source-derived runtime subjects and content-addressed generated artifacts",
+    "declared_transformation_bindings": [
+      {
+        "source_node": "route.home",
+        "target_contract": "app.json pages[0] equals pages/index/index and pages/index/index.json exists",
+        "target_artifacts": [
+          {
+            "path": "app.json",
+            "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+            "bytes": 223
+          },
+          {
+            "path": "pages/index/index.json",
+            "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+            "bytes": 64
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.app-shell",
+        "target_contract": "pages/index/index.xhsml contains the source-traced application shell",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.todo-input",
+        "target_contract": "pages/index/index.xhsml input value binds text and bindinput targets handleInput0",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.add-button",
+        "target_contract": "pages/index/index.xhsml button disabled binds !canSubmit0 and bindtap targets handleSubmit0",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "component.todo-list",
+        "target_contract": "pages/index/index.xhsml iterates itemsRender with __elmosKey and pages/index/index.js derives each key from item plus source index",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "effect.add-todo",
+        "target_contract": "pages/index/index.js trims text appends one value persists application items and clears text",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "token.app-shell",
+        "target_contract": "pages/index/index.css scopes .app-shell with the deterministic scope class and preserves max-width auto margins and padding",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.css",
+            "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+            "bytes": 574
+          }
+        ],
+        "verified": true
+      },
+      {
+        "source_node": "permission.local-only",
+        "target_contract": "adapters/platform.js exposes no network identity payment upload review or release capability",
+        "target_artifacts": [
+          {
+            "path": "adapters/platform.js",
+            "sha256": "sha256:4f4b8a3e7c9f1635d7b982f662ef1309861dc19724e1f6a44dbf47b117809c4b",
+            "bytes": 136
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "crosswalk": [
+      {
+        "review_node_id": "route.home",
+        "runtime_subject_ids": [
+          "route.8b8df5760bcd52c75516"
+        ],
+        "review_source_paths": [
+          "src/router.ts"
+        ],
+        "runtime_source_paths": [
+          "src/router.ts"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/router.ts",
+            "sha256": "sha256:4a100a699df9e076565bcba974ea0e7433a3d2d9cd6445d0a36f764eb5b629e4",
+            "bytes": 244
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "app.json",
+            "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+            "bytes": 223
+          },
+          {
+            "path": "pages/index/index.json",
+            "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+            "bytes": 64
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "view.app-shell",
+        "runtime_subject_ids": [
+          "component.361923a1bb7397676d8e"
+        ],
+        "review_source_paths": [
+          "src/App.vue"
+        ],
+        "runtime_source_paths": [
+          "src/App.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
+            "bytes": 263
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "view.home",
+        "runtime_subject_ids": [
+          "component.532133dc3188c5366642"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.app-shell",
+        "runtime_subject_ids": [
+          "component.361923a1bb7397676d8e"
+        ],
+        "review_source_paths": [
+          "src/App.vue"
+        ],
+        "runtime_source_paths": [
+          "src/App.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
+            "bytes": 263
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.home-view",
+        "runtime_subject_ids": [
+          "component.532133dc3188c5366642"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.todo-input",
+        "runtime_subject_ids": [
+          "component.d67240b928720b098e09"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.add-button",
+        "runtime_subject_ids": [
+          "component.69b07e0f26388ff2514d"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "component.todo-list",
+        "runtime_subject_ids": [
+          "component.9ba2c5abfd87ca91748c"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "state.todo-text",
+        "runtime_subject_ids": [
+          "state.ad7ce7a5eeb7b35e351a"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "state.todo-items",
+        "runtime_subject_ids": [
+          "state.9a892831ecf0f8a8bb4f"
+        ],
+        "review_source_paths": [
+          "src/stores/todo.ts"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/stores/todo.ts",
+            "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a",
+            "bytes": 260
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "app.js",
+            "sha256": "sha256:516bc3ee3685e36ec5c74d30eec6fa18690f6ad370eca17e194c1882e114396e",
+            "bytes": 169
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "action.input-todo",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "action.submit-todo",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/stores/todo.ts",
+            "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a",
+            "bytes": 260
+          },
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "effect.add-todo",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/stores/todo.ts",
+            "sha256": "sha256:dff9c172ca2a16986b3c943711625df827abda894b6529e38c41937292570c3a",
+            "bytes": 260
+          },
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "form.todo-entry",
+        "runtime_subject_ids": [
+          "form.fda314903f53c1212a4a"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "binding.todo-text",
+        "runtime_subject_ids": [
+          "interaction.3daa07935328ebded93b",
+          "component.d67240b928720b098e09"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "permission.local-only",
+        "runtime_subject_ids": [
+          "policy.no-declared-platform-capabilities"
+        ],
+        "review_source_paths": [
+          "package.json"
+        ],
+        "runtime_source_paths": [],
+        "source_manifest_entries": [
+          {
+            "path": "package.json",
+            "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+            "bytes": 461
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "SOURCE_MANIFEST_ONLY_NEGATIVE_OR_RESOURCE_CONTRACT",
+        "target_artifacts": [
+          {
+            "path": "adapters/platform.js",
+            "sha256": "sha256:4f4b8a3e7c9f1635d7b982f662ef1309861dc19724e1f6a44dbf47b117809c4b",
+            "bytes": 136
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "resource.source-snapshot",
+        "runtime_subject_ids": [
+          "sha256:aa692b28cfdb3764013b88bada8cf90c35515bb00ee0d69b3f6e411df3b73184"
+        ],
+        "review_source_paths": [
+          "package.json"
+        ],
+        "runtime_source_paths": [],
+        "source_manifest_entries": [
+          {
+            "path": "package.json",
+            "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+            "bytes": 461
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "SOURCE_MANIFEST_ONLY_NEGATIVE_OR_RESOURCE_CONTRACT",
+        "target_artifacts": [
+          {
+            "path": "source-snapshots/manifest.json",
+            "sha256": "sha256:19c337bdad5b1cdc81eb92106710c203ee4515dedef89416a4dd7042eb55f608",
+            "bytes": 2278
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "token.app-shell",
+        "runtime_subject_ids": [
+          "style.e0dad29b9ebfe405ce86"
+        ],
+        "review_source_paths": [
+          "src/App.vue"
+        ],
+        "runtime_source_paths": [
+          "src/App.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:91985cca2e02ba745bdaa1b043f30977a3c7e0778c8309d21282e1f5efba922e",
+            "bytes": 263
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.css",
+            "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+            "bytes": 574
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "a11y.todo-input-label",
+        "runtime_subject_ids": [
+          "component.d67240b928720b098e09"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          }
+        ],
+        "verified": true
+      },
+      {
+        "review_node_id": "a11y.disabled-state",
+        "runtime_subject_ids": [
+          "component.69b07e0f26388ff2514d",
+          "state.ad7ce7a5eeb7b35e351a",
+          "interaction.3daa07935328ebded93b"
+        ],
+        "review_source_paths": [
+          "src/views/HomeView.vue"
+        ],
+        "runtime_source_paths": [
+          "src/stores/todo.ts",
+          "src/views/HomeView.vue"
+        ],
+        "source_manifest_entries": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:a46381c3400c6f3a82b2c9de05bbff05ab40894d3aa3c347077db5cbfab38240",
+            "bytes": 504
+          }
+        ],
+        "source_ref_coverage": 1,
+        "source_binding": "RUNTIME_SOURCE_REFS_AND_SOURCE_MANIFEST",
+        "target_artifacts": [
+          {
+            "path": "pages/index/index.xhsml",
+            "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+            "bytes": 1084
+          },
+          {
+            "path": "pages/index/index.js",
+            "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+            "bytes": 1488
+          }
+        ],
+        "verified": true
+      }
+    ],
+    "state": "PASSED_LOCAL_SELF_ATTESTED_MAPPING_ONLY",
+    "full_runtime_ir_reverse_equivalence": "NOT_EVALUATED",
+    "independent_verification": "NOT_RUN",
+    "official_runtime_verification": "NOT_RUN"
+  },
+  "plan": {
+    "summary": {
+      "A": 8,
+      "B": 0,
+      "C": 0,
+      "D": 1,
+      "E": 0
+    },
+    "findings": [
+      {
+        "code": "MINIAPP_TARGET_VERSION_TUPLE_UNSUPPORTED",
+        "platform": "xiaohongshu",
+        "classification": "D",
+        "blocking": true,
+        "message": "xiaohongshu/2.10.2/1.0.0 is not bound to generator profile 2026-08-20.1."
+      }
+    ]
+  },
+  "generated_project": {
+    "platform": "xiaohongshu",
+    "platform_version": "2.10.2",
+    "toolchain_version": "1.0.0",
+    "profile_version": "2026-08-20.1",
+    "deterministic_digest": "sha256:6f858a84e73348c3d23da42b5d4aa2c130280b718d4d384a2152cca6cb5090f3",
+    "file_count": 11,
+    "static_validation": "PASSED",
+    "official_build": "NOT_RUN",
+    "device_runtime": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+    "artifacts": [
+      {
+        "path": "adapters/platform.js",
+        "sha256": "sha256:4f4b8a3e7c9f1635d7b982f662ef1309861dc19724e1f6a44dbf47b117809c4b",
+        "bytes": 136
+      },
+      {
+        "path": "app.css",
+        "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+        "bytes": 574
+      },
+      {
+        "path": "app.js",
+        "sha256": "sha256:516bc3ee3685e36ec5c74d30eec6fa18690f6ad370eca17e194c1882e114396e",
+        "bytes": 169
+      },
+      {
+        "path": "app.json",
+        "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+        "bytes": 223
+      },
+      {
+        "path": "migration-findings.json",
+        "sha256": "sha256:7d5d58d03c7f5f0d0f55b347e858ccfde939d9c5275c6ca4a8a1ff5ef811cdbe",
+        "bytes": 705
+      },
+      {
+        "path": "pages/index/index.css",
+        "sha256": "sha256:196d07bb36e8792dbc5bf9910c474253dfbd628a895fe96633801f72f0f8336f",
+        "bytes": 574
+      },
+      {
+        "path": "pages/index/index.js",
+        "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+        "bytes": 1488
+      },
+      {
+        "path": "pages/index/index.json",
+        "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+        "bytes": 64
+      },
+      {
+        "path": "pages/index/index.xhsml",
+        "sha256": "sha256:ed9a86f0c027751e83828f5c9a25a93c4f9256511eac73309d9474acaa4db5ff",
+        "bytes": 1084
+      },
+      {
+        "path": "project.config.json",
+        "sha256": "sha256:430625373c468d993964958cbd3cbf9a61ac081c152b6ea26904c84ac6cf428a",
+        "bytes": 142
+      },
+      {
+        "path": "trace-map.json",
+        "sha256": "sha256:3c42e4c3d1acc0f73ce3f1f47e4beca98845bc216dbc85576b44842373ef3819",
+        "bytes": 1324
+      }
+    ]
+  },
+  "gates": {
+    "G0": "PASSED",
+    "G1": "PASSED",
+    "G2": "PASSED",
+    "G3": "BLOCKED",
+    "G4": "BLOCKED",
+    "G5": "NOT_RUN",
+    "G6": "NOT_RUN",
+    "G7": "NOT_RUN",
+    "G8": "NOT_RUN",
+    "G9": "NOT_RUN"
+  },
+  "task_states": {
+    "BLOCKED": 24,
+    "NOT_APPLICABLE": 7,
+    "NOT_RUN_EXTERNAL": 9
+  },
+  "local_engineering": "BLOCKED",
+  "readiness": "NOT_READY",
+  "certification": "NOT_CERTIFIED",
+  "external_evidence": "NOT_RUN",
+  "official_xiaohongshu_build_preview_device_upload_review_release": "NOT_RUN",
+  "replay": "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-xiaohongshu-v1/certification/replay-local-runtime.mjs --check"
+}

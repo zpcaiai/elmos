@@ -47,7 +47,7 @@ test("首页与迁移能力 API 使用权威 15 语言 210 路线零本地通过
 for (const businessLine of [
   {
     path: "/spring",
-    heading: "Java / Spring 老项目一键迁移",
+    heading: "Java / Spring 现代化升级",
     readyText: "完整真实旅程",
   },
   {

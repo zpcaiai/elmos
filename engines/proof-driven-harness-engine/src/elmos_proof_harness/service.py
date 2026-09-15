@@ -27,14 +27,15 @@ import uuid
 
 from .canonical import digest_bytes
 from .control_plane import DurableControlPlane
+from .delta_v32 import DELTA_V32_SKILL_REGISTRY, execute_v32_skill
 from .errors import HarnessError, ValidationError
 from .observability import MetricsRegistry
 from .skills import SKILL_REGISTRY, SkillRuntime
 
 
-SERVICE_VERSION = "3.1.0"
+SERVICE_VERSION = "3.2.0"
 SERVICE_CONTRACT_DIGEST = digest_bytes(
-    b"elmos-proof-harness-http-contract:v3.1.0",
+    b"elmos-proof-harness-http-contract:v3.2.0",
     domain="http-contract",
 )
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@/-]{0,159}$")
@@ -602,6 +603,76 @@ class HarnessService:
                     principal,
                     request_id,
                 )
+            if method == "GET" and route == "/v3.2/skills":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.read")
+                return ServiceResponse.json(
+                    200,
+                    {
+                        "registryVersion": "3.2.0",
+                        "skills": [
+                            {
+                                "name": name,
+                                "batch": desc.batch,
+                                "kernel": desc.kernel,
+                                "description": desc.description,
+                            }
+                            for name, desc in sorted(DELTA_V32_SKILL_REGISTRY.items())
+                        ],
+                    },
+                    {"X-Request-ID": request_id},
+                )
+            if method == "POST" and route.startswith("/v3.2/skills/") and route.endswith("/invoke"):
+                parts = route.split("/")
+                if len(parts) == 5:
+                    skill_name = parts[3]
+                    principal = self._authenticate(normalized_headers)
+                    self._require_scope(principal, "proof-harness.invoke")
+                    json_req = self._parse_json_request(normalized_headers, body)
+                    try:
+                        result = execute_v32_skill(skill_name, json_req)
+                        return ServiceResponse.json(
+                            200,
+                            result,
+                            {"X-Request-ID": request_id},
+                        )
+                    except ValueError as exc:
+                        return self._error(400, "BAD_REQUEST", str(exc), request_id)
+            if method == "POST" and route == "/v3.2/timeline":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.invoke")
+                json_req = self._parse_json_request(normalized_headers, body)
+                result = execute_v32_skill("execution-timeline-artifacts", json_req)
+                return ServiceResponse.json(200, result, {"X-Request-ID": request_id})
+            if method == "POST" and route == "/v3.2/artifacts":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.invoke")
+                json_req = self._parse_json_request(normalized_headers, body)
+                result = execute_v32_skill("execution-timeline-artifacts", json_req)
+                return ServiceResponse.json(200, result, {"X-Request-ID": request_id})
+            if method == "POST" and route == "/v3.2/ownership":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.invoke")
+                json_req = self._parse_json_request(normalized_headers, body)
+                result = execute_v32_skill("durable-execution-ownership", json_req)
+                return ServiceResponse.json(200, result, {"X-Request-ID": request_id})
+            if method == "POST" and route == "/v3.2/approvals":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.invoke")
+                json_req = self._parse_json_request(normalized_headers, body)
+                result = execute_v32_skill("effect-level-approval", json_req)
+                return ServiceResponse.json(200, result, {"X-Request-ID": request_id})
+            if method == "POST" and route == "/v3.2/release-gate/evaluate":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.invoke")
+                json_req = self._parse_json_request(normalized_headers, body)
+                result = execute_v32_skill("release-evidence-exact-artifact", json_req)
+                return ServiceResponse.json(200, result, {"X-Request-ID": request_id})
+            if method == "GET" and route == "/v3.2/status":
+                principal = self._authenticate(normalized_headers)
+                self._require_scope(principal, "proof-harness.read")
+                result = execute_v32_skill("runtime-state-observation", {})
+                return ServiceResponse.json(200, result, {"X-Request-ID": request_id})
             run_id = _match_run_route(route)
             if method == "GET" and run_id is not None:
                 principal = self._authenticate(normalized_headers)

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "elmos-composite-engine"
+version = "1.0.0"
+description = "ELMOS Composite System-Level Modernization & Cutover Engine"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+elmos-composite = "elmos_composite_engine.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/elmos_composite_engine"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["src"]

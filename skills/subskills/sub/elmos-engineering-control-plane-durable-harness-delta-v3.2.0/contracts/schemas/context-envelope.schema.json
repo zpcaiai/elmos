@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContextEnvelope",
+  "type": "object",
+  "required": [
+    "context_id",
+    "role",
+    "kind",
+    "producer",
+    "trust",
+    "scope",
+    "retention_policy",
+    "replay_policy"
+  ],
+  "properties": {
+    "context_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trust": {
+      "enum": [
+        "SYSTEM",
+        "OWNER",
+        "VERIFIED",
+        "AGENT",
+        "TOOL",
+        "UNTRUSTED"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "ROOT_ONLY",
+        "CHILD_ONLY",
+        "LINEAGE",
+        "SESSION",
+        "WORK_PACKAGE"
+      ]
+    },
+    "parent_execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "retention_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "replay_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_digest": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

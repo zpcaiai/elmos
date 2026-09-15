@@ -17,10 +17,13 @@ from .full_regression import RegressionRunner
 from .generation_domain import ProjectGenerationRouteRunner
 from .mutation_auditor import Mutant, MutationAuditor
 from .planner import CoveragePlanner
+from .repository_domain import RepositoryConversionRouteRunner
 from .router_budget import ResourceBudget
 from .scope import ScopeCompiler
 from .security_isolation import DurableExecutionSession, VerifiedSecurityContext
 from .smoke_gate import SmokeGateEvaluator
+from .spring_domain import SpringModernizationRouteRunner
+from .sql_domain import SqlConversionRouteRunner
 
 
 class AssuranceOrchestrator:
@@ -38,7 +41,7 @@ class AssuranceOrchestrator:
         report: dict[str, Any] = {
             "schema_version": "4.0",
             "profile": "elmos.assurance/v4",
-            "slice": "B00-B03",
+            "slice": "B00-B04",
             "batches": {},
             "overall_status": "PASS",
             "production_signing_allowed": False,
@@ -174,6 +177,38 @@ class AssuranceOrchestrator:
             "golden_route_decision": route_results["overall_decision"].value,
             "golden_route_cases_passed": len(route_results["cases"]),
             "other_business_lines": route_results["other_domains_status"],
+        }
+
+        # -------------------------------------------------------------
+        # B04: 领域转换集成 (SQL / Spring / Repository Modernization)
+        # -------------------------------------------------------------
+        sql_results = SqlConversionRouteRunner.run_all()
+        spring_results = SpringModernizationRouteRunner.run_all()
+        repo_results = RepositoryConversionRouteRunner.run_all()
+
+        b04_status = "PASS" if (
+            sql_results["overall_decision"] == GateDecision.PASS
+            and spring_results["overall_decision"] == GateDecision.PASS
+            and repo_results["overall_decision"] == GateDecision.PASS
+        ) else "FAIL"
+
+        report["batches"]["B04"] = {
+            "title": "领域转换集成",
+            "status": b04_status,
+            "routes": {
+                "sql-conversion": {
+                    "status": sql_results["overall_decision"].value,
+                    "cases_passed": len(sql_results["cases"]),
+                },
+                "spring-modernization": {
+                    "status": spring_results["overall_decision"].value,
+                    "cases_passed": len(spring_results["cases"]),
+                },
+                "repository-conversion": {
+                    "status": repo_results["overall_decision"].value,
+                    "cases_passed": len(repo_results["cases"]),
+                },
+            },
         }
 
         # Overall Status

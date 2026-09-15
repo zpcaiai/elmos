@@ -132,10 +132,10 @@
       <view wx:if="{{selectedCapability.id === 'M30'}}" class="feature-callout">
         <Icon name="workflow" size="{{17}}" />
         <view>
-          <text>Spring 老项目专属流程已接入</text>
+          <text>Spring 现代化升级专属流程已接入</text>
           <text>支持经典 Spring XML、注解与旧 Boot 画像；外部运行与升级认证仍为 NOT_RUN。</text>
           <navigator class="text-link" href="/spring">
-            <text>打开 Spring 翻新</text>
+            <text>打开 Spring 现代化升级</text>
             <Icon name="arrow" size="{{13}}" />
           </navigator>
         </view>

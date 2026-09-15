@@ -491,3 +491,123 @@ _OIDC_SETUP = '''        def provision_auth_material(state: Path) -> dict[str, s
                 "ELMOS_OIDC_PRIVATE_KEY_FILE": str(private_key_file),
             }
 '''
+
+
+def render_mysql_local_runtime(
+    *,
+    auth_mode: str,
+    app_command: list[str],
+    verify_command: list[str],
+    app_port_argument_index: int | None = None,
+) -> str:
+    """Render scripts/local_runtime.py for a MySQL production target."""
+    if auth_mode not in {"jwt", "oidc"}:
+        raise ValueError(f"UNSUPPORTED_AUTH_MODE:{auth_mode}")
+    auth_setup = _JWT_SETUP if auth_mode == "jwt" else _OIDC_SETUP
+
+    return clean(
+        f'''
+        from __future__ import annotations
+
+        import atexit
+        import base64
+        import json
+        import os
+        import secrets
+        import shutil
+        import signal
+        import socket
+        import subprocess
+        import sys
+        from pathlib import Path
+
+        APP_COMMAND = {_command_literal(app_command)}
+        VERIFY_COMMAND = {_command_literal(verify_command)}
+        APP_PORT_ARGUMENT_INDEX = {app_port_argument_index!r}
+        children: list[subprocess.Popen[bytes]] = []
+        stopping = False
+
+
+        def stop_children() -> None:
+            global stopping
+            if stopping:
+                return
+            stopping = True
+            for child in reversed(children):
+                if child.poll() is None:
+                    try:
+                        child.terminate()
+                        child.wait(timeout=5)
+                    except (subprocess.TimeoutExpired, OSError):
+                        child.kill()
+
+
+        def secure_state_directory() -> Path:
+            workspace = Path.cwd().resolve()
+            state = Path(os.getenv({ENV_RUNTIME_STATE_DIR!r}, ".elmos-runtime")).resolve()
+            if state == workspace or workspace not in state.parents or state.is_symlink():
+                raise RuntimeError("RUNTIME_STATE_DIRECTORY_MUST_BE_WORKSPACE_CONFINED")
+            state.mkdir(parents=True, exist_ok=True, mode=0o700)
+            return state
+
+
+        def base64url(value: bytes) -> str:
+            return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
+
+
+{auth_setup}
+
+        def main() -> int:
+            atexit.register(stop_children)
+            signal.signal(signal.SIGTERM, stop_children)
+            signal.signal(signal.SIGINT, stop_children)
+            state = secure_state_directory()
+
+            database_url_file = state / "database-url"
+            if not database_url_file.exists():
+                ambient_url = os.getenv("ELMOS_DATABASE_URL", "")
+                target_url = (
+                    ambient_url
+                    if ambient_url.startswith("mysql://")
+                    else "mysql://root@127.0.0.1:3306/generated"
+                )
+                database_url_file.write_text(target_url, encoding="utf-8")
+                database_url_file.chmod(0o600)
+
+            environment = dict(os.environ)
+            for proxy_name in (
+                "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
+                "http_proxy", "https_proxy", "all_proxy",
+            ):
+                environment.pop(proxy_name, None)
+            environment["NO_PROXY"] = "127.0.0.1,localhost"
+            environment["no_proxy"] = "127.0.0.1,localhost"
+            environment[{ENV_DATABASE_URL_FILE!r}] = str(database_url_file)
+            environment[{ENV_AUTH_ISSUER!r}] = {LOCAL_ISSUER!r}
+            environment[{ENV_AUTH_AUDIENCE!r}] = {LOCAL_AUDIENCE!r}
+            environment.update(provision_auth_material(state))
+
+            if sys.argv[1:] == ["--verify"]:
+                try:
+                    with socket.socket() as probe:
+                        probe.settimeout(2.0)
+                        probe.connect(("127.0.0.1", 3306))
+                except OSError as error:
+                    raise RuntimeError(f"MYSQL_DATABASE_UNREACHABLE:{{error}}") from error
+                result = subprocess.run(VERIFY_COMMAND, check=False, env=environment)
+                stop_children()
+                return result.returncode
+            if sys.argv[1:]:
+                raise RuntimeError("LOCAL_RUNTIME_ARGUMENT_INVALID")
+            app = subprocess.Popen(APP_COMMAND, env=environment)
+            children.append(app)
+            return_code = app.wait()
+            stop_children()
+            return return_code
+
+
+        if __name__ == "__main__":
+            raise SystemExit(main())
+        '''
+    )
+

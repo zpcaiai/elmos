@@ -641,7 +641,7 @@ export function SpringModernizationStudio() {
       <section className="page-header business-hero">
         <div>
           <span className="overline">SPRING MODERNIZATION · REAL JOURNEY</span>
-          <h1>Java / Spring 老项目一键迁移</h1>
+          <h1>Java / Spring 现代化升级</h1>
           <p>从不可变 Git Commit 到 FCM、真实 OpenRewrite、双工具链构建、独立验证、下载与隔离启动。每一步都显示真实状态，未运行绝不显示通过。</p>
         </div>
         <div className="header-actions">

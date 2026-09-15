@@ -45,15 +45,70 @@ class ConsumedMessage:
     last_error: str | None = None
 
 
+def idempotent_consumer_ddl(dialect: str = "postgres") -> str:
+    """Generate dialect-specific DDL for the consumer idempotent deduplication log table."""
+    dialect_lower = dialect.lower()
+    if dialect_lower == "mysql":
+        return """CREATE TABLE IF NOT EXISTS `idempotent_consumer_log` (
+    `consumer_group` VARCHAR(128) NOT NULL,
+    `message_id` VARCHAR(128) NOT NULL,
+    `processed_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `payload_sha256` VARCHAR(64),
+    PRIMARY KEY (`consumer_group`, `message_id`),
+    INDEX `idx_idempotent_consumer_processed_at` (`processed_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"""
+    if dialect_lower == "sqlite":
+        return """CREATE TABLE IF NOT EXISTS "idempotent_consumer_log" (
+    "consumer_group" TEXT NOT NULL,
+    "message_id" TEXT NOT NULL,
+    "processed_at" TEXT NOT NULL DEFAULT (datetime('now')),
+    "payload_sha256" TEXT,
+    PRIMARY KEY ("consumer_group", "message_id")
+);
+CREATE INDEX IF NOT EXISTS "idx_idempotent_consumer_processed_at" ON "idempotent_consumer_log" ("processed_at");"""
+    return """CREATE TABLE IF NOT EXISTS "idempotent_consumer_log" (
+    "consumer_group" VARCHAR(128) NOT NULL,
+    "message_id" VARCHAR(128) NOT NULL,
+    "processed_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "payload_sha256" VARCHAR(64),
+    PRIMARY KEY ("consumer_group", "message_id")
+);
+CREATE INDEX IF NOT EXISTS "idx_idempotent_consumer_processed_at" ON "idempotent_consumer_log" ("processed_at");"""
+
+
+def idempotent_consumer_insert_sql(dialect: str = "postgres", placeholder: str = "%s") -> str:
+    """Generate dialect-specific atomic insert query ignoring duplicates."""
+    dialect_lower = dialect.lower()
+    p = placeholder
+    if dialect_lower == "mysql":
+        return f"INSERT IGNORE INTO `idempotent_consumer_log` (`consumer_group`, `message_id`, `payload_sha256`) VALUES ({p}, {p}, {p});"  # noqa: S608
+    if dialect_lower == "sqlite":
+        return f'INSERT OR IGNORE INTO "idempotent_consumer_log" ("consumer_group", "message_id", "payload_sha256") VALUES ({p}, {p}, {p});'  # noqa: S608
+    return f'INSERT INTO "idempotent_consumer_log" ("consumer_group", "message_id", "payload_sha256") VALUES ({p}, {p}, {p}) ON CONFLICT ("consumer_group", "message_id") DO NOTHING;'  # noqa: S608
+
+
 class IdempotentDeduplicationStore:
     """In-memory or persistent deduplication store preventing replay of already processed messages."""
 
-    def __init__(self, ttl_seconds: int = 86400) -> None:
+    def __init__(self, ttl_seconds: int = 86400, db_connection: Any | None = None, dialect: str = "sqlite") -> None:
         self.ttl_seconds = ttl_seconds
+        self.db_connection = db_connection
+        self.dialect = dialect
         # key -> (consumer_group, processed_at_timestamp)
         self._processed: dict[str, tuple[str, float]] = {}
 
     def is_processed(self, consumer_group: str, message_id: str) -> bool:
+        if self.db_connection is not None:
+            cursor = self.db_connection.cursor()
+            tbl = "`idempotent_consumer_log`" if self.dialect == "mysql" else '"idempotent_consumer_log"'
+            grp_col = "`consumer_group`" if self.dialect == "mysql" else '"consumer_group"'
+            msg_col = "`message_id`" if self.dialect == "mysql" else '"message_id"'
+            param = "%s" if self.dialect == "postgres" else "?"
+            query = f"SELECT 1 FROM {tbl} WHERE {grp_col} = {param} AND {msg_col} = {param}"  # noqa: S608
+            cursor.execute(query, (consumer_group, message_id))
+            row = cursor.fetchone()
+            return row is not None
+
         key = f"{consumer_group}:{message_id}"
         record = self._processed.get(key)
         if not record:
@@ -64,7 +119,16 @@ class IdempotentDeduplicationStore:
             return False
         return True
 
-    def mark_processed(self, consumer_group: str, message_id: str) -> None:
+    def mark_processed(self, consumer_group: str, message_id: str, payload_sha256: str | None = None) -> None:
+        if self.db_connection is not None:
+            cursor = self.db_connection.cursor()
+            p = "%s" if self.dialect == "postgres" else "?"
+            sql = idempotent_consumer_insert_sql(self.dialect, placeholder=p)
+            cursor.execute(sql, (consumer_group, message_id, payload_sha256))
+            if hasattr(self.db_connection, "commit"):
+                self.db_connection.commit()
+            return
+
         key = f"{consumer_group}:{message_id}"
         self._processed[key] = (consumer_group, time.time())
 
@@ -74,6 +138,7 @@ class IdempotentDeduplicationStore:
         for k in to_del:
             del self._processed[k]
         return len(to_del)
+
 
 
 class ExponentialBackoffWithJitter:

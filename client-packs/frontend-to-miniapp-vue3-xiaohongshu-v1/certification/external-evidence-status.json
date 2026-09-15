@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-xiaohongshu-v1",
+  "generated_at": "2026-08-20T00:00:00Z",
+  "statuses": {
+    "official_xiaohongshu_toolchain_lock": "NOT_RUN",
+    "official_xiaohongshu_build": "NOT_RUN",
+    "official_xiaohongshu_preview": "NOT_RUN",
+    "xiaohongshu_devtools_emulator_journey": "NOT_RUN",
+    "xiaohongshu_physical_device_journey": "NOT_RUN",
+    "visual_regression_review": "NOT_RUN",
+    "assistive_technology_audit": "NOT_RUN",
+    "automated_accessibility_scan": "NOT_RUN",
+    "performance_budget_validation": "NOT_RUN",
+    "security_authorization_audit": "NOT_RUN",
+    "independent_expert_review": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN"
+  }
+}

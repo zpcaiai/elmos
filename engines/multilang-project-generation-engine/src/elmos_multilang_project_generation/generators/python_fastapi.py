@@ -1,15 +1,14 @@
 from __future__ import annotations
-from typing import Dict, Any, List
+from typing import Dict
 from .base import ProjectGenerator
 from ..models import PSIR, GeneratedProject, EntitySpec, EndpointSpec, ServiceSpec, FieldType
-from ..type_mapper import TypeMapper, Language
+from ..type_mapper import TypeMapper
 
 class PythonFastAPIGenerator(ProjectGenerator):
     def __init__(self):
         self.type_mapper = TypeMapper()
 
     def generate(self, psir: PSIR) -> GeneratedProject:
-        app_name = (psir.project_name or "fastapi-app").lower().replace(" ", "_")
         files: Dict[str, str] = {
             "pyproject.toml": self.generate_build_config(psir),
             "database.py": (

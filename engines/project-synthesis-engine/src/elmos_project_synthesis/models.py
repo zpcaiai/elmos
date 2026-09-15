@@ -84,7 +84,7 @@ STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # The current emitters implement one exact, reviewable starter profile. Keep
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
-SUPPORTED_PROJECT_KINDS = ("api", "worker")
+SUPPORTED_PROJECT_KINDS = ("api", "worker", "fullstack", "scientific")
 SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite", "mysql")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # The broad starter profile remains portable across all eight emitters. The
@@ -97,16 +97,17 @@ SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # Unauthenticated sqlite/mysql is also closed: production runtimes always
 # emit JWT or OIDC material.
 _PYTHON_RELATIONAL_TARGETS = frozenset({"python"})
+_MYSQL_RELATIONAL_TARGETS = frozenset({"python", "java", "go", "typescript", "csharp"})
 SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("in-memory", "none"): frozenset(SUPPORTED_LANGUAGES),
     ("sqlite", "jwt"): _PYTHON_RELATIONAL_TARGETS,
     ("sqlite", "oidc"): _PYTHON_RELATIONAL_TARGETS,
-    ("mysql", "jwt"): _PYTHON_RELATIONAL_TARGETS,
-    ("mysql", "oidc"): _PYTHON_RELATIONAL_TARGETS,
+    ("mysql", "jwt"): _MYSQL_RELATIONAL_TARGETS,
+    ("mysql", "oidc"): _MYSQL_RELATIONAL_TARGETS,
     ("postgresql", "jwt"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
     ("postgresql", "oidc"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
 }
-PLANNED_PROJECT_KINDS = ("fullstack", "worker", "cli", "modular-monolith")
+PLANNED_PROJECT_KINDS = ("cli", "modular-monolith")
 PLANNED_PERSISTENCE: tuple[str, ...] = ()
 PLANNED_AUTH_MODES: tuple[str, ...] = ()
 SUPPORTED_RELATION_KINDS = ("one-to-one", "one-to-many", "many-to-one", "many-to-many")
@@ -545,6 +546,54 @@ def _validate_permissions(value: Any, *, entity_names: set[str]) -> None:
 
 
 @dataclass(frozen=True)
+class ResearchSpec:
+    task_type: str = "classification"
+    framework: str = "pytorch"
+    modality: str = "tabular"
+    tracking: str = "wandb"
+    reproducibility_seed: int = 42
+    batch_size: int = 32
+    learning_rate: float = 0.001
+    epochs: int = 10
+    ablation_variants: tuple[str, ...] = ("baseline", "without_attention", "without_residual", "without_dropout")
+
+    @classmethod
+    def from_mapping(cls, mapping: dict[str, Any] | None) -> ResearchSpec:
+        if not mapping or not isinstance(mapping, dict):
+            return cls()
+        return cls(
+            task_type=str(mapping.get("task_type", "classification")),
+            framework=str(mapping.get("framework", "pytorch")),
+            modality=str(mapping.get("modality", "tabular")),
+            tracking=str(mapping.get("tracking", "wandb")),
+            reproducibility_seed=int(mapping.get("reproducibility_seed", 42)),
+            batch_size=int(mapping.get("batch_size", 32)),
+            learning_rate=float(mapping.get("learning_rate", 0.001)),
+            epochs=int(mapping.get("epochs", 10)),
+            ablation_variants=tuple(
+                str(v)
+                for v in mapping.get(
+                    "ablation_variants",
+                    ("baseline", "without_attention", "without_residual", "without_dropout"),
+                )
+            ),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "task_type": self.task_type,
+            "framework": self.framework,
+            "modality": self.modality,
+            "tracking": self.tracking,
+            "reproducibility_seed": self.reproducibility_seed,
+            "batch_size": self.batch_size,
+            "learning_rate": self.learning_rate,
+            "epochs": self.epochs,
+            "ablation_variants": list(self.ablation_variants),
+        }
+
+
+@dataclass(frozen=True)
 class SynthesisRequest:
     raw: dict[str, Any]
     project_name: str
@@ -776,3 +825,19 @@ class SynthesisRequest:
     @property
     def is_api(self) -> bool:
         return self.project_kind == "api"
+
+    @property
+    def is_fullstack(self) -> bool:
+        return self.project_kind == "fullstack"
+
+    @property
+    def is_scientific(self) -> bool:
+        return self.project_kind == "scientific"
+
+    @property
+    def research_spec(self) -> ResearchSpec:
+        research_raw = (
+            self.raw.get("project", {}).get("research_spec")
+            or self.raw.get("research_spec")
+        )
+        return ResearchSpec.from_mapping(research_raw)

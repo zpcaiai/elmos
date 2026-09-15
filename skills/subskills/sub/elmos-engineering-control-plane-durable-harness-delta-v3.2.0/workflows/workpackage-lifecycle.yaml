@@ -1,0 +1,7 @@
+name: certification-work-package-lifecycle
+states: [DRAFT,SPECIFIED,READY,LEASED,BUILDING,BUILT,VERIFYING,CERTIFYING,REVIEW,CERTIFIED,PUBLISHED,BLOCKED,FAILED,REJECTED,QUARANTINED,CANCELLED,STALE]
+terminal: [PUBLISHED,FAILED,REJECTED,QUARANTINED,CANCELLED]
+invariants:
+  - CERTIFIED requires immutable evidence manifest
+  - PUBLISHED requires PublicationBroker
+  - BUILT never implies VERIFIED

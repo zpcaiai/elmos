@@ -1,0 +1,10 @@
+skill: elmos-execution-timeline-artifacts
+implementation_order:
+  - define stable domain contract
+  - implement port/interface
+  - implement adapter mapping
+  - persist timeline/artifacts
+  - add policy gates
+  - add conformance tests
+  - add observability fields
+release_gate: target integration tests plus exact-version adapter conformance

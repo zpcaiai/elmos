@@ -2,7 +2,7 @@
 try { var workspaces = [
     {
         eyebrow: "BATCH 30 · SPRING",
-        title: "Spring 老项目翻新",
+        title: "Spring 现代化升级",
         description: "识别经典 Spring、XML 与旧 Boot，显式处理 Java、Jakarta、Security、JPA、配置和真实启动证据。",
         href: "/spring",
         icon: "workflow",

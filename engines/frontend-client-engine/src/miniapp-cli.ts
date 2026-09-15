@@ -39,44 +39,83 @@ import {
   type MiniappConversionRun,
   type MiniappPackageConversionRun,
 } from "./miniapp-skill-runtime.js";
+import { auditMiniappCompliance } from "./miniapp-compliance-auditor.js";
+import {
+  executeMiniappToolchain,
+  type MiniappToolchainConfig,
+  type ToolchainAction,
+} from "./miniapp-toolchain-runner.js";
+import type { MiniappPlatform } from "./miniapp-types.js";
 
 const MAX_INPUT_BYTES = 32 * 1024 * 1024;
 
 interface Options {
-  readonly command: "run" | "package" | "digest" | "catalog";
+  readonly command: "run" | "package" | "digest" | "catalog" | "audit" | "toolchain";
   readonly input?: string;
   readonly output?: string;
   readonly materialize?: string;
+  readonly dir?: string;
+  readonly platform?: string;
+  readonly action?: string;
+  readonly appid?: string;
+  readonly privateKey?: string;
+  readonly dryRun?: boolean;
 }
 
 function usage(): never {
-  throw new Error("usage: miniapp [run|package|digest|catalog] [--input FILE] [--output FILE] [--materialize NEW_DIRECTORY_IN_PRIVATE_EXISTING_PARENT]");
+  throw new Error("usage: miniapp [run|package|digest|catalog|audit|toolchain] [--input FILE] [--output FILE] [--materialize DIR] [--dir DIR] [--platform PLATFORM] [--action ACTION] [--appid ID] [--private-key KEY] [--dry-run]");
 }
 
 function parseArgs(argv: readonly string[]): Options {
   let command: Options["command"] = "run";
   let cursor = 0;
-  if (["run", "package", "digest", "catalog"].includes(argv[0] ?? "")) {
+  if (["run", "package", "digest", "catalog", "audit", "toolchain"].includes(argv[0] ?? "")) {
     command = argv[0] as Options["command"];
     cursor = 1;
   }
   let input: string | undefined;
   let output: string | undefined;
   let materialize: string | undefined;
+  let dir: string | undefined;
+  let platform: string | undefined;
+  let action: string | undefined;
+  let appid: string | undefined;
+  let privateKey: string | undefined;
+  let dryRun: boolean | undefined;
   while (cursor < argv.length) {
     const option = argv[cursor++];
+    if (option === "--dry-run") {
+      dryRun = true;
+      continue;
+    }
     const value = argv[cursor++];
     if (!value || value.startsWith("--")) usage();
     if (option === "--input" && input === undefined) input = value;
     else if (option === "--output" && output === undefined) output = value;
     else if (option === "--materialize" && materialize === undefined) materialize = value;
+    else if (option === "--dir" && dir === undefined) dir = value;
+    else if (option === "--platform" && platform === undefined) platform = value;
+    else if (option === "--action" && action === undefined) action = value;
+    else if (option === "--appid" && appid === undefined) appid = value;
+    else if (option === "--private-key" && privateKey === undefined) privateKey = value;
     else usage();
   }
   if (command !== "run" && command !== "package" && materialize !== undefined) usage();
   if (output !== undefined && materialize !== undefined) {
     throw new Error("--output cannot be combined with --materialize; materialized runs emit JSON on stdout");
   }
-  return { command, ...(input === undefined ? {} : { input }), ...(output === undefined ? {} : { output }), ...(materialize === undefined ? {} : { materialize }) };
+  return {
+    command,
+    ...(input === undefined ? {} : { input }),
+    ...(output === undefined ? {} : { output }),
+    ...(materialize === undefined ? {} : { materialize }),
+    ...(dir === undefined ? {} : { dir }),
+    ...(platform === undefined ? {} : { platform }),
+    ...(action === undefined ? {} : { action }),
+    ...(appid === undefined ? {} : { appid }),
+    ...(privateKey === undefined ? {} : { privateKey }),
+    ...(dryRun === undefined ? {} : { dryRun }),
+  };
 }
 
 interface BoundedInputSnapshot {
@@ -1342,10 +1381,57 @@ function parseJson(source: string): unknown {
   try { return JSON.parse(source); } catch { throw new Error("input must be valid JSON"); }
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
   if (options.command === "catalog") {
     writeOutput(options.output, `${JSON.stringify({ schemaVersion: "1.0", skills: MINIAPP_SKILL_CATALOG }, null, 2)}\n`);
+    return;
+  }
+  if (options.command === "audit") {
+    const targetDir = options.dir ?? options.input ?? ".";
+    const platform = (options.platform ?? "wechat") as MiniappPlatform;
+    const report = auditMiniappCompliance(targetDir, platform);
+    writeOutput(options.output, `${JSON.stringify({ schemaVersion: "1.0", report }, null, 2)}\n`);
+    return;
+  }
+  if (options.command === "toolchain") {
+    const targetDir = options.dir ?? options.input ?? ".";
+    const platform = (options.platform ?? "wechat") as MiniappPlatform;
+    const action = (options.action ?? "analyze") as ToolchainAction;
+    const dryRun = options.dryRun ?? true;
+    const appid = options.appid ?? "testAppId";
+    let config: MiniappToolchainConfig;
+    if (platform === "wechat") {
+      config = {
+        platform: "wechat",
+        appid,
+        projectPath: targetDir,
+        ...(options.privateKey ? { privateKeyPath: options.privateKey } : {}),
+      };
+    } else if (platform === "alipay") {
+      config = {
+        platform: "alipay",
+        appid,
+        projectPath: targetDir,
+        ...(options.privateKey ? { privateKey: options.privateKey } : {}),
+      };
+    } else if (platform === "douyin") {
+      config = {
+        platform: "douyin",
+        appid,
+        projectPath: targetDir,
+        ...(options.privateKey ? { token: options.privateKey } : {}),
+      };
+    } else {
+      config = {
+        platform: "xiaohongshu",
+        appid,
+        projectPath: targetDir,
+        ...(options.privateKey ? { token: options.privateKey } : {}),
+      };
+    }
+    const toolchainResult = await executeMiniappToolchain({ action, config, dryRun });
+    writeOutput(options.output, `${JSON.stringify({ schemaVersion: "1.0", toolchainResult }, null, 2)}\n`);
     return;
   }
   const value = parseJson(readInput(options.input));
@@ -1370,7 +1456,7 @@ function main(): void {
 if (process.argv[1] !== undefined
   && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
-    main();
+    await main();
   } catch (error) {
     const structured = error instanceof MiniappPackageContractError ? {
       state: error.state,

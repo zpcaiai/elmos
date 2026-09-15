@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExecutionPlan",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "execution_id",
+    "repository",
+    "revision",
+    "runtime",
+    "steps",
+    "policy_revision"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "policy_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill_set_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_fingerprint": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

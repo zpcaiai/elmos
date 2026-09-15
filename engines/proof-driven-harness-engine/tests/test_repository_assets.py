@@ -49,8 +49,8 @@ class RepositoryAssetTests(unittest.TestCase):
         self.assertEqual(manifest["counts"]["roles"]["delta-example"], 15)
         self.assertEqual(manifest["counts"]["roles"]["delta-adapter-profile"], 5)
         self.assertEqual(manifest["counts"]["roles"]["supply-chain-boundary"], 1)
-        self.assertEqual(manifest["counts"]["files"], 133)
-        self.assertEqual(manifest["counts"]["roles"]["runtime-source"], 31)
+        self.assertEqual(manifest["counts"]["files"], 152)
+        self.assertEqual(manifest["counts"]["roles"]["runtime-source"], 49)
         self.assertEqual(
             manifest["counts"]["roles"]["delta-acceptance-traceability"], 1
         )

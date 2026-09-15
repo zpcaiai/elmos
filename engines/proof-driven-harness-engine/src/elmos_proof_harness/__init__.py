@@ -46,9 +46,89 @@ from .service import (
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
 from .transformation import ChangeSet, FileChange, WorkspaceTransformer
 
+from .formal_verifier import (
+    CounterexampleModel,
+    FormalVerificationEngine,
+    ObligationKind,
+    ProofCertificate,
+    ProofObligation,
+    SExprParser,
+    SMTValueEvaluator,
+    VerificationVerdict,
+)
+
+from . import delta_v32
+
+from .hermetic_container import (
+    EnvironmentFingerprint,
+    HermeticContainerSandbox,
+    HermeticExecutionReceipt,
+    IsolationLevel,
+)
+from .resilience_channel import (
+    ChaosConfig,
+    ChaosFaultInjector,
+    ChaosFaultType,
+    CircuitBreaker,
+    CircuitBreakerOpenError,
+    CircuitState,
+    NonRetryableError,
+    ResilientDatabaseChannel,
+    RetryMetrics,
+)
+from .soak_auditor import (
+    LeakReport,
+    ResourceAuditSnapshot,
+    ResourceLeakAuditor,
+    ResourceLeakError,
+    SoakTestRunner,
+)
+from .independent_audit_gate import (
+    AuthoritativeAuditReceipt,
+    CandidateEvidenceBundle,
+    GateDecision,
+    GateViolationReason,
+    IndependentAuditGateRunner,
+)
+from .host_broker import (
+    CapabilityLease,
+    CapabilityLeaseVerifier,
+    EffectSettlementReceipt,
+    HostBrokerChannel,
+    SettlementLedger,
+    SettlementStatus,
+)
+from .postgres_lifecycle import (
+    EphemeralPostgresCluster,
+    PostgresBinaryDiscovery,
+    PostgresVersionInfo,
+    ReversibleMigrationEngine,
+)
+from .tenant_scheduler import (
+    PriorityPreemptionQueue,
+    PriorityTier,
+    QueuedTask,
+    TenantConcurrencyPool,
+    TenantFairScheduler,
+    TenantQuotaExceededError,
+)
+from .crash_recovery import (
+    InFlightOrphanReconciler,
+    JournalEvent,
+    TaskExecutionJournal,
+    TaskLifecycleState,
+    TimeTravelReplayer,
+)
+from .tsa_notary import (
+    MerkleTransparencyLog,
+    TSANotaryAuthority,
+    TimeStampToken,
+)
+
 __version__ = SERVICE_VERSION
 
 __all__ = [
+    "delta_v32",
     "AdapterInvocation",
     "AdapterManifest",
     "AdapterRegistry",
@@ -93,5 +173,60 @@ __all__ = [
     "StaticTokenAuthenticator",
     "VERIFIER_ADAPTER_REGISTRY",
     "WorkspaceTransformer",
+    "EnvironmentFingerprint",
+    "HermeticContainerSandbox",
+    "HermeticExecutionReceipt",
+    "IsolationLevel",
+    "ChaosConfig",
+    "ChaosFaultInjector",
+    "ChaosFaultType",
+    "CircuitBreaker",
+    "CircuitBreakerOpenError",
+    "CircuitState",
+    "NonRetryableError",
+    "ResilientDatabaseChannel",
+    "RetryMetrics",
+    "LeakReport",
+    "ResourceAuditSnapshot",
+    "ResourceLeakAuditor",
+    "ResourceLeakError",
+    "SoakTestRunner",
+    "AuthoritativeAuditReceipt",
+    "CandidateEvidenceBundle",
+    "GateDecision",
+    "GateViolationReason",
+    "IndependentAuditGateRunner",
+    "CapabilityLease",
+    "CapabilityLeaseVerifier",
+    "EffectSettlementReceipt",
+    "HostBrokerChannel",
+    "SettlementLedger",
+    "SettlementStatus",
+    "EphemeralPostgresCluster",
+    "PostgresBinaryDiscovery",
+    "PostgresVersionInfo",
+    "ReversibleMigrationEngine",
+    "PriorityPreemptionQueue",
+    "PriorityTier",
+    "QueuedTask",
+    "TenantConcurrencyPool",
+    "TenantFairScheduler",
+    "TenantQuotaExceededError",
+    "InFlightOrphanReconciler",
+    "JournalEvent",
+    "TaskExecutionJournal",
+    "TaskLifecycleState",
+    "TimeTravelReplayer",
+    "MerkleTransparencyLog",
+    "TSANotaryAuthority",
+    "TimeStampToken",
+    "CounterexampleModel",
+    "FormalVerificationEngine",
+    "ObligationKind",
+    "ProofCertificate",
+    "ProofObligation",
+    "SExprParser",
+    "SMTValueEvaluator",
+    "VerificationVerdict",
     "__version__",
 ]
