@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json
+import re
 import time
 import urllib.request
 import urllib.error
@@ -60,17 +61,32 @@ class ResponseComparator:
     """
     Deep semantic HTTP response comparator for Spring differential verification.
     Compares HTTP status codes, normalized headers, and JSON payloads while
-    gracefully handling dynamic timestamps, UUIDs, and trace IDs.
+    gracefully handling dynamic timestamps, UUIDs, CSRF tokens, and trace IDs.
     """
     VOLATILE_HEADER_KEYS = {
         "date", "timestamp", "x-request-id", "x-b3-traceid", "x-b3-spanid",
-        "traceparent", "tracestate", "expires", "last-modified", "keep-alive"
+        "traceparent", "tracestate", "expires", "last-modified", "keep-alive",
+        "server", "transfer-encoding", "connection", "content-length"
     }
 
     VOLATILE_BODY_KEYS = {
         "timestamp", "time", "date", "traceid", "spanid", "responsetime",
-        "duration", "executiontime", "nonce"
+        "duration", "executiontime", "nonce", "_csrf", "csrftoken", "csrf_token",
+        "token", "requestid", "uuid"
     }
+
+    UUID_PATTERN = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+    ISO_DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$")
+
+    def __init__(
+        self,
+        float_epsilon: float = 1e-6,
+        normalize_uuids: bool = True,
+        strict_null: bool = True
+    ):
+        self.float_epsilon = float_epsilon
+        self.normalize_uuids = normalize_uuids
+        self.strict_null = strict_null
 
     def compare(self, source_resp: dict, target_resp: dict, ignore_timestamps: bool = True) -> bool:
         matches, _ = self.compare_detailed(source_resp, target_resp, ignore_timestamps=ignore_timestamps)
@@ -80,13 +96,19 @@ class ResponseComparator:
         self,
         source_resp: dict,
         target_resp: dict,
-        ignore_timestamps: bool = True
+        ignore_timestamps: bool = True,
+        float_epsilon: Optional[float] = None,
+        normalize_uuids: Optional[bool] = None,
+        strict_null: Optional[bool] = None
     ) -> Tuple[bool, List[str]]:
         diffs: List[str] = []
+        eps = float_epsilon if float_epsilon is not None else self.float_epsilon
+        norm_uuids = normalize_uuids if normalize_uuids is not None else self.normalize_uuids
+        strict_n = strict_null if strict_null is not None else self.strict_null
 
         # 1. Compare status code
-        src_status = source_resp.get("status") or source_resp.get("status_code", 200)
-        tgt_status = target_resp.get("status") or target_resp.get("status_code", 200)
+        src_status = source_resp.get("status") if "status" in source_resp else source_resp.get("status_code", 200)
+        tgt_status = target_resp.get("status") if "status" in target_resp else target_resp.get("status_code", 200)
         if src_status != tgt_status:
             diffs.append(f"Status mismatch: source={src_status}, target={tgt_status}")
 
@@ -98,12 +120,20 @@ class ResponseComparator:
             diffs.extend(header_diffs)
 
         # 3. Compare body
-        src_body = source_resp.get("body") or source_resp.get("data")
-        tgt_body = target_resp.get("body") or target_resp.get("data")
+        src_body = source_resp.get("body") if "body" in source_resp else source_resp.get("data")
+        tgt_body = target_resp.get("body") if "body" in target_resp else target_resp.get("data")
 
         if src_body is not None and tgt_body is not None:
-            body_diffs = self._compare_bodies(src_body, tgt_body, ignore_timestamps)
+            body_diffs = self._compare_bodies(
+                src_body, tgt_body, ignore_timestamps, eps, norm_uuids, strict_n
+            )
             diffs.extend(body_diffs)
+        elif src_body is None and tgt_body is not None:
+            if strict_n:
+                diffs.append("Body mismatch: source body is missing/null while target has body")
+        elif src_body is not None and tgt_body is None:
+            if strict_n:
+                diffs.append("Body mismatch: source body is present while target body is missing/null")
 
         return len(diffs) == 0, diffs
 
@@ -128,7 +158,15 @@ class ResponseComparator:
 
         return diffs
 
-    def _compare_bodies(self, src: Any, tgt: Any, ignore_timestamps: bool) -> List[str]:
+    def _compare_bodies(
+        self,
+        src: Any,
+        tgt: Any,
+        ignore_timestamps: bool,
+        float_epsilon: float,
+        normalize_uuids: bool,
+        strict_null: bool
+    ) -> List[str]:
         diffs: List[str] = []
 
         # Parse string body if JSON
@@ -143,6 +181,32 @@ class ResponseComparator:
             except Exception:
                 pass
 
+        if src is None and tgt is None:
+            return []
+        if (src is None and tgt is not None) or (src is not None and tgt is None):
+            return [f"Null mismatch: source={repr(src)}, target={repr(tgt)}"]
+
+        # Handle numeric comparisons (int vs float, float vs float with epsilon)
+        if isinstance(src, (int, float)) and isinstance(tgt, (int, float)):
+            if isinstance(src, int) and isinstance(tgt, int):
+                if src != tgt:
+                    return [f"Integer value mismatch: source={src}, target={tgt}"]
+                return []
+            else:
+                if abs(float(src) - float(tgt)) > float_epsilon:
+                    return [f"Numeric precision mismatch (epsilon={float_epsilon}): source={src}, target={tgt}"]
+                return []
+
+        # Handle string comparisons with UUID / Timestamp masking
+        if isinstance(src, str) and isinstance(tgt, str):
+            if ignore_timestamps and self.ISO_DATE_PATTERN.match(src.strip()) and self.ISO_DATE_PATTERN.match(tgt.strip()):
+                return []
+            if normalize_uuids and self.UUID_PATTERN.match(src.strip()) and self.UUID_PATTERN.match(tgt.strip()):
+                return []
+            if src != tgt:
+                return [f"String value mismatch: source='{src}', target='{tgt}'"]
+            return []
+
         if type(src) != type(tgt):
             return [f"Body type mismatch: source={type(src).__name__}, target={type(tgt).__name__}"]
 
@@ -153,7 +217,9 @@ class ResponseComparator:
                 if k not in tgt:
                     diffs.append(f"Key missing in target body: {k}")
                 else:
-                    child_diffs = self._compare_bodies(v, tgt[k], ignore_timestamps)
+                    child_diffs = self._compare_bodies(
+                        v, tgt[k], ignore_timestamps, float_epsilon, normalize_uuids, strict_null
+                    )
                     for cd in child_diffs:
                         diffs.append(f"{k}.{cd}")
 
@@ -168,7 +234,9 @@ class ResponseComparator:
                 diffs.append(f"Array length mismatch: source={len(src)}, target={len(tgt)}")
             else:
                 for idx, (s_item, t_item) in enumerate(zip(src, tgt)):
-                    item_diffs = self._compare_bodies(s_item, t_item, ignore_timestamps)
+                    item_diffs = self._compare_bodies(
+                        s_item, t_item, ignore_timestamps, float_epsilon, normalize_uuids, strict_null
+                    )
                     for idf in item_diffs:
                         diffs.append(f"[{idx}].{idf}")
         else:
