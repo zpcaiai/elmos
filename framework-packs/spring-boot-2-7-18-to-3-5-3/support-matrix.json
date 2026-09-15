@@ -3,10 +3,10 @@
     {
       "evidence_bindings": [
         {
-          "bytes": 9742,
+          "bytes": 6520,
           "path": "certification/local-reference-evidence.json",
           "role": "runtime-equivalence",
-          "sha256": "c95b816d54eaa6fa20a8548818fed4f5d4806a62fa9ff089ff8a2155e2f8b35d"
+          "sha256": "b54254823c518310e5f806acf776e52871ea666f69eb69e5207fb911090cca50"
         }
       ],
       "evidence_refs": [
@@ -17,24 +17,26 @@
       ],
       "id": "web",
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
-      "status": "certified",
+      "status": "supported",
       "strategy": "framework-contract-and-real-runtime",
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
       "id": "dependency-injection",
-      "reason": "Not yet implemented",
-      "status": "detected-only",
-      "strategy": "framework-contract"
+      "reason": "Exact local source and target runtime probes preserve constructor injection. Customer topologies and independent verification remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime"
     },
     {
       "evidence_bindings": [
         {
-          "bytes": 9742,
+          "bytes": 6520,
           "path": "certification/local-reference-evidence.json",
           "role": "runtime-equivalence",
-          "sha256": "c95b816d54eaa6fa20a8548818fed4f5d4806a62fa9ff089ff8a2155e2f8b35d"
+          "sha256": "b54254823c518310e5f806acf776e52871ea666f69eb69e5207fb911090cca50"
         },
         {
           "bytes": 120,
@@ -59,7 +61,7 @@
       ],
       "id": "configuration",
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
-      "status": "certified",
+      "status": "supported",
       "strategy": "framework-contract-and-real-runtime",
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
@@ -103,47 +105,57 @@
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
       "id": "persistence",
-      "reason": "Not yet implemented",
-      "status": "detected-only",
-      "strategy": "contract-mapping"
+      "reason": "Exact local source and target builds and H2/JPA runtime probes passed. Customer database providers, schemas, concurrency and independent verification remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "contract-mapping-and-real-runtime"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
       "id": "transactions",
-      "reason": "Requires provider-specific certification",
-      "status": "blocked",
-      "strategy": "human-review"
+      "reason": "Exact local source and target rollback probes preserve atomic rollback on H2. Provider-specific isolation, retry, locking and independent certification remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "transaction-contract-and-real-runtime"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
       "id": "messaging",
-      "reason": "Not yet implemented",
-      "status": "detected-only",
-      "strategy": "retained-provider-or-adapter"
+      "reason": "Exact local source and target runtime probes preserve in-process Spring application-event delivery. Broker, outbox, ordering, retry and production delivery evidence remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "retained-provider-or-adapter-and-real-runtime"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
       "id": "cache",
-      "reason": "Not yet implemented",
-      "status": "detected-only",
-      "strategy": "provider-profile"
+      "reason": "Exact local source and target runtime probes preserve Spring ConcurrentMap cache hit semantics. Distributed providers, eviction and consistency evidence remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "provider-profile-and-real-runtime"
     },
     {
-      "evidence_refs": [],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
       "id": "scheduler",
-      "reason": "Not yet implemented",
-      "status": "detected-only",
-      "strategy": "provider-profile"
+      "reason": "Exact local source and target runtime probes preserve single-process scheduled execution. Cluster coordination, misfire and production timing evidence remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "provider-profile-and-real-runtime"
     },
     {
       "evidence_bindings": [
         {
-          "bytes": 9742,
+          "bytes": 6520,
           "path": "certification/local-reference-evidence.json",
           "role": "runtime-equivalence",
-          "sha256": "c95b816d54eaa6fa20a8548818fed4f5d4806a62fa9ff089ff8a2155e2f8b35d"
+          "sha256": "b54254823c518310e5f806acf776e52871ea666f69eb69e5207fb911090cca50"
         }
       ],
       "evidence_refs": [
@@ -154,7 +166,7 @@
       ],
       "id": "lifecycle",
       "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
-      "status": "certified",
+      "status": "supported",
       "strategy": "framework-contract-and-real-runtime",
       "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
     }

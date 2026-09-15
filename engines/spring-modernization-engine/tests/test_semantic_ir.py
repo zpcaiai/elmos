@@ -1,4 +1,3 @@
-from pathlib import Path
 from elmos_spring_modernization.semantic_ir import SpringSemanticExtractor
 
 def test_extract_ir_empty(tmp_path):

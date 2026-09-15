@@ -1,0 +1,13 @@
+{
+  "canonical_recipe_sha256": "sha256:c693bb39c5119e1ae29ebd17b9984636710b6858f69a6082f2760d18f06f6d3f",
+  "certification_eligible": false,
+  "execution_status": "NOT_RUN",
+  "pack_key": "java-ee-servlet-2-5-to-spring-boot-3-5-3",
+  "raw_route_status": "PASSED_LOCAL",
+  "recipe_config": "recipes/servlet-2.5-jsp-to-spring-boot-3.5.3.yml",
+  "recipes": [
+    "io.elmos.openrewrite.Servlet2_5JspToSpringBoot3_5_3Java21"
+  ],
+  "schema_version": 1,
+  "worker_recipe_resource": "/rewrite/servlet-2.5-jsp-to-spring-boot-3.5.3.yml"
+}

@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -727,6 +728,10 @@ class CertificationCampaignTests(unittest.TestCase):
         self.assertTrue(admission["requires_live_external_reverification"])
         self.assertEqual(list(REQUIRED_EVIDENCE), admission["verified_evidence_types"])
 
+    @unittest.skipIf(
+        os.name == "nt",
+        "Windows host has no independently trusted OpenSSL CLI for a subprocess gate",
+    )
     def test_certified_framework_gate_reverifies_the_complete_external_chain(self) -> None:
         self._install_full_documents()
         result = self.evaluate()
@@ -763,6 +768,10 @@ class CertificationCampaignTests(unittest.TestCase):
             self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
             self.assertIn("status=certified decision=CERTIFIED", completed.stdout)
 
+    @unittest.skipIf(
+        os.name == "nt",
+        "Windows host has no independently trusted OpenSSL CLI for a subprocess gate",
+    )
     def test_certified_framework_gate_rejects_tampered_admission_receipt(self) -> None:
         self._install_full_documents()
         result = self.evaluate()
@@ -800,6 +809,10 @@ class CertificationCampaignTests(unittest.TestCase):
             self.assertEqual(2, completed.returncode, completed.stdout + completed.stderr)
             self.assertIn("admission receipt does not match", completed.stderr)
 
+    @unittest.skipIf(
+        os.name == "nt",
+        "Windows host has no independently trusted OpenSSL CLI for a subprocess gate",
+    )
     def test_apply_promotion_is_atomic_and_post_gate_verified(self) -> None:
         self._install_full_documents()
         with tempfile.TemporaryDirectory(prefix="batch30-atomic-promotion-") as temporary:

@@ -40,7 +40,7 @@
       "17"
     ]
   },
-  "status": "certified",
+  "status": "experimental",
   "target": {
     "build_tools": [
       "gradle-8.14.3"

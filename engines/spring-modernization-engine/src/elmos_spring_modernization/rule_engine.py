@@ -3,6 +3,7 @@ import difflib
 import functools
 import os
 import re
+import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -31,7 +32,6 @@ def mask_comments_only(src: str) -> str:
     pattern = r"(/\*[\s\S]*?\*/|//[^\n]*)"
     return re.sub(pattern, lambda m: " " * len(m.group(0)), src)
 
-
 class RuleEngine:
     """
     Industrial-grade AST-aware rule application engine for Spring modernization.
@@ -42,6 +42,32 @@ class RuleEngine:
     ELIGIBLE_EXTENSIONS = {
         ".java", ".xml", ".properties", ".yaml", ".yml", ".gradle", ".kt", ".groovy"
     }
+
+    @staticmethod
+    def _atomic_write(path: Path, content: str) -> None:
+        temporary_path: Optional[Path] = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                newline="",
+                dir=path.parent,
+                prefix=f".{path.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as handle:
+                temporary_path = Path(handle.name)
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary_path, path)
+        except OSError:
+            if temporary_path is not None:
+                try:
+                    temporary_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            raise
 
     def apply_rule(
         self,
@@ -90,8 +116,8 @@ class RuleEngine:
             try:
                 rx = _compile_regex(pattern)
                 matches = list(rx.finditer(masked))
-            except re.error:
-                matches = []
+            except re.error as exc:
+                raise ValueError(f"Invalid regex in rule {rule.rule_id}: {exc}") from exc
         else:
             rx = re.compile(re.escape(pattern))
             matches = list(rx.finditer(masked))
@@ -119,8 +145,8 @@ class RuleEngine:
             try:
                 rx = _compile_regex(pattern)
                 return rx.subn(target, file_content)
-            except re.error:
-                pass
+            except re.error as exc:
+                raise ValueError(f"Invalid regex in rule {rule.rule_id}: {exc}") from exc
 
         if pattern in file_content:
             count = file_content.count(pattern)
@@ -285,11 +311,7 @@ class RuleEngine:
         diff_preview = "".join(diff_lines)
 
         if not dry_run:
-            try:
-                with open(p, "w", encoding="utf-8") as f:
-                    f.write(current_content)
-            except OSError:
-                pass
+            self._atomic_write(p, current_content)
 
         change = FileChange(
             file_path=str(p.resolve()),
@@ -371,7 +393,6 @@ class RuleEngine:
                             modified_content = new_content
                             replacements_count += count
                             rules_applied_to_file.append(rule.rule_id)
-                            applied_rules_set.add(rule.rule_id)
                             file_modified = True
                     except Exception as e:
                         failed_rules_set.add(rule.rule_id)
@@ -395,8 +416,14 @@ class RuleEngine:
                     diff_preview = "".join(diff_lines)
 
                     if not dry_run:
-                        with open(file_path, "w", encoding="utf-8") as f:
-                            f.write(modified_content)
+                        try:
+                            self._atomic_write(file_path, modified_content)
+                        except OSError as exc:
+                            failed_rules_set.update(rules_applied_to_file)
+                            warnings.append(f"Failed to write file {file_path}: {exc}")
+                            continue
+
+                    applied_rules_set.update(rules_applied_to_file)
 
                     file_changes.append(FileChange(
                         file_path=str(file_path.resolve()),
@@ -465,8 +492,8 @@ class RuleEngine:
                             if sig in content:
                                 residual_count += 1
                                 issues.append(f"{p.name}: {msg}")
-                    except OSError:
-                        pass
+                    except OSError as exc:
+                        issues.append(f"{p}: unable to read file: {exc}")
 
         is_valid = len(issues) == 0
         return {

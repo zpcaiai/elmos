@@ -1,7 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum, auto
-from typing import List, Dict, Set, Optional, Tuple
+from typing import Any, List, Tuple
 
 MAX_BEANS = 1000
 
@@ -37,7 +37,7 @@ class BeanDependencyGraphExtractor:
     and generates topological ordering and Mermaid visualizations.
     """
 
-    def extract(self, definitions: list[dict]) -> BeanGraph:
+    def extract(self, definitions: list[dict[str, Any]]) -> BeanGraph:
         if len(definitions) > MAX_BEANS:
             raise ValueError(f"Too many beans. Max allowed is {MAX_BEANS}")
 

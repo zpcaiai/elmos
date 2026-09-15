@@ -95,7 +95,7 @@ class JavaWorkerClient:
         if classpath_file.is_file():
             try:
                 deps = classpath_file.read_text(encoding="utf-8").strip()
-                return f"{target_classes}:{deps}"
+                return os.pathsep.join((str(target_classes), deps))
             except Exception:
                 pass
 

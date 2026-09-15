@@ -142,10 +142,11 @@ def launch(target: str, environment: Mapping[str, str]) -> None:
     topology.validate_trusted_system_executable(
         TRUSTED_MAKE, label="production GNU make"
     )
+    trusted_make = TRUSTED_MAKE.as_posix()
     os.execve(
-        str(TRUSTED_MAKE),
+        trusted_make,
         [
-            str(TRUSTED_MAKE),
+            trusted_make,
             "--no-print-directory",
             "-C",
             str(ROOT),

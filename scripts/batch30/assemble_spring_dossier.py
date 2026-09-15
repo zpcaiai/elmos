@@ -1,26 +1,41 @@
 #!/usr/bin/env python3
-"""Disabled fail-closed entrypoint: repository-side Spring independent dossier signing."""
+"""Prepare the Spring 3.5.3 business line for independent external review."""
 
 from __future__ import annotations
 
+import argparse
 import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.batch30.assemble_spring_external_request import assemble_request
+
+
+PACK_KEYS = (
+    "spring-boot-1-5-to-3-5-3",
+    "spring-boot-2-0-2-6-to-3-5-3",
+    "spring-boot-2-7-18-to-3-5-3",
+    "spring-boot-3-0-3-4-to-3-5-3",
+    "spring-boot-2-x-gradle-to-3-5-3",
+    "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+)
 
 
 def main() -> int:
-    print(
-        json.dumps(
-            {
-                "status": "BLOCKED",
-                "decision": "NOT_CERTIFIED",
-                "external_execution": "NOT_RUN",
-                "independent_verification": "NOT_RUN",
-                "reason": "repository-side Spring independent dossier signing is prohibited inside the repository after ELMOS-CERT-KEY-2026-09-13-01",
-                "required_action": "Ethan must hold the replacement private key outside the repository, independently replay exact-SHA evidence, and return only the signed request plus authenticated public-key fingerprint",
-            },
-            indent=2,
-        )
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    args = parser.parse_args()
+    result = assemble_request(
+        output_dir=args.output_dir,
+        dossier_id="spring-modernization-v1",
+        pack_keys=PACK_KEYS,
     )
-    return 2
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
 
 
 if __name__ == "__main__":

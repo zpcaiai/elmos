@@ -115,6 +115,11 @@ function configuredSecret(): Buffer {
   ) {
     throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_REQUIRED");
   }
+  if (process.platform === "win32") {
+    // Node's Windows stat mode is not an ACL-equivalence proof for POSIX 0400/0600.
+    // The production deployment is Linux-rootless; an unsupported host must fail closed.
+    throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_PERMISSIONS_UNSUPPORTED");
+  }
   let descriptor: number | undefined;
   try {
     for (

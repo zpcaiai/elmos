@@ -3,43 +3,39 @@
     {
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json",
-        "certification/external-admission.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ],
       "id": "web",
       "reason": "The exact fixture passed local source/target builds, Tomcat/WarLauncher startup, one exact JSON GET comparison and preserved controller tests; this does not generalize beyond the fixture.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "fcm-dispatcher-servlet-to-boot-mvc"
     },
     {
       "evidence_refs": [
-        "contracts/framework-contract-model.json",
-        "certification/external-admission.json"
+        "contracts/framework-contract-model.json"
       ],
       "id": "dependency-injection",
       "reason": "Root/web context ownership and component scanning are modeled; bean graph conformance is NOT_RUN.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "fcm-root-and-servlet-context-merge"
     },
     {
       "evidence_refs": [
-        "contracts/framework-contract-model.json",
-        "certification/external-admission.json"
+        "contracts/framework-contract-model.json"
       ],
       "id": "configuration",
       "reason": "XML and property sources are inventoried; Boot precedence and binding parity are NOT_RUN.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "explicit-property-and-xml-obligation-mapping"
     },
     {
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json",
-        "certification/external-admission.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ],
       "id": "validation",
       "reason": "Two validation-error contracts and the controller advice contract passed in the preserved 6 source and 9 target tests for the exact fixture; locale, groups and other providers remain NOT_RUN.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "javax-to-jakarta-validation-contract"
     },
     {
@@ -73,23 +69,21 @@
     {
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json",
-        "certification/external-admission.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ],
       "id": "error-handling",
       "reason": "The exact fixture's ControllerAdvice status and JSON shape passed preserved source/target tests locally; broader exception resolvers and production errors remain NOT_RUN.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "controller-advice-contract"
     },
     {
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json",
-        "certification/external-admission.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ],
       "id": "servlet-filters-and-interceptors",
       "reason": "The exact fixture's UTF-8 filter and /api/** audit interceptor behavior passed preserved tests and the JSON HTTP comparison across Tomcat 9 and embedded Tomcat 10 locally.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "ordered-filter-interceptor-contract"
     },
     {
@@ -117,23 +111,21 @@
       "evidence_refs": [
         "target-profile/scaffold/manifest.json",
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json",
-        "certification/external-admission.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ],
       "id": "views-and-static-resources",
       "reason": "The admitted JSP page rendered 142 identical bytes with exact stable headers across source Tomcat 9 and target embedded Tomcat 10; only the exact JSESSIONID token nondeterminism is governed, and other JSP constructs remain blocked.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "executable-war-tomcat-jasper-profile"
     },
     {
       "evidence_refs": [
         "contracts/framework-contract-model.json",
-        "certification/local-execution/2026-08-30/evidence-index.json",
-        "certification/external-admission.json"
+        "certification/local-execution/2026-08-30/evidence-index.json"
       ],
       "id": "lifecycle",
       "reason": "The exact fixture passed bounded external Tomcat 9 source startup/shutdown and Boot WarLauncher target startup/Actuator/shutdown locally; alternate lifecycle integrations remain NOT_RUN.",
-      "status": "certified",
+      "status": "experimental",
       "strategy": "listener-servlet-to-boot-lifecycle-contract"
     }
   ],

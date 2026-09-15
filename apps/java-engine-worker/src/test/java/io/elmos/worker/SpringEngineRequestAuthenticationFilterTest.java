@@ -1,6 +1,5 @@
 package io.elmos.worker;
 
-import io.elmos.security.FileNonceStore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -8,7 +7,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.time.Clock;
@@ -16,7 +17,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.HexFormat;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +31,7 @@ class SpringEngineRequestAuthenticationFilterTest {
     private static final String PATH = "/engine/v1/spring-upgrades";
     private static final String ORGANIZATION = "org-production-a";
     private static final String ACTOR = "user:operator-a";
+    private final Map<Path, Set<String>> replayStores = new ConcurrentHashMap<>();
 
     @TempDir
     Path temporary;
@@ -232,8 +237,7 @@ class SpringEngineRequestAuthenticationFilterTest {
                 SECRET,
                 clock,
                 60,
-                new FileNonceStore(
-                        temporary.toRealPath().resolve("boundary-replay"), clock));
+                inMemoryNonceStore(temporary.toRealPath().resolve("boundary-replay")));
         byte[] body = "{}".getBytes(StandardCharsets.UTF_8);
         String bodySha = HexFormat.of().formatHex(
                 MessageDigest.getInstance("SHA-256").digest(body));
@@ -252,6 +256,14 @@ class SpringEngineRequestAuthenticationFilterTest {
         Path directory = temporary.toRealPath();
         Path secret = directory.resolve("secret");
         Files.write(secret, SECRET);
+        if (Files.getFileAttributeView(
+                secret, PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS) == null) {
+            IllegalStateException rejected = assertThrows(
+                    IllegalStateException.class,
+                    () -> SpringEngineRequestAuthenticationFilter.readSecret(secret));
+            assertTrue(rejected.getMessage().contains("POSIX ownership and mode checks"));
+            return;
+        }
         Files.setPosixFilePermissions(secret, PosixFilePermissions.fromString("rw-------"));
         assertArrayEquals(SECRET, SpringEngineRequestAuthenticationFilter.readSecret(secret));
 
@@ -316,12 +328,22 @@ class SpringEngineRequestAuthenticationFilterTest {
         }
     }
 
-    private static SpringEngineRequestAuthenticationFilter.Authentication authentication(
+    private SpringEngineRequestAuthenticationFilter.Authentication authentication(
             Path replayRoot
     ) {
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
         return new SpringEngineRequestAuthenticationFilter.Authentication(
-                SECRET, clock, 60, new FileNonceStore(replayRoot, clock));
+                SECRET, clock, 60, inMemoryNonceStore(replayRoot));
+    }
+
+    private SpringEngineRequestAuthenticationFilter.Authentication.NonceClaimer inMemoryNonceStore(
+            Path replayRoot
+    ) {
+        Set<String> claims = replayStores.computeIfAbsent(
+                replayRoot.toAbsolutePath().normalize(),
+                ignored -> ConcurrentHashMap.newKeySet());
+        return (protocol, role, signer, nonce, expiresAt) ->
+                claims.add(String.join("\u0000", protocol, role, signer, nonce));
     }
 
     private static Clock advancesAfterFirstRead() {

@@ -40,10 +40,11 @@ class SpringMvcWarRuntimeTest {
         Map<String, String> environment = new HashMap<>();
         environment.put("MANAGEMENT_SERVER_ADDRESS", "inherited.invalid.example");
 
+        Path javaHome = Path.of("/exact/jdk-21");
         SpringMvcWarRuntime.configureTargetLoopbackEnvironment(
-                environment, Path.of("/exact/jdk-21"), 49152);
+                environment, javaHome, 49152);
 
-        assertEquals("/exact/jdk-21", environment.get("JAVA_HOME"));
+        assertEquals(javaHome.toString(), environment.get("JAVA_HOME"));
         assertEquals("127.0.0.1", environment.get("SERVER_ADDRESS"));
         assertEquals("49152", environment.get("SERVER_PORT"));
         assertEquals("49152", environment.get("MANAGEMENT_SERVER_PORT"));

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 MAX_TX = 500
 
@@ -34,7 +34,7 @@ class TransactionBoundaryExtractor:
     chains, and detects proxy bypass anti-patterns (e.g. self-invocation).
     """
 
-    def extract(self, methods: list[dict]) -> TransactionConfig:
+    def extract(self, methods: list[dict[str, Any]]) -> TransactionConfig:
         if len(methods) > MAX_TX:
             raise ValueError(f"Too many methods. Max allowed is {MAX_TX}")
 
@@ -105,8 +105,6 @@ class TransactionBoundaryExtractor:
         calls_map: dict[str, list[str]]
     ) -> list[list[str]]:
         chains: list[list[str]] = []
-        visited: set[str] = set()
-
         def trace(current: str, current_chain: list[str], path_set: set[str]) -> None:
             policy = policies.get(current)
             label = f"{current} ({policy.propagation if policy else 'NON_TX'})"

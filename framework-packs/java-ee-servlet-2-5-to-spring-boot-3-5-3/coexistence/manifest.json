@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "pack_key": "java-ee-servlet-2-5-to-spring-boot-3-5-3",
+  "enabled": false,
+  "components": [],
+  "status": "NOT_RUN",
+  "reason": "Coexistence is disabled until an application-specific compatibility contract is approved.",
+  "exit_criteria": [
+    "Retire the source runtime only after target parity, rollback, and customer acceptance pass."
+  ]
+}

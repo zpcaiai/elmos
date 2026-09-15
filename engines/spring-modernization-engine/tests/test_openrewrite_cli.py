@@ -190,7 +190,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         error_log="cannot find symbol: class WebSecurityConfigurerAdapter",
         source_code=legacy_code
     )
-    assert result.success is True
+    # A real OpenRewrite transform is still only a candidate until an
+    # independent build/runtime verifier accepts it.
+    assert result.success is False
+    assert result.final_strategy == "VERIFICATION_REQUIRED"
     assert "extends WebSecurityConfigurerAdapter" not in result.repaired_content
     assert any("OPENREWRITE" in patch for patch in result.applied_patches)
 

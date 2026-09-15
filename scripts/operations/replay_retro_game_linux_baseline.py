@@ -81,7 +81,9 @@ def install_termination_signal_handlers() -> None:
     """Make PTY/session termination persist evidence and run exact cleanup."""
 
     signal.signal(signal.SIGTERM, _termination_signal_handler)
-    signal.signal(signal.SIGHUP, _termination_signal_handler)
+    sighup = getattr(signal, "SIGHUP", None)
+    if sighup is not None:
+        signal.signal(sighup, _termination_signal_handler)
 
 
 def require_opt_in(enabled: bool) -> None:

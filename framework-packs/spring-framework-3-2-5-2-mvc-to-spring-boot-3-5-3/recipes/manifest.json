@@ -1,0 +1,12 @@
+{
+  "canonical_recipe_sha256": "sha256:703350d9b178aae438d4fabdb198dcf7b6f17e3eb2eb24c4282eb10340ae1a55",
+  "certification_eligible": false,
+  "execution_status": "NOT_RUN",
+  "pack_key": "spring-framework-3-2-5-2-mvc-to-spring-boot-3-5-3",
+  "recipe_config": "recipes/spring-framework-3.2-5.2-mvc-to-spring-boot-3.5.3.yml",
+  "recipes": [
+    "io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21"
+  ],
+  "schema_version": 1,
+  "worker_recipe_resource": "/rewrite/spring-framework-3.2-5.2-mvc-to-spring-boot-3.5.3.yml"
+}

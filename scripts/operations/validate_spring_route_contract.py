@@ -43,6 +43,17 @@ MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3
 MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
 MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
 MVC_UNVERIFIED_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
+INVENTORY_PACK_KEYS = {
+    "spring-boot-1-5-to-2-7-18",
+    "spring-boot-1-5-to-3-2-12",
+    "spring-boot-2-0-2-6-to-2-7-18",
+    "spring-boot-2-0-2-6-to-3-2-12",
+    "spring-boot-2-7-to-3-2-12",
+    "spring-boot-3-0-3-1-to-3-2-12",
+    "spring-boot-1-5-3-5-15-to-3-5-16",
+    "spring-framework-3-2-5-2-mvc-to-spring-boot-3-5-3",
+    "java-ee-servlet-2-5-to-spring-boot-3-5-3",
+}
 BOOT_3_5_16_ROUTE_COMPOSITIONS = {
     "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": (
         "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
@@ -453,6 +464,54 @@ def parse_catalog() -> list[dict[str, object]]:
         })
     require(bool(routes), "CATALOG_ROUTES_NOT_PARSED")
     return routes
+
+
+def check_pack_references(
+    routes: list[dict[str, object]], repo: Path = ROOT
+) -> None:
+    """A directed catalog reference never resolves to an absent or alien Pack."""
+    packs_root = repo / "framework-packs"
+    for route in routes:
+        key = str(route["pack_key"])
+        route_id = str(route["route_id"])
+        require(
+            re.fullmatch(r"[a-z0-9][a-z0-9-]{1,63}", key) is not None,
+            f"ROUTE_PACK_KEY_UNSAFE:{route_id}:{key}",
+        )
+        pack = packs_root / key
+        manifest_path = pack / "pack.json"
+        require(manifest_path.is_file(), f"ROUTE_PACK_MISSING:{route_id}:{key}")
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise ContractError(f"ROUTE_PACK_MANIFEST_INVALID:{route_id}:{key}") from error
+        require(
+            isinstance(manifest, dict) and manifest.get("pack_key") == key,
+            f"ROUTE_PACK_IDENTITY_DRIFT:{route_id}:{key}",
+        )
+        if key in INVENTORY_PACK_KEYS:
+            require(
+                manifest.get("status") == "research",
+                f"INVENTORY_PACK_MUST_REMAIN_RESEARCH:{route_id}:{key}",
+            )
+            certification = json.loads(
+                (pack / "certification/certification.json").read_text(encoding="utf-8")
+            )
+            require(
+                certification.get("certification_decision") == "NOT_CERTIFIED"
+                and certification.get("status") == "research",
+                f"INVENTORY_PACK_CANNOT_SELF_CERTIFY:{route_id}:{key}",
+            )
+            support = json.loads((pack / "support-matrix.json").read_text(encoding="utf-8"))
+            require(
+                isinstance(support.get("capabilities"), list)
+                and all(
+                    item.get("status") not in {"certified", "supported"}
+                    for item in support["capabilities"]
+                    if isinstance(item, dict)
+                ),
+                f"INVENTORY_PACK_CANNOT_PROMOTE_CAPABILITY:{route_id}:{key}",
+            )
 
 
 def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, str]) -> None:
@@ -1242,6 +1301,7 @@ def main() -> int:
     constants = catalog_constants()
     routes = parse_catalog()
     check_catalog_shape(routes, constants)
+    check_pack_references(routes)
     check_boot_3_5_local_evidence(routes)
     check_boot_4_1_version_matrix(routes)
     check_feature_catalog()

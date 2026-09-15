@@ -202,7 +202,7 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
                 media_type="application/json",
             )
 
-        self.assertEqual("file://" + str(evidence), reference["uri"])
+            self.assertEqual(evidence.as_uri(), reference["uri"])
         self.assertEqual("sha256:" + hashlib.sha256(payload).hexdigest(), reference["digest"])
         self.assertEqual(len(payload), reference["size_bytes"])
 
@@ -521,6 +521,10 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
                 )
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "signed launch receipts require POSIX ownership/mode evidence and an independently trusted OpenSSL",
+)
 class SignedSpringLaunchReceiptTests(unittest.TestCase):
     NOW = datetime(2026, 9, 4, 10, 0, tzinfo=timezone.utc)
     REVISION = subprocess.run(

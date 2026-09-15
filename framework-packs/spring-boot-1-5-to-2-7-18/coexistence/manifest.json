@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-1-5-to-2-7-18",
+  "enabled": false,
+  "components": [],
+  "status": "NOT_RUN",
+  "reason": "Coexistence is disabled until an application-specific compatibility contract is approved.",
+  "exit_criteria": [
+    "Retire the source runtime only after target parity, rollback, and customer acceptance pass."
+  ]
+}

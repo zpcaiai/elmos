@@ -1,10 +1,8 @@
 from __future__ import annotations
-import tempfile
-from pathlib import Path
 from elmos_spring_modernization.rule_engine import RuleEngine
 from elmos_spring_modernization.migration_rules import RULE_CATALOG
 from elmos_spring_modernization.models import (
-    MigrationPlan, SpringVersion, MigrationRule, MigrationCategory, RiskLevel
+    MigrationPlan, SpringVersion, RiskLevel
 )
 
 def test_apply_rule():
@@ -207,3 +205,29 @@ def test_syntactic_integrity_protection():
     # Corrupted code with missing paren
     assert engine.validate_syntactic_integrity("foo(bar);", "foo(bar;") is False
 
+
+def test_apply_plan_does_not_claim_rules_when_atomic_write_fails(tmp_path, monkeypatch):
+    engine = RuleEngine()
+    source = tmp_path / "Entity.java"
+    source.write_text("import javax.persistence.Entity1;", encoding="utf-8")
+    rule = RULE_CATALOG["RULE_001"]
+    plan = MigrationPlan(
+        plan_id="write-failure",
+        source_version=SpringVersion.BOOT_2_7,
+        target_version=SpringVersion.BOOT_3_5,
+        rules=[rule],
+        estimated_changes=1,
+        risk_summary={RiskLevel.LOW: 1},
+    )
+
+    def fail_write(_path, _content):
+        raise OSError("injected durable write failure")
+
+    monkeypatch.setattr(engine, "_atomic_write", fail_write)
+    result = engine.apply_plan(str(tmp_path), plan, dry_run=False)
+
+    assert result.applied_rules == []
+    assert result.failed_rules == [rule.rule_id]
+    assert result.file_changes == []
+    assert "javax.persistence" in source.read_text(encoding="utf-8")
+    assert any("durable write failure" in warning for warning in result.warnings)

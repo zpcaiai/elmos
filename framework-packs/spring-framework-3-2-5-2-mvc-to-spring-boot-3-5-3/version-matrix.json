@@ -1,0 +1,33 @@
+{
+  "pack_key": "spring-framework-3-2-5-2-mvc-to-spring-boot-3-5-3",
+  "schema_version": 1,
+  "tuples": [
+    {
+      "build": "maven-3.9.11",
+      "framework": "spring-mvc",
+      "id": "inventory-source-seed",
+      "java": "11",
+      "status": "NOT_RUN",
+      "version": "5.2.25.RELEASE"
+    },
+    {
+      "build": "maven-3.9.11",
+      "framework": "spring-boot",
+      "id": "exact-target",
+      "java": "21",
+      "status": "NOT_RUN",
+      "version": "3.5.3"
+    }
+  ],
+  "upgrade_edges": [
+    {
+      "directional": true,
+      "execution_status": "NOT_RUN",
+      "from": "inventory-source-seed",
+      "recipes": [
+        "io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21"
+      ],
+      "to": "exact-target"
+    }
+  ]
+}

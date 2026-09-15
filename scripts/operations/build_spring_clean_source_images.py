@@ -235,6 +235,25 @@ def capacity_snapshot(
 def terminate_process_group(process: subprocess.Popen[bytes]) -> None:
     if process.poll() is not None:
         return
+    if os.name == "nt":
+        try:
+            process.send_signal(signal.CTRL_BREAK_EVENT)
+        except (OSError, ValueError):
+            pass
+        try:
+            process.wait(timeout=10)
+            return
+        except subprocess.TimeoutExpired:
+            subprocess.run(
+                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            process.wait(timeout=10)
+            return
     try:
         os.killpg(process.pid, signal.SIGTERM)
     except ProcessLookupError:
@@ -282,6 +301,11 @@ def run_command(
     command_evidence.append(event)
     with log_path.open("wb") as log:
         try:
+            process_group_options = (
+                {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+                if os.name == "nt"
+                else {"start_new_session": True}
+            )
             process = subprocess.Popen(
                 list(argv),
                 cwd=cwd,
@@ -289,7 +313,7 @@ def run_command(
                 stdout=log,
                 stderr=subprocess.STDOUT,
                 shell=False,
-                start_new_session=True,
+                **process_group_options,
             )
         except OSError as exc:
             event.update(status="FAILED_TO_START", completed_at=utc_now())

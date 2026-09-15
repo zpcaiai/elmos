@@ -1257,19 +1257,20 @@ public void legacy() { throw new RuntimeException(); } }
     def test_linux_replay_installs_cleanup_signal_handlers(self) -> None:
         with mock.patch.object(LINUX_REPLAY.signal, "signal") as install:
             LINUX_REPLAY.install_termination_signal_handlers()
-        self.assertEqual(
-            install.call_args_list,
-            [
-                mock.call(
-                    LINUX_REPLAY.signal.SIGTERM,
-                    LINUX_REPLAY._termination_signal_handler,
-                ),
+        expected = [
+            mock.call(
+                LINUX_REPLAY.signal.SIGTERM,
+                LINUX_REPLAY._termination_signal_handler,
+            )
+        ]
+        if hasattr(LINUX_REPLAY.signal, "SIGHUP"):
+            expected.append(
                 mock.call(
                     LINUX_REPLAY.signal.SIGHUP,
                     LINUX_REPLAY._termination_signal_handler,
-                ),
-            ],
-        )
+                )
+            )
+        self.assertEqual(install.call_args_list, expected)
         with self.assertRaisesRegex(KeyboardInterrupt, "received SIGTERM"):
             LINUX_REPLAY._termination_signal_handler(
                 LINUX_REPLAY.signal.SIGTERM, None

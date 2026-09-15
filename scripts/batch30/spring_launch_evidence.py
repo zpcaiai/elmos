@@ -29,6 +29,7 @@ from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
 from urllib.parse import parse_qs, unquote, urlparse
+from urllib.request import url2pathname
 
 ROOT = Path(__file__).resolve().parents[2]
 TRUST_MODULE_PATH = ROOT / "scripts" / "precision_migration" / "trust.py"
@@ -539,6 +540,29 @@ class OpenedLocalFile:
     path: Path
 
 
+def _current_uid() -> int:
+    """Return the current file-owner identity on POSIX and Windows."""
+
+    getuid = getattr(os, "getuid", None)
+    return int(getuid()) if getuid is not None else int(ROOT.stat().st_uid)
+
+
+def _close_opened_file(opened: OpenedLocalFile) -> None:
+    os.close(opened.descriptor)
+    if opened.parent_descriptor >= 0:
+        os.close(opened.parent_descriptor)
+
+
+def _restat_opened_file(opened: OpenedLocalFile) -> os.stat_result:
+    if opened.parent_descriptor >= 0:
+        return os.stat(
+            opened.filename,
+            dir_fd=opened.parent_descriptor,
+            follow_symlinks=False,
+        )
+    return os.stat(opened.path, follow_symlinks=False)
+
+
 @dataclass(frozen=True)
 class OpenedMountSource:
     descriptor: int
@@ -716,6 +740,18 @@ def _within(path: Path, roots: tuple[Path, ...]) -> bool:
 
 
 def _stat_identity(value: os.stat_result) -> tuple[int, ...]:
+    if os.name == "nt":
+        # NTFS exposes stable file IDs through st_dev/st_ino, while timestamp
+        # precision can differ between a handle query and a path query.  Bind
+        # identity and size here; the streaming SHA-256 check binds content.
+        return (
+            value.st_dev,
+            value.st_ino,
+            value.st_nlink,
+            value.st_uid,
+            value.st_gid,
+            value.st_size,
+        )
     return (
         value.st_dev,
         value.st_ino,
@@ -935,7 +971,7 @@ def _open_local_file(
     parsed = urlparse(uri)
     if parsed.scheme != "file" or parsed.netloc not in {"", "localhost"}:
         raise SpringLaunchEvidenceError(f"{label} must be an absolute local file URI")
-    lexical = Path(os.path.abspath(Path(unquote(parsed.path))))
+    lexical = Path(os.path.abspath(Path(url2pathname(unquote(parsed.path)))))
     containing_root = next((root for root in roots if _within(lexical, (root,))), None)
     if containing_root is None:
         raise SpringLaunchEvidenceError(
@@ -955,7 +991,32 @@ def _open_local_file(
         | getattr(os, "O_CLOEXEC", 0)
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_NONBLOCK", 0)
+        | getattr(os, "O_BINARY", 0)
     )
+    if os.name == "nt":
+        try:
+            resolved = lexical.resolve(strict=True)
+            if resolved != lexical or any(
+                candidate.is_symlink()
+                for candidate in (lexical, *lexical.parents)
+                if candidate != Path(lexical.anchor)
+            ):
+                raise SpringLaunchEvidenceError(
+                    f"{label} path must be canonical and contain no symlink"
+                )
+            descriptor = os.open(lexical, file_flags)
+            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                os.close(descriptor)
+                raise SpringLaunchEvidenceError(
+                    f"{label} must resolve to a regular file"
+                )
+            return OpenedLocalFile(descriptor, -1, lexical.name, lexical)
+        except (OSError, SpringLaunchEvidenceError) as exc:
+            if isinstance(exc, SpringLaunchEvidenceError):
+                raise
+            raise SpringLaunchEvidenceError(
+                f"{label} could not be opened beneath its approved root: {exc}"
+            ) from exc
     current_descriptor = -1
     file_descriptor = -1
     try:
@@ -1022,7 +1083,30 @@ def _open_absolute_file(path: Path, label: str) -> OpenedLocalFile:
         | getattr(os, "O_CLOEXEC", 0)
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_NONBLOCK", 0)
+        | getattr(os, "O_BINARY", 0)
     )
+    if os.name == "nt":
+        try:
+            resolved = supplied.resolve(strict=True)
+            if resolved != supplied or any(
+                candidate.is_symlink()
+                for candidate in (supplied, *supplied.parents)
+                if candidate != Path(supplied.anchor)
+            ):
+                raise SpringLaunchEvidenceError(
+                    f"{label} path must be canonical and contain no symlink"
+                )
+            descriptor = os.open(supplied, file_flags)
+            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                os.close(descriptor)
+                raise SpringLaunchEvidenceError(f"{label} must be a regular file")
+            return OpenedLocalFile(descriptor, -1, supplied.name, supplied)
+        except (OSError, SpringLaunchEvidenceError) as exc:
+            if isinstance(exc, SpringLaunchEvidenceError):
+                raise
+            raise SpringLaunchEvidenceError(
+                f"{label} could not be opened without following links: {exc}"
+            ) from exc
     current_descriptor = -1
     file_descriptor = -1
     try:
@@ -1100,15 +1184,15 @@ def _read_secure_absolute_file(
     try:
         opened = os.fstat(descriptor)
         mode = stat.S_IMODE(opened.st_mode)
-        if opened.st_uid != os.getuid():
+        if opened.st_uid != _current_uid():
             raise SpringLaunchEvidenceError(f"{label} must be owned by the current account")
         if opened.st_nlink != 1:
             raise SpringLaunchEvidenceError(f"{label} must have exactly one hard link")
-        if allowed_modes is not None:
+        if allowed_modes is not None and os.name != "nt":
             if mode not in allowed_modes:
                 rendered = ", ".join(f"{item:04o}" for item in sorted(allowed_modes))
                 raise SpringLaunchEvidenceError(f"{label} mode must be one of {rendered}")
-        elif mode & 0o022 or mode & 0o111 or not mode & 0o400:
+        elif os.name != "nt" and (mode & 0o022 or mode & 0o111 or not mode & 0o400):
             raise SpringLaunchEvidenceError(
                 f"{label} must be owner-readable, non-executable, and not group/other writable"
             )
@@ -1125,11 +1209,7 @@ def _read_secure_absolute_file(
         if os.read(descriptor, 1):
             raise SpringLaunchEvidenceError(f"{label} changed while being read")
         completed = os.fstat(descriptor)
-        path_after = os.stat(
-            opened_file.filename,
-            dir_fd=opened_file.parent_descriptor,
-            follow_symlinks=False,
-        )
+        path_after = _restat_opened_file(opened_file)
         if (
             _stat_identity(completed) != _stat_identity(opened)
             or _stat_identity(path_after) != _stat_identity(opened)
@@ -1139,8 +1219,7 @@ def _read_secure_absolute_file(
     except OSError as exc:
         raise SpringLaunchEvidenceError(f"{label} could not be read safely: {exc}") from exc
     finally:
-        os.close(descriptor)
-        os.close(opened_file.parent_descriptor)
+        _close_opened_file(opened_file)
 
 
 def _snapshot_content_reference(
@@ -1183,14 +1262,9 @@ def _snapshot_content_reference(
         if os.read(descriptor, 1):
             raise SpringLaunchEvidenceError(f"{label} changed while being read")
         completed = os.fstat(descriptor)
-        path_after = os.stat(
-            opened_local.filename,
-            dir_fd=opened_local.parent_descriptor,
-            follow_symlinks=False,
-        )
+        path_after = _restat_opened_file(opened_local)
     finally:
-        os.close(descriptor)
-        os.close(opened_local.parent_descriptor)
+        _close_opened_file(opened_local)
     if (
         _stat_identity(completed) != _stat_identity(opened)
         or _stat_identity(path_after) != _stat_identity(opened)
@@ -1379,11 +1453,11 @@ def _validate_trust_store_path(path: Path, evidence_roots: tuple[Path, ...]) -> 
         raise SpringLaunchEvidenceError(
             "Spring launch trust store must be a regular file"
         )
-    if path_stat.st_uid != os.getuid():
+    if path_stat.st_uid != _current_uid():
         raise SpringLaunchEvidenceError(
             "Spring launch trust store must be owned by the current account"
         )
-    if stat.S_IMODE(path_stat.st_mode) not in {0o400, 0o600}:
+    if os.name != "nt" and stat.S_IMODE(path_stat.st_mode) not in {0o400, 0o600}:
         raise SpringLaunchEvidenceError(
             "Spring launch trust store must use owner-only mode 0400 or 0600"
         )
@@ -5670,14 +5744,9 @@ def content_reference(
                 break
             digest_value.update(chunk)
         completed = os.fstat(descriptor)
-        path_after = os.stat(
-            opened_local.filename,
-            dir_fd=opened_local.parent_descriptor,
-            follow_symlinks=False,
-        )
+        path_after = _restat_opened_file(opened_local)
     finally:
-        os.close(descriptor)
-        os.close(opened_local.parent_descriptor)
+        _close_opened_file(opened_local)
     if (
         _stat_identity(opened) != _stat_identity(completed)
         or _stat_identity(path_after) != _stat_identity(completed)
@@ -5744,7 +5813,9 @@ def _write_new_owner_only(path: Path, content: bytes) -> None:
         raise SpringLaunchEvidenceError(f"output parent is unavailable: {exc}") from exc
     if not stat.S_ISDIR(parent_stat.st_mode):
         raise SpringLaunchEvidenceError("output parent must be a directory")
-    if parent_stat.st_uid != os.getuid() or stat.S_IMODE(parent_stat.st_mode) & 0o022:
+    if parent_stat.st_uid != _current_uid() or (
+        os.name != "nt" and stat.S_IMODE(parent_stat.st_mode) & 0o022
+    ):
         raise SpringLaunchEvidenceError(
             "output parent must be current-account-owned and not group/other writable"
         )
@@ -5754,7 +5825,57 @@ def _write_new_owner_only(path: Path, content: bytes) -> None:
         | os.O_EXCL
         | getattr(os, "O_CLOEXEC", 0)
         | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_BINARY", 0)
     )
+    if os.name == "nt":
+        descriptor = -1
+        created = False
+        try:
+            descriptor = os.open(supplied, flags, 0o600)
+            created = True
+            opened = os.fstat(descriptor)
+            if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
+                raise SpringLaunchEvidenceError(
+                    "assembled output must be a new regular file"
+                )
+            offset = 0
+            while offset < len(content):
+                written = os.write(descriptor, content[offset:])
+                if written <= 0:
+                    raise SpringLaunchEvidenceError(
+                        "assembled output write made no forward progress"
+                    )
+                offset += written
+            os.fsync(descriptor)
+            completed = os.fstat(descriptor)
+            path_after = os.stat(supplied, follow_symlinks=False)
+            if (
+                _stat_identity(completed) != _stat_identity(opened)
+                or _stat_identity(path_after) != _stat_identity(opened)
+                or completed.st_size != len(content)
+                or path_after.st_size != len(content)
+            ):
+                raise SpringLaunchEvidenceError(
+                    "assembled output identity or size changed while it was written"
+                )
+            return
+        except BaseException as exc:
+            if descriptor >= 0:
+                os.close(descriptor)
+                descriptor = -1
+            if created:
+                try:
+                    supplied.unlink()
+                except OSError:
+                    pass
+            if isinstance(exc, OSError):
+                raise SpringLaunchEvidenceError(
+                    f"output must be a new file in an existing safe directory: {exc}"
+                ) from exc
+            raise
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
     parent_descriptor = -1
     descriptor = -1
     created_identity: tuple[int, int] | None = None
@@ -5778,7 +5899,7 @@ def _write_new_owner_only(path: Path, content: bytes) -> None:
         created_identity = (output_stat.st_dev, output_stat.st_ino)
         if (
             not stat.S_ISREG(output_stat.st_mode)
-            or output_stat.st_uid != os.getuid()
+            or output_stat.st_uid != _current_uid()
             or output_stat.st_nlink != 1
             or stat.S_IMODE(output_stat.st_mode) != 0o600
         ):
@@ -5902,7 +6023,7 @@ def _bounded_docker_inspect(
         _validate_trusted_system_executable(TRUSTED_DOCKER_CLI, label="Docker CLI")
         process = subprocess.Popen(
             [
-                str(TRUSTED_DOCKER_CLI),
+                TRUSTED_DOCKER_CLI.as_posix(),
                 "--host",
                 docker_host,
                 "inspect",

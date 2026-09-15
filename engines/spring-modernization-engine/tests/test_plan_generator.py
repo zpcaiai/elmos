@@ -1,5 +1,4 @@
 from elmos_spring_modernization.plan_generator import MigrationPlanGenerator
-from elmos_spring_modernization.project_scanner import SpringProjectScanner
 from elmos_spring_modernization.models import SpringProjectProfile, SpringVersion, RiskLevel
 
 def test_generate_plan():

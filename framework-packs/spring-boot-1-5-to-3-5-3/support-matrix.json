@@ -2,30 +2,27 @@
   "capabilities": [
     {
       "evidence_refs": [
-        "certification/evidence.json",
-        "certification/external-admission.json"
+        "certification/evidence.json"
       ],
       "id": "web",
       "name": "Web and REST endpoints",
-      "status": "certified"
+      "status": "experimental"
     },
     {
       "evidence_refs": [
-        "certification/evidence.json",
-        "certification/external-admission.json"
+        "certification/evidence.json"
       ],
       "id": "configuration",
       "name": "Configuration and Properties",
-      "status": "certified"
+      "status": "experimental"
     },
     {
       "evidence_refs": [
-        "certification/evidence.json",
-        "certification/external-admission.json"
+        "certification/evidence.json"
       ],
       "id": "lifecycle",
       "name": "Application Lifecycle and Health",
-      "status": "certified"
+      "status": "experimental"
     }
   ],
   "pack_key": "spring-boot-1-5-to-3-5-3",

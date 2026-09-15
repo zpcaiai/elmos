@@ -1,0 +1,35 @@
+{
+  "architecture_style": "INVENTORY_ONLY_NOT_RUN",
+  "build": {
+    "commands": [],
+    "toolchain_digests": []
+  },
+  "framework": "spring-boot",
+  "framework_versions": [
+    "3.5.16"
+  ],
+  "owner": "ELMOS Framework Pack Maintainers",
+  "profile_key": "spring-boot-1-5-3-5-15-to-3-5-16-target",
+  "providers": {
+    "authentication": {},
+    "authorization": {},
+    "cache": {},
+    "dependency_injection": {},
+    "messaging": {},
+    "observability": {},
+    "persistence": {},
+    "scheduler": {},
+    "serializer": {},
+    "validation": {}
+  },
+  "runtime": "java",
+  "runtime_versions": [
+    "21"
+  ],
+  "schema_version": 1,
+  "startup": {
+    "command": "",
+    "health_check": ""
+  },
+  "version": "0.1.0"
+}

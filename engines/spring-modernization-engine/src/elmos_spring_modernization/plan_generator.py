@@ -1,6 +1,5 @@
 from __future__ import annotations
-import uuid
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from .models import MigrationPlan, SpringProjectProfile, SpringVersion, MigrationRule, RiskLevel
 from .migration_rules import RULE_CATALOG
 

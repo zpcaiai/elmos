@@ -4,3 +4,22 @@ engines/polyglot-route-engine/native/javascript/vendor/typescript-5.9.2/LICENSE.
 client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/** -diff -text
 client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
 verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/node_modules/@types/node/README.md -text whitespace=cr-at-eol
+
+# Batch 30 content-addressed manifests and configuration contracts must have
+# identical bytes on Windows and POSIX checkouts.
+framework-packs/**/*.json text eol=lf
+framework-packs/**/application.properties text eol=lf
+framework-packs/**/*.yml text eol=lf
+framework-packs/**/*.yaml text eol=lf
+framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/** text eol=lf
+certification/**/*.json text eol=lf
+evidence/spring-routes/**/*.json text eol=lf
+apps/java-engine-worker/src/main/resources/spring-mvc/target-profile/*.json text eol=lf
+apps/java-engine-worker/src/main/resources/spring-mvc/*.json text eol=lf
+apps/java-engine-worker/src/main/resources/rewrite/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml text eol=lf
+apps/java-engine-worker/src/main/resources/rewrite/spring-boot-2.7.18-to-3.5.3.yml text eol=lf
+skills/elmos-legacy-web-repository-modernization-skills-v1.0.0/** text eol=lf
+framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/local-execution/**/*.json text eol=lf
+framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/local-execution/**/*.log text eol=lf
+framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/local-execution/**/*.txt text eol=lf
+framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/certification/local-execution/**/*.pom text eol=lf
