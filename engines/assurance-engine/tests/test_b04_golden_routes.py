@@ -224,3 +224,112 @@ def test_orchestrator_vertical_slice_includes_b04():
     assert report["batches"]["B04"]["routes"]["sql-conversion"]["status"] == "PASS"
     assert report["batches"]["B04"]["routes"]["spring-modernization"]["status"] == "PASS"
     assert report["batches"]["B04"]["routes"]["repository-conversion"]["status"] == "PASS"
+
+
+def test_b04_e4_independent_audit_evidence_pack_and_gate():
+    import base64
+    import time
+
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+    from elmos_assurance_engine.contracts import canonical_json_bytes, sha256_digest
+    from elmos_assurance_engine.evidence_graph import EvidenceBlob, EvidenceEnvelope, TrustedKey
+    from elmos_assurance_engine.gate_engine import GateEngine
+
+    priv = Ed25519PrivateKey.generate()
+    pub = priv.public_key()
+    pub_b64 = base64.b64encode(pub.public_bytes_raw()).decode("ascii")
+    trusted_keys = {"key-e4": TrustedKey("key-e4", pub_b64, "assurance-signer")}
+
+    now = int(time.time())
+    rev_set = {"source": "a" * 64, "target": "b" * 64}
+    rev_digest = sha256_digest(rev_set)
+
+    request = {
+        "tenant_id": "tenant-e4",
+        "project_id": "proj-e4",
+        "run_id": "run-e4-audit",
+        "target_level": "E4",
+        "revision_set": rev_set,
+    }
+    app_digest = sha256_digest(request)
+
+    e4_kinds = ("build", "contract", "smoke", "regression", "differential", "mutation")
+    envelopes = []
+    blobs = {}
+
+    for idx, kind in enumerate(e4_kinds):
+        content = f'{{"kind": "{kind}", "verified": true, "failed_count": 0}}'.encode()
+        blob = EvidenceBlob(content)
+        blobs[blob.digest] = content
+
+        payload = {
+            "evidence_id": f"ev-e4-{idx}-{kind}",
+            "kind": kind,
+            "tenant_id": "tenant-e4",
+            "project_id": "proj-e4",
+            "run_id": "run-e4-audit",
+            "revision_set_digest": rev_digest,
+            "report_digest": blob.digest,
+            "failed_count": 0,
+            "issued_at": now - 10,
+            "expires_at": now + 3600,
+        }
+        canonical_bytes = canonical_json_bytes(payload)
+        sig = base64.b64encode(priv.sign(canonical_bytes)).decode("ascii")
+
+        env = EvidenceEnvelope(
+            envelope_id=f"env-e4-{idx}",
+            key_id="key-e4",
+            algorithm="Ed25519",
+            signature_base64=sig,
+            payload=payload,
+        )
+        envelopes.append(env)
+
+    # 1. Full E4 gate evaluation succeeds and confirms non-self-certification
+    res = GateEngine.evaluate_gate(
+        request=request,
+        envelopes=envelopes,
+        blobs=blobs,
+        trusted_keys=trusted_keys,
+        now=now,
+        approved_request_digest=app_digest,
+        ethen_configured=False,
+    )
+    assert res.verdict == GateDecision.PASS
+    assert res.status == "READY_FOR_EXTERNAL_GATE"
+    assert res.production_signing_allowed is False
+    assert len(res.verified_evidence_ids) == 6
+
+    # 2. Missing any required kind (e.g. mutation) fails closed
+    incomplete_envelopes = [e for e in envelopes if e.payload["kind"] != "mutation"]
+    res_incomplete = GateEngine.evaluate_gate(
+        request=request,
+        envelopes=incomplete_envelopes,
+        blobs=blobs,
+        trusted_keys=trusted_keys,
+        now=now,
+        approved_request_digest=app_digest,
+        ethen_configured=False,
+    )
+    assert res_incomplete.verdict in (GateDecision.FAIL, GateDecision.INCONCLUSIVE)
+    assert res_incomplete.status == "GATE_BLOCKED"
+    assert any("MISSING_REQUIRED_EVIDENCE_KINDS" in r and "mutation" in r for r in res_incomplete.reasons)
+
+    # 3. E5 gate without Ethen auditor remains INCONCLUSIVE and never signs
+    req_e5 = dict(request, target_level="E5")
+    app_e5_digest = sha256_digest(req_e5)
+    res_e5 = GateEngine.evaluate_gate(
+        request=req_e5,
+        envelopes=envelopes,
+        blobs=blobs,
+        trusted_keys=trusted_keys,
+        now=now,
+        approved_request_digest=app_e5_digest,
+        ethen_configured=False,
+    )
+    assert res_e5.verdict == GateDecision.INCONCLUSIVE
+    assert res_e5.status == "AUDITOR_NOT_CONFIGURED"
+    assert res_e5.production_signing_allowed is False
+
