@@ -1,10 +1,10 @@
 {
-  "pipelineRunId": "run-1789235748",
-  "environment": "Python 3.14.5 on Darwin arm64 (Source: PostgreSQL-16, Target: openGauss-Docker ((openGauss 3.0.0))",
-  "databaseTarget": "Source: PostgreSQL 16.15 (Homebrew) on | Target: openGauss-Docker ((openGauss 3.0.0)",
-  "startTime": "2026-09-12T17:55:48Z",
-  "endTime": "2026-09-12T17:56:34Z",
-  "totalDurationSeconds": 45.33,
+  "pipelineRunId": "run-1789511091",
+  "environment": "Python 3.14.5 on Darwin arm64 (Source: PostgreSQL-16, Target: PostgreSQL-16 (Loopback))",
+  "databaseTarget": "Source: PostgreSQL 16.15 (Homebrew) on | Target: PostgreSQL-16 (Loopback)",
+  "startTime": "2026-09-15T22:24:51Z",
+  "endTime": "2026-09-15T22:24:54Z",
+  "totalDurationSeconds": 2.633,
   "allPhasesPassed": true,
   "gateDecision": "LOCAL_EXECUTED_SELF_ATTESTED",
   "phases": [
@@ -12,7 +12,7 @@
       "phase_id": 1,
       "name": "Static DDL Lexical & Grammar Parsing",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 3.96,
+      "duration_ms": 1.46,
       "details": {
         "parsed_table": "customers",
         "column_count": 3,
@@ -28,7 +28,7 @@
       "phase_id": 2,
       "name": "Live Online Metadata Inspection",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 2195.62,
+      "duration_ms": 280.33,
       "details": {
         "schema": "elmos_e2e_inspect",
         "inspected_table": "orders",
@@ -51,7 +51,7 @@
       "phase_id": 3,
       "name": "Canonical DB IR & Topological DAG Ordering",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 2.24,
+      "duration_ms": 0.25,
       "details": {
         "tables_sorted": 4,
         "create_order": [
@@ -74,40 +74,41 @@
       "phase_id": 4,
       "name": "ChinaDB Dialect & Procedural Lowering",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 5169.78,
+      "duration_ms": 68.27,
       "details": {
         "dm8_lowered_sql": "CREATE TABLE test (id INT IDENTITY(1, 1) PRIMARY KEY, active BIT);",
         "opengauss_lowered_sql": "CREATE TABLE test (id SERIAL PRIMARY KEY, active BOOLEAN) WITH (ORIENTATION = ROW) DISTRIBUTE BY HASH(id);",
         "procedural_lowered_sql": "CREATE PROCEDURE anon_block()\nLANGUAGE plpgsql\nAS $$\nBEGIN\n    NULL;\nEND;\n$$;",
         "og_function_sql": "CREATE OR REPLACE FUNCTION calc_rebate(p_amount NUMERIC, p_tier INTEGER)\nRETURN NUMERIC\nAS\nDECLARE\n    v_rate NUMERIC := 0.05;\nBEGIN\n    IF p_tier > 1 THEN\n        v_rate := 0.10;\n    END IF;\n    RETURN p_amount * v_rate;\nEND;",
+        "dm8_function_sql": "CREATE OR REPLACE FUNCTION calc_rebate(p_amount NUMBER, p_tier NUMBER(10))\nRETURN NUMBER\nIS\n    v_rate NUMBER := 0.05;\nBEGIN\n    IF p_tier > 1 THEN\n        v_rate := 0.10;\n    END IF;\n    RETURN p_amount * v_rate;\nEND;",
         "og_procedure_sql": "CREATE OR REPLACE PROCEDURE update_stock(p_prod_id INTEGER, p_delta INTEGER)\nAS\nDECLARE\n    v_stock INTEGER;\nBEGIN\n    SELECT stock INTO v_stock FROM inventory WHERE id = p_prod_id;\n    UPDATE inventory SET stock = stock + p_delta WHERE id = p_prod_id;\nEND;",
         "dm8_procedure_sql": "CREATE OR REPLACE PROCEDURE update_stock(p_prod_id NUMBER(10), p_delta NUMBER(10))\nIS\n    v_stock NUMBER(10);\nBEGIN\n    SELECT stock INTO v_stock FROM inventory WHERE id = p_prod_id;\n    UPDATE inventory SET stock = stock + p_delta WHERE id = p_prod_id;\nEND;",
         "live_proc_executed": true,
         "calc_rebate_result": 10.0,
         "updated_stock_result": 145
       },
-      "evidence_digest": "112979afcdebdf61283a5f792ce9b5c55f0155b689ef5c5c651160610f79e835"
+      "evidence_digest": "6a0a56f92d30c1e1351f95e926b44ea194d3c5ca488f3a5002b51626fbab3cff"
     },
     {
       "phase_id": 5,
       "name": "Physical Data Pump Streaming Transfer",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 7555.91,
+      "duration_ms": 168.48,
       "details": {
         "rows_pumped": 1000,
-        "throughput_rows_sec": 304.88,
+        "throughput_rows_sec": 13197.41,
         "chunks": 4,
-        "target_type": "openGauss-Docker ((openGauss 3.0.0)",
+        "target_type": "PostgreSQL-16 (Loopback)",
         "target_verified_count": 1000,
         "target_verified_sum": 6176170.0
       },
-      "evidence_digest": "efb44c74b3d89fcc7d550b871840c00f7f4fa1586903f1858d3c63ffc515c67d"
+      "evidence_digest": "dd3fda039d217b2a9e059e30be6154a42d20d49f1708e501cb2aa3093fa8e04a"
     },
     {
       "phase_id": 6,
       "name": "Physical PostgreSQL WAL CDC Ingestion",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 6097.42,
+      "duration_ms": 79.74,
       "details": {
         "slot_name": "elmos_e2e_slot",
         "captured_events_count": 6,
@@ -133,7 +134,7 @@
       "phase_id": 7,
       "name": "Heterogeneous Data Chunk Hash & Discrepancy Pinpointing",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 2948.19,
+      "duration_ms": 685.52,
       "details": {
         "total_rows": 300,
         "total_chunks": 3,
@@ -150,27 +151,27 @@
       "phase_id": 8,
       "name": "Physical Multi-Worker Transaction Stress & Invariant Audit",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 20132.68,
+      "duration_ms": 1294.52,
       "details": {
-        "target_database": "openGauss-Target",
+        "target_database": "PostgreSQL-16-Local",
         "workers": 8,
         "total_tx": 160,
         "successful_tx": 160,
-        "tps": 8.583809202847538,
-        "p50_ms": 500.8477710000534,
-        "p95_ms": 2644.391750000068,
+        "tps": 143.43557563050993,
+        "p50_ms": 14.475520503765438,
+        "p95_ms": 181.1257920053322,
         "money_conservation_invariant_passed": true,
         "initial_balance_total": 200000.0,
         "final_balance_total": 200000.0,
         "balance_drift": 0.0
       },
-      "evidence_digest": "b9e10db3a26d503ffee38a2a1205509cbb251f33e1bf729a4aa863f20066bf3d"
+      "evidence_digest": "36b269235c12abbfe92cd134339eca0596c2a4af06461b17b383b2bbc76aa6c2"
     },
     {
       "phase_id": 9,
       "name": "Closed-Loop AST Diagnostic & Savepoint Self-Healing",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 1120.43,
+      "duration_ms": 45.96,
       "details": {
         "initial_sql": "CREATE TABLE elmos_e2e_heal.`devices` (`dev_id` INT AUTO_INCREMENT PRIMARY KEY, `specs` VARCHAR2(100));",
         "final_sql": "CREATE TABLE elmos_e2e_heal.\"devices\" (\"dev_id\" SERIAL PRIMARY KEY, \"specs\" VARCHAR(100));",
@@ -187,7 +188,7 @@
       "phase_id": 10,
       "name": "Real Quality Gate Receipt Assembly & Tamper-Evident Attestation",
       "status": "PASSED_LOCAL_EXECUTED",
-      "duration_ms": 45332.57,
+      "duration_ms": 2632.95,
       "details": {
         "total_phases_verified": 9,
         "gate_decision": "LOCAL_EXECUTED_SELF_ATTESTED",

@@ -68,6 +68,14 @@ public final class SpringShardingSphereModernizer {
     private SpringShardingSphereModernizer() {}
 
     public static ShardingSphereModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true, true);
+    }
+
+    public static ShardingSphereModernizationResult modernize(Path projectRoot, boolean updatePom) {
+        return modernize(projectRoot, updatePom, true);
+    }
+
+    public static ShardingSphereModernizationResult modernize(Path projectRoot, boolean updatePom, boolean updateConfig) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return ShardingSphereModernizationResult.empty();
@@ -87,11 +95,13 @@ public final class SpringShardingSphereModernizer {
                 Matcher matcher = OLD_SHARDING_DEP_PATTERN.matcher(pomContent);
                 if (matcher.find()) {
                     shardingDetected = true;
-                    String updated = matcher.replaceAll(Matcher.quoteReplacement(MODERN_SHARDING_DEP));
-                    Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
-                    modifiedFiles.add("pom.xml");
-                    rulesApplied.add("UPGRADE_SHARDINGSPHERE_DEPENDENCY_5_5_0");
-                    changes++;
+                    if (updatePom) {
+                        String updated = matcher.replaceAll(Matcher.quoteReplacement(MODERN_SHARDING_DEP));
+                        Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
+                        modifiedFiles.add("pom.xml");
+                        rulesApplied.add("UPGRADE_SHARDINGSPHERE_DEPENDENCY_5_5_0");
+                        changes++;
+                    }
                 } else if (pomContent.contains("shardingsphere") || pomContent.contains("sharding-jdbc")) {
                     shardingDetected = true;
                 }
@@ -122,7 +132,7 @@ public final class SpringShardingSphereModernizer {
                         if (!updated.equals(content)) {
                             shardingDetected = true;
                             Files.writeString(javaFile, updated, StandardCharsets.UTF_8);
-                            modifiedFiles.add(projectRoot.relativize(javaFile).toString());
+                            modifiedFiles.add(projectRoot.relativize(javaFile).toString().replace('\\', '/'));
                             rulesApplied.add("MIGRATE_SHARDING_DATASOURCE_CLASS_TO_5_5");
                             changes++;
                         } else if (content.contains("ShardingSphere") || content.contains("shardingsphere")) {
@@ -165,9 +175,9 @@ public final class SpringShardingSphereModernizer {
                             rulesApplied.add("NORMALIZE_SHARDING_TABLE_RULES");
                         }
 
-                        if (!updated.equals(content)) {
+                        if (updateConfig && !updated.equals(content)) {
                             Files.writeString(configFile, updated, StandardCharsets.UTF_8);
-                            modifiedFiles.add(projectRoot.relativize(configFile).toString());
+                            modifiedFiles.add(projectRoot.relativize(configFile).toString().replace('\\', '/'));
                             rulesApplied.add("MODERNIZE_SHARDINGSPHERE_YAML_CONFIG");
                             changes++;
                         }
@@ -189,7 +199,7 @@ public final class SpringShardingSphereModernizer {
                 if (!Files.exists(configClassFile)) {
                     String configSource = generateShardingConfigClass();
                     Files.writeString(configClassFile, configSource, StandardCharsets.UTF_8);
-                    modifiedFiles.add(projectRoot.relativize(configClassFile).toString());
+                    modifiedFiles.add(projectRoot.relativize(configClassFile).toString().replace('\\', '/'));
                     rulesApplied.add("GENERATE_SHARDINGSPHERE_DATA_SOURCE_CONFIGURATION");
                     changes++;
                 }

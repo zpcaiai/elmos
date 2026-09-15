@@ -56,6 +56,10 @@ public final class SpringCloudMicroservicesModernizer {
     private SpringCloudMicroservicesModernizer() {}
 
     public static CloudModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true);
+    }
+
+    public static CloudModernizationResult modernize(Path projectRoot, boolean updatePom) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return CloudModernizationResult.empty();
@@ -72,11 +76,13 @@ public final class SpringCloudMicroservicesModernizer {
             for (Path file : allFiles) {
                 String fileName = file.getFileName().toString();
                 if (fileName.equals("pom.xml")) {
-                    CloudModernizationResult pomRes = modernizePom(projectRoot, file);
-                    if (pomRes.modified()) {
-                        changesCount += pomRes.changesCount();
-                        modifiedFiles.addAll(pomRes.modifiedFiles());
-                        rulesApplied.addAll(pomRes.rulesApplied());
+                    if (updatePom) {
+                        CloudModernizationResult pomRes = modernizePom(projectRoot, file);
+                        if (pomRes.modified()) {
+                            changesCount += pomRes.changesCount();
+                            modifiedFiles.addAll(pomRes.modifiedFiles());
+                            rulesApplied.addAll(pomRes.rulesApplied());
+                        }
                     }
                 } else if (fileName.endsWith(".java")) {
                     CloudModernizationResult javaRes = modernizeJava(projectRoot, file);

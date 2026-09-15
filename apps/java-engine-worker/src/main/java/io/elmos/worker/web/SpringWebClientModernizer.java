@@ -61,6 +61,10 @@ public final class SpringWebClientModernizer {
     private SpringWebClientModernizer() {}
 
     public static WebClientModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true);
+    }
+
+    public static WebClientModernizationResult modernize(Path projectRoot, boolean updatePom) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return WebClientModernizationResult.empty();
@@ -127,15 +131,17 @@ public final class SpringWebClientModernizer {
             try {
                 String pomContent = Files.readString(pomFile, StandardCharsets.UTF_8);
                 if (webClientDetected && !pomContent.contains("spring-boot-starter-webflux")) {
-                    int insertIdx = pomContent.lastIndexOf("</dependencies>");
-                    if (insertIdx != -1) {
-                        String updated = pomContent.substring(0, insertIdx) +
-                                "    " + WEBFLUX_STARTER_DEP + "\n    " +
-                                pomContent.substring(insertIdx);
-                        Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
-                        modifiedFiles.add("pom.xml");
-                        rulesApplied.add("INJECT_SPRING_BOOT_STARTER_WEBFLUX_DEPENDENCY");
-                        changes++;
+                    if (updatePom) {
+                        int insertIdx = pomContent.lastIndexOf("</dependencies>");
+                        if (insertIdx != -1) {
+                            String updated = pomContent.substring(0, insertIdx) +
+                                    "    " + WEBFLUX_STARTER_DEP + "\n    " +
+                                    pomContent.substring(insertIdx);
+                            Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
+                            modifiedFiles.add("pom.xml");
+                            rulesApplied.add("INJECT_SPRING_BOOT_STARTER_WEBFLUX_DEPENDENCY");
+                            changes++;
+                        }
                     }
                 }
             } catch (IOException e) {

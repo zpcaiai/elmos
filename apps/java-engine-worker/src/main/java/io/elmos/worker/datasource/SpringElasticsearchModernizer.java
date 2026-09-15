@@ -66,6 +66,10 @@ public final class SpringElasticsearchModernizer {
     private SpringElasticsearchModernizer() {}
 
     public static ElasticsearchModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true);
+    }
+
+    public static ElasticsearchModernizationResult modernize(Path projectRoot, boolean updatePom) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return ElasticsearchModernizationResult.empty();
@@ -85,11 +89,13 @@ public final class SpringElasticsearchModernizer {
                 Matcher matcher = OLD_ES_POM_DEP.matcher(pomContent);
                 if (matcher.find()) {
                     esDetected = true;
-                    String updated = matcher.replaceAll(Matcher.quoteReplacement(MODERN_ES_STARTER));
-                    Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
-                    modifiedFiles.add("pom.xml");
-                    rulesApplied.add("UPGRADE_ELASTICSEARCH_STARTER_DEPENDENCY");
-                    changes++;
+                    if (updatePom) {
+                        String updated = matcher.replaceAll(Matcher.quoteReplacement(MODERN_ES_STARTER));
+                        Files.writeString(pomFile, updated, StandardCharsets.UTF_8);
+                        modifiedFiles.add("pom.xml");
+                        rulesApplied.add("UPGRADE_ELASTICSEARCH_STARTER_DEPENDENCY");
+                        changes++;
+                    }
                 } else if (pomContent.contains("elasticsearch")) {
                     esDetected = true;
                 }

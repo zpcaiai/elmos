@@ -103,7 +103,7 @@ public final class SpringSessionModernizer {
 
                         if (!updated.equals(content)) {
                             Files.writeString(javaFile, updated, StandardCharsets.UTF_8);
-                            modifiedFiles.add(projectRoot.relativize(javaFile).toString());
+                            modifiedFiles.add(projectRoot.relativize(javaFile).toString().replace('\\', '/'));
                             rulesApplied.add("MIGRATE_JAVAX_TO_JAKARTA_COOKIE_AND_HTTP_SESSION");
                             changes++;
                         }
@@ -148,7 +148,7 @@ public final class SpringSessionModernizer {
                 if (!Files.exists(configFile)) {
                     String configSource = generateSessionCookieConfigSource();
                     Files.writeString(configFile, configSource, StandardCharsets.UTF_8);
-                    modifiedFiles.add(projectRoot.relativize(configFile).toString());
+                    modifiedFiles.add(projectRoot.relativize(configFile).toString().replace('\\', '/'));
                     rulesApplied.add("GENERATE_SPRING_SESSION_COOKIE_CONFIGURATION");
                     changes++;
                 }

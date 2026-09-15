@@ -58,6 +58,10 @@ public final class SpringCloudConfigModernizer {
     private SpringCloudConfigModernizer() {}
 
     public static CloudConfigModernizationResult modernize(Path projectRoot) {
+        return modernize(projectRoot, true);
+    }
+
+    public static CloudConfigModernizationResult modernize(Path projectRoot, boolean updatePom) {
         Objects.requireNonNull(projectRoot, "projectRoot must not be null");
         if (!Files.isDirectory(projectRoot)) {
             return CloudConfigModernizationResult.empty();
@@ -76,7 +80,7 @@ public final class SpringCloudConfigModernizer {
                 String pomContent = Files.readString(pomFile, StandardCharsets.UTF_8);
                 if (SPRING_CLOUD_CONFIG_DEP_PATTERN.matcher(pomContent).find()) {
                     cloudConfigDetected = true;
-                    if (!pomContent.contains("spring-cloud-starter-bus-amqp") && !pomContent.contains("spring-cloud-starter-bus-kafka")) {
+                    if (updatePom && !pomContent.contains("spring-cloud-starter-bus-amqp") && !pomContent.contains("spring-cloud-starter-bus-kafka")) {
                         // Inject spring-cloud-starter-bus-amqp into <dependencies>
                         int insertIdx = pomContent.lastIndexOf("</dependencies>");
                         if (insertIdx != -1) {
@@ -163,7 +167,7 @@ public final class SpringCloudConfigModernizer {
 
                         if (!updated.equals(content)) {
                             Files.writeString(configFile, updated, StandardCharsets.UTF_8);
-                            modifiedFiles.add(projectRoot.relativize(configFile).toString());
+                            modifiedFiles.add(projectRoot.relativize(configFile).toString().replace('\\', '/'));
                             rulesApplied.add("ENABLE_CLOUD_BUS_AND_ACTUATOR_REFRESH_ENDPOINTS");
                             changes++;
                         }
@@ -185,7 +189,7 @@ public final class SpringCloudConfigModernizer {
                 if (!Files.exists(listenerFile)) {
                     String listenerSource = generateLocalConfigSnapshotFallbackSource();
                     Files.writeString(listenerFile, listenerSource, StandardCharsets.UTF_8);
-                    modifiedFiles.add(projectRoot.relativize(listenerFile).toString());
+                    modifiedFiles.add(projectRoot.relativize(listenerFile).toString().replace('\\', '/'));
                     rulesApplied.add("GENERATE_LOCAL_CONFIG_SNAPSHOT_FALLBACK_LISTENER");
                     changes++;
                 }
