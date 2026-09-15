@@ -29,12 +29,14 @@ def _parse_target_version(target_str: Optional[str]) -> SpringVersion:
 
 def main(args_list: Optional[list[str]] = None) -> None:
     parser = argparse.ArgumentParser(description="Spring Modernization Engine CLI")
-    parser.add_argument("command", choices=["scan", "plan", "apply", "verify", "report"])
+    parser.add_argument("command", choices=["scan", "plan", "apply", "verify", "report", "compare-db"])
     parser.add_argument("--project", default=".", help="Project directory")
     parser.add_argument("--target", default="3.2", help="Target Spring Boot version")
     parser.add_argument("--plan", help="Migration plan file")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--results", help="Results file")
+    parser.add_argument("--baseline-db", help="Baseline DB dataset JSON file path")
+    parser.add_argument("--shadow-db", help="Shadow DB dataset JSON file path")
     parser.add_argument("--format", default="json", choices=["json", "text"], help="Output format")
 
     args = parser.parse_args(args_list)
@@ -125,6 +127,19 @@ def main(args_list: Optional[list[str]] = None) -> None:
             "estimated_effort_sp": generator.estimate_effort(plan),
             "blockers": blockers
         }
+
+    elif args.command == "compare-db":
+        from .spring_database_state_comparator import SpringDatabaseStateComparator
+        dataset: dict[str, Any] = {}
+        if args.baseline_db and Path(args.baseline_db).is_file():
+            b_data = json.loads(Path(args.baseline_db).read_text(encoding="utf-8"))
+            dataset = b_data.get("tables", b_data)
+        report = SpringDatabaseStateComparator.generate_report(
+            baseline_db="baseline_primary",
+            shadow_db="shadow_secondary",
+            dataset=dataset
+        )
+        output_data["database_state_report"] = report.to_dict()
 
     if args.results:
         Path(args.results).write_text(json.dumps(output_data, indent=2), encoding="utf-8")

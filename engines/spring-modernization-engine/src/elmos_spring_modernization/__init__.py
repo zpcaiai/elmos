@@ -50,6 +50,13 @@ from .spring_jvm_performance_profiler import (
     JvmPerformanceReport,
     SpringJvmPerformanceProfiler,
 )
+from .spring_database_state_comparator import (
+    ColumnDiff,
+    RowDiff,
+    TableDiffSummary,
+    DatabaseStateReport,
+    SpringDatabaseStateComparator,
+)
 
 __all__ = [
     "MultiModuleWaveOrchestrator",
@@ -84,5 +91,10 @@ __all__ = [
     "JvmComparisonMetrics",
     "JvmPerformanceReport",
     "SpringJvmPerformanceProfiler",
+    "ColumnDiff",
+    "RowDiff",
+    "TableDiffSummary",
+    "DatabaseStateReport",
+    "SpringDatabaseStateComparator",
 ]
 
