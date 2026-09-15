@@ -68,15 +68,34 @@ public final class OpenRewriteAstCompiler {
 
             for (Recipe recipe : recipes) {
                 try {
-                    SourceFile next = (SourceFile) recipe.getVisitor().visit(current, ctx);
-                    if (next != null && next != current) {
-                        current = next;
+                    var run = recipe.run(new org.openrewrite.internal.InMemoryLargeSourceSet(List.of(current)), ctx);
+                    var results = run.getChangeset().getAllResults();
+                    if (!results.isEmpty() && results.get(0).getAfter() != null) {
+                        current = results.get(0).getAfter();
                         applied.add(recipe.getName() != null && !recipe.getName().isBlank()
                                 ? recipe.getName()
                                 : recipe.getClass().getSimpleName());
+                    } else {
+                        SourceFile next = (SourceFile) recipe.getVisitor().visit(current, ctx);
+                        if (next != null && next != current) {
+                            current = next;
+                            applied.add(recipe.getName() != null && !recipe.getName().isBlank()
+                                    ? recipe.getName()
+                                    : recipe.getClass().getSimpleName());
+                        }
                     }
                 } catch (Exception e) {
-                    // Fail-safe per recipe to ensure pipeline resilience
+                    try {
+                        SourceFile next = (SourceFile) recipe.getVisitor().visit(current, ctx);
+                        if (next != null && next != current) {
+                            current = next;
+                            applied.add(recipe.getName() != null && !recipe.getName().isBlank()
+                                    ? recipe.getName()
+                                    : recipe.getClass().getSimpleName());
+                        }
+                    } catch (Exception ignored) {
+                        // Fail-safe per recipe to ensure pipeline resilience
+                    }
                 }
             }
 

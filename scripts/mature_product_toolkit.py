@@ -1002,7 +1002,35 @@ def main() -> int:
     request_parser.add_argument("--batch", type=int, choices=BATCHES, required=True)
     request_parser.add_argument("pack", type=Path)
     request_parser.add_argument("--key-id", required=True)
+    dr_drill_parser = sub.add_parser("dr-drill", help="Execute real enterprise DR verification rehearsal")
+    dr_drill_parser.add_argument("--tenant-id", default="enterprise-production-dr")
+    dr_drill_parser.add_argument("--workload-size", type=int, default=200)
+    audit_parser = sub.add_parser("audit-evaluate", help="Execute real regulatory compliance & SBOM audit evaluation")
+    audit_parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
+
+    if args.command == "dr-drill":
+        import sys
+        sys.path.insert(0, str(ROOT / "engines/mature-platform-engine/src"))
+        from elmos_mature_platform.enterprise_dr_verifier import DrRehearsalConfig, EnterpriseDrVerifier
+        cfg = DrRehearsalConfig(tenant_id=args.tenant_id, workload_size=args.workload_size)
+        res = EnterpriseDrVerifier(cfg).run_rehearsal()
+        print(json.dumps(res.evidence_receipt, indent=2, ensure_ascii=False))
+        return 0 if res.status == "PASSED" else 1
+    if args.command == "audit-evaluate":
+        import sys
+        sys.path.insert(0, str(ROOT / "engines/mature-platform-engine/src"))
+        from elmos_mature_platform.compliance_audit_toolkit import ComplianceAuditToolkit
+        toolkit = ComplianceAuditToolkit(repo_root=ROOT)
+        dossier = toolkit.evaluate_compliance()
+        if args.output:
+            toolkit.export_json(dossier, args.output)
+            print(f"Exported audit dossier to {args.output}")
+        else:
+            print(f"Compliance Score: {dossier.metrics.compliance_score_pct}% ({dossier.metrics.controls_passed}/{dossier.metrics.total_controls_evaluated} controls passed)")
+            print(f"SBOM Coverage: {dossier.metrics.sbom_coverage_ratio*100:.1f}% ({dossier.metrics.sbom_component_count} components)")
+            print(f"Decision: {dossier.certification_decision}")
+        return 0
 
     if args.command == "validate":
         errors = validate_batch(args.batch)

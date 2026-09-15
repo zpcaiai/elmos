@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import MagicMock
 
 
@@ -171,8 +172,6 @@ def test_smt_value_evaluator_bitvector_array_and_numbers() -> None:
 
 
 def test_formal_verifier_refuted_complex_counterexample_executable() -> None:
-    from elmos_proof_harness.formal_verifier import SMTValueEvaluator
-
     mock_complex_model = """
     sat
     (model

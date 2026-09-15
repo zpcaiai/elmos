@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Dict, Any, List
+from typing import Dict
 from .base import ProjectGenerator
 from ..models import PSIR, GeneratedProject, EntitySpec, EndpointSpec, ServiceSpec, FieldType
-from ..type_mapper import TypeMapper, Language
+from ..type_mapper import TypeMapper
 
 class GoGinGenerator(ProjectGenerator):
     def __init__(self):
@@ -102,7 +102,6 @@ class GoGinGenerator(ProjectGenerator):
     def generate_entity(self, entity_spec: EntitySpec) -> str:
         ename = entity_spec.name
         fields = ["    ID uint `gorm:\"primaryKey\" json:\"id\"`"]
-        imports = []
 
         go_types = {
             FieldType.STRING: "string",

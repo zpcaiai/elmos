@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import ipaddress
+import logging
 import re
+import socket
 import urllib.parse
 from dataclasses import dataclass
+
+logger = logging.getLogger("elmos_proof_harness.network_egress")
 
 
 class EgressViolationError(Exception):
@@ -20,6 +24,9 @@ _SECRET_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("Anthropic API Key", re.compile(r"sk-ant-[a-zA-Z0-9]{20,}")),
     ("Private Key Header", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")),
     ("Generic Bearer Token", re.compile(r"Bearer\s+[A-Za-z0-9\-_\.]{24,}")),
+    ("GCP Service Account Key", re.compile(r'"type":\s*"service_account"')),
+    ("Slack Token", re.compile(r"xox[baprs]-[0-9]{10,}-[0-9]{10,}-[a-zA-Z0-9]{24,}")),
+    ("Database Credentials URI", re.compile(r"[a-zA-Z0-9_\-]+://[^:]+:[^@]+@[^/]+")),
 )
 
 # Blocked SSRF and internal subnets
@@ -41,6 +48,16 @@ _BLOCKED_HOSTNAMES: frozenset[str] = frozenset({
     "instance-data",
 })
 
+_BLOCKED_DOMAIN_SUFFIXES: tuple[str, ...] = (
+    ".internal",
+    ".local",
+    ".localhost",
+    ".lan",
+    ".corp",
+    ".home",
+    ".onion",
+)
+
 
 @dataclass(frozen=True)
 class EgressPolicy:
@@ -49,6 +66,7 @@ class EgressPolicy:
     allowed_ports: tuple[int, ...] = (443, 8080)
     block_private_networks: bool = True
     scan_secrets_on_egress: bool = True
+    resolve_dns_for_ssrf: bool = True
 
 
 class NetworkEgressGuard:
@@ -86,6 +104,11 @@ class NetworkEgressGuard:
         if hostname in _BLOCKED_HOSTNAMES:
             raise EgressViolationError(f"Target host '{hostname}' is in blocked metadata/localhost list")
 
+        # Check blocked domain suffixes
+        for suffix in _BLOCKED_DOMAIN_SUFFIXES:
+            if hostname.endswith(suffix) or hostname == suffix.lstrip("."):
+                raise EgressViolationError(f"Target host '{hostname}' ends with blocked suffix '{suffix}'")
+
         # Check IP range if hostname is an IP
         if self.policy.block_private_networks:
             try:
@@ -96,8 +119,24 @@ class NetworkEgressGuard:
                             f"Target IP {hostname} belongs to private/internal blocked network {net}"
                         )
             except ValueError:
-                # Not an IP literal, domain name
-                pass
+                # Not an IP literal: domain name. Perform DNS resolution check if enabled
+                if self.policy.resolve_dns_for_ssrf:
+                    try:
+                        addr_info = socket.getaddrinfo(hostname, port, family=socket.AF_UNSPEC, type=socket.SOCK_STREAM)
+                        for entry in addr_info:
+                            resolved_ip_str = entry[4][0]
+                            try:
+                                resolved_ip = ipaddress.ip_address(resolved_ip_str)
+                                for net in _BLOCKED_NETWORKS:
+                                    if resolved_ip in net:
+                                        raise EgressViolationError(
+                                            f"Target host '{hostname}' resolves to private/internal blocked IP {resolved_ip} in {net}"
+                                        )
+                            except ValueError:
+                                pass
+                    except socket.gaierror:
+                        # DNS lookup unavailable or airgapped, rely on static blocklists
+                        logger.debug("DNS resolution unavailable for %s during egress check", hostname)
 
         if port not in self.policy.allowed_ports:
             raise EgressViolationError(f"Port {port} is not in allowed ports {self.policy.allowed_ports}")

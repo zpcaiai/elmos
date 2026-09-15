@@ -7,11 +7,10 @@ safe circuit-breaker stubs ready for targeted AI injection.
 
 from __future__ import annotations
 
-import os
 from typing import Dict, List, Optional, Tuple
 
 from .domain_slot import DomainSlotSpec, SlotInvariant, SlotParameter, SlotType
-from .models import PSIR, EntitySpec, FieldSpec, FieldType, Framework, Language, ProjectType, GeneratedProject
+from .models import PSIR, Language, GeneratedProject
 
 
 class DeterministicScaffoldGenerator:
@@ -131,7 +130,7 @@ class DeterministicScaffoldGenerator:
         )
 
         # API Controller
-        files[f"app/api/controller.py"] = (
+        files["app/api/controller.py"] = (
             f"from fastapi import APIRouter, HTTPException\n"
             f"from pydantic import BaseModel, Field\n"
             f"from ..domain.{entity_name.lower()} import {entity_name}\n"

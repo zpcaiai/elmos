@@ -1,4 +1,3 @@
-import pytest
 from elmos_multilang_project_generation.models import (
     PSIR, Language, Framework, ProjectType, EntitySpec, FieldSpec, FieldType
 )

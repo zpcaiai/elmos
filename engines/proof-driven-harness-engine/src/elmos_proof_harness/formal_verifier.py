@@ -485,3 +485,5 @@ class FormalVerificationEngine:
                 elapsed_ms=elapsed_ms,
                 timestamp=ts,
             )
+
+    verify = verify_obligation

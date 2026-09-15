@@ -11,9 +11,11 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List
 
 from .domain_slot import DomainSlotParser, DomainSlotSpec
+from .models import LanguageTarget
+from .native_toolchain_runner import HermeticWorkspace, NativeToolchainRunner, ToolchainExecutionReport, ToolchainStatus
 
 
 class GateDecision(Enum):
@@ -38,6 +40,7 @@ class VerificationReport:
     evidence_hash: str
     diagnostics: List[str] = field(default_factory=list)
     file_hashes: Dict[str, str] = field(default_factory=dict)
+    toolchain_report: Optional[ToolchainExecutionReport] = None
 
 
 class DeterministicVerificationGate:
@@ -51,7 +54,9 @@ class DeterministicVerificationGate:
         self,
         project_files: Dict[str, str],
         expected_slots: List[DomainSlotSpec],
-        execute_unit_tests: bool = True
+        execute_unit_tests: bool = True,
+        language: Optional[LanguageTarget] = None,
+        run_native_toolchain: bool = False
     ) -> VerificationReport:
         """Executes independent multi-stage verification on generated project code."""
         diagnostics: List[str] = []
@@ -129,7 +134,26 @@ class DeterministicVerificationGate:
                 else:
                     test_count += len(non_py_tests)
 
-        # 4. Determine Gate Decision
+        # 4. Optional Native Toolchain Subprocess Execution on Disk (Layer 4)
+        toolchain_report: Optional[ToolchainExecutionReport] = None
+        if run_native_toolchain and language:
+            with HermeticWorkspace() as ws:
+                ws.write_files(project_files)
+                runner = NativeToolchainRunner()
+                toolchain_report = runner.execute(language, ws.root_path)
+
+                diagnostics.extend(toolchain_report.diagnostics)
+                if toolchain_report.status == ToolchainStatus.EXECUTION_PASSED:
+                    tests_passed = True
+                    test_count = max(test_count, toolchain_report.test_count)
+                elif toolchain_report.status == ToolchainStatus.EXECUTION_FAILED:
+                    tests_passed = False
+                    failures_count += max(1, toolchain_report.fail_count)
+                    diagnostics.append(f"Native compiler/test runner failed: {toolchain_report.stderr}")
+                elif toolchain_report.status == ToolchainStatus.UNAVAILABLE:
+                    diagnostics.append(f"Toolchain binary not found; execution marked NOT_RUN")
+
+        # 5. Determine Gate Decision
         all_passed = syntax_ok and slots_fulfilled and tests_passed and (test_count > 0)
 
         if not syntax_ok:
@@ -138,17 +162,20 @@ class DeterministicVerificationGate:
             decision = GateDecision.E1_SYNTAX_VALIDATED
         elif not tests_passed or test_count == 0:
             decision = GateDecision.E2_CONTRACT_FULFILLED
+        elif toolchain_report and toolchain_report.passed:
+            decision = GateDecision.E4_INTEGRATION_READY
         else:
             decision = GateDecision.E3_LOCAL_TESTS_VERIFIED
 
-        # 5. Emit Evidence Hash
+        # 6. Emit Evidence Hash
         manifest = {
             "files": file_hashes,
             "gate_decision": decision.value,
             "syntax_ok": syntax_ok,
             "slots_fulfilled": slots_fulfilled,
             "test_count": test_count,
-            "failures_count": failures_count
+            "failures_count": failures_count,
+            "native_toolchain_passed": toolchain_report.passed if toolchain_report else False
         }
         evidence_hash = self.compute_sha256(json.dumps(manifest, sort_keys=True))
 
@@ -162,5 +189,6 @@ class DeterministicVerificationGate:
             failures_count=failures_count,
             evidence_hash=evidence_hash,
             diagnostics=diagnostics,
-            file_hashes=file_hashes
+            file_hashes=file_hashes,
+            toolchain_report=toolchain_report
         )

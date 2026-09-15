@@ -147,6 +147,25 @@ class RuleEngine:
         Rewrites deprecated 'extends WebMvcConfigurerAdapter' to 'implements WebMvcConfigurer'
         via compiler-grade AST TypeDeclaration visitor traversal, completely eliminating regex matching.
         """
+        # Route A: Prioritize Java Worker OpenRewrite compiler engine
+        from .java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available() and "WebMvcConfigurerAdapter" in code:
+            res = worker.rewrite_with_openrewrite(code, recipe_family="WEB_MVC")
+            if res.status == "SUCCESS" and res.source_code and res.source_code != code:
+                rewritten = res.source_code
+                if "WebMvcConfigurer;" not in rewritten and "implements WebMvcConfigurer" in rewritten:
+                    idx_pkg = rewritten.find("package ")
+                    if idx_pkg != -1:
+                        idx_semi = rewritten.find(";", idx_pkg)
+                        rewritten = (
+                            rewritten[: idx_semi + 1]
+                            + "\nimport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;"
+                            + rewritten[idx_semi + 1 :]
+                        )
+                # 2 compiler-grade AST mutations: import replacement and extends-to-implements conversion
+                return self.normalize_imports(rewritten), 2
+
         rewritten, count = JavaASTRewriter.rewrite_webmvc_configurer_adapter(code)
         if count > 0:
             return self.normalize_imports(rewritten), count
@@ -241,6 +260,11 @@ class RuleEngine:
                     recipe_families.append("JPA_HIBERNATE_6")
                 if any("junit" in str(r.rule_id).lower() or r.category == MigrationCategory.TESTING for r in rules):
                     recipe_families.append("JUNIT_5")
+                if any("mvc" in str(r.rule_id).lower() or "web" in str(r.rule_id).lower() or r.category == MigrationCategory.WEB for r in rules):
+                    recipe_families.append("WEB_MVC")
+                if "WebMvcConfigurerAdapter" in current_content or "HandlerInterceptorAdapter" in current_content:
+                    if "WEB_MVC" not in recipe_families:
+                        recipe_families.append("WEB_MVC")
 
                 for rf in recipe_families:
                     res = worker.rewrite_with_openrewrite(current_content, recipe_family=rf)

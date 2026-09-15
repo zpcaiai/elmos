@@ -50,7 +50,7 @@ public final class Hibernate6CriteriaModernizationRecipe extends Recipe {
                 TypeTree typeExpr = vd.getTypeExpression();
                 if (typeExpr != null) {
                     String typeName = typeExpr.printTrimmed();
-                    if ("Criteria".equals(typeName) || "org.hibernate.Criteria".equals(typeName)) {
+                    if ("Criteria".equals(typeName) || "org.hibernate.Criteria".equals(typeName) || "CriteriaQuery".equals(typeName)) {
                         maybeRemoveImport("org.hibernate.Criteria");
                         maybeAddImport("jakarta.persistence.criteria.CriteriaQuery");
                         maybeAddImport("jakarta.persistence.criteria.CriteriaBuilder");
@@ -122,6 +122,9 @@ public final class Hibernate6CriteriaModernizationRecipe extends Recipe {
             @Override
             public J.Identifier visitIdentifier(J.Identifier identifier, ExecutionContext ctx) {
                 J.Identifier id = super.visitIdentifier(identifier, ctx);
+                if (getCursor().firstEnclosing(J.Import.class) != null) {
+                    return id;
+                }
                 if ("Criteria".equals(id.getSimpleName())) {
                     maybeRemoveImport("org.hibernate.Criteria");
                     maybeAddImport("jakarta.persistence.criteria.CriteriaQuery");

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from .domain_slot import DomainSlotSpec
 
@@ -49,7 +49,6 @@ class SlotContextCompiler:
     ) -> SlotContextPackage:
         """Slices the project and creates a minimal-context package for a specific slot."""
         # 1. Measure baseline token footprint of the entire project
-        total_project_chars = sum(len(c) for c in all_project_files.values())
         baseline_project_tokens = cls.estimate_tokens(" ".join(all_project_files.values()))
 
         # 2. Extract strictly relevant files

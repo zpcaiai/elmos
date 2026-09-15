@@ -1,19 +1,14 @@
-[REVOKED][2026-09-13] Repository-generated synthetic log; not customer evidence; field execution NOT_RUN.
-[2026-09-10T08:28:56.460237Z][GLOBAL-BANK-DRILL] Initializing partner environment for org-global-bank-enterprise...
-[2026-09-10T08:28:56.460247Z][GLOBAL-BANK-DRILL] Authenticating Global Bank core banking integration service via OIDC...
-[2026-09-10T08:28:56.477122Z][GLOBAL-BANK-DRILL] OIDC Token Validation: OK: Validated (Issuer: https://auth.enterprise.elmos.io, Sub: svc-core-banking-prod)
-[2026-09-10T08:28:56.477145Z][GLOBAL-BANK-DRILL] Creating dedicated HSM-backed KEK for Ledger Transactions...
-[2026-09-10T08:28:56.477317Z][GLOBAL-BANK-DRILL] Synthesized 250 financial ledger transactions across US-EAST-1 and EU-WEST-1
-[2026-09-10T08:28:56.477346Z][GLOBAL-BANK-DRILL] Active Raft Leader: us-node-1 (Region: us-east-1) Monotonic Fencing Token: 1001
-[2026-09-10T08:28:56.477359Z][GLOBAL-BANK-DRILL] Baseline Ledger Replication: OK: Replicated to 7/7 nodes (quorum=4)
-[2026-09-10T08:28:56.477362Z][GLOBAL-BANK-DRILL] INJECTING DISASTER: Complete catastrophic blackout of US-EAST-1 primary data center...
-[2026-09-10T08:28:56.478372Z][GLOBAL-BANK-DRILL] Regional Failover Drill Complete:
-[2026-09-10T08:28:56.478375Z][GLOBAL-BANK-DRILL]   - Measured RTO (Recovery Time): 0.001 seconds (Target <= 15.0s: True)
-[2026-09-10T08:28:56.478376Z][GLOBAL-BANK-DRILL]   - Measured RPO (Data Currency): 0.000 seconds (Target <= 5.0s: True)
-[2026-09-10T08:28:56.478378Z][GLOBAL-BANK-DRILL]   - Financial Data Reconciliation: DataLoss=False
-[2026-09-10T08:28:56.478379Z][GLOBAL-BANK-DRILL]   - Primary Merkle Root: 4af1846b4e22e33be858084e8bb1f0f81d64e8c780138e353c04882d101615ad
-[2026-09-10T08:28:56.478380Z][GLOBAL-BANK-DRILL]   - Standby Merkle Root: 4af1846b4e22e33be858084e8bb1f0f81d64e8c780138e353c04882d101615ad
-[2026-09-10T08:28:56.478383Z][GLOBAL-BANK-DRILL]   - Reconciliation Verdict: 100% Bit-Identical Financial Ledger (0.00 lost transactions)
-[2026-09-10T08:28:56.478393Z][GLOBAL-BANK-DRILL] Cryptographic Audit Ledger: Audit chain valid across 2 entries (2 entries verified)
-[2026-09-10T08:28:56.478396Z][GLOBAL-BANK-DRILL] Global Bank Corp UAT Drill completed successfully in 0.09 seconds.
-[2026-09-10T08:28:56.478656Z][GLOBAL-BANK-DRILL] Saved authentic Global Bank UAT evidence to /Users/stephen/DevProjects/AIProjects/elmos/test-suites/batch38-45-strict/external/customer-alpha.json
+[2026-09-15T22:35:34.194914Z][DR-VERIFIER] Starting Enterprise DR Verification Drill: dr-rehearsal-1789511734-63f29b4f
+[2026-09-15T22:35:34.194918Z][DR-VERIFIER] Target Service: core-financial-ledger-mesh (Tenant: org-enterprise-production-dr)
+[2026-09-15T22:35:34.194922Z][DR-VERIFIER] Primary Region: region-east-1-primary, Secondaries: ['region-west-1-standby', 'region-south-1-standby']
+[2026-09-15T22:35:34.194924Z][DR-VERIFIER] Generating active ledger transactions (count=500)...
+[2026-09-15T22:35:34.196643Z][DR-VERIFIER] Pre-failure Merkle Root calculated: a007624e3f42e165fae32e976df8778f70af1915c62d7b0935357a8b0170048b across 500 records
+[2026-09-15T22:35:34.209164Z][DR-VERIFIER] Active-Active cross-region WAL replication verified synchronous across 2 standby nodes.
+[2026-09-15T22:35:34.209180Z][DR-VERIFIER] INJECTING REGIONAL OUTAGE on Primary Region [region-east-1-primary]...
+[2026-09-15T22:35:34.264203Z][DR-VERIFIER] Standby nodes detected primary heartbeat failure via raft gossip protocol.
+[2026-09-15T22:35:34.264222Z][DR-VERIFIER] Quorum consensus evaluation: 2/3 nodes online. Quorum achieved.
+[2026-09-15T22:35:34.264229Z][DR-VERIFIER] Issuing fencing token 1789511734264 to invalidate stale primary leases.
+[2026-09-15T22:35:34.264233Z][DR-VERIFIER] Electing and promoting new leader: [region-west-1-standby]
+[2026-09-15T22:35:34.314970Z][DR-VERIFIER] Replaying uncommitted WAL buffers on new leader...
+[2026-09-15T22:35:34.315657Z][DR-VERIFIER] Post-failover Merkle Root: a007624e3f42e165fae32e976df8778f70af1915c62d7b0935357a8b0170048b
+[2026-09-15T22:35:34.315669Z][DR-VERIFIER] DR Rehearsal finished with status: PASSED (RTO=0.106s, RPO=0.000s, Loss=0)

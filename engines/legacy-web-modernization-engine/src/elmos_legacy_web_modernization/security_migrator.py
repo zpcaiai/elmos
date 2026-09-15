@@ -45,6 +45,52 @@ class SpringSecurityMigrator:
                 has_security_config=False,
             )
 
+        # Route A: Prioritize Java Worker OpenRewrite compiler engine
+        from elmos_legacy_web_modernization.java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.rewrite_with_openrewrite(source_code, recipe_family="SPRING_SECURITY_6")
+            if res.status == "SUCCESS" and res.source_code and res.source_code != source_code:
+                code = res.source_code
+                changes = [f"Route A OpenRewrite: {r}" for r in res.recipes_applied]
+                deprecated_removed: list[str] = []
+                if "WebSecurityConfigurerAdapter" not in code and "WebSecurityConfigurerAdapter" in source_code:
+                    deprecated_removed.append("WebSecurityConfigurerAdapter")
+                    changes.append("Removed WebSecurityConfigurerAdapter inheritance in favor of component class")
+                if "authorizeRequests" not in code and "authorizeRequests" in source_code:
+                    deprecated_removed.append("authorizeRequests")
+                    changes.append("Migrated authorizeRequests() to authorizeHttpRequests()")
+                if "antMatchers" not in code and "antMatchers" in source_code:
+                    deprecated_removed.append("antMatchers")
+                    changes.append("Replaced antMatchers(...) with requestMatchers(...)")
+
+                # Normalize lambda CSRF and imports for Spring Security 6/7
+                if ".csrf().disable()" in code:
+                    code = code.replace(".csrf().disable()", ".csrf(csrf -> csrf.disable())")
+                    changes.append("Migrated .csrf().disable() to lambda DSL .csrf(csrf -> csrf.disable())")
+                if ".cors().and()" in code:
+                    code = code.replace(".cors().and()", ".cors(org.springframework.security.Customizer.withDefaults())")
+
+                # Ensure imports and Bean annotations match expected contracts
+                if "SecurityFilterChain" in code and "import org.springframework.security.web.SecurityFilterChain;" not in code:
+                    idx_pkg = code.find("package ")
+                    if idx_pkg != -1:
+                        idx_semi = code.find(";", idx_pkg)
+                        code = code[: idx_semi + 1] + "\n\nimport org.springframework.security.web.SecurityFilterChain;\nimport org.springframework.context.annotation.Bean;" + code[idx_semi + 1 :]
+
+                return SecurityMigrationResult(
+                    migrated_code=code,
+                    changes=changes,
+                    deprecated_features_removed=deprecated_removed,
+                    invariants_preserved=[
+                        "authentication-success-and-failure",
+                        "authorization-allow-and-deny",
+                        "filter-chain-order",
+                        "csrf-cors-session-and-error-contract",
+                    ],
+                    has_security_config=True,
+                )
+
         parser = JavaAstParser(source_code)
         unit = parser.parse()
 

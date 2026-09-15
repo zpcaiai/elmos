@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Dict, Any, List
+from typing import Dict
 from .base import ProjectGenerator
 from ..models import PSIR, GeneratedProject, EntitySpec, EndpointSpec, ServiceSpec, FieldType
-from ..type_mapper import TypeMapper, Language
+from ..type_mapper import TypeMapper
 
 class CSharpAspNetCoreGenerator(ProjectGenerator):
     def __init__(self):
@@ -220,7 +220,6 @@ class CSharpAspNetCoreGenerator(ProjectGenerator):
 
     def _generate_controller(self, entity_spec: EntitySpec, proj_name: str) -> str:
         ename = entity_spec.name
-        elower = ename.lower()
         return (
             "using System.Collections.Generic;\n"
             "using System.Threading.Tasks;\n"

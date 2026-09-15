@@ -9,7 +9,7 @@ from __future__ import annotations
 import ast
 import time
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, Optional, Tuple
 
 from .domain_slot import DomainSlotParser, DomainSlotSpec, SlotSynthesisResult
 from .slot_context_compiler import SlotContextPackage
@@ -33,7 +33,6 @@ class HighFidelitySimulatedModelDriver(ModelDriver):
 
     def synthesize_code(self, package: SlotContextPackage) -> str:
         lang = package.language.lower()
-        slot_id = package.slot_id.lower()
 
         if "python" in lang:
             # High-fidelity tiered pricing with invariant enforcement
@@ -134,7 +133,7 @@ class AgenticSlotInjector:
                 return False, f"Python SyntaxError: {e.msg} at line {e.lineno}"
 
         # Common checks for C-family languages (Go, Java, TS, C#)
-        if any(l in lang for l in ["go", "java", "typescript", "csharp"]):
+        if any(target_lang in lang for target_lang in ["go", "java", "typescript", "csharp"]):
             open_curlies = code_snippet.count("{")
             close_curlies = code_snippet.count("}")
             if open_curlies != close_curlies:

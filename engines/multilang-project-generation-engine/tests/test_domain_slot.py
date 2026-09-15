@@ -1,6 +1,5 @@
-import pytest
 from elmos_multilang_project_generation.domain_slot import (
-    DomainSlotSpec, DomainSlotParser, SlotParameter, SlotInvariant, SlotType
+    DomainSlotParser
 )
 
 def test_domain_slot_parser_find_and_replace():

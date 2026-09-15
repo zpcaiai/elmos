@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import argparse
-import json
-import sys
 from .models import PSIR, Language, Framework, ProjectType, EntitySpec, FieldSpec, FieldType
-from .psir_parser import PSIRParser
 from .orchestrator import ProjectOrchestrator
 from .hybrid_orchestrator import LayeredHybridProjectSynthesizer
 
@@ -24,6 +21,9 @@ def main() -> None:
     hybrid_parser.add_argument("--name", default="PricingService", help="Project name")
     hybrid_parser.add_argument("--lang", default="python", choices=["python", "go", "java", "typescript", "csharp"], help="Target language")
     hybrid_parser.add_argument("--output", default="./output_hybrid", help="Target output directory")
+    hybrid_parser.add_argument("--native-toolchain", action="store_true", help="Execute real host compiler/test runner on disk (L4)")
+    hybrid_parser.add_argument("--self-heal", action="store_true", help="Enable autonomous closed-loop self-healing on failure (L5)")
+    hybrid_parser.add_argument("--audit-maturity", action="store_true", default=True, help="Perform L1-L5 commercial maturity assessment")
 
     # list-combinations
     subparsers.add_parser("list-combinations", help="List supported language and framework combinations")
@@ -58,10 +58,20 @@ def main() -> None:
         )
 
         synthesizer = LayeredHybridProjectSynthesizer()
-        outcome = synthesizer.synthesize(psir)
+        outcome = synthesizer.synthesize(
+            psir=psir,
+            run_native_toolchain=args.native_toolchain,
+            enable_self_healing=args.self_heal,
+            enable_merkle_provenance=True,
+            audit_maturity=args.audit_maturity
+        )
         outcome.write_to_disk(args.output)
         print(outcome.markdown_report)
+        if outcome.maturity_assessment:
+            print(f"\n[MATURITY] Evaluated Delivery Maturity: {outcome.maturity_assessment.current_level.value}")
+            print(f"[MERKLE] Root Hash: {outcome.evidence_bundle.merkle_root if outcome.evidence_bundle else 'N/A'}")
         print(f"\n[SUCCESS] Generated hybrid project written to: {args.output}")
+
 
     elif args.command == "list-combinations":
         orch = ProjectOrchestrator()

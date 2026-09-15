@@ -8,7 +8,7 @@ generic agent baseline, latency, and monetary savings.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from .domain_slot import SlotSynthesisResult
 from .slot_context_compiler import SlotContextPackage

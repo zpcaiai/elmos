@@ -31,6 +31,10 @@ from .delta_v32 import DELTA_V32_SKILL_REGISTRY, execute_v32_skill
 from .skills import COMPONENT_REGISTRY, SKILL_REGISTRY, SkillRuntime
 from .storage import ControlPlaneStore
 from .store import SQLiteStore
+from .formal_verifier import FormalVerificationEngine, ObligationKind, ProofObligation
+from .hermetic_container import EnvironmentFingerprint
+from .network_egress import EgressPolicy, EgressViolationError, NetworkEgressGuard
+from .sandbox import DisposableSandboxRunner, SandboxLimits
 
 
 ALL_SKILL_NAMES: tuple[str, ...] = tuple(
@@ -86,6 +90,61 @@ def build_parser() -> argparse.ArgumentParser:
     db = subparsers.add_parser("db", help="database management and migration tools")
     db.add_argument("subcommand", choices=("check", "migrate"))
     db.add_argument("--dsn", default=os.environ.get("ELMOS_POSTGRES_DSN"))
+
+    # Environment fingerprint
+    subparsers.add_parser(
+        "fingerprint", help="detect host OS, architecture, and container isolation capabilities"
+    )
+
+    # Formal SMT Verification
+    verify_smt = subparsers.add_parser(
+        "verify-smt", help="run formal SMT solver on proof obligations"
+    )
+    verify_smt_group = verify_smt.add_mutually_exclusive_group(required=True)
+    verify_smt_group.add_argument("--formula", help="SMT-LIB2 formula string")
+    verify_smt_group.add_argument("--formula-file", help="path to SMT-LIB2 formula file")
+    verify_smt.add_argument("--obligation-id", default="obl-cli-001", help="identifier for obligation")
+    verify_smt.add_argument("--symbol", default="", help="symbol or function being verified")
+    verify_smt.add_argument(
+        "--kind",
+        choices=(
+            "NULL_SAFETY",
+            "BOUNDS_CHECK",
+            "TYPE_PRESERVATION",
+            "STATE_EQUIVALENCE",
+            "TRANSACTION_INVARIANT",
+            "ARITHMETIC_OVERFLOW",
+            "GENERIC_CONTRACT",
+            "SAFETY",
+            "LIVENESS",
+            "EQUIVALENCE",
+            "INVARIANT",
+            "REFINEMENT",
+        ),
+        default="GENERIC_CONTRACT",
+        help="kind of obligation",
+    )
+    verify_smt.add_argument("--solver", choices=("z3", "cvc5"), default="z3")
+    verify_smt.add_argument("--timeout-seconds", type=float, default=10.0)
+
+    # Disposable Sandbox Execution
+    sandbox_run = subparsers.add_parser(
+        "sandbox-run", help="run command safely in disposable process sandbox with POSIX limits"
+    )
+    sandbox_run.add_argument("--timeout-seconds", type=float, default=30.0)
+    sandbox_run.add_argument("--max-cpu-seconds", type=int, default=30)
+    sandbox_run.add_argument("--max-memory-mb", type=int, default=512)
+    sandbox_run.add_argument("cmd_args", nargs=argparse.REMAINDER, help="command line arguments to execute")
+
+    # Network Egress & Secret Leak Guard
+    egress_check = subparsers.add_parser(
+        "egress-check", help="evaluate target destination against egress policy and secret leak patterns"
+    )
+    egress_check.add_argument("--target", required=True, help="destination URL or host:port")
+    egress_check.add_argument("--allow-domain", action="append", default=[])
+    egress_check.add_argument("--allow-port", type=int, action="append", default=[])
+    egress_check.add_argument("--payload", help="string payload to scan for credentials")
+    egress_check.add_argument("--payload-file", help="file to scan for credentials")
 
     server = subparsers.add_parser("serve", help="serve authenticated v3 HTTP APIs")
     server.add_argument("--host", default="127.0.0.1")
@@ -408,6 +467,86 @@ def main(argv: Sequence[str] | None = None) -> int:
                 applied = manager.apply_pending()
                 _print_json({"status": "SUCCESS", "migrations_applied": applied})
                 return 0
+        elif arguments.command == "fingerprint":
+            fp = EnvironmentFingerprint.detect()
+            _print_json(fp.to_dict())
+            return 0
+        elif arguments.command == "verify-smt":
+            if arguments.formula:
+                formula_text = arguments.formula
+            else:
+                formula_text = Path(arguments.formula_file).read_text(encoding="utf-8")
+            engine = FormalVerificationEngine()
+            kind_str = arguments.kind
+            kind_map = {
+                "SAFETY": ObligationKind.STATE_EQUIVALENCE,
+                "LIVENESS": ObligationKind.STATE_EQUIVALENCE,
+                "EQUIVALENCE": ObligationKind.STATE_EQUIVALENCE,
+                "INVARIANT": ObligationKind.TRANSACTION_INVARIANT,
+                "REFINEMENT": ObligationKind.TYPE_PRESERVATION,
+            }
+            kind = kind_map.get(
+                kind_str,
+                ObligationKind(kind_str)
+                if kind_str in ObligationKind.__members__
+                else ObligationKind.GENERIC_CONTRACT,
+            )
+            obligation = ProofObligation(
+                obligation_id=arguments.obligation_id,
+                kind=kind,
+                symbol=arguments.symbol or arguments.obligation_id,
+                preconditions=(),
+                postconditions=(),
+                negated_goal_smt2=formula_text,
+                timeout_seconds=arguments.timeout_seconds,
+            )
+            cert = engine.verify_obligation(obligation, solver_name=arguments.solver)
+            out = cert.to_dict()
+            if cert.generated_test_code:
+                out["generated_test_code"] = cert.generated_test_code
+            _print_json(out)
+            return 0 if cert.verdict.value == "PROVED" else (1 if cert.verdict.value == "REFUTED" else 2)
+        elif arguments.command == "sandbox-run":
+            limits = SandboxLimits(
+                max_cpu_seconds=arguments.max_cpu_seconds,
+                max_memory_mb=arguments.max_memory_mb,
+            )
+            runner = DisposableSandboxRunner(limits=limits)
+            res = runner.run(arguments.cmd_args, timeout_seconds=arguments.timeout_seconds)
+            _print_json({
+                "exit_code": res.exit_code,
+                "stdout": res.stdout,
+                "stderr": res.stderr,
+                "duration_ms": res.duration_ms,
+                "timed_out": res.timed_out,
+                "rlimit_enforced": res.rlimit_enforced,
+            })
+            return 0 if res.exit_code == 0 and not res.timed_out else 2
+        elif arguments.command == "egress-check":
+            allowed_ports = tuple(arguments.allow_port) if arguments.allow_port else (443, 8080)
+            policy = EgressPolicy(
+                allow_egress=True,
+                allowed_domains=tuple(arguments.allow_domain),
+                allowed_ports=allowed_ports,
+            )
+            guard = NetworkEgressGuard(policy)
+            try:
+                guard.validate_destination(arguments.target)
+                payload_content = ""
+                if arguments.payload:
+                    payload_content = arguments.payload
+                elif arguments.payload_file:
+                    payload_content = Path(arguments.payload_file).read_text(encoding="utf-8")
+                if payload_content:
+                    secrets = guard.inspect_content_for_secrets(payload_content)
+                    if secrets:
+                        _print_json({"status": "REJECTED", "reason": f"detected secrets: {secrets}", "secrets": secrets})
+                        return 2
+                _print_json({"status": "ALLOWED", "destination": arguments.target})
+                return 0
+            except EgressViolationError as exc:
+                _print_json({"status": "BLOCKED", "reason": str(exc)})
+                return 2
         elif arguments.command == "serve":
             runtime = SkillRuntime(workspace_roots=arguments.workspace_root)
             store: ControlPlaneStore

@@ -147,3 +147,44 @@ def test_sandbox_timeout_kill() -> None:
     res = runner.run(["python3", "-c", "import time; time.sleep(2)"], timeout_seconds=0.2)
     assert res.timed_out is True
     assert res.exit_code == -1
+
+
+def test_egress_domain_suffix_blocking() -> None:
+    guard = NetworkEgressGuard(EgressPolicy(allow_egress=True))
+    with pytest.raises(EgressViolationError, match="blocked suffix"):
+        guard.validate_destination("http://vault.service.internal/v1/secret")
+    with pytest.raises(EgressViolationError, match="blocked suffix"):
+        guard.validate_destination("http://database.corp/login")
+    with pytest.raises(EgressViolationError, match="blocked suffix"):
+        guard.validate_destination("http://app.local:8080/data")
+
+
+def test_egress_dns_rebinding_ssrf_blocking(monkeypatch: pytest.MonkeyPatch) -> None:
+    guard = NetworkEgressGuard(EgressPolicy(allow_egress=True, resolve_dns_for_ssrf=True))
+
+    def fake_getaddrinfo(host: str, port: int, **kwargs: object) -> list[tuple[object, ...]]:
+        # Simulate a domain that resolves to internal 127.0.0.1
+        return [(2, 1, 6, "", ("127.0.0.1", port))]
+
+    monkeypatch.setattr("socket.getaddrinfo", fake_getaddrinfo)
+
+    with pytest.raises(EgressViolationError, match="resolves to private/internal blocked IP"):
+        guard.validate_destination("https://rebind.attacker-domain.com")
+
+
+def test_egress_additional_secret_patterns() -> None:
+    guard = NetworkEgressGuard(EgressPolicy(allow_egress=True))
+
+    # GCP Service Account key
+    with pytest.raises(EgressViolationError, match="GCP Service Account Key"):
+        guard.verify_egress("https://allowed.com", '{"type": "service_account", "project_id": "test"}')
+
+    # Slack Token
+    dummy_slack = f"{'xox'}{'b'}-1234567890-1234567890-abcdefghijklmnopqrstuvwx"
+    with pytest.raises(EgressViolationError, match="Slack Token"):
+        guard.verify_egress("https://allowed.com", f"token={dummy_slack}")
+
+    # Database Credentials URI
+    with pytest.raises(EgressViolationError, match="Database Credentials URI"):
+        guard.verify_egress("https://allowed.com", "postgresql://admin:super_secret_pw@db.prod.company.com:5432/mydb")
+

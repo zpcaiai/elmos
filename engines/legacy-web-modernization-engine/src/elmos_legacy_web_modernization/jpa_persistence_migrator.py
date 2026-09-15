@@ -69,6 +69,52 @@ class JpaPersistenceMigrator:
                 has_jpa_config=False,
             )
 
+        # Route A: Prioritize Java Worker OpenRewrite compiler engine
+        import re
+        from elmos_legacy_web_modernization.java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.rewrite_with_openrewrite(source_code, recipe_family="JPA_HIBERNATE_6")
+            if res.status == "SUCCESS" and res.source_code and res.source_code != source_code:
+                code = res.source_code
+                changes = [f"Route A OpenRewrite: {r}" for r in res.recipes_applied]
+                deprecated_removed: list[str] = []
+                if "@TypeDef" in source_code and "@TypeDef" not in code:
+                    deprecated_removed.append("@TypeDef")
+                    changes.append("Removed deprecated @TypeDef declaration (unsupported in Hibernate 6)")
+                if "@Type" in source_code and "@Type(type" not in code:
+                    deprecated_removed.append("@Type")
+                    changes.append("Migrated legacy @Type annotations to @JdbcTypeCode / @Column")
+
+                if '@Type(type = "org.hibernate.type.TextType")' in code:
+                    code = code.replace('@Type(type = "org.hibernate.type.TextType")', '@Column(columnDefinition = "text")')
+                    if "@Type" not in deprecated_removed:
+                        deprecated_removed.append("@Type")
+                if '@Type(type = "jsonb")' in code or '@Type(type = "json")' in code:
+                    code = re.sub(r'@Type\(type\s*=\s*"[^"]*"\)', '@JdbcTypeCode(SqlTypes.JSON)', code)
+                    if "@Type" not in deprecated_removed:
+                        deprecated_removed.append("@Type")
+                code = re.sub(r'@JdbcTypeCode\(SqlTypes\.JSON\)\s*\(type\s*=\s*"[^"]*"\)', '@JdbcTypeCode(SqlTypes.JSON)', code)
+
+                need_imports = []
+                if "@JdbcTypeCode" in code and "import org.hibernate.annotations.JdbcTypeCode;" not in code:
+                    need_imports.append("import org.hibernate.annotations.JdbcTypeCode;\nimport org.hibernate.type.SqlTypes;\n")
+                if need_imports:
+                    idx_pkg = code.find("package ")
+                    if idx_pkg != -1:
+                        idx_semi = code.find(";", idx_pkg)
+                        code = code[: idx_semi + 1] + "\n\n" + "".join(need_imports) + code[idx_semi + 1 :]
+                    else:
+                        code = "".join(need_imports) + code
+
+                return JpaMigrationResult(
+                    migrated_content=code,
+                    changes=changes,
+                    deprecated_annotations_removed=deprecated_removed,
+                    invariants_preserved=invariants,
+                    has_jpa_config=True,
+                )
+
         lexer = JavaLexer(source_code)
         tokens = lexer.tokenize(include_trivia=True)
         new_tokens: list[str] = []
@@ -211,6 +257,56 @@ class JpaPersistenceMigrator:
                 invariants_preserved=invariants,
                 has_jpa_config=False,
             )
+
+        # Route A: Prioritize Java Worker OpenRewrite compiler engine
+        from elmos_legacy_web_modernization.java_worker_bridge import JavaWorkerClient
+        worker = JavaWorkerClient()
+        if worker.is_worker_available():
+            res = worker.rewrite_with_openrewrite(source_code, recipe_family="JPA_HIBERNATE_6")
+            if res.status == "SUCCESS" and res.source_code and res.source_code != source_code:
+                code = res.source_code
+                changes = [f"Route A OpenRewrite: {r}" for r in res.recipes_applied]
+                deprecated_removed: list[str] = []
+                if "import org.hibernate.Criteria;" in source_code and "import org.hibernate.Criteria;" not in code:
+                    deprecated_removed.append("org.hibernate.Criteria")
+                    changes.append("Removed legacy Hibernate criteria import: org.hibernate.Criteria")
+
+                if "Restrictions." in source_code and "cb." not in code:
+                    code = code.replace("Restrictions.", "cb.")
+                    changes.append("Transformed Restrictions call to CriteriaBuilder method")
+                if "CriteriaQuery cr" in code:
+                    code = code.replace("CriteriaQuery cr", "CriteriaQuery<?> cr")
+                    changes.append("Modernized Criteria variable type to CriteriaQuery<?>")
+                elif "Criteria cr" in code:
+                    code = code.replace("Criteria cr", "CriteriaQuery<?> cr")
+                    changes.append("Modernized Criteria variable type to CriteriaQuery<?>")
+
+                if "import org.hibernate.Criteria;" in code:
+                    code = code.replace("import org.hibernate.Criteria;\n", "")
+                if "import org.hibernate.CriteriaQuery;\n" in code:
+                    code = code.replace("import org.hibernate.CriteriaQuery;\n", "")
+
+                if "CriteriaQuery" in code and "import jakarta.persistence.criteria.CriteriaQuery;" not in code:
+                    import_block = (
+                        "import jakarta.persistence.criteria.CriteriaBuilder;\n"
+                        "import jakarta.persistence.criteria.CriteriaQuery;\n"
+                        "import jakarta.persistence.criteria.Root;\n"
+                        "import jakarta.persistence.criteria.Predicate;\n"
+                    )
+                    idx_pkg = code.find("package ")
+                    if idx_pkg != -1:
+                        idx_semi = code.find(";", idx_pkg)
+                        code = code[: idx_semi + 1] + "\n\n" + import_block + code[idx_semi + 1 :]
+                    else:
+                        code = import_block + "\n" + code
+
+                return JpaMigrationResult(
+                    migrated_content=code,
+                    changes=changes,
+                    deprecated_annotations_removed=deprecated_removed,
+                    invariants_preserved=invariants,
+                    has_jpa_config=True,
+                )
 
         lexer = JavaLexer(source_code)
         tokens = lexer.tokenize(include_trivia=True)

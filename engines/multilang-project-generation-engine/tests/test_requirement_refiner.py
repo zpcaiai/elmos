@@ -1,4 +1,3 @@
-import pytest
 from elmos_multilang_project_generation.requirement_refiner import RequirementRefiner
 
 def test_requirement_refiner():

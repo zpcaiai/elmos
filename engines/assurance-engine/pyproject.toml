@@ -19,6 +19,7 @@ packages = ["src/elmos_assurance_engine"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+pythonpath = ["src"]
 
 [tool.ruff]
 target-version = "py312"
