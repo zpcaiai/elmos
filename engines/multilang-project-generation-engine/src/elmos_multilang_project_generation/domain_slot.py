@@ -39,9 +39,9 @@ class DomainSlotSpec:
     slot_id: str
     slot_name: str
     target_file: str
-    enclosing_class: str
-    method_signature: str
-    description: str
+    enclosing_class: str = ""
+    method_signature: str = ""
+    description: str = ""
     slot_type: SlotType = SlotType.CALCULATION
     parameters: List[SlotParameter] = field(default_factory=list)
     return_type: str = "void"
@@ -49,6 +49,11 @@ class DomainSlotSpec:
     required_dependencies: List[str] = field(default_factory=list)
     safe_stub_code: str = ""
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def source_file(self) -> str:
+        return self.target_file
+
 
     def render_marker_start(self, comment_prefix: str = "//") -> str:
         return f"{comment_prefix} [[ELMOS_DOMAIN_SLOT_START: {self.slot_id} | {self.slot_name}]]"

@@ -96,8 +96,9 @@ def test_mature_platform_dr_dispatch(runtime: SkillExecutionRuntime):
     assert receipt.evidence_grade == "LOCAL_EXECUTED_SELF_ATTESTED"
     assert receipt.external_evidence == "NOT_RUN"
     assert receipt.certification_status == "NOT_CERTIFIED"
-    assert receipt.outputs["primary_region"] == "dc-east"
-    assert receipt.outputs["data_divergence_records"] == 0
+    assert receipt.outputs["environment"]["primary_region"] == "dc-east"
+    assert receipt.outputs["metrics"]["transactions_lost"] == 0
+    assert receipt.outputs["metrics"]["merkle_integrity_passed"] is True
 
 
 def test_dry_run_mode(runtime: SkillExecutionRuntime):

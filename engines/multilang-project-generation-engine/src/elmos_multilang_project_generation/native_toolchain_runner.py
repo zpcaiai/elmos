@@ -72,13 +72,21 @@ class HermeticWorkspace:
     def read_file(self, rel_path: str) -> str:
         """Reads content of a workspace file."""
         abs_path = self.root_path / rel_path
-        return abs_path.read_text(encoding="utf-8")
+        try:
+            return abs_path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            return abs_path.read_text(encoding="utf-8", errors="ignore")
 
     def list_files(self) -> List[str]:
-        """Lists all relative file paths in the workspace."""
+        """Lists all relative text file paths in the workspace."""
         files: List[str] = []
+        ignored_dirs = {"__pycache__", ".pytest_cache", ".git", "target", "bin", "obj"}
         for p in self.root_path.rglob("*"):
             if p.is_file():
+                if any(part in ignored_dirs for part in p.parts):
+                    continue
+                if p.suffix in [".pyc", ".class", ".o", ".exe"]:
+                    continue
                 files.append(str(p.relative_to(self.root_path)))
         return sorted(files)
 

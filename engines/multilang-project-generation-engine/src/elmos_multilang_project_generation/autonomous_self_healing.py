@@ -77,14 +77,14 @@ class AutonomousSelfHealingEngine:
             )
 
             # 2. Invoke slot injector to generate repaired implementation
-            repair_res = self.slot_injector.inject_slot(
+            project_files = {f: workspace.read_file(f) for f in workspace.list_files()}
+            updated_files, slot_result = self.slot_injector.inject_slot(
                 slot=slot,
-                context_package=slot_context_package,
-                target_file_content=workspace.read_file(target_rel_path),
-                diagnostics_feedback=diag_text
+                package=slot_context_package,
+                project_files=project_files
             )
 
-            if not repair_res.success:
+            if not slot_result.ast_valid:
                 attempts.append(HealingAttempt(
                     attempt_number=attempt_idx,
                     diagnostic_input=diag_text,
@@ -96,8 +96,9 @@ class AutonomousSelfHealingEngine:
                 ))
                 continue
 
-            # 3. Apply repaired file into hermetic workspace
-            workspace.update_file(target_rel_path, repair_res.modified_file_content)
+            # 3. Apply repaired files into hermetic workspace
+            for fpath, new_content in updated_files.items():
+                workspace.update_file(fpath, new_content)
 
             # 4. Re-execute native compiler / test runner
             re_run_report = self.toolchain_runner.execute(language, workspace.root_path)
@@ -106,7 +107,7 @@ class AutonomousSelfHealingEngine:
             attempt = HealingAttempt(
                 attempt_number=attempt_idx,
                 diagnostic_input=diag_text,
-                repaired_code=repair_res.slot_result.generated_code if repair_res.slot_result else "",
+                repaired_code=slot_result.synthesized_code,
                 exit_code=re_run_report.exit_code,
                 passed=re_run_report.passed,
                 duration_ms=duration_ms,
@@ -118,6 +119,7 @@ class AutonomousSelfHealingEngine:
             if re_run_report.passed:
                 success = True
                 break
+
 
         final_files: Dict[str, str] = {}
         for f in workspace.list_files():

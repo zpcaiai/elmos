@@ -440,69 +440,118 @@ class SkillExecutionRuntime:
         diagnostics: List[str],
     ) -> SkillExecutionReceipt:
         """Dispatches to composite-engine components."""
-        from elmos_composite_engine.topology import SystemGraph
-        from elmos_composite_engine.cutover_engine import CutoverEngine
-        from elmos_composite_engine.shadow_differential import ShadowDifferentialEngine
-        from elmos_composite_engine.wave_planner import WavePlanner
+        from elmos_composite_engine.models import DependencyEdge, SystemNode
+        from elmos_composite_engine.topology import DependencyGraphAnalyzer
+        from elmos_composite_engine.cutover_engine import SystemCutoverOrchestrator
+        from elmos_composite_engine.shadow_differential import ShadowTrafficValidator
+        from elmos_composite_engine.wave_planner import MigrationWavePlanner
 
         operation = inputs.get("operation", "analyze")
         outputs: Dict[str, Any] = {}
 
         if operation in ("analyze", "topology"):
-            nodes = inputs.get("nodes", [])
-            edges = inputs.get("edges", [])
-            graph = SystemGraph(nodes=nodes, edges=edges)
-            cycles = graph.find_dependency_cycles()
-            shared_dbs = graph.detect_shared_database_writers()
+            raw_nodes = inputs.get("nodes", [])
+            raw_edges = inputs.get("edges", [])
+            nodes = [
+                SystemNode(
+                    nodeId=n.get("id") or n.get("nodeId", f"node-{idx}"),
+                    organizationId=n.get("organizationId", "default-org"),
+                    nodeType=(n.get("kind") or n.get("nodeType") or "SERVICE").upper(),
+                    name=n.get("name", n.get("id", f"node-{idx}")),
+                    language=n.get("language", "java"),
+                    repositoryId=n.get("repositoryId", "repo-1"),
+                    deployableId=n.get("deployableId", "dep-1"),
+                    environment=n.get("environment", "prod"),
+                )
+                for idx, n in enumerate(raw_nodes)
+            ]
+            edges = [
+                DependencyEdge(
+                    edgeId=e.get("edgeId", f"edge-{idx}"),
+                    organizationId=e.get("organizationId", "default-org"),
+                    sourceNodeId=e.get("source") or e.get("sourceNodeId", ""),
+                    targetNodeId=e.get("target") or e.get("targetNodeId", ""),
+                    edgeType=(e.get("kind") or e.get("edgeType") or "CALLS_HTTP").upper().replace("DATABASE_WRITE", "WRITES_DB").replace("SYNC_RPC", "CALLS_HTTP"),
+                    environment=e.get("environment", "prod"),
+                )
+                for idx, e in enumerate(raw_edges)
+            ]
+            analyzer = DependencyGraphAnalyzer(nodes=nodes, edges=edges)
+            cycles = analyzer.find_strongly_connected_components()
+            shared_dbs = analyzer.detect_shared_database_couplings()
             outputs = {
-                "node_count": len(graph.nodes),
-                "edge_count": len(graph.edges),
+                "node_count": len(analyzer.nodes),
+                "edge_count": len(analyzer.edges),
                 "dependency_cycles": cycles,
                 "shared_database_writers": shared_dbs,
                 "has_cycles": len(cycles) > 0,
             }
             audit_notes.append("Executed Tarjan SCC cycle analysis & shared DB writer detection.")
         elif operation == "plan_waves":
-            nodes = inputs.get("nodes", [])
-            edges = inputs.get("edges", [])
-            graph = SystemGraph(nodes=nodes, edges=edges)
-            planner = WavePlanner(graph)
-            plan = planner.plan_waves()
+            raw_nodes = inputs.get("nodes", [])
+            raw_edges = inputs.get("edges", [])
+            nodes = [
+                SystemNode(
+                    nodeId=n.get("id") or n.get("nodeId", f"node-{idx}"),
+                    organizationId=n.get("organizationId", "default-org"),
+                    nodeType=(n.get("kind") or n.get("nodeType") or "SERVICE").upper(),
+                    name=n.get("name", n.get("id", f"node-{idx}")),
+                    language=n.get("language", "java"),
+                    repositoryId=n.get("repositoryId", "repo-1"),
+                    deployableId=n.get("deployableId", "dep-1"),
+                    environment=n.get("environment", "prod"),
+                )
+                for idx, n in enumerate(raw_nodes)
+            ]
+            edges = [
+                DependencyEdge(
+                    edgeId=e.get("edgeId", f"edge-{idx}"),
+                    organizationId=e.get("organizationId", "default-org"),
+                    sourceNodeId=e.get("source") or e.get("sourceNodeId", ""),
+                    targetNodeId=e.get("target") or e.get("targetNodeId", ""),
+                    edgeType=(e.get("kind") or e.get("edgeType") or "CALLS_HTTP").upper().replace("DATABASE_WRITE", "WRITES_DB").replace("SYNC_RPC", "CALLS_HTTP"),
+                    environment=e.get("environment", "prod"),
+                )
+                for idx, e in enumerate(raw_edges)
+            ]
+            planner = MigrationWavePlanner()
+            waves = planner.plan_waves(nodes=nodes, edges=edges)
             outputs = {
-                "wave_count": len(plan.waves),
-                "waves": [w.to_dict() for w in plan.waves],
-                "unassigned_nodes": plan.unassigned_nodes,
+                "wave_count": len(waves),
+                "waves": [
+                    {
+                        "waveNumber": w.waveNumber,
+                        "nodeIds": w.nodeIds,
+                        "validationCriteria": w.validationCriteria,
+                    }
+                    for w in waves
+                ],
             }
             audit_notes.append("Executed topological wave planning.")
         elif operation == "shadow_diff":
-            engine = ShadowDifferentialEngine(
-                cdc_lag_threshold_ms=inputs.get("cdc_lag_threshold_ms", 2000),
-                allowed_drift_pct=inputs.get("allowed_drift_pct", 0.0),
-            )
+            validator = ShadowTrafficValidator()
             legacy_resp = inputs.get("legacy_response", {})
             target_resp = inputs.get("target_response", {})
-            diff = engine.compare_payloads(
-                legacy=legacy_resp,
-                target=target_resp,
-                ignore_paths=inputs.get("ignore_paths", ["timestamp", "trace_id"]),
-            )
+            norm_legacy = validator.normalize_payload(legacy_resp)
+            norm_target = validator.normalize_payload(target_resp)
+            matched = (norm_legacy == norm_target)
             outputs = {
-                "matched": diff.matched,
-                "field_mismatches": diff.field_mismatches,
-                "missing_in_target": diff.missing_in_target,
-                "extra_in_target": diff.extra_in_target,
+                "matched": matched,
+                "normalized_legacy": norm_legacy,
+                "normalized_target": norm_target,
             }
             audit_notes.append("Executed response normalization & shadow differential.")
         elif operation == "cutover_decision":
-            engine = CutoverEngine()
-            decision = engine.evaluate_cutover(
-                node_id=inputs.get("node_id", "service-node"),
-                shadow_match_rate=inputs.get("shadow_match_rate", 1.0),
-                p99_latency_ms=inputs.get("p99_latency_ms", 50.0),
-                error_rate=inputs.get("error_rate", 0.0),
-                cdc_lag_ms=inputs.get("cdc_lag_ms", 0),
+            orchestrator = SystemCutoverOrchestrator()
+            decision = orchestrator.evaluate_cutover_request(
+                plan_id=inputs.get("plan_id", "cutover-plan-1"),
+                current_state=inputs.get("current_state", "SHADOW_RUN"),
+                requested_state=inputs.get("requested_state", "READ_CUTOVER"),
+                read_differential_pass_rate=inputs.get("read_differential_pass_rate", 1.0),
+                write_idempotency_verified=inputs.get("write_idempotency_verified", True),
             )
-            outputs = decision.to_dict()
+            from dataclasses import asdict
+            outputs = asdict(decision)
             audit_notes.append("Executed cutover decision evaluation.")
         else:
             outputs = {
@@ -534,25 +583,21 @@ class SkillExecutionRuntime:
         diagnostics: List[str],
     ) -> SkillExecutionReceipt:
         """Dispatches to mature-platform-engine verifiers."""
-        from elmos_mature_platform.enterprise_dr_verifier import EnterpriseDrVerifier
+        from elmos_mature_platform.enterprise_dr_verifier import DrRehearsalConfig, EnterpriseDrVerifier
         from elmos_mature_platform.compliance_audit_toolkit import ComplianceAuditToolkit
 
         outputs: Dict[str, Any] = {}
         if "dr" in meta.name or inputs.get("type") == "dr_drill":
-            verifier = EnterpriseDrVerifier()
             region_a = inputs.get("region_a", "primary-region")
             region_b = inputs.get("region_b", "secondary-region")
-            records = inputs.get("records", [
-                {"id": "rec-1", "val": "tx-101"},
-                {"id": "rec-2", "val": "tx-102"},
-            ])
-            res = verifier.execute_full_dr_drill(
+            config = DrRehearsalConfig(
                 primary_region=region_a,
-                dr_region=region_b,
-                source_records=records,
-                replicate_records=records,
+                secondary_regions=[region_b],
+                workload_size=inputs.get("workload_size", 50),
             )
-            outputs = res.to_dict()
+            verifier = EnterpriseDrVerifier(config=config)
+            res = verifier.run_rehearsal()
+            outputs = res.evidence_receipt
             audit_notes.append("Executed authentic Enterprise DR drill with Merkle verification.")
         else:
             toolkit = ComplianceAuditToolkit(self.repo_root)

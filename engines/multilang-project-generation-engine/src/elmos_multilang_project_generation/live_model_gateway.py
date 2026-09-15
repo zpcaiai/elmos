@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from .agentic_slot_injector import ModelDriver
+from .slot_context_compiler import SlotContextPackage
 
 
 @dataclass
@@ -59,6 +60,11 @@ class LiveModelGatewayDriver(ModelDriver):
     @classmethod
     def compute_sha256(cls, text: str) -> str:
         return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+    def synthesize_code(self, package: SlotContextPackage) -> str:
+        """Implements ModelDriver abstract method using package prompt."""
+        prompt = getattr(package, "formatted_prompt", "") or getattr(package, "interface_definition", "")
+        return self.generate_code(prompt=prompt, system_prompt="You are an expert polyglot software architect. Generate only pure code.")
 
     def generate_code(self, prompt: str, system_prompt: str = "") -> str:
         receipt = self.generate_with_receipt(prompt, system_prompt)

@@ -113,6 +113,19 @@ class HighFidelitySimulatedModelDriver(ModelDriver):
         else:
             return "        return base_price * quantity"
 
+    def generate_code(self, prompt: str, system_prompt: str = "") -> str:
+        """Supports direct prompt-to-code generation for model gateway integration."""
+        p_lower = prompt.lower()
+        if "go" in p_lower:
+            return "\treturn basePrice * float64(quantity)"
+        elif "java" in p_lower:
+            return "        return basePrice.multiply(BigDecimal.valueOf(quantity));"
+        elif "typescript" in p_lower or "ts" in p_lower:
+            return "    return basePrice * quantity;"
+        elif "csharp" in p_lower or "cs" in p_lower:
+            return "        return basePrice * quantity;"
+        return "        return base_price * quantity"
+
 
 class AgenticSlotInjector:
     """Orchestrates model invocation, AST validation, bounded repair, and slot merging."""
