@@ -19,7 +19,7 @@ const navigation: Array<{
   group: SurfaceGroup;
 }> = [
   { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home", group: "user" },
-  { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow", group: "user" },
+  { href: "/spring", label: "Spring 现代化升级", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow", group: "user" },
   { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code", group: "user" },
   { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark", group: "user" },
   { href: "/migration", label: "国产数据库 SQL 转换", enLabel: "ChinaDB SQL conversion", hint: "Migration / ChinaDB SQL", icon: "route", group: "user" },
@@ -49,7 +49,7 @@ const mobileNavigation = navigation.filter((item) =>
 
 const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
-  { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
+  { href: "/spring", label: "评估 Spring 现代化升级", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 现代化升级 翻新 XML Java 8 Jakarta Security JPA" },
   { href: "/translation", label: "选择跨语言方向路线", hint: "15 语言 · 210 路线 · 本地通过 0 · 全部 NOT_RUN", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 210 routes 15 languages Java C# Go Rust Python TypeScript C++ Objective-C Swift PHP Kotlin React Flutter VB6 VC++6 NOT_RUN" },
   { href: "/intake", label: "接入多模态项目资料", hint: "Audio / Image / PDF / Word / Folder / Archive", icon: "file" as IconName, group: "能力", keywords: "多模态 输入 音频 图片 PDF Word 文件夹 压缩包 OCR ASR" },
   { href: "/migration/sql", label: "运行国产数据库 SQL 预检", hint: "DM8 / KingbaseES / openGauss / TiDB / OceanBase / GaussDB", icon: "database" as IconName, group: "业务线", keywords: "ChinaDB 国产数据库 SQL 预检 转换 DM8 人大金仓 openGauss TiDB GBase 瀚高 OceanBase GaussDB GoldenDB" },
@@ -444,7 +444,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {mobileNavigation.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           const label = navLabel(item);
-          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}</span></Link>;
+          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 现代化升级", "Spring").replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}</span></Link>;
         })}
       </nav>
       {showBackToTop && <button className="back-to-top" type="button" onClick={scrollToTop} aria-label="返回页面顶部">

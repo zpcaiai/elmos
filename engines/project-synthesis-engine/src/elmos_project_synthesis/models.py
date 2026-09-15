@@ -84,7 +84,7 @@ STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # The current emitters implement one exact, reviewable starter profile. Keep
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
-SUPPORTED_PROJECT_KINDS = ("api", "worker")
+SUPPORTED_PROJECT_KINDS = ("api", "worker", "fullstack")
 SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite", "mysql")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # The broad starter profile remains portable across all eight emitters. The
@@ -107,7 +107,7 @@ SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("postgresql", "jwt"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
     ("postgresql", "oidc"): frozenset({"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}),
 }
-PLANNED_PROJECT_KINDS = ("fullstack", "worker", "cli", "modular-monolith")
+PLANNED_PROJECT_KINDS = ("cli", "modular-monolith")
 PLANNED_PERSISTENCE: tuple[str, ...] = ()
 PLANNED_AUTH_MODES: tuple[str, ...] = ()
 SUPPORTED_RELATION_KINDS = ("one-to-one", "one-to-many", "many-to-one", "many-to-many")
@@ -777,3 +777,7 @@ class SynthesisRequest:
     @property
     def is_api(self) -> bool:
         return self.project_kind == "api"
+
+    @property
+    def is_fullstack(self) -> bool:
+        return self.project_kind == "fullstack"

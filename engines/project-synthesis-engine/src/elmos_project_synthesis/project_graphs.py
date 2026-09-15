@@ -34,9 +34,11 @@ _DIGEST_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 _SHARED_ROOT_KINDS = {
     ".github": "continuous-integration",
+    "ai": "ai-services",
     "database": "database",
     "deploy": "deployment",
     "docs": "documentation",
+    "frontend": "frontend",
     "observability": "observability",
     "operations": "operations",
     "requirements": "requirements",

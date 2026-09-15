@@ -26,7 +26,7 @@ import json
 from importlib.resources import files
 
 from .container_images import ALPINE_IMAGE, RUST_IMAGE
-from .models import FieldSpec, SynthesisRequest
+from .models import EntitySpec, FieldSpec, SynthesisRequest
 from .production_contract import (
     ENV_AUTH_AUDIENCE,
     ENV_AUTH_ISSUER,

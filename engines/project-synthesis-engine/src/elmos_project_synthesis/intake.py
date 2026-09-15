@@ -654,6 +654,31 @@ def create_draft(
             }
         )
 
+    if project_kind == "fullstack":
+        fullstack_req_id = "REQ-FULLSTACK-001"
+        requirements.append(
+            {
+                "id": fullstack_req_id,
+                "kind": "functional",
+                "statement": (
+                    "The fullstack application delivers an integrated modern Web frontend with navigation, "
+                    "dashboard metrics, entity CRUD management, and typed backend API integration."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG350", "location": "web-frontend"}],
+            }
+        )
+        criteria.append(
+            {
+                "id": "AC-FULLSTACK-001",
+                "requirement_ids": [fullstack_req_id],
+                "statement": "The web frontend builds cleanly, exports typed API clients, and renders entity management views.",
+                "verification_type": "build",
+            }
+        )
+
     draft: dict[str, Any] = {
         "schema_version": "1.1.0",
         "project": {

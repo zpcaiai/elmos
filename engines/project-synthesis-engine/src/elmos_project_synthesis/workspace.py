@@ -9,8 +9,10 @@ from importlib.resources import files as package_files
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
+from .ai_agent_scaffold import render_ai_agent_scaffold
 from .deployment_guidance import render_deployment_guidance
 from .dotnet_target import render_dotnet
+from .frontend_target import render_frontend
 from .go_target import render_go
 from .insights import render_generation_insights, render_insights_markdown
 from .java_target import render_java
@@ -161,24 +163,39 @@ def _render_blueprint(request: SynthesisRequest) -> dict[str, Any]:
         ],
         "quality": {"unit_tests": True, "lint": True, "type_check": True, "startup_probe": True},
         "generation_units": [
-            {
-                "id": f"GEN-{target.language.upper()}",
-                "kind": "project",
-                "target_path": _target_directory(target.language),
-                "ownership": "managed",
-                "source_refs": [
-                    *[f"REQ-CRUD-{index:03d}" for index in range(1, len(request.entities) + 1)],
-                    *(
-                        ["REQ-WORKER-001"]
-                        if request.is_worker
-                        and any(r.get("id") == "REQ-WORKER-001" for r in request.raw.get("requirements", []))
-                        else []
-                    ),
-                    "REQ-HEALTH-001",
-                    "REQ-DELIVERY-001",
-                ],
-            }
-            for target in request.targets
+            *(
+                [
+                    {
+                        "id": "GEN-FRONTEND",
+                        "kind": "frontend",
+                        "target_path": "frontend",
+                        "ownership": "managed",
+                        "source_refs": ["REQ-FULLSTACK-001", "REQ-HEALTH-001", "REQ-DELIVERY-001"],
+                    }
+                ]
+                if request.is_fullstack
+                else []
+            ),
+            *[
+                {
+                    "id": f"GEN-{target.language.upper()}",
+                    "kind": "project",
+                    "target_path": _target_directory(target.language),
+                    "ownership": "managed",
+                    "source_refs": [
+                        *[f"REQ-CRUD-{index:03d}" for index in range(1, len(request.entities) + 1)],
+                        *(
+                            ["REQ-WORKER-001"]
+                            if request.is_worker
+                            and any(r.get("id") == "REQ-WORKER-001" for r in request.raw.get("requirements", []))
+                            else []
+                        ),
+                        "REQ-HEALTH-001",
+                        "REQ-DELIVERY-001",
+                    ],
+                }
+                for target in request.targets
+            ],
         ],
     }
 
@@ -274,6 +291,17 @@ def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
                 {"from": source_id, "to": evidence_id, "relation": "requires-verification"},
             ]
         )
+    if request.is_fullstack:
+        nodes.append(
+            {
+                "id": "frontend-source",
+                "kind": "generated-frontend",
+                "path": "frontend",
+                "status": "GENERATED",
+                "source_skill": "elmos-frontend-ui-migrator",
+            }
+        )
+        edges.append({"from": "project-blueprint", "to": "frontend-source", "relation": "emits"})
     return {
         "schema_version": "1.0.0",
         "graph_kind": "project-synthesis-asset-graph",
@@ -292,6 +320,29 @@ def _render_build_graph(request: SynthesisRequest) -> dict[str, Any]:
         }
     ]
     edges: list[dict[str, str]] = []
+    if request.is_fullstack:
+        nodes.extend(
+            [
+                {
+                    "id": "frontend-generate",
+                    "language": "typescript",
+                    "kind": "generation",
+                    "status": "GENERATED",
+                    "source_skill": "elmos-frontend-ui-migrator",
+                },
+                {
+                    "id": "frontend-build",
+                    "language": "typescript",
+                    "kind": "native-build",
+                    "status": "NOT_RUN",
+                    "required_runtime": "node22",
+                    "required_framework": "react19",
+                    "required_toolchain": "npm",
+                },
+            ]
+        )
+        edges.append({"from": "approved-request", "to": "frontend-generate", "relation": "must-complete-before"})
+        edges.append({"from": "frontend-generate", "to": "frontend-build", "relation": "must-complete-before"})
     for target in request.targets:
         profile = TARGET_PROFILES[target.language]
         phases = (
@@ -363,26 +414,78 @@ def _compose(request: SynthesisRequest) -> str:
                 "      io.elmos.runtime-scope: local-development",
             ]
         )
+    if request.is_fullstack:
+        blocks.extend(
+            [
+                "  frontend:",
+                "    build:",
+                "      context: ./frontend",
+                "      dockerfile: Dockerfile",
+                "    environment:",
+                f"      APP_NAME: {request.project_name}-frontend",
+                "      APP_ENV: development",
+                '    ports: ["127.0.0.1:3000:80"]',
+                "    init: true",
+                "    networks: [runtime]",
+                "    labels:",
+                '      io.elmos.generated: "true"',
+                "      io.elmos.runtime-scope: local-development",
+            ]
+        )
+    middleware = request.raw.get("middleware", [])
+    if "redis" in middleware or request.raw.get("enable_redis"):
+        blocks.extend(
+            [
+                "  redis:",
+                "    image: redis:7.4-alpine",
+                '    ports: ["127.0.0.1:6379:6379"]',
+                "    networks: [runtime]",
+                "    labels:",
+                '      io.elmos.generated: "true"',
+            ]
+        )
+    if "kafka" in middleware or request.raw.get("enable_kafka"):
+        blocks.extend(
+            [
+                "  kafka:",
+                "    image: confluentinc/cp-kafka:7.7.0",
+                '    ports: ["127.0.0.1:9092:9092"]',
+                "    environment:",
+                "      KAFKA_NODE_ID: 1",
+                "      KAFKA_PROCESS_ROLES: broker,controller",
+                "      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093",
+                "      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092",
+                "      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER",
+                "      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT",
+                "      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093",
+                "      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1",
+                "      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk",
+                "    networks: [runtime]",
+                "    labels:",
+                '      io.elmos.generated: "true"',
+            ]
+        )
     blocks.extend(["networks:", "  runtime:", "    internal: true"])
     return "\n".join(blocks) + "\n"
 
 
 def _root_makefile(request: SynthesisRequest) -> str:
     first = request.targets[0].language
-    phony_targets = " ".join(
-        [
-            "doctor",
-            "verify",
-            "run",
-            "plan",
-            "up",
-            "down",
-            "status",
-            "smoke",
-            *[f"run-{target.language}" for target in request.targets],
-            *[f"verify-{target.language}" for target in request.targets],
-        ]
-    )
+    phony_list = [
+        "doctor",
+        "verify",
+        "run",
+        "plan",
+        "up",
+        "down",
+        "status",
+        "smoke",
+        *[f"run-{target.language}" for target in request.targets],
+        *[f"verify-{target.language}" for target in request.targets],
+    ]
+    if request.is_fullstack:
+        phony_list.extend(["run-frontend", "verify-frontend"])
+    phony_targets = " ".join(phony_list)
     lines = [
         f".PHONY: {phony_targets}",
         "",
@@ -418,6 +521,17 @@ def _root_makefile(request: SynthesisRequest) -> str:
                 "",
                 f"verify-{target.language}:",
                 f"\tpython3 scripts/projectctl.py verify --target {target.language}",
+            ]
+        )
+    if request.is_fullstack:
+        lines.extend(
+            [
+                "",
+                "run-frontend:",
+                "\t(cd frontend && npm install && npm run dev)",
+                "",
+                "verify-frontend:",
+                "\t(cd frontend && npm run build)",
             ]
         )
     return "\n".join(lines) + "\n"
@@ -490,6 +604,8 @@ def _root_readme(request: SynthesisRequest) -> str:
             "&& cargo clippy --locked --all-targets --all-features -- -D warnings "
             "&& cargo test --locked --all-features)"
         )
+    if request.is_fullstack:
+        build_commands.append("(cd frontend && npm install && npm run build)")
     commands = "\n".join(build_commands)
     return clean(
         f"""
@@ -658,6 +774,21 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         if path in files:
             raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
         files[path] = content
+
+    if request.is_fullstack:
+        backend_port = request.targets[0].port if request.targets else 8080
+        for relative, content in render_frontend(request, backend_port).items():
+            path = f"frontend/{relative}"
+            if path in files:
+                raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+            files[path] = content
+
+    if request.raw.get("ai_integration") or "ai" in request.raw.get("features", []):
+        for relative, content in render_ai_agent_scaffold(request).items():
+            path = f"ai/{relative}"
+            if path in files:
+                raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
+            files[path] = content
 
     insight_path = "requirements/project-insights.json"
     insight_report_path = "docs/PROJECT_INSIGHTS.md"
