@@ -37,7 +37,7 @@ const modernizationGroups: CapabilityGroup[] = [
   { range: "能力", title: "能力抽取、数据集构建与私有模型训练", count: 135, source: "内置能力底座 v3.0.0", status: "READY", icon: "spark", note: "从既有工程中提炼可复用规则，支持 SFT/DPO/RLVR 训练、蒸馏与受控执行沙箱。" },
   { range: "验证", title: "形式化证明、推理路由、安全防护与用量核算", count: 135, source: "内置能力底座 v3.0.0", status: "READY", icon: "shield", note: "SMT 形式化验证、自适应缓存、越狱防范，以及按租户核算的用量与成本。" },
   { range: "租户", title: "多租户隔离、人机协作与能力沉淀", count: 125, source: "内置能力底座 v3.0.0", status: "READY", icon: "workflow", note: "多租户隔离、合规操作审计、行业能力包沉淀与自我演化流水线。" },
-  { range: "工程", title: "Java / Spring 翻新、跨语言、数据库与前端改造", count: 260, source: "内置能力底座 v3.0.0", status: "READY", icon: "code", note: "覆盖 Spring 老项目翻新、30 个方向的跨语言转换、SQL 迁移与微前端改造。" },
+  { range: "工程", title: "Java / Spring 现代化升级、跨语言、数据库与前端改造", count: 260, source: "内置能力底座 v3.0.0", status: "READY", icon: "code", note: "覆盖 Spring 现代化升级、30 个方向的跨语言转换、SQL 迁移与微前端改造。" },
   { range: "数据", title: "湖仓大数据、DevOps、质量工厂与工控接入", count: 290, source: "内置能力底座 v3.0.0", status: "READY", icon: "database", note: "覆盖 Dataflow、K8s 编排、变异测试、大型主机与工业边缘总线。" },
   { range: "适配", title: "语言 / 数据库 / 云平台适配器与受监管合规", count: 246, source: "内置能力底座 v3.0.0", status: "READY", icon: "route", note: "覆盖主流语言、国产数据库、多云驱动与 ISO/IEC 行业合规标准。" },
 ];
@@ -126,7 +126,7 @@ export function CapabilityCenter() {
         </div>
         <div className="header-actions">
           <Link className="button button-secondary" href="/translation"><Icon name="code" size={16} />跨语言转换</Link>
-          <Link className="button button-primary" href="/spring">Spring 老项目翻新<Icon name="arrow" size={15} /></Link>
+          <Link className="button button-primary" href="/spring">Spring 现代化升级<Icon name="arrow" size={15} /></Link>
         </div>
       </section>
 

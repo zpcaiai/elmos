@@ -6,7 +6,7 @@ import { hasPlatformAdministratorSession } from "./lib/server/surfaceGuards";
 const workspaces = [
   {
     eyebrow: "BATCH 30 · SPRING",
-    title: "Spring 老项目翻新",
+    title: "Spring 现代化升级",
     description: "识别经典 Spring、XML 与旧 Boot，显式处理 Java、Jakarta、Security、JPA、配置和真实启动证据。",
     href: "/spring",
     icon: "workflow" as const,
@@ -69,11 +69,11 @@ export default async function Home() {
           <span className="overline">ELMOS CONTROL CENTER</span>
           <h1>四类核心工作空间，一套可验证的交付闭环。</h1>
           <p>
-            Spring 老项目翻新、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
+            Spring 现代化升级、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
           </p>
           <div className="welcome-actions">
             <Link className="button button-primary" href="/spring">
-              评估 Spring 老项目 <Icon name="arrow" size={16} />
+              评估 Spring 现代化升级 <Icon name="arrow" size={16} />
             </Link>
             <Link className="button button-secondary" href="/translation">
               选择跨语言路线

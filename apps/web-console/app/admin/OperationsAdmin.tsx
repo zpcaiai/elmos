@@ -26,7 +26,7 @@ import styles from "./OperationsAdmin.module.css";
 
 const lines = [
   ["ALL", "全部业务线"],
-  ["SPRING_MODERNIZATION", "Spring 老项目翻新"],
+  ["SPRING_MODERNIZATION", "Spring 现代化升级"],
   ["LANGUAGE_TRANSLATION", "全库跨语言转换"],
   ["PROJECT_SYNTHESIS", "多语言项目生成"],
   ["REPOSITORY_WORKSPACE", "代码仓库工作区"],
