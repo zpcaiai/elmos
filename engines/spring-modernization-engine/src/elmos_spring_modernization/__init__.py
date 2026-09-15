@@ -57,6 +57,12 @@ from .spring_database_state_comparator import (
     DatabaseStateReport,
     SpringDatabaseStateComparator,
 )
+from .spring_modernization_fixpoint_guard import (
+    TransformationStep,
+    HumanEscalationDossier,
+    GuardVerdict,
+    SpringModernizationFixpointGuard,
+)
 
 __all__ = [
     "MultiModuleWaveOrchestrator",
@@ -96,5 +102,9 @@ __all__ = [
     "TableDiffSummary",
     "DatabaseStateReport",
     "SpringDatabaseStateComparator",
+    "TransformationStep",
+    "HumanEscalationDossier",
+    "GuardVerdict",
+    "SpringModernizationFixpointGuard",
 ]
 
